@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import '../styles/globals.css'
 
 export const metadata: Metadata = {
-  title: 'Painel de Cliente Barberia',
-  description: 'BarberShop Premium - Estilo e tradição em cada corte',
+  title: 'Prótese Capilar - Painel de Cliente',
+  description: 'Prótese Capilar - Transformando vidas através do cabelo!',
 }
 
 export default function RootLayout({

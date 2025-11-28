@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Lock, User, Phone, ArrowLeft, Scissors } from 'lucide-react';
+import { Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 type ViewType = 'login' | 'register' | 'forgot';
@@ -71,12 +71,6 @@ export default function Home() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-10 right-10 opacity-10 hidden md:block">
-        <Scissors className="w-32 h-32 text-amber-500 rotate-45" />
-      </div>
-      <div className="absolute bottom-10 left-10 opacity-10 hidden md:block">
-        <Scissors className="w-24 h-24 text-amber-500 -rotate-45" />
-      </div>
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-md mx-4 sm:mx-auto">
@@ -87,12 +81,16 @@ export default function Home() {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/50">
-              <Scissors className="w-8 h-8 text-black rotate-45" />
+            <div className="w-24 h-24 flex items-center justify-center">
+              <img
+                src="/images/logo.webp"
+                alt="Prótese Capilar Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
-          <h1 className="text-amber-500 mb-2">BarberShop Premium</h1>
-          <p className="text-gray-400">Estilo e tradição em cada corte</p>
+          <h1 className="text-amber-500 mb-2">Prótese Capilar</h1>
+          <p className="text-gray-400">Transformando vidas através do cabelo!</p>
         </motion.div>
 
         {/* Card Container */}
@@ -355,7 +353,7 @@ export default function Home() {
           transition={{ delay: 0.3 }}
           className="text-center text-gray-500 mt-6"
         >
-          © 2025 BarberShop Premium. Todos os direitos reservados.
+          © 2025 Prótese Capilar. Todos os direitos reservados.
         </motion.p>
       </div>
     </div>
