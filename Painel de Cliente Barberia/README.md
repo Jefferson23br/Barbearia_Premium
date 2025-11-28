@@ -40,22 +40,37 @@ npm run build
 npm start
 ```
 
-## 🌐 Deploy na Hostinger
+## 🌐 Deploy na Hostinger (Copiar Arquivos)
 
-**Veja o arquivo [DEPLOY.md](./DEPLOY.md) para instruções completas de deploy na Hostinger.**
+### ⚡ Método Rápido - Gerenciador de Arquivos
 
-### Resumo rápido:
-
-1. **VPS/Cloud Hosting:**
+1. **Fazer build local:**
    ```bash
    npm install
    npm run build
-   pm2 start npm --name "barberia-painel" -- start
    ```
+   
+   Ou use o script automatizado:
+   - **Windows:** `preparar-deploy.bat`
+   - **Linux/Mac:** `./preparar-deploy.sh`
 
-2. **Hospedagem Compartilhada:**
-   - Fazer build local
-   - Fazer upload da pasta `out/` via FTP
+2. **Copiar arquivos:**
+   - Acesse o **Gerenciador de Arquivos** da Hostinger
+   - Vá até a pasta `public_html`
+   - Copie **TODOS os arquivos** da pasta `out/` para `public_html/`
+   - Copie também o arquivo `.htaccess` para `public_html/`
+
+3. **Acessar:**
+   - URL: `http://seu-dominio-provisorio.com`
+   - A tela de login aparecerá automaticamente!
+
+### 📋 Porta de Entrada
+
+- **Arquivo:** `index.html` (gerado automaticamente na pasta `out/`)
+- **Caminho:** `/` (raiz do domínio)
+- **Resultado:** Tela de login aparece automaticamente
+
+**Veja o arquivo [README_DEPLOY.md](./README_DEPLOY.md) para instruções detalhadas.**
 
 ## 📁 Estrutura do projeto
 

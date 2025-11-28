@@ -1,18 +1,19 @@
-# Configuração para Next.js na Hostinger (Apache)
-# Se estiver usando Apache ao invés de Nginx
+# Configuração para Next.js Export Estático na Hostinger (Apache)
+# Este arquivo deve ser copiado junto com os arquivos da pasta "out"
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
   
-  # Redirecionar para HTTPS (opcional)
+  # Redirecionar para HTTPS (opcional - descomente se tiver SSL)
   # RewriteCond %{HTTPS} off
   # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   
-  # Proxy para aplicação Next.js na porta 3000
+  # Redirecionar todas as requisições para index.html (SPA)
+  # Isso garante que o Next.js funcione corretamente
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(.*)$ http://localhost:3000/$1 [P,L]
+  RewriteRule ^(.*)$ /index.html [L]
 </IfModule>
 
 # Compressão GZIP

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone', // Otimizado para produção
+  output: 'export', // Export estático para hospedagem compartilhada
   images: {
     domains: ['images.unsplash.com'],
     remotePatterns: [
@@ -10,11 +10,12 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
-    unoptimized: false, // Otimização de imagens ativada
+    unoptimized: true, // Necessário para export estático
   },
-  // Configuração para produção
+  // Configuração para produção estática
   compress: true,
   poweredByHeader: false,
+  trailingSlash: true, // Adiciona barra no final das URLs
 }
 
 module.exports = nextConfig
