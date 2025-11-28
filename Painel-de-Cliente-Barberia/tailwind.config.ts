@@ -9,6 +9,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        border: "var(--color-border)",
+        background: "var(--color-background)",
+        foreground: "var(--color-foreground)",
+        primary: {
+          DEFAULT: "var(--color-primary)",
+          foreground: "var(--color-primary-foreground)",
+        },
+        secondary: {
+          DEFAULT: "var(--color-secondary)",
+          foreground: "var(--color-secondary-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--color-muted)",
+          foreground: "var(--color-muted-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--color-accent)",
+          foreground: "var(--color-accent-foreground)",
+        },
+        destructive: {
+          DEFAULT: "var(--color-destructive)",
+          foreground: "var(--color-destructive-foreground)",
+        },
+        ring: "var(--color-ring)",
         amber: {
           400: 'oklch(.828 .189 84.429)',
           500: 'oklch(.769 .188 70.08)',
@@ -27,6 +51,11 @@ const config: Config = {
           800: 'oklch(.274 .006 286.033)',
           900: 'oklch(.21 .006 285.885)',
         },
+      },
+      borderRadius: {
+        lg: "var(--radius-lg)",
+        md: "var(--radius-md)",
+        sm: "var(--radius-sm)",
       },
     },
   },
