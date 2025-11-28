@@ -1,0 +1,45 @@
+═══════════════════════════════════════════════════════════════
+  QUANDO USAR npm run build?
+═══════════════════════════════════════════════════════════════
+
+❌ NÃO PRECISA fazer build durante o desenvolvimento!
+
+═══════════════════════════════════════════════════════════════
+
+🛠️ PARA DESENVOLVER (Editando código):
+
+Use: npm run dev
+
+- Atualiza AUTOMATICAMENTE quando você salva
+- Veja mudanças instantâneas no navegador
+- NÃO precisa fazer build manualmente
+- Acesse: http://localhost:3000
+
+Fluxo:
+1. Execute: npm run dev
+2. Edite seus arquivos
+3. Salve (Ctrl+S)
+4. Veja mudanças AUTOMATICAMENTE! ✨
+
+═══════════════════════════════════════════════════════════════
+
+📦 PARA PRODUÇÃO (Copiar para servidor):
+
+Use: npm run build
+
+- APENAS quando quiser gerar arquivos finais
+- APENAS antes de copiar para Hostinger
+- Gera a pasta "out/" com arquivos estáticos
+
+═══════════════════════════════════════════════════════════════
+
+✅ RESUMO:
+
+DURANTE DESENVOLVIMENTO:
+  → npm run dev (fica rodando, atualiza sozinho)
+
+ANTES DE COPIAR PARA SERVIDOR:
+  → npm run build (gera arquivos finais)
+
+═══════════════════════════════════════════════════════════════
+
