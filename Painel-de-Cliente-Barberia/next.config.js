@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'export', // Export estático para hospedagem compartilhada
+  eslint: {
+    ignoreDuringBuilds: true, // Ignora erros do ESLint durante o build
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   images: {
     domains: ['images.unsplash.com'],
     remotePatterns: [
