@@ -1,0 +1,21 @@
+import type { Metadata } from 'next'
+import '../styles/globals.css'
+import '../index.css'
+
+export const metadata: Metadata = {
+  title: 'Painel de Cliente Barberia',
+  description: 'BarberShop Premium - Estilo e tradição em cada corte',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="pt-BR">
+      <body>{children}</body>
+    </html>
+  )
+}
+

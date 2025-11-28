@@ -1,0 +1,83 @@
+═══════════════════════════════════════════════════════════════
+  INSTRUÇÕES RÁPIDAS - DEPLOY NA HOSTINGER
+═══════════════════════════════════════════════════════════════
+
+📋 PRÉ-REQUISITOS:
+  ✓ Conta na Hostinger com acesso SSH
+  ✓ Domínio provisório configurado
+  ✓ Node.js 18+ instalado (ou usar nvm)
+
+🚀 MÉTODO RÁPIDO (VPS/Cloud):
+
+1. Conectar via SSH:
+   ssh usuario@seu-dominio.com
+
+2. Navegar até a pasta do site:
+   cd public_html
+   # ou criar uma pasta específica
+   mkdir barberia-painel
+   cd barberia-painel
+
+3. Fazer upload dos arquivos:
+   - Via Git: git clone seu-repositorio.git
+   - Via FTP: fazer upload de todos os arquivos
+
+4. Instalar e executar:
+   npm install
+   npm run build
+   
+   # Com PM2 (recomendado):
+   npm install -g pm2
+   pm2 start ecosystem.config.js
+   pm2 save
+
+5. Configurar proxy (se necessário):
+   - Editar arquivo .htaccess ou configurar Nginx
+   - Ver arquivo DEPLOY.md para detalhes
+
+🌐 MÉTODO ALTERNATIVO (Hospedagem Compartilhada):
+
+1. Fazer build local:
+   npm install
+   npm run build
+
+2. Editar next.config.js e adicionar:
+   output: 'export',
+
+3. Fazer build novamente:
+   npm run build
+
+4. Fazer upload da pasta 'out/' via FTP para public_html/
+
+═══════════════════════════════════════════════════════════════
+
+📞 VERIFICAÇÃO:
+
+Após o deploy, acesse:
+  http://seu-dominio-provisorio.com
+  ou
+  https://seu-dominio-provisorio.com
+
+═══════════════════════════════════════════════════════════════
+
+🔧 COMANDOS ÚTEIS:
+
+Ver logs:
+  pm2 logs barberia-painel-cliente
+
+Reiniciar:
+  pm2 restart barberia-painel-cliente
+
+Parar:
+  pm2 stop barberia-painel-cliente
+
+Status:
+  pm2 status
+
+═══════════════════════════════════════════════════════════════
+
+📚 DOCUMENTAÇÃO COMPLETA:
+  Veja o arquivo DEPLOY.md para instruções detalhadas
+
+═══════════════════════════════════════════════════════════════
+

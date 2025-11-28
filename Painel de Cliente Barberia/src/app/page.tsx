@@ -1,11 +1,13 @@
+'use client'
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Lock, User, Phone, ArrowLeft, Scissors } from 'lucide-react';
-import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 type ViewType = 'login' | 'register' | 'forgot';
 
-export default function App() {
+export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -359,3 +361,4 @@ export default function App() {
     </div>
   );
 }
+
