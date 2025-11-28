@@ -1,115 +1,163 @@
-# Painel de Cliente Barberia
+# 💈 BarberShop Premium - Painel de Cliente
 
-Este é o **Painel de Acesso do Cliente** - primeira parte do sistema completo de barbearia.
+<div align="center">
 
-O projeto original está disponível em: https://www.figma.com/design/PiFI7YV1KGUQ8CR5UA3lVu/Painel-de-Cliente-Barberia
+![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
-## 🚀 Tecnologias
+**Sistema completo de gestão para barbearias premium** ✂️
+
+[![Status](https://img.shields.io/badge/status-em_desenvolvimento-yellow?style=flat-square)](https://github.com)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+
+</div>
+
+---
+
+## 🎯 Sobre o Projeto
+
+Desenvolvi este projeto como parte de um sistema completo de gestão para barbearias premium. Este é o **Painel de Acesso do Cliente**, a primeira interface que os clientes encontram ao acessar o sistema.
+
+O design foi criado no Figma com foco em uma experiência moderna, elegante e intuitiva, refletindo o padrão premium de uma barbearia de alto nível.
+
+### ✨ Características Principais
+
+- 🎨 **Interface Moderna**: Design elegante com animações suaves usando Motion
+- 📱 **Totalmente Responsivo**: Funciona perfeitamente em todos os dispositivos
+- 🚀 **Performance Otimizada**: Build estático para carregamento ultrarrápido
+- 🎭 **Componentes Acessíveis**: Utilizando Radix UI para máxima acessibilidade
+- 🌙 **Sistema de Temas**: Pronto para modo claro/escuro com next-themes
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+<div align="center">
 
 ### Front-end
-- **Next.js 14** - Framework React para produção
-- **React 18** - Biblioteca JavaScript para interfaces
-- **TypeScript** - Superset do JavaScript com tipagem estática
-- **Tailwind CSS** - Framework CSS utilitário
-- **Motion** - Biblioteca de animações
-- **Radix UI** - Componentes acessíveis
 
-### Back-end (Próximas etapas)
-- **Node.js** - Runtime JavaScript
-- **PostgreSQL** - Banco de dados relacional
+<table>
+<tr>
+<td align="center" width="150">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="48" height="48" alt="Next.js" />
+<br />Next.js 14
+</td>
+<td align="center" width="150">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" height="48" alt="React" />
+<br />React 18
+</td>
+<td align="center" width="150">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
+<br />TypeScript
+</td>
+<td align="center" width="150">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="48" height="48" alt="Tailwind CSS" />
+<br />Tailwind CSS
+</td>
+</tr>
+</table>
 
-## 📦 Instalação Local
+### Bibliotecas & Ferramentas
 
-```bash
-# Instalar dependências
-npm install
+- **Motion** - Animações fluidas e performáticas
+- **Radix UI** - Componentes acessíveis e customizáveis
+- **Lucide React** - Ícones modernos e leves
+- **React Hook Form** - Formulários performáticos
+- **Class Variance Authority** - Sistema de variantes de componentes
 
-# Executar em desenvolvimento
-npm run dev
-```
+### Arquitetura Planejada
 
-O projeto estará disponível em [http://localhost:3000](http://localhost:3000)
+- **Back-end**: Node.js com Express/Fastify
+- **Banco de Dados**: PostgreSQL
+- **Autenticação**: JWT + Refresh Tokens
+- **APIs**: RESTful com documentação OpenAPI
 
-## 🏗️ Build para Produção
+</div>
 
-```bash
-# Criar build otimizado
-npm run build
+---
 
-# Iniciar servidor de produção
-npm start
-```
+## 🎨 Design & UX
 
-## 🌐 Deploy na Hostinger (Copiar Arquivos)
+O projeto foi desenvolvido seguindo os princípios de Design System moderno:
 
-### ⚡ Método Rápido - Gerenciador de Arquivos
+- **Paleta de Cores**: Tons de âmbar e dourado para transmitir elegância e premium
+- **Tipografia**: Hierarquia clara e legibilidade em todos os tamanhos
+- **Espaçamento**: Sistema de grid consistente para harmonia visual
+- **Micro-interações**: Feedback visual em todas as ações do usuário
+- **Acessibilidade**: Contraste adequado e navegação por teclado
 
-1. **Fazer build local:**
-   ```bash
-   npm install
-   npm run build
-   ```
-   
-   Ou use o script automatizado:
-   - **Windows:** `preparar-deploy.bat`
-   - **Linux/Mac:** `./preparar-deploy.sh`
+### Telas Implementadas
 
-2. **Copiar arquivos:**
-   - Acesse o **Gerenciador de Arquivos** da Hostinger
-   - Vá até a pasta `public_html`
-   - Copie **TODOS os arquivos** da pasta `out/` para `public_html/`
-   - Copie também o arquivo `.htaccess` para `public_html/`
+✅ **Tela de Login** - Autenticação intuitiva e segura  
+✅ **Tela de Registro** - Cadastro rápido e objetivo  
+✅ **Recuperação de Senha** - Fluxo de recuperação simplificado  
 
-3. **Acessar:**
-   - URL: `http://seu-dominio-provisorio.com`
-   - A tela de login aparecerá automaticamente!
+---
 
-### 📋 Porta de Entrada
-
-- **Arquivo:** `index.html` (gerado automaticamente na pasta `out/`)
-- **Caminho:** `/` (raiz do domínio)
-- **Resultado:** Tela de login aparece automaticamente
-
-**Veja o arquivo [README_DEPLOY.md](./README_DEPLOY.md) para instruções detalhadas.**
-
-## 📁 Estrutura do projeto
+## 📦 Estrutura do Projeto
 
 ```
 src/
-├── app/              # App Router do Next.js
-│   ├── layout.tsx   # Layout principal
-│   └── page.tsx     # Página inicial (Login/Registro)
-├── components/       # Componentes React
-│   ├── figma/       # Componentes do Figma
-│   └── ui/          # Componentes de UI (shadcn/ui)
-└── styles/          # Estilos globais
+├── app/                    # App Router do Next.js
+│   ├── layout.tsx         # Layout principal
+│   └── page.tsx           # Página de login/registro
+├── components/            
+│   ├── figma/             # Componentes do design original
+│   └── ui/                # Componentes reutilizáveis (shadcn/ui)
+└── styles/                # Estilos globais
 ```
 
-## 📝 Scripts disponíveis
+---
 
-- `npm run dev` - Inicia o servidor de desenvolvimento
-- `npm run build` - Cria build de produção
-- `npm run start` - Inicia o servidor de produção
-- `npm run lint` - Executa o linter
+## 🚀 Estado do Projeto
 
-## 🔐 Funcionalidades Atuais
+Atualmente, estou trabalhando na integração com o back-end e implementação das funcionalidades completas do sistema. O front-end está pronto para receber as APIs e a autenticação.
 
-- ✅ Tela de Login
-- ✅ Tela de Registro
-- ✅ Recuperação de Senha
-- ✅ Animações suaves
-- ✅ Design responsivo
-- ✅ Interface moderna com Tailwind CSS
-
-## 📋 Próximas Etapas
+### Próximas Etapas
 
 - [ ] Integração com API Node.js
+- [ ] Implementação de autenticação JWT
 - [ ] Conexão com PostgreSQL
-- [ ] Autenticação JWT
 - [ ] Dashboard do cliente
-- [ ] Agendamento de serviços
-- [ ] Histórico de atendimentos
+- [ ] Sistema de agendamentos
+- [ ] Histórico de serviços
+- [ ] Perfil e configurações
 
-## 📞 Suporte
+---
 
-Para dúvidas sobre deploy ou configuração, consulte o arquivo `DEPLOY.md`
+## 💼 Diferenciais Técnicos
+
+- **SSG (Static Site Generation)**: Build estático para performance máxima
+- **Type Safety**: TypeScript em 100% do código
+- **Component-Driven Development**: Componentes reutilizáveis e testáveis
+- **Modern React Patterns**: Hooks, Context API, e Server Components
+- **SEO Optimized**: Meta tags e estrutura otimizada
+
+---
+
+## 📸 Preview
+
+![BarberShop Premium](https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80)
+
+*Design elegante e moderno que reflete a qualidade premium de uma barbearia de alto padrão.*
+
+---
+
+## 📄 Licença
+
+Este projeto é privado e desenvolvido exclusivamente para uso comercial.
+
+---
+
+<div align="center">
+
+**Desenvolvido com ❤️ para barbearias premium**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)
+
+</div>
