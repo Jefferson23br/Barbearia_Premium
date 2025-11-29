@@ -199,3 +199,4 @@ CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 *Schema baseado nas especificações do sistema*
 
 
+
