@@ -1,0 +1,49 @@
+CRONOGRAMA DE PROJETO
+Sistema de Gestão de Prótese Capilar: Planos e Atendimentos
+Cliente: Próteses Capilares Cuiabá Emissão: 28/11/2025 Prazo Total Estimado: 60 dias úteis Final: 19/02/2026
+________________________________________
+1. Resumo Executivo
+O projeto será desenvolvido ao longo de 60 dias úteis (aproximadamente 12 semanas), dividido em 8 fases estratégicas. O objetivo é entregar um sistema completo, testado e funcional, garantindo transparência através de 4 entregas parciais antes da finalização.
+________________________________________
+2. Linha do Tempo e Entregas (Milestones)
+Abaixo detalhamos o fluxo de desenvolvimento e os pontos de entrega para validação.
+Mês 1: Fundação e Back-End
+•	FASE 1: Infraestrutura e Setup (Dias 1-5)
+o	Configuração do ambiente de desenvolvimento, banco de dados e repositórios.
+o	Status: Em andamento.
+•	FASE 2: Núcleo do Sistema e Segurança (Dias 6-15)
+o	Desenvolvimento do sistema de autenticação, login seguro e proteção de dados.
+o	Estruturação inicial do banco de dados e APIs.
+•	FASE 3: Módulos Principais (Dias 16-23)
+o	Desenvolvimento dos módulos de Planos, Serviços, Clientes e Agendamentos.
+o	📌 ENTREGA PARCIAL 1 (Dia 23): Backend funcional com documentação das APIs.
+Mês 2: Interface do Cliente e Vendas
+•	FASE 4: Área do Cliente (Dias 24-31)
+o	Painel completo onde o cliente visualiza planos, saldo de usos e histórico.
+o	📌 ENTREGA PARCIAL 2 (Dia 31): Painel do cliente funcional e integrado.
+•	FASE 5: Site Público e Comercial (Dias 32-41)
+o	Desenvolvimento do site institucional, catálogo de planos e checkout de compras.
+o	📌 ENTREGA PARCIAL 3 (Dia 41): Site público online com área de vendas.
+Mês 3: Gestão Administrativa e Finalização
+•	FASE 6: Painel Administrativo - Básico (Dias 42-49)
+o	Dashboard de gestão, controle de clientes e configuração de serviços.
+•	FASE 7: Painel Administrativo - Avançado (Dias 50-55)
+o	Controle financeiro, relatórios, agenda administrativa e sistema de notificações.
+o	📌 ENTREGA PARCIAL 4 (Dia 55): Painel administrativo completo com todas as ferramentas de gestão.
+•	FASE 8: Integrações Finais e Lançamento (Dias 56-60)
+o	Integração final com meios de pagamento (Pix, Cartão, Boleto) e Emissão de NFe.
+o	Testes de segurança, correção de bugs e otimização.
+o	🏁 ENTREGA FINAL (Dia 60): Sistema 100% funcional, implantado no servidor e pronto para uso.
+________________________________________
+3. O que será entregue ao final (Dia 60)
+Ao concluir o ciclo de 60 dias, sua empresa receberá:
+1.	Sistema Completo Hospedado: A solução rodando em servidor de produção.
+2.	Propriedade Intelectual: Código-fonte organizado e documentado.
+3.	Capacitação: Manual de uso e treinamento para a equipe administrativa.
+4.	Dados Prontos: Banco de dados configurado e populado.
+________________________________________
+4. Observações Importantes
+•	Dias Úteis: O cronograma considera dias de segunda a sexta-feira.
+•	Integrações Externas: Credenciais para pagamentos e notas fiscais devem ser providenciadas com antecedência para evitar atrasos.
+•	Acompanhamento: Pequenos ajustes podem ser feitos durante o processo, mantendo a comunicação constante.
+
