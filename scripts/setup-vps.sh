@@ -110,3 +110,4 @@ echo "4. Configurar usuário e chaves SSH"
 echo ""
 echo "Consulte: docs/deploy/CONFIGURACAO_VPS.md"
 
+
