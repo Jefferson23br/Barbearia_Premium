@@ -198,3 +198,4 @@ sudo tail -f /var/log/nginx/access.log | grep -v "200"
 
 **Segurança é um processo contínuo!** 🔐
 
+
