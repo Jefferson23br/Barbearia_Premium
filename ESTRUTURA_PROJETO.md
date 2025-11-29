@@ -61,3 +61,4 @@ Barbearia_Premium/
 *Estrutura a ser atualizada conforme as ideias do documento*
 
 
+
