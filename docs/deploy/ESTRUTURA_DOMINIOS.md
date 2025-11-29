@@ -154,3 +154,4 @@ NEXT_PUBLIC_API_URL=https://api.seudominio.com
 
 **Estrutura profissional e escalável!** 🚀
 
+

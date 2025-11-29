@@ -500,3 +500,4 @@ sudo ufw enable
 
 **Importante**: Guarde todas as senhas e chaves SSH em local seguro!
 
+
