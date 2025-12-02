@@ -1,69 +1,155 @@
-# 📚 Documentação de Deploy - VPS Hostinger
+# 📚 Documentação de Deploy - protesecapilarcuiaba.com.br
 
-## 📖 Índice de Documentos
+## 🎯 Informações do Projeto
 
-### 🚀 Guias de Configuração
-
-1. **[GUIA_COMPLETO_VPS.md](./GUIA_COMPLETO_VPS.md)** ⭐
-   - Guia completo passo a passo
-   - Todas as configurações detalhadas
-   - **COMEÇE POR AQUI!**
-
-2. **[RESUMO_CONFIGURACAO.md](./RESUMO_CONFIGURACAO.md)**
-   - Comandos essenciais resumidos
-   - Referência rápida
-
-3. **[CHECKLIST_CONFIGURACAO_VPS.md](./CHECKLIST_CONFIGURACAO_VPS.md)**
-   - Checklist para acompanhar progresso
-   - Marque conforme for configurando
+- **Domínio**: protesecapilarcuiaba.com.br
+- **API**: api.protesecapilarcuiaba.com.br
+- **VPS**: Hostinger KVM 2 (AlmaLinux 9)
+- **CDN**: Cloudflare
+- **Acesso**: PowerShell via SSH
 
 ---
 
-### 🌐 Estrutura e Domínios
+## 🚀 INÍCIO RÁPIDO
 
-4. **[ESTRUTURA_DOMINIOS.md](./ESTRUTURA_DOMINIOS.md)**
+### Para Configuração via PowerShell:
+
+👉 **[GUIA_VIA_POWERSHELL.md](./GUIA_VIA_POWERSHELL.md)** ⭐⭐⭐
+
+**Este é o guia principal para configurar tudo via PowerShell!**
+
+---
+
+## 📖 Índice de Documentos
+
+### 🔥 Guias Principais (COMECE AQUI)
+
+1. **[GUIA_VIA_POWERSHELL.md](./GUIA_VIA_POWERSHELL.md)** ⭐⭐⭐
+   - **PRINCIPAL:** Configuração completa via PowerShell
+   - Cloudflare + VPS em um único documento
+   - Passo a passo detalhado
+
+2. **[PASSO_A_PASSO_COMPLETO.md](./PASSO_A_PASSO_COMPLETO.md)** ⭐⭐
+   - Alternativa ao guia principal
+   - Separado em seções
+
+3. **[CHECKLIST_CONFIGURACAO_VPS.md](./CHECKLIST_CONFIGURACAO_VPS.md)** ⭐
+   - Checklist para marcar progresso
+   - Use enquanto configura
+
+---
+
+### ☁️ Cloudflare
+
+4. **[CONFIGURACAO_CLOUDFLARE.md](./CONFIGURACAO_CLOUDFLARE.md)**
+   - Configuração detalhada do Cloudflare
+   - DNS, SSL, Performance, Segurança
+   - Específico para protesecapilarcuiaba.com.br
+
+---
+
+### 🌐 Nginx e Domínios
+
+5. **[ESTRUTURA_DOMINIOS.md](./ESTRUTURA_DOMINIOS.md)**
    - Explicação da estrutura de domínios
-   - Por que usar API com domínio próprio
-   - Configuração de DNS
+   - Por que API com domínio próprio
+   - Arquitetura do sistema
 
-5. **[TEMPLATES_NGINX.md](./TEMPLATES_NGINX.md)**
-   - Templates prontos de configuração Nginx
-   - Para API, Site, Painel Cliente e Admin
+6. **[TEMPLATES_NGINX.md](./TEMPLATES_NGINX.md)**
+   - Templates genéricos de Nginx
+
+📁 **Templates prontos (com domínio real):**
+- `../../scripts/templates-nginx/api.conf`
+- `../../scripts/templates-nginx/www.conf`
+- `../../scripts/templates-nginx/app.conf`
+- `../../scripts/templates-nginx/admin.conf`
 
 ---
 
 ### 🛡️ Segurança
 
-6. **[SEGURANCA_VPS.md](./SEGURANCA_VPS.md)**
+7. **[SEGURANCA_VPS.md](./SEGURANCA_VPS.md)**
    - Guia completo de segurança
-   - Boas práticas implementadas
-   - Monitoramento e manutenção
+   - Boas práticas
+   - Monitoramento
 
-7. **[CONFIGURACAO_VPS.md](./CONFIGURACAO_VPS.md)**
-   - Versão detalhada da configuração
-   - Com explicações adicionais
-
----
-
-## 🎯 Ordem Recomendada de Leitura
-
-1. **ESTRUTURA_DOMINIOS.md** - Entender a arquitetura
-2. **GUIA_COMPLETO_VPS.md** - Seguir passo a passo
-3. **CHECKLIST_CONFIGURACAO_VPS.md** - Marcar progresso
-4. **TEMPLATES_NGINX.md** - Usar templates
-5. **SEGURANCA_VPS.md** - Revisar segurança
+8. **[SETUP_VPS_POWERSHELL.md](./SETUP_VPS_POWERSHELL.md)**
+   - Configuração via PowerShell
+   - Específico para Windows
 
 ---
 
-## 🚀 Início Rápido
+### 📚 Referência
 
-1. Conectar na VPS: `ssh root@IP_DA_VPS`
-2. Seguir: **[GUIA_COMPLETO_VPS.md](./GUIA_COMPLETO_VPS.md)**
-3. Marcar progresso: **[CHECKLIST_CONFIGURACAO_VPS.md](./CHECKLIST_CONFIGURACAO_VPS.md)**
+9. **[GUIA_COMPLETO_VPS.md](./GUIA_COMPLETO_VPS.md)**
+   - Guia genérico (sem domínio específico)
+
+10. **[CONFIGURACAO_VPS.md](./CONFIGURACAO_VPS.md)**
+    - Detalhes técnicos adicionais
+
+11. **[RESUMO_CONFIGURACAO.md](./RESUMO_CONFIGURACAO.md)**
+    - Comandos resumidos
 
 ---
 
-*Documentação completa para configuração segura da VPS!* 🛡️
+## 🎯 Fluxo Recomendado
+
+### 1️⃣ CLOUDFLARE (Interface Web)
+
+1. Adicionar domínio ao Cloudflare
+2. Configurar DNS (registros A)
+3. Alterar nameservers no Registro.br
+4. Aguardar propagação (2-4 horas)
+5. Configurar SSL, Performance e Segurança
+
+**Guia:** [CONFIGURACAO_CLOUDFLARE.md](./CONFIGURACAO_CLOUDFLARE.md)
+
+### 2️⃣ VPS (PowerShell)
+
+1. Conectar via SSH
+2. Criar usuário seguro
+3. Configurar chaves SSH
+4. Instalar dependências
+5. Configurar PostgreSQL
+6. Configurar Nginx
+7. Configurar SSL
+
+**Guia:** [GUIA_VIA_POWERSHELL.md](./GUIA_VIA_POWERSHELL.md)
+
+### 3️⃣ VERIFICAÇÃO
+
+1. Marcar checklist
+2. Testar todos os domínios
+3. Verificar segurança
+
+**Checklist:** [CHECKLIST_CONFIGURACAO_VPS.md](./CHECKLIST_CONFIGURACAO_VPS.md)
+
+---
+
+## 📋 Templates Prontos
+
+Na pasta `scripts/templates-nginx/`:
+- ✅ `api.conf` - API Backend
+- ✅ `www.conf` - Site Público
+- ✅ `app.conf` - Painel Cliente
+- ✅ `admin.conf` - Painel Admin
+
+**Todos com domínio real configurado!**
+
+---
+
+## ✅ Estrutura de Domínios
+
+```
+api.protesecapilarcuiaba.com.br     → Backend (Node.js :3001) [DNS Only]
+app.protesecapilarcuiaba.com.br     → Painel Cliente [Proxied]
+admin.protesecapilarcuiaba.com.br   → Painel Admin [Proxied]
+www.protesecapilarcuiaba.com.br     → Site Público [Proxied]
+```
+
+---
+
+*Documentação completa e pronta para uso!* 🚀
 
 
 
