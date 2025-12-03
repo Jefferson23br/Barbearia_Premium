@@ -1,0 +1,24 @@
+═══════════════════════════════════════════════════════════════
+  COMO EXECUTAR - Site de Entrada
+═══════════════════════════════════════════════════════════════
+
+1. Abrir PowerShell
+
+2. Navegar até a pasta:
+   cd "C:\Users\vivo\Barbearia_Premium\frontend\site-entrada"
+
+3. Instalar dependências (primeira vez):
+   npm install
+
+4. Executar em desenvolvimento:
+   npm run dev
+
+5. Acessar no navegador:
+   http://localhost:3002
+
+═══════════════════════════════════════════════════════════════
+
+NOTA: Usa porta 3002 para não conflitar com outros projetos
+
+═══════════════════════════════════════════════════════════════
+

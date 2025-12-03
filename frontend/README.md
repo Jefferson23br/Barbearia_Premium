@@ -6,9 +6,10 @@ Esta pasta contém todos os projetos frontend do sistema:
 
 ```
 frontend/
-├── painel-cliente/          # ✅ Painel do Cliente (em desenvolvimento)
-├── site-publico/            # 🔄 Site Público / Área Comercial (a criar)
-└── painel-admin/            # 🔄 Painel Administrativo (a criar)
+├── site-entrada/            # ✅ Página inicial (Em desenvolvimento)
+├── painel-cliente/          # ✅ Painel do Cliente (Em desenvolvimento)
+├── painel-admin/            # ✅ Painel Admin (Em desenvolvimento)
+└── site-publico/            # 🔄 Site Público completo (A criar)
 ```
 
 ---
