@@ -437,3 +437,4 @@ Arquivos importantes:
 - `scripts/teste-api-simples.js` - Código da API de teste
 
 Quer começar instalando Node.js e PostgreSQL na VPS agora?
+

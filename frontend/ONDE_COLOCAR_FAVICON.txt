@@ -1,0 +1,62 @@
+═══════════════════════════════════════════════════════════════
+  ONDE COLOCAR O FAVICON (ÍCONE DO TÍTULO DA PÁGINA)
+═══════════════════════════════════════════════════════════════
+
+Você precisa converter a logo para formato de favicon e colocar
+nas seguintes pastas:
+
+PAINEL CLIENTE:
+═══════════════════════════════════════════════════════════════
+frontend/painel-cliente/public/favicon.ico       (16x16 ou 32x32)
+frontend/painel-cliente/public/favicon.png       (32x32 ou 192x192)
+frontend/painel-cliente/public/apple-touch-icon.png  (180x180)
+
+PAINEL ADMIN:
+═══════════════════════════════════════════════════════════════
+frontend/painel-admin/public/favicon.ico
+frontend/painel-admin/public/favicon.png
+frontend/painel-admin/public/apple-touch-icon.png
+
+SITE ENTRADA:
+═══════════════════════════════════════════════════════════════
+frontend/site-entrada/public/favicon.ico
+frontend/site-entrada/public/favicon.png
+frontend/site-entrada/public/apple-touch-icon.png
+
+═══════════════════════════════════════════════════════════════
+COMO GERAR O FAVICON:
+═══════════════════════════════════════════════════════════════
+
+1. Use um conversor online:
+   - https://favicon.io/
+   - https://realfavicongenerator.net/
+
+2. Faça upload da logo.webp
+
+3. Baixe os arquivos gerados:
+   - favicon.ico
+   - favicon-32x32.png (renomeie para favicon.png)
+   - apple-touch-icon.png
+
+4. Coloque nas pastas public/ de cada projeto
+
+═══════════════════════════════════════════════════════════════
+FORMATOS NECESSÁRIOS:
+═══════════════════════════════════════════════════════════════
+
+favicon.ico          → 16x16, 32x32, 48x48 (multi-size)
+favicon.png          → 32x32 ou 192x192
+apple-touch-icon.png → 180x180
+
+═══════════════════════════════════════════════════════════════
+RESULTADO:
+═══════════════════════════════════════════════════════════════
+
+Após colocar os arquivos, o ícone aparecerá:
+✓ Na aba do navegador
+✓ Nos favoritos
+✓ No histórico
+✓ Ao adicionar à tela inicial (mobile)
+
+═══════════════════════════════════════════════════════════════
+
