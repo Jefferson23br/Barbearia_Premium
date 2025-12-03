@@ -1,0 +1,99 @@
+═══════════════════════════════════════════════════════════════
+  COMANDOS PARA VPS BACKEND - 82.25.65.201
+═══════════════════════════════════════════════════════════════
+
+CONECTAR:
+═══════════════════════════════════════════════════════════════
+ssh root@82.25.65.201
+
+═══════════════════════════════════════════════════════════════
+VERIFICAR O QUE ESTÁ RODANDO:
+═══════════════════════════════════════════════════════════════
+
+# Ver processos Node.js
+ps aux | grep node
+
+# Ver portas abertas
+sudo netstat -tlnp
+
+# Ver porta 3001 (API)
+sudo netstat -tlnp | grep 3001
+
+# Ver todos os serviços
+sudo systemctl list-units --type=service --state=running
+
+═══════════════════════════════════════════════════════════════
+CONFIGURAR FIREWALL:
+═══════════════════════════════════════════════════════════════
+
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --permanent --add-port=3001/tcp
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all
+
+═══════════════════════════════════════════════════════════════
+INSTALAR NODE.JS (se não tiver):
+═══════════════════════════════════════════════════════════════
+
+curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+sudo dnf install -y nodejs
+node --version
+npm --version
+sudo npm install -g pm2
+
+═══════════════════════════════════════════════════════════════
+CONFIGURAR POSTGRESQL:
+═══════════════════════════════════════════════════════════════
+
+sudo -u postgres psql
+
+# No PostgreSQL:
+CREATE DATABASE protese_capilar;
+CREATE USER protese_user WITH PASSWORD 'SenhaForte123!';
+GRANT ALL PRIVILEGES ON DATABASE protese_capilar TO protese_user;
+\q
+
+═══════════════════════════════════════════════════════════════
+CONFIGURAR NGINX PARA API:
+═══════════════════════════════════════════════════════════════
+
+sudo nano /etc/nginx/conf.d/api.conf
+
+# Copie o template de: scripts/templates-nginx/api.conf
+
+sudo nginx -t
+sudo systemctl reload nginx
+
+═══════════════════════════════════════════════════════════════
+CONFIGURAR SSL (Aguardar DNS propagar primeiro!):
+═══════════════════════════════════════════════════════════════
+
+# Testar DNS
+curl -I http://api.protesecapilarcuiaba.com.br
+
+# Se responder, configurar SSL:
+sudo certbot --nginx -d api.protesecapilarcuiaba.com.br
+
+═══════════════════════════════════════════════════════════════
+CRIAR ESTRUTURA DE PASTAS:
+═══════════════════════════════════════════════════════════════
+
+sudo mkdir -p /home/desenvolvedor/app/backend
+sudo mkdir -p /home/desenvolvedor/app/backend/logs
+sudo chown -R desenvolvedor:desenvolvedor /home/desenvolvedor/app
+
+═══════════════════════════════════════════════════════════════
+VERIFICAR TUDO:
+═══════════════════════════════════════════════════════════════
+
+sudo systemctl status firewalld
+sudo systemctl status nginx
+sudo systemctl status postgresql-15
+sudo firewall-cmd --list-all
+
+═══════════════════════════════════════════════════════════════
+

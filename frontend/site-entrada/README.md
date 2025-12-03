@@ -2,21 +2,18 @@
 
 ## 🎯 Sobre
 
-Página de entrada do site principal mostrando que está em desenvolvimento, com links para as áreas do sistema.
+Página inicial mostrando que o site está em desenvolvimento, com animação de trabalhador e links para as áreas do sistema.
 
 ---
 
-## ✨ Funcionalidades
+## 🌐 URLs
 
-- 🎨 Animação de trabalhador construindo
-- 👋 Trabalhador acena para os visitantes
-- 🔗 Links para Área de Cliente e Administrativa
-- 📱 Design responsivo
-- ⚡ Animações suaves
+- **Desenvolvimento**: http://localhost:3002
+- **Produção**: https://www.protesecapilarcuiaba.com.br
 
 ---
 
-## 🚀 Desenvolvimento
+## 🚀 Execução
 
 ```bash
 npm install
@@ -27,19 +24,43 @@ Acesse: http://localhost:3002
 
 ---
 
-## 🌐 Produção
+## ✨ Funcionalidades
 
-URL: https://www.protesecapilarcuiaba.com.br
+- 🎨 Animação de trabalhador construindo
+- 👋 Trabalhador acena periodicamente (a cada 5s)
+- 🏗️ Carrinho de obra animado
+- ⭐ Partículas animadas no fundo
+- 🔗 Link para Área de Cliente
+- 🔗 Link para Área Administrativa
+- 📱 Design totalmente responsivo
+- 🌙 Tema escuro moderno
 
 ---
 
-## 📝 Notas
+## 🎨 Elementos Visuais
 
-- Porta 3002 para não conflitar com outros painéis
-- Logo deve estar em `public/images/logo.webp`
-- Links apontam para os subdomínios de produção
+- Logo no topo esquerdo
+- Botões de navegação no topo direito
+- Trabalhador SVG animado
+- Mensagem "Em Desenvolvimento" com gradiente
+- Dots animados "Aguarde..."
+- Footer com copyright
 
 ---
 
-*Página temporária enquanto o site completo está em desenvolvimento* 🚧
+## 📦 Build
 
+```bash
+npm run build
+# Gera pasta out/ para deploy
+```
+
+---
+
+## 🔄 Substituição Futura
+
+Este site temporário será substituído pelo **site-publico/** quando o site comercial completo estiver pronto.
+
+---
+
+*Página temporária enquanto desenvolvemos o site completo* 🚧

@@ -2,71 +2,63 @@
 
 ## 🎯 Sobre
 
-Painel administrativo para gestão completa do sistema de prótese capilar.
+Painel administrativo para gestão completa do sistema: clientes, planos, agenda e financeiro.
 
 ---
 
-## 🚀 Tecnologias
+## 🌐 URLs
 
-- **Framework**: Next.js 14
-- **UI**: React 18
-- **Linguagem**: TypeScript
-- **Estilização**: Tailwind CSS
-- **Componentes**: Radix UI
-- **Animações**: Motion
+- **Desenvolvimento**: http://localhost:3000
+- **Produção**: https://admin.protesecapilarcuiaba.com.br
 
 ---
 
-## 📦 Instalação
+## 🚀 Execução
 
 ```bash
 npm install
-```
-
----
-
-## 🔧 Desenvolvimento
-
-```bash
 npm run dev
 ```
 
-Acesse: http://localhost:3000
+---
+
+## ✨ Funcionalidades Atuais
+
+- ✅ Login administrativo
+- ✅ Recuperação de senha
+- ✅ Checkbox "Manter conectado"
+- ✅ Validações de formulário
+- ✅ Design responsivo
 
 ---
 
-## 🏗️ Build
+## 📋 Funcionalidades Futuras
+
+- [ ] Dashboard com indicadores
+- [ ] Gerenciamento de clientes (CRUD)
+- [ ] Gerenciamento de planos (CRUD)
+- [ ] Gerenciamento de serviços (CRUD)
+- [ ] Agenda administrativa
+- [ ] Controle de saldo de usos
+- [ ] Controle financeiro
+- [ ] Relatórios
+- [ ] Sistema de notificações
+- [ ] Envio de emails/WhatsApp
+
+---
+
+## 🔗 Integração com API
+
+Conecta-se à API: https://api.protesecapilarcuiaba.com.br
+
+---
+
+## 📦 Build
 
 ```bash
 npm run build
+# Gera pasta out/ para deploy
 ```
-
----
-
-## 📋 Funcionalidades
-
-### Autenticação
-- ✅ Login administrativo
-- ✅ Recuperação de senha
-- ✅ Manter conectado
-
-### Dashboard (A implementar)
-- [ ] Visão geral do sistema
-- [ ] Indicadores principais
-- [ ] Gráficos e métricas
-
-### Gerenciamento (A implementar)
-- [ ] Clientes
-- [ ] Planos e Serviços
-- [ ] Agenda
-- [ ] Financeiro
-- [ ] Notificações
-
----
-
-## 🌐 Deploy
-
-URL de produção: https://admin.protesecapilarcuiaba.com.br
 
 ---
 

@@ -1,57 +1,56 @@
-# 🎨 Frontend - Sistema Prótese Capilar
+# 🎨 Frontend - Prótese Capilar Cuiabá
 
-## 📁 Estrutura
-
-Esta pasta contém todos os projetos frontend do sistema:
+## 📁 Projetos Frontend
 
 ```
 frontend/
-├── site-entrada/            # ✅ Página inicial (Em desenvolvimento)
-├── painel-cliente/          # ✅ Painel do Cliente (Em desenvolvimento)
-├── painel-admin/            # ✅ Painel Admin (Em desenvolvimento)
-└── site-publico/            # 🔄 Site Público completo (A criar)
+├── site-entrada/      ✅ Página inicial "Em Desenvolvimento"
+├── painel-cliente/    ✅ Painel do Cliente
+├── painel-admin/      ✅ Painel Administrativo
+└── site-publico/      🔄 Site comercial completo (futuro)
 ```
 
 ---
 
-## 🚀 Projetos
+## 🌐 URLs de Produção
 
-### 1. Painel do Cliente (`painel-cliente/`)
-- **Status**: ✅ Em desenvolvimento
-- **Tecnologia**: Next.js 14 + React + TypeScript
-- **Funcionalidades**:
-  - Login/Registro ✅
-  - Dashboard (em desenvolvimento)
-  - Visualização de planos
-  - Histórico de atendimentos
-  - Agendamentos
-  - Perfil do cliente
-
-### 2. Site Público (`site-publico/`)
-- **Status**: 🔄 A criar
-- **Tecnologia**: Next.js 14 + React + TypeScript
-- **Funcionalidades**:
-  - Página institucional
-  - Apresentação de serviços
-  - Catálogo de planos
-  - Área de compra/checkout
-  - Integração com gateway de pagamento
-
-### 3. Painel Administrativo (`painel-admin/`)
-- **Status**: ✅ Em desenvolvimento
-- **Tecnologia**: Next.js 14 + React + TypeScript
-- **Funcionalidades**:
-  - Login administrativo ✅
-  - Dashboard administrativo (em desenvolvimento)
-  - Gerenciamento de clientes
-  - Gerenciamento de planos
-  - Agenda administrativa
-  - Controle financeiro
-  - Sistema de notificações
+| Projeto | URL | Porta Dev |
+|---------|-----|-----------|
+| Site de Entrada | https://www.protesecapilarcuiaba.com.br | 3002 |
+| Painel Cliente | https://app.protesecapilarcuiaba.com.br | 3000 |
+| Painel Admin | https://admin.protesecapilarcuiaba.com.br | 3000 |
 
 ---
 
-## 🛠️ Tecnologias Comuns
+## 🚀 Execução Local
+
+### Site de Entrada
+```bash
+cd site-entrada
+npm install
+npm run dev
+# Acesse: http://localhost:3002
+```
+
+### Painel do Cliente
+```bash
+cd painel-cliente
+npm install
+npm run dev
+# Acesse: http://localhost:3000
+```
+
+### Painel Administrativo
+```bash
+cd painel-admin
+npm install
+npm run dev
+# Acesse: http://localhost:3000
+```
+
+---
+
+## 🛠️ Stack Tecnológica
 
 - **Framework**: Next.js 14
 - **UI**: React 18
@@ -63,32 +62,65 @@ frontend/
 
 ---
 
-## 📝 Comandos Úteis
+## 📦 Build para Produção
 
-### Desenvolvimento
 ```bash
-cd painel-cliente
-npm run dev
-```
-
-### Build
-```bash
+# Em qualquer projeto
 npm run build
+
+# Gera pasta out/ com arquivos estáticos
+# Copiar conteúdo de out/ para VPS Frontend (45.132.157.28)
 ```
 
 ---
 
-## 🔗 Integração
+## 🔗 Conexão com API
 
-Todos os projetos frontend se conectam ao backend através da API REST:
-- **URL Base**: `http://localhost:3001/api` (desenvolvimento)
-- **Produção**: Configurar via variáveis de ambiente
+Todos os frontends se conectam à API:
+
+```
+URL da API: https://api.protesecapilarcuiaba.com.br
+```
+
+Configurar em `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
+```
 
 ---
 
-*Estrutura organizada para fácil manutenção e desenvolvimento*
+## 📋 Funcionalidades
 
+### Site de Entrada ✅
+- Animação de "Em Desenvolvimento"
+- Links para Área de Cliente e Admin
+- Design moderno e responsivo
 
+### Painel Cliente ✅
+- Login com email e senha
+- Registro de novos clientes
+- Recuperação de senha
+- Checkbox "Manter conectado"
+- Inputs com fundo branco (visível)
 
+### Painel Admin ✅
+- Login administrativo
+- Mesmas funcionalidades do painel cliente
+- Interface diferenciada para admin
 
+---
 
+## 🌐 Deploy (VPS Frontend)
+
+1. Fazer build: `npm run build`
+2. Copiar pasta `out/` para VPS (45.132.157.28):
+   ```
+   site-entrada → /var/www/site-entrada/
+   painel-cliente → /var/www/painel-cliente/
+   painel-admin → /var/www/painel-admin/
+   ```
+
+---
+
+*Todos os projetos frontend prontos para desenvolvimento!* 🎨

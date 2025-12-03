@@ -1,0 +1,78 @@
+═══════════════════════════════════════════════════════════════
+  PRÓXIMOS PASSOS - VPS BACKEND (82.25.65.201)
+═══════════════════════════════════════════════════════════════
+
+SITUAÇÃO ATUAL:
+═══════════════════════════════════════════════════════════════
+✅ VPS com CyberPanel instalado
+✅ OpenLiteSpeed rodando (portas 80, 443)
+✅ MariaDB instalado e rodando
+✅ Firewall ativo
+✅ Porta 3001 disponível para API
+
+═══════════════════════════════════════════════════════════════
+COMANDOS PARA EXECUTAR (VIA SSH):
+═══════════════════════════════════════════════════════════════
+
+1. VERIFICAR/INSTALAR NODE.JS:
+   
+   node --version
+   
+   # Se não tiver:
+   curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+   sudo dnf install -y nodejs
+
+2. INSTALAR PM2:
+   
+   sudo npm install -g pm2
+
+3. ESCOLHER BANCO DE DADOS:
+   
+   Opção A - Usar MariaDB (já instalado):
+   mysql -u root -p
+   # Senha: sudo cat .db_password
+   
+   Opção B - Instalar PostgreSQL:
+   sudo dnf install -y postgresql15-server postgresql15
+
+4. ABRIR PORTA 3001 NO FIREWALL:
+   
+   sudo firewall-cmd --permanent --add-port=3001/tcp
+   sudo firewall-cmd --reload
+
+5. CONFIGURAR DOMÍNIO NO CYBERPANEL:
+   
+   Interface: https://212.85.12.84:8090
+   Create Website → api.protesecapilarcuiaba.com.br
+
+6. CONFIGURAR SSL:
+   
+   CyberPanel → SSL → Issue SSL (Let's Encrypt)
+
+7. CONFIGURAR PROXY REVERSO:
+   
+   CyberPanel → Websites → api.* → Rewrite Rules
+   Direcionar para http://localhost:3001
+
+8. CRIAR ESTRUTURA DO BACKEND:
+   
+   mkdir -p /home/cyberpanel/app/backend
+   cd /home/cyberpanel/app/backend
+
+9. CRIAR API DE TESTE:
+   
+   # (Código fornecido no guia)
+
+10. TESTAR:
+    
+    curl http://localhost:3001/health
+    curl https://api.protesecapilarcuiaba.com.br/health
+
+═══════════════════════════════════════════════════════════════
+DOCUMENTAÇÃO:
+═══════════════════════════════════════════════════════════════
+
+Ver: docs/deploy/VPS_BACKEND_COM_CYBERPANEL.md
+
+═══════════════════════════════════════════════════════════════
+
