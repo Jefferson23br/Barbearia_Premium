@@ -1,0 +1,4 @@
+Coloque a logo.webp aqui também!
+
+Caminho: frontend/site-entrada/public/images/logo.webp
+
