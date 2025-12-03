@@ -1,0 +1,16 @@
+═══════════════════════════════════════════════════════════════
+  PASTA DE IMAGENS
+═══════════════════════════════════════════════════════════════
+
+📁 Coloque suas imagens aqui!
+
+Exemplo:
+- logo.webp
+- background.jpg
+- outros arquivos de imagem...
+
+Caminho completo:
+C:\Users\vivo\Barbearia_Premium\Painel-de-Cliente-Barberia\public\images\
+
+═══════════════════════════════════════════════════════════════
+

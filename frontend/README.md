@@ -37,10 +37,11 @@ frontend/
   - Integração com gateway de pagamento
 
 ### 3. Painel Administrativo (`painel-admin/`)
-- **Status**: 🔄 A criar
+- **Status**: ✅ Em desenvolvimento
 - **Tecnologia**: Next.js 14 + React + TypeScript
 - **Funcionalidades**:
-  - Dashboard administrativo
+  - Login administrativo ✅
+  - Dashboard administrativo (em desenvolvimento)
   - Gerenciamento de clientes
   - Gerenciamento de planos
   - Agenda administrativa
@@ -85,6 +86,7 @@ Todos os projetos frontend se conectam ao backend através da API REST:
 ---
 
 *Estrutura organizada para fácil manutenção e desenvolvimento*
+
 
 
 

@@ -14,6 +14,7 @@ export default function Home() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,7 +130,7 @@ export default function Home() {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="seu@email.com"
                           required
                         />
@@ -144,18 +145,27 @@ export default function Home() {
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="••••••••"
                           required
                         />
                       </div>
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-800/50 text-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-0 cursor-pointer"
+                        />
+                        <span className="ml-2 text-sm text-gray-400">Manter conectado</span>
+                      </label>
                       <button
                         type="button"
                         onClick={() => changeTo('forgot')}
-                        className="text-amber-500 hover:text-amber-400 transition-colors"
+                        className="text-amber-500 hover:text-amber-400 transition-colors text-sm"
                       >
                         Esqueceu a senha?
                       </button>
@@ -212,7 +222,7 @@ export default function Home() {
                           type="text"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="João Silva"
                           required
                         />
@@ -227,7 +237,7 @@ export default function Home() {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="seu@email.com"
                           required
                         />
@@ -242,7 +252,7 @@ export default function Home() {
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="(11) 99999-9999"
                           required
                         />
@@ -257,7 +267,7 @@ export default function Home() {
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="••••••••"
                           required
                         />
@@ -272,7 +282,7 @@ export default function Home() {
                           type="password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="••••••••"
                           required
                         />
@@ -322,7 +332,7 @@ export default function Home() {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
                           placeholder="seu@email.com"
                           required
                         />

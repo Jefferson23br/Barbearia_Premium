@@ -165,3 +165,5 @@ VPS configurada. Próximo: criar backend.
 
 **Documentação completa:** `docs/deploy/GUIA_VIA_POWERSHELL.md`
 
+
+

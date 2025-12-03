@@ -1,0 +1,44 @@
+═══════════════════════════════════════════════════════════════
+  INSTRUÇÕES RÁPIDAS - COPIAR ARQUIVOS PARA HOSTINGER
+═══════════════════════════════════════════════════════════════
+
+📋 PASSO A PASSO:
+
+1. No seu computador, execute:
+   
+   npm install
+   npm run build
+
+2. Isso criará uma pasta chamada "out" com todos os arquivos
+
+3. Acesse o Gerenciador de Arquivos da Hostinger
+
+4. Vá até a pasta "public_html" (ou pasta do domínio provisório)
+
+5. Copie TODOS os arquivos da pasta "out" para "public_html"
+
+   ⚠️ IMPORTANTE: Copie o CONTEÚDO da pasta "out", não a pasta inteira!
+
+6. Acesse: http://seu-dominio-provisorio.com
+
+   ✅ A tela de login aparecerá automaticamente!
+
+═══════════════════════════════════════════════════════════════
+
+📁 ESTRUTURA FINAL:
+
+public_html/
+├── index.html          ← PORTA DE ENTRADA (tela de login)
+├── _next/
+└── outros arquivos...
+
+═══════════════════════════════════════════════════════════════
+
+🔄 PARA ATUALIZAR:
+
+1. npm run build
+2. Copiar arquivos atualizados de "out" para "public_html"
+3. Substituir arquivos antigos
+
+═══════════════════════════════════════════════════════════════
+

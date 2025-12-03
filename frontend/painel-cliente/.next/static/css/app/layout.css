@@ -515,6 +515,43 @@ video {
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  input[type="checkbox"] {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-zinc-700);
+    background-color: rgba(39, 39, 42, 0.5);
+    position: relative;
+    transition: all 0.15s ease;
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: oklch(.769 .188 70.08);
+    border-color: oklch(.769 .188 70.08);
+  }
+
+  input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 0.05rem;
+    width: 0.3rem;
+    height: 0.5rem;
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  input[type="checkbox"]:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgba(245, 158, 11, 0.2);
+  }
   :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
     h1 {
       font-size: var(--text-2xl);
@@ -754,6 +791,9 @@ video {
 }
 .ml-1 {
   margin-left: 0.25rem;
+}
+.ml-2 {
+  margin-left: 0.5rem;
 }
 .ml-auto {
   margin-left: auto;
@@ -1108,6 +1148,9 @@ video {
 .cursor-default {
   cursor: default;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 .touch-none {
   touch-action: none;
 }
@@ -1162,9 +1205,6 @@ video {
 }
 .items-stretch {
   align-items: stretch;
-}
-.justify-end {
-  justify-content: flex-end;
 }
 .justify-center {
   justify-content: center;
@@ -1240,6 +1280,9 @@ video {
 }
 .break-words {
   overflow-wrap: break-word;
+}
+.rounded {
+  border-radius: 0.25rem;
 }
 .rounded-2xl {
   border-radius: 1rem;
@@ -1350,6 +1393,10 @@ video {
 }
 .bg-transparent {
   background-color: transparent;
+}
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
@@ -2155,6 +2202,10 @@ html {
 
 .focus\:ring-ring:focus {
   --tw-ring-color: var(--color-ring);
+}
+
+.focus\:ring-offset-0:focus {
+  --tw-ring-offset-width: 0px;
 }
 
 .focus\:ring-offset-2:focus {
