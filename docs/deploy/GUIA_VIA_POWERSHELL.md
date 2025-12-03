@@ -487,3 +487,5 @@ sudo tail -f /var/log/nginx/api.access.log
 
 **VPS configurada com sucesso via PowerShell!** 🎉
 
+
+
