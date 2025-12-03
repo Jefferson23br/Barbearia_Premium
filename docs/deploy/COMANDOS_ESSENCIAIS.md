@@ -193,3 +193,5 @@ psql -h localhost -U protese_user protese_capilar < backup_20250101.sql
 
 *Comandos prontos para copiar e colar!* ⚡
 
+
+
