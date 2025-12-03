@@ -355,3 +355,5 @@ const allowedOrigins = [
 
 **Cloudflare configurado e pronto!** ☁️🔒
 
+
+
