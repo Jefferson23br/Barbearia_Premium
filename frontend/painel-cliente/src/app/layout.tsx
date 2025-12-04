@@ -2,71 +2,28 @@ import type { Metadata } from 'next'
 import '../styles/globals.css'
 
 export const metadata: Metadata = {
-  title: 'Prótese Capilar em Cuiabá | Solução Natural para Calvície',
-  description: 'Sua prótese capilar natural em Cuiabá. Acabe com a calvície de forma definitiva. Agende sua consulta, gerencie seus planos e acompanhe resultados. Atendimento personalizado e discreto.',
-  keywords: [
-    'prótese capilar cuiabá',
-    'solução calvície cuiabá',
-    'peruca masculina cuiabá',
-    'implante capilar não cirúrgico',
-    'prótese capilar natural',
-    'acabar com calvície',
-    'cabelo artificial natural',
-    'prótese capilar masculina',
-    'tratamento calvície cuiabá mt',
-    'peruca natural masculina',
-    'sistema capilar cuiabá',
-    'cobertura capilar',
-    'calvície solução imediata',
-    'prótese cabelo homem',
-    'barbeiro prótese capilar cuiabá'
-  ],
+  title: 'Prótese Capilar Cuiabá - Painel do Cliente',
+  description: 'Acesse seu painel de cliente da Prótese Capilar Cuiabá. Gerencie seus planos, agende atendimentos e acompanhe seu histórico de serviços.',
+  keywords: ['prótese capilar', 'cuiabá', 'painel cliente', 'agendamento', 'peruca masculina', 'calvície'],
   authors: [{ name: 'Prótese Capilar Cuiabá' }],
   creator: 'Prótese Capilar Cuiabá',
   publisher: 'Prótese Capilar Cuiabá',
-  icons: {
-    icon: [
-      { url: '/images/logo.webp' },
-      { url: '/favicon.ico', sizes: 'any' },
-    ],
-    apple: [
-      { url: '/images/logo.webp' },
-    ],
-  },
   robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    }
+    index: false, // Não indexar área de cliente
+    follow: false,
   },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
     url: 'https://app.protesecapilarcuiaba.com.br',
     siteName: 'Prótese Capilar Cuiabá',
-    title: 'Prótese Capilar Natural em Cuiabá | Transforme Sua Vida',
-    description: 'Solução definitiva para calvície em Cuiabá. Prótese capilar 100% natural, imperceptível e confortável. Agende sua avaliação gratuita hoje!',
-    images: [
-      {
-        url: '/images/logo.webp',
-        width: 1200,
-        height: 630,
-        alt: 'Prótese Capilar Cuiabá - Solução para Calvície',
-      }
-    ],
+    title: 'Painel do Cliente - Prótese Capilar Cuiabá',
+    description: 'Acesse seu painel de cliente e gerencie seus serviços de prótese capilar.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Prótese Capilar em Cuiabá | Acabe com a Calvície',
-    description: 'Solução natural e definitiva para calvície. Agende sua consulta em Cuiabá.',
-    images: ['/images/logo.webp'],
-  },
-  alternates: {
-    canonical: 'https://app.protesecapilarcuiaba.com.br',
+    title: 'Painel do Cliente - Prótese Capilar Cuiabá',
+    description: 'Acesse seu painel de cliente e gerencie seus serviços de prótese capilar.',
   },
 }
 
