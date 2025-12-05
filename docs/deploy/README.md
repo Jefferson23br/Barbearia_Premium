@@ -1,155 +1,110 @@
-# 📚 Documentação de Deploy - protesecapilarcuiaba.com.br
+# 📚 Guias de Deploy - Prótese Capilar Cuiabá
 
-## 🎯 Informações do Projeto
+## ✅ Status Atual
 
-- **Domínio**: protesecapilarcuiaba.com.br
-- **API**: api.protesecapilarcuiaba.com.br
-- **VPS**: Hostinger KVM 2 (AlmaLinux 9)
-- **CDN**: Cloudflare
-- **Acesso**: PowerShell via SSH
+**VPS Backend (82.25.65.201):**
+- ✅ Configurada e funcionando
+- ✅ API rodando na porta 8080
+- ✅ PostgreSQL funcionando
+- ⏳ SSL pendente
 
----
-
-## 🚀 INÍCIO RÁPIDO
-
-### Para Configuração via PowerShell:
-
-👉 **[GUIA_VIA_POWERSHELL.md](./GUIA_VIA_POWERSHELL.md)** ⭐⭐⭐
-
-**Este é o guia principal para configurar tudo via PowerShell!**
+**VPS Frontend (45.132.157.28):**
+- ⏳ A configurar
 
 ---
 
-## 📖 Índice de Documentos
+## 📖 Documentação Disponível
 
-### 🔥 Guias Principais (COMECE AQUI)
+### 🔧 VPS Backend
 
-1. **[GUIA_VIA_POWERSHELL.md](./GUIA_VIA_POWERSHELL.md)** ⭐⭐⭐
-   - **PRINCIPAL:** Configuração completa via PowerShell
-   - Cloudflare + VPS em um único documento
-   - Passo a passo detalhado
+1. **[VPS_BACKEND_COM_CYBERPANEL.md](./VPS_BACKEND_COM_CYBERPANEL.md)** ⭐
+   - Guia completo para VPS com CyberPanel
+   - IP: 82.25.65.201
+   - OpenLiteSpeed + PostgreSQL
 
-2. **[PASSO_A_PASSO_COMPLETO.md](./PASSO_A_PASSO_COMPLETO.md)** ⭐⭐
-   - Alternativa ao guia principal
-   - Separado em seções
+2. **[INSTALAR_API_TESTE.md](./INSTALAR_API_TESTE.md)** ✅
+   - API de teste instalada e funcionando
+   - Express + PostgreSQL + PM2
 
-3. **[CHECKLIST_CONFIGURACAO_VPS.md](./CHECKLIST_CONFIGURACAO_VPS.md)** ⭐
-   - Checklist para marcar progresso
-   - Use enquanto configura
+### 🎨 VPS Frontend
 
----
+3. **[VPS_FRONTEND_45.md](./VPS_FRONTEND_45.md)**
+   - Configuração da VPS Frontend
+   - IP: 45.132.157.28
+   - Deploy dos sites estáticos
 
-### ☁️ Cloudflare
+### 🌐 DNS e Domínios
 
-4. **[CONFIGURACAO_CLOUDFLARE.md](./CONFIGURACAO_CLOUDFLARE.md)**
-   - Configuração detalhada do Cloudflare
-   - DNS, SSL, Performance, Segurança
-   - Específico para protesecapilarcuiaba.com.br
+4. **[CONFIGURACAO_FINAL_DNS.md](./CONFIGURACAO_FINAL_DNS.md)** ⭐
+   - DNS no Cloudflare (com IPs corretos)
+   - Registros A para todos os domínios
 
----
-
-### 🌐 Nginx e Domínios
-
-5. **[ESTRUTURA_DOMINIOS.md](./ESTRUTURA_DOMINIOS.md)**
-   - Explicação da estrutura de domínios
-   - Por que API com domínio próprio
-   - Arquitetura do sistema
-
-6. **[TEMPLATES_NGINX.md](./TEMPLATES_NGINX.md)**
-   - Templates genéricos de Nginx
-
-📁 **Templates prontos (com domínio real):**
-- `../../scripts/templates-nginx/api.conf`
-- `../../scripts/templates-nginx/www.conf`
-- `../../scripts/templates-nginx/app.conf`
-- `../../scripts/templates-nginx/admin.conf`
-
----
+5. **[ARQUITETURA_DUAS_VPS.md](./ARQUITETURA_DUAS_VPS.md)**
+   - Visão geral da arquitetura
+   - Fluxo de dados entre VPS
 
 ### 🛡️ Segurança
 
-7. **[SEGURANCA_VPS.md](./SEGURANCA_VPS.md)**
-   - Guia completo de segurança
+6. **[SEGURANCA_VPS.md](./SEGURANCA_VPS.md)**
+   - Medidas de segurança
    - Boas práticas
    - Monitoramento
 
-8. **[SETUP_VPS_POWERSHELL.md](./SETUP_VPS_POWERSHELL.md)**
-   - Configuração via PowerShell
-   - Específico para Windows
+### 🔧 Utilitários
+
+7. **[COMANDOS_ESSENCIAIS.md](./COMANDOS_ESSENCIAIS.md)**
+   - Comandos úteis do dia a dia
+   - PostgreSQL, Nginx, PM2, Firewall
 
 ---
 
-### 📚 Referência
+## 🎯 O Que Está Funcionando
 
-9. **[GUIA_COMPLETO_VPS.md](./GUIA_COMPLETO_VPS.md)**
-   - Guia genérico (sem domínio específico)
+✅ **API de Teste**
+- URL: http://api.protesecapilarcuiaba.com.br:8080
+- Endpoints:
+  - `GET /health`
+  - `GET /api/test-db`
+  - `GET /api/v1/test`
 
-10. **[CONFIGURACAO_VPS.md](./CONFIGURACAO_VPS.md)**
-    - Detalhes técnicos adicionais
+✅ **PostgreSQL**
+- Versão 15.15
+- Banco: protese_capilar
+- DBeaver conectado via SSH Tunnel
 
-11. **[RESUMO_CONFIGURACAO.md](./RESUMO_CONFIGURACAO.md)**
-    - Comandos resumidos
-
----
-
-## 🎯 Fluxo Recomendado
-
-### 1️⃣ CLOUDFLARE (Interface Web)
-
-1. Adicionar domínio ao Cloudflare
-2. Configurar DNS (registros A)
-3. Alterar nameservers no Registro.br
-4. Aguardar propagação (2-4 horas)
-5. Configurar SSL, Performance e Segurança
-
-**Guia:** [CONFIGURACAO_CLOUDFLARE.md](./CONFIGURACAO_CLOUDFLARE.md)
-
-### 2️⃣ VPS (PowerShell)
-
-1. Conectar via SSH
-2. Criar usuário seguro
-3. Configurar chaves SSH
-4. Instalar dependências
-5. Configurar PostgreSQL
-6. Configurar Nginx
-7. Configurar SSL
-
-**Guia:** [GUIA_VIA_POWERSHELL.md](./GUIA_VIA_POWERSHELL.md)
-
-### 3️⃣ VERIFICAÇÃO
-
-1. Marcar checklist
-2. Testar todos os domínios
-3. Verificar segurança
-
-**Checklist:** [CHECKLIST_CONFIGURACAO_VPS.md](./CHECKLIST_CONFIGURACAO_VPS.md)
+✅ **PM2**
+- API rodando 24/7
+- Auto-restart configurado
 
 ---
 
-## 📋 Templates Prontos
+## ⏳ Pendente
 
-Na pasta `scripts/templates-nginx/`:
-- ✅ `api.conf` - API Backend
-- ✅ `www.conf` - Site Público
-- ✅ `app.conf` - Painel Cliente
-- ✅ `admin.conf` - Painel Admin
+### Próxima Sessão
+- [ ] Configurar SSL (HTTPS)
+- [ ] Mover para porta 443 padrão
+- [ ] Configurar DNS no Cloudflare
+- [ ] Aguardar propagação DNS
 
-**Todos com domínio real configurado!**
+### Esta Semana
+- [ ] Criar backend completo (NestJS)
+- [ ] Módulo de autenticação
+- [ ] Migrations do banco
 
----
-
-## ✅ Estrutura de Domínios
-
-```
-api.protesecapilarcuiaba.com.br     → Backend (Node.js :3001) [DNS Only]
-app.protesecapilarcuiaba.com.br     → Painel Cliente [Proxied]
-admin.protesecapilarcuiaba.com.br   → Painel Admin [Proxied]
-www.protesecapilarcuiaba.com.br     → Site Público [Proxied]
-```
+### Próximas Semanas
+- [ ] Configurar VPS Frontend
+- [ ] Deploy dos frontends
+- [ ] Integração completa
 
 ---
 
-*Documentação completa e pronta para uso!* 🚀
+## 📝 Links Rápidos
 
+- [Status Projeto](../../STATUS_PROJETO.md)
+- [O Que Fizemos Hoje](../../O_QUE_FIZEMOS_HOJE.md)
+- [Próximos Passos](../../PROXIMOS_PASSOS.md)
+- [Cronograma](../../Cronograma.txt)
 
+---
 
+*Documentação de deploy atualizada!* 📚
