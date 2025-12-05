@@ -50,14 +50,20 @@
 
 ---
 
-## 🔄 PRÓXIMA FASE: Configurar SSL e Portas Padrão
+## 🔄 PRÓXIMA FASE: Configurar SSL e Portas Padrão (EM ANDAMENTO)
 
-### Pendente (Próxima Sessão)
+### Em Andamento (Sessão Atual)
+- [ ] Configurar DNS no Cloudflare
+- [ ] Aguardar propagação DNS (2-4 horas)
 - [ ] Configurar SSL (Let's Encrypt) para API
 - [ ] Mover Nginx para portas 80/443 padrão
 - [ ] Redirecionamento HTTP → HTTPS
-- [ ] Configurar DNS no Cloudflare
 - [ ] Testar API via HTTPS
+
+**📚 Guias disponíveis:**
+- [COMECAR_AQUI_SSL_DNS.md](../COMECAR_AQUI_SSL_DNS.md) - Início rápido
+- [CONFIGURAR_DNS_CLOUDFLARE.md](../CONFIGURAR_DNS_CLOUDFLARE.md) - DNS passo a passo
+- [GUIA_SSL_DNS_COMPLETO.md](../GUIA_SSL_DNS_COMPLETO.md) - Guia completo
 
 ---
 
