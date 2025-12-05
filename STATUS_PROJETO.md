@@ -160,3 +160,4 @@ psql -h localhost -U protese_user -d protese_capilar
 **Última atualização:** 05/12/2025 - 00:30 UTC  
 **Status:** FASE 1 CONCLUÍDA ✅
 
+
