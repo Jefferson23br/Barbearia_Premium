@@ -176,3 +176,4 @@ sudo tail -f /var/log/nginx/access.log
 
 *Próxima sessão: Configurar SSL e finalizar deploy da API*
 
+
