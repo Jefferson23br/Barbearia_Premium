@@ -81,8 +81,13 @@ npm run build
 ## 🔗 Integração
 
 Todos os projetos frontend se conectam ao backend através da API REST:
-- **URL Base**: `http://localhost:3001/api` (desenvolvimento)
-- **Produção**: Configurar via variáveis de ambiente
+- **Desenvolvimento**: `http://localhost:3001/api`
+- **Produção**: `https://api.protesecapilarcuiaba.com.br/api` ✅ (HTTPS funcionando)
+
+**Configurar variável de ambiente:**
+```env
+NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
+```
 
 ---
 

@@ -39,8 +39,10 @@
   - [x] Health check (/health)
   - [x] Test DB (/api/test-db)
 - [x] PM2 rodando 24/7 (auto-restart)
-- [x] Nginx instalado e proxy configurado
-- [x] API acessível via: http://api.protesecapilarcuiaba.com.br:8080
+- [x] Nginx instalado e proxy configurado (porta 8080)
+- [x] OpenLiteSpeed configurado (porta 443 - SSL)
+- [x] API acessível via HTTPS: https://api.protesecapilarcuiaba.com.br ✅
+- [x] SSL/HTTPS funcionando (Let's Encrypt)
 - [x] DBeaver conectado via SSH Tunnel
 
 ### Ferramentas ✅
@@ -50,20 +52,18 @@
 
 ---
 
-## 🔄 PRÓXIMA FASE: Configurar SSL e Portas Padrão (EM ANDAMENTO)
+## ✅ SSL/HTTPS CONFIGURADO (05/12/2025)
 
-### Em Andamento (Sessão Atual)
-- [ ] Configurar DNS no Cloudflare
-- [ ] Aguardar propagação DNS (2-4 horas)
-- [ ] Configurar SSL (Let's Encrypt) para API
-- [ ] Mover Nginx para portas 80/443 padrão
-- [ ] Redirecionamento HTTP → HTTPS
-- [ ] Testar API via HTTPS
+### Concluído Hoje
+- [x] DNS configurado no Cloudflare
+- [x] DNS propagado e funcionando
+- [x] SSL/HTTPS configurado (Let's Encrypt via CyberPanel)
+- [x] OpenLiteSpeed fazendo proxy para Nginx
+- [x] API acessível via HTTPS: `https://api.protesecapilarcuiaba.com.br`
+- [x] Certificado SSL válido e funcionando
 
-**📚 Guias disponíveis:**
-- [COMECAR_AQUI_SSL_DNS.md](../COMECAR_AQUI_SSL_DNS.md) - Início rápido
-- [CONFIGURAR_DNS_CLOUDFLARE.md](../CONFIGURAR_DNS_CLOUDFLARE.md) - DNS passo a passo
-- [GUIA_SSL_DNS_COMPLETO.md](../GUIA_SSL_DNS_COMPLETO.md) - Guia completo
+**📚 Guia de referência:**
+- [GUIA_SSL_DNS_COMPLETO.md](../GUIA_SSL_DNS_COMPLETO.md) - Guia completo (referência)
 
 ---
 
@@ -90,8 +90,10 @@
 ### Arquitetura
 ```
 VPS Backend (82.25.65.201):
-├── API: http://api.protesecapilarcuiaba.com.br:8080
-│   └── Node.js na porta 3001
+├── API: https://api.protesecapilarcuiaba.com.br ✅
+│   ├── OpenLiteSpeed (porta 443 - SSL)
+│   ├── Nginx (porta 8080 - proxy)
+│   └── Node.js (porta 3001)
 └── PostgreSQL na porta 5432 (localhost)
 
 VPS Frontend (45.132.157.28):
@@ -112,9 +114,9 @@ PostgreSQL:
 SSH VPS Backend:
 - ssh root@82.25.65.201
 
-API Atual:
-- http://api.protesecapilarcuiaba.com.br:8080
-- http://82.25.65.201:3001
+API Produção:
+- https://api.protesecapilarcuiaba.com.br ✅ (HTTPS funcionando)
+- http://82.25.65.201:3001 (acesso direto local)
 ```
 
 ### Endpoints Funcionando
@@ -155,7 +157,7 @@ pm2 restart api-protese-capilar
 
 # Testar API
 curl http://localhost:3001/health
-curl http://api.protesecapilarcuiaba.com.br:8080/health
+curl https://api.protesecapilarcuiaba.com.br/health
 
 # Conectar PostgreSQL
 psql -h localhost -U protese_user -d protese_capilar
@@ -163,7 +165,7 @@ psql -h localhost -U protese_user -d protese_capilar
 
 ---
 
-**Última atualização:** 05/12/2025 - 00:30 UTC  
-**Status:** FASE 1 CONCLUÍDA ✅
+**Última atualização:** 05/12/2025 - 22:00 UTC  
+**Status:** FASE 1 CONCLUÍDA ✅ | SSL/HTTPS CONFIGURADO ✅
 
 

@@ -64,10 +64,16 @@ npm run build
 
 ---
 
+## 🔗 Integração com API
+
+- **API Produção**: `https://api.protesecapilarcuiaba.com.br` ✅ (HTTPS funcionando)
+- **Variável de ambiente**: `NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br`
+
 ## 🌐 Deploy
 
-URL de produção: https://admin.protesecapilarcuiaba.com.br
+URL de produção: `https://admin.protesecapilarcuiaba.com.br`
 
 ---
 
-*Painel administrativo em desenvolvimento* 👨‍💼
+*Painel administrativo em desenvolvimento* 👨‍💼  
+**Status:** Login implementado | Integração com API pendente

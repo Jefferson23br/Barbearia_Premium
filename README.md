@@ -11,7 +11,8 @@
 **Sistema completo de gestão para clínica de prótese capilar** ✂️
 
 [![Status](https://img.shields.io/badge/status-fase_1_concluída-green?style=flat-square)](https://github.com)
-[![API](https://img.shields.io/badge/API-online-brightgreen?style=flat-square)](http://api.protesecapilarcuiaba.com.br:8080/health)
+[![API](https://img.shields.io/badge/API-online-brightgreen?style=flat-square)](https://api.protesecapilarcuiaba.com.br/health)
+[![SSL](https://img.shields.io/badge/SSL-HTTPS-success?style=flat-square)](https://api.protesecapilarcuiaba.com.br/health)
 
 </div>
 
@@ -30,11 +31,12 @@ Sistema completo desenvolvido para **Próteses Capilares Cuiabá** com gestão d
 
 ### VPS Backend (82.25.65.201) ✅
 ```
-api.protesecapilarcuiaba.com.br:8080
-├── Node.js 20.19.6
+https://api.protesecapilarcuiaba.com.br
+├── OpenLiteSpeed (porta 443 - SSL)
+├── Nginx (porta 8080 - proxy)
+├── Node.js 20.19.6 (porta 3001)
 ├── Express + PostgreSQL 15.15
-├── PM2 (24/7 online)
-└── Nginx (proxy reverso)
+└── PM2 (24/7 online)
 ```
 
 ### VPS Frontend (45.132.157.28) ⏳
@@ -87,7 +89,7 @@ Barbearia_Premium/
 - **VPS Backend**: Hostinger KVM 2 (AlmaLinux 9 + CyberPanel)
 - **VPS Frontend**: Hostinger
 - **CDN**: Cloudflare
-- **SSL**: Let's Encrypt (pendente)
+- **SSL**: Let's Encrypt ✅ (HTTPS funcionando)
 
 ---
 
@@ -112,11 +114,11 @@ cd frontend/site-entrada && npm run dev
 ### Testar API (Produção)
 
 ```bash
-# Health check
-curl http://api.protesecapilarcuiaba.com.br:8080/health
+# Health check (HTTPS)
+curl https://api.protesecapilarcuiaba.com.br/health
 
-# Test database
-curl http://api.protesecapilarcuiaba.com.br:8080/api/test-db
+# Test database (HTTPS)
+curl https://api.protesecapilarcuiaba.com.br/api/test-db
 ```
 
 ---
@@ -140,15 +142,14 @@ curl http://api.protesecapilarcuiaba.com.br:8080/api/test-db
 
 ### 🔄 Em Andamento
 
-- ⏳ SSL/HTTPS na API
-- ⏳ DNS no Cloudflare
 - ⏳ Backend completo (NestJS)
+- ⏳ Deploy frontend (VPS 45.132.157.28)
 
 ### 📋 Próximo
 
-- [ ] Configurar SSL
-- [ ] Mover para porta 443
 - [ ] Deploy frontend (VPS 45.132.157.28)
+- [ ] Desenvolver backend completo (NestJS)
+- [ ] Integrar frontend com API
 
 ---
 
@@ -175,8 +176,7 @@ ssh root@45.132.157.28
 ### API
 ```
 Desenvolvimento: http://localhost:3001
-Produção Atual: http://api.protesecapilarcuiaba.com.br:8080
-Produção Final: https://api.protesecapilarcuiaba.com.br (pendente SSL)
+Produção: https://api.protesecapilarcuiaba.com.br ✅
 ```
 
 ---
@@ -216,6 +216,7 @@ Projeto privado - Próteses Capilares Cuiabá
 
 *FASE 1 Concluída | API Online | PostgreSQL Configurado*
 
-**Última atualização:** 05/12/2025
+**Última atualização:** 05/12/2025  
+**SSL/HTTPS:** ✅ Configurado e funcionando
 
 </div>

@@ -51,7 +51,19 @@ backend/
 
 Base URL: `/api/v1`
 
-### Principais Endpoints
+### Status Atual ✅
+
+**Produção:**
+- URL: `https://api.protesecapilarcuiaba.com.br`
+- SSL: ✅ Let's Encrypt (HTTPS funcionando)
+- Status: Online 24/7 via PM2
+
+**Endpoints Funcionando:**
+- `GET /health` - Health check da API
+- `GET /api/test-db` - Teste de conexão PostgreSQL
+- `GET /api/v1/test` - Teste geral
+
+### Principais Endpoints (A Desenvolver)
 
 - `/auth/*` - Autenticação
 - `/users/*` - Usuários
@@ -64,9 +76,12 @@ Base URL: `/api/v1`
 
 ## 🗄️ Banco de Dados
 
-- **SGBD**: PostgreSQL 15+
-- **Host**: Local (dev) / VPS Hostinger (prod)
+- **SGBD**: PostgreSQL 15.15 ✅
+- **Host**: VPS Backend (82.25.65.201)
+- **Database**: `protese_capilar` ✅
+- **User**: `protese_user` ✅
 - **Schema**: Ver `SCHEMA_DATABASE.md` na raiz do projeto
+- **Acesso**: DBeaver via SSH Tunnel ✅
 
 ---
 
