@@ -84,43 +84,74 @@ export default function CadastroCliente() {
       return;
     }
 
-    // Aqui será implementada a lógica de envio para o backend
-    const formData = {
-      nome_completo: nomeCompleto,
-      email,
-      cpf: cpf.replace(/\D/g, ''),
-      rg,
-      rua,
-      numero,
-      complemento,
-      bairro,
-      cidade,
-      estado,
-      cep: cep.replace(/\D/g, ''),
-      senha,
-      foto: foto ? await fileToBase64(foto) : null,
-    };
+    try {
+      // Criar FormData para envio de arquivo
+      const formDataToSend = new FormData();
+      
+      // Adicionar dados do formulário
+      formDataToSend.append('nome_completo', nomeCompleto);
+      formDataToSend.append('email', email);
+      formDataToSend.append('cpf', cpf.replace(/\D/g, ''));
+      formDataToSend.append('rg', rg || '');
+      formDataToSend.append('rua', rua);
+      formDataToSend.append('numero', numero);
+      formDataToSend.append('complemento', complemento || '');
+      formDataToSend.append('bairro', bairro);
+      formDataToSend.append('cidade', cidade);
+      formDataToSend.append('estado', estado);
+      formDataToSend.append('cep', cep.replace(/\D/g, ''));
+      formDataToSend.append('senha', senha);
+      
+      // Adicionar foto se existir
+      if (foto) {
+        formDataToSend.append('foto', foto);
+      }
 
-    console.log('Dados do formulário:', formData);
-    
-    // TODO: Implementar chamada à API
-    // await fetch('https://api.protesecapilarcuiaba.com.br/api/clientes', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData)
-    // });
+      // URL da API (em produção usar: https://api.protesecapilarcuiaba.com.br)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      
+      const response = await fetch(`${apiUrl}/api/v1/clientes`, {
+        method: 'POST',
+        body: formDataToSend,
+        // Não definir Content-Type manualmente - o navegador fará isso automaticamente com o boundary correto
+      });
 
-    alert('Cadastro realizado com sucesso! (Frontend apenas - Backend pendente)');
-    setIsSubmitting(false);
-  };
+      const data = await response.json();
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao cadastrar cliente');
+      }
+
+      alert('Cadastro realizado com sucesso!');
+      
+      // Limpar formulário
+      setNomeCompleto('');
+      setEmail('');
+      setCpf('');
+      setRg('');
+      setRua('');
+      setNumero('');
+      setComplemento('');
+      setBairro('');
+      setCidade('');
+      setEstado('');
+      setCep('');
+      setSenha('');
+      setConfirmarSenha('');
+      setFoto(null);
+      setFotoPreview(null);
+      
+      // Redirecionar para login após 2 segundos
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('Erro ao cadastrar:', error);
+      alert(error.message || 'Erro ao cadastrar cliente. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const estados = [
