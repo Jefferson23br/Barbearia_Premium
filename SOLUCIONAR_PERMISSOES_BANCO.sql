@@ -33,3 +33,6 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO protese_user
 -- SELECT * FROM information_schema.role_table_grants WHERE grantee = 'protese_user';
 
 
+
+
+
