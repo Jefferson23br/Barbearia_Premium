@@ -121,3 +121,6 @@ CREATE TRIGGER update_usuarios_administrativos_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 
+
+
+
