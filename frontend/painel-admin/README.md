@@ -49,6 +49,7 @@ npm run build
 - ✅ Login administrativo
 - ✅ Recuperação de senha
 - ✅ Manter conectado
+- ✅ **Sem opção de criação de conta** (usuários criados manualmente via DBeaver)
 
 ### Dashboard (A implementar)
 - [ ] Visão geral do sistema

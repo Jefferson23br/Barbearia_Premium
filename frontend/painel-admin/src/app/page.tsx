@@ -2,30 +2,21 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
-type ViewType = 'login' | 'register' | 'forgot';
+type ViewType = 'login' | 'forgot';
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Login:', { email, password });
     // Aqui você implementará a lógica de autenticação real
-  };
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Register:', { name, email, phone, password });
-    // Aqui você implementará a lógica de cadastro real
   };
 
   const handleForgotPassword = (e: React.FormEvent) => {
@@ -52,7 +43,7 @@ export default function Home() {
   const [direction, setDirection] = useState(0);
 
   const changeTo = (view: ViewType) => {
-    const views: ViewType[] = ['login', 'register', 'forgot'];
+    const views: ViewType[] = ['login', 'forgot'];
     const currentIndex = views.indexOf(currentView);
     const newIndex = views.indexOf(view);
     setDirection(newIndex > currentIndex ? 1 : -1);
@@ -176,124 +167,6 @@ export default function Home() {
                       className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50"
                     >
                       Entrar
-                    </button>
-                  </form>
-
-                  <div className="mt-6 text-center">
-                    <p className="text-gray-400">
-                      Não tem uma conta?{' '}
-                      <button
-                        onClick={() => changeTo('register')}
-                        className="text-amber-500 hover:text-amber-400 transition-colors"
-                      >
-                        Cadastre-se
-                      </button>
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-
-              {currentView === 'register' && (
-                <motion.div
-                  key="register"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex items-center mb-6">
-                    <button
-                      onClick={() => changeTo('login')}
-                      className="text-gray-400 hover:text-white transition-colors mr-3"
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    <h2 className="text-white">Criar Conta</h2>
-                  </div>
-
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div>
-                      <label className="block text-gray-300 mb-2">Nome Completo</label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                          placeholder="João Silva"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-300 mb-2">Email</label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                          placeholder="seu@email.com"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-300 mb-2">Telefone</label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                          placeholder="(11) 99999-9999"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-300 mb-2">Senha</label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                          placeholder="••••••••"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-300 mb-2">Confirmar Senha</label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="password"
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                          placeholder="••••••••"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 mt-6"
-                    >
-                      Criar Conta
                     </button>
                   </form>
                 </motion.div>

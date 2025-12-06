@@ -182,12 +182,12 @@ export default function Home() {
                   <div className="mt-6 text-center">
                     <p className="text-gray-400">
                       Não tem uma conta?{' '}
-                      <button
-                        onClick={() => changeTo('register')}
+                      <a
+                        href="/cadastro-cliente"
                         className="text-amber-500 hover:text-amber-400 transition-colors"
                       >
                         Cadastre-se
-                      </button>
+                      </a>
                     </p>
                   </div>
                 </motion.div>
