@@ -107,13 +107,23 @@ export default function CadastroCliente() {
         formDataToSend.append('foto', foto);
       }
 
-      // URL da API (em produção usar: https://api.protesecapilarcuiaba.com.br)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      // URL da API
+      // Em produção: usa a variável de ambiente ou fallback para API de produção
+      // Em desenvolvimento: usa localhost se não tiver variável
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+        (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+          ? 'https://api.protesecapilarcuiaba.com.br' 
+          : 'http://localhost:3001');
+      
+      console.log('🌐 Enviando para:', `${apiUrl}/api/v1/clientes`);
       
       const response = await fetch(`${apiUrl}/api/v1/clientes`, {
         method: 'POST',
         body: formDataToSend,
         // Não definir Content-Type manualmente - o navegador fará isso automaticamente com o boundary correto
+      }).catch((error) => {
+        console.error('❌ Erro na requisição:', error);
+        throw new Error(`Erro ao conectar com a API: ${error.message}. Verifique se a API está rodando e se o CORS está configurado corretamente.`);
       });
 
       const data = await response.json();
