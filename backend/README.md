@@ -21,14 +21,14 @@ backend/
 
 ## 🛠️ Stack Tecnológica
 
-- **Runtime**: Node.js 20 LTS
-- **Framework**: NestJS ou Express (a definir)
-- **Linguagem**: TypeScript
-- **Banco de Dados**: PostgreSQL
-- **ORM**: TypeORM ou Prisma (a definir)
-- **Autenticação**: JWT (Passport.js)
-- **Validação**: class-validator
-- **Documentação**: Swagger/OpenAPI
+- **Runtime**: Node.js 20 LTS ✅
+- **Framework**: Express (atual) → NestJS (futuro)
+- **Linguagem**: JavaScript (atual) → TypeScript (futuro)
+- **Banco de Dados**: PostgreSQL 15 ✅
+- **Upload**: Multer ✅
+- **Hash**: bcrypt ✅
+- **Autenticação**: JWT (a implementar)
+- **Validação**: Express validator
 
 ---
 
@@ -59,14 +59,23 @@ Base URL: `/api/v1`
 - Status: Online 24/7 via PM2
 
 **Endpoints Funcionando:**
-- `GET /health` - Health check da API
-- `GET /api/test-db` - Teste de conexão PostgreSQL
-- `GET /api/v1/test` - Teste geral
+
+#### Health & Test
+- `GET /health` - Health check da API ✅
+- `GET /api/test-db` - Teste de conexão PostgreSQL ✅
+- `GET /api/v1/test` - Teste geral ✅
+
+#### Autenticação
+- `POST /api/v1/auth/login` - Login de cliente ✅
+
+#### Clientes
+- `POST /api/v1/clientes` - Cadastro de cliente (com upload de foto) ✅
+- `GET /api/v1/clientes/:id` - Buscar cliente por ID ✅
 
 ### Principais Endpoints (A Desenvolver)
 
-- `/auth/*` - Autenticação
-- `/users/*` - Usuários
+- `POST /api/v1/auth/admin/login` - Login administrativo
+- `PUT /api/v1/clientes/:id` - Atualizar cliente
 - `/plans/*` - Planos
 - `/appointments/*` - Agendamentos
 - `/transactions/*` - Pagamentos
@@ -114,20 +123,18 @@ npm run start:prod
 Criar arquivo `.env`:
 
 ```env
-# Database
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-DATABASE_USER=postgres
-DATABASE_PASSWORD=senha
-DATABASE_NAME=protese_capilar
-
-# JWT
-JWT_SECRET=seu_secret_aqui
-JWT_EXPIRES_IN=1d
-
-# Server
 PORT=3001
-NODE_ENV=development
+NODE_ENV=production
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=protese_capilar
+DB_USER=protese_user
+DB_PASSWORD=AppProtese@2025!
+
+API_BASE_URL=https://api.protesecapilarcuiaba.com.br
+
+CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br
 ```
 
 ---

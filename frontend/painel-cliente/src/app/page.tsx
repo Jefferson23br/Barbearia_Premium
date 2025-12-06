@@ -16,10 +16,50 @@ export default function Home() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login:', { email, password });
-    // Aqui você implementará a lógica de autenticação real
+    setIsLoggingIn(true);
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+        (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+          ? 'https://api.protesecapilarcuiaba.com.br' 
+          : 'http://localhost:3001');
+
+      const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          senha: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao fazer login');
+      }
+
+      // Salvar dados do cliente no localStorage
+      localStorage.setItem('cliente', JSON.stringify(data.cliente));
+      
+      // Se "Manter conectado" estiver marcado, salvar token/refresh
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      }
+
+      // Redirecionar para dashboard
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      alert(error.message || 'Erro ao fazer login. Tente novamente.');
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleRegister = (e: React.FormEvent) => {
@@ -173,9 +213,10 @@ export default function Home() {
 
                     <button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50"
+                      disabled={isLoggingIn}
+                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Entrar
+                      {isLoggingIn ? 'Entrando...' : 'Entrar'}
                     </button>
                   </form>
 

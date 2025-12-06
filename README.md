@@ -132,6 +132,9 @@ curl https://api.protesecapilarcuiaba.com.br/api/test-db
 - ✅ Design system implementado
 - ✅ SEO otimizado (B2B e B2C)
 - ✅ Favicon configurado
+- ✅ Login implementado e funcional ✅
+- ✅ Dashboard do cliente criado ✅
+- ✅ Cadastro de cliente funcionando ✅
 
 **Backend:**
 - ✅ VPS configurada (82.25.65.201)
@@ -139,17 +142,22 @@ curl https://api.protesecapilarcuiaba.com.br/api/test-db
 - ✅ API de teste rodando 24/7
 - ✅ Nginx configurado (porta 8080)
 - ✅ DBeaver conectado
+- ✅ Endpoint de cadastro funcionando ✅
+- ✅ Endpoint de login funcionando ✅
+- ✅ Upload de imagens configurado ✅
 
 ### 🔄 Em Andamento
 
 - ⏳ Backend completo (NestJS)
 - ⏳ Deploy frontend (VPS 45.132.157.28)
+- ⏳ Dashboard completo do cliente
 
 ### 📋 Próximo
 
 - [ ] Deploy frontend (VPS 45.132.157.28)
 - [ ] Desenvolver backend completo (NestJS)
-- [ ] Integrar frontend com API
+- [ ] Funcionalidades do dashboard do cliente
+- [ ] Sistema de agendamentos
 
 ---
 
@@ -216,7 +224,9 @@ Projeto privado - Próteses Capilares Cuiabá
 
 *FASE 1 Concluída | API Online | PostgreSQL Configurado*
 
-**Última atualização:** 05/12/2025  
-**SSL/HTTPS:** ✅ Configurado e funcionando
+**Última atualização:** 06/12/2025  
+**SSL/HTTPS:** ✅ Configurado e funcionando  
+**Login/Cadastro:** ✅ Implementado e funcionando  
+**Upload de Imagens:** ✅ Configurado
 
 </div>

@@ -20,12 +20,14 @@ frontend/
 - **Status**: ✅ Em desenvolvimento
 - **Tecnologia**: Next.js 14 + React + TypeScript
 - **Funcionalidades**:
-  - Login/Registro ✅
-  - Dashboard (em desenvolvimento)
-  - Visualização de planos
-  - Histórico de atendimentos
-  - Agendamentos
-  - Perfil do cliente
+  - ✅ Login funcional (integração com API)
+  - ✅ Cadastro de cliente (com upload de foto)
+  - ✅ Dashboard criado (página "Em Desenvolvimento")
+  - ✅ Recuperação de senha (tela)
+  - ⏳ Visualização de planos
+  - ⏳ Histórico de atendimentos
+  - ⏳ Agendamentos
+  - ⏳ Perfil do cliente completo
 
 ### 2. Site Público (`site-publico/`)
 - **Status**: 🔄 A criar

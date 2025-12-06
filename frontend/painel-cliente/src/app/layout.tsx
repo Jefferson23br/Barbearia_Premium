@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Prótese Capilar Cuiabá' }],
   creator: 'Prótese Capilar Cuiabá',
   publisher: 'Prótese Capilar Cuiabá',
+  icons: {
+    icon: '/images/logo.webp',
+    shortcut: '/images/logo.webp',
+    apple: '/images/apple-touch-icon.png',
+  },
   robots: {
     index: false, // Não indexar área de cliente
     follow: false,

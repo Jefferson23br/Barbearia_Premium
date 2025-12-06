@@ -117,14 +117,17 @@ Atualmente, estou trabalhando na integração com o back-end e implementação d
 
 ### Status Atual
 
-- ✅ Login/Registro implementado
+- ✅ Login implementado e funcionando (integração com API)
+- ✅ Cadastro de cliente funcionando (com upload de foto)
+- ✅ Dashboard criado (página "Em Desenvolvimento")
 - ✅ Checkbox "Manter conectado"
 - ✅ SEO otimizado (B2C)
 - ✅ Favicon configurado
-- ⏳ Integração com API HTTPS
-- ⏳ Dashboard do cliente
+- ✅ Integração com API HTTPS funcionando
+- ⏳ Funcionalidades completas do dashboard
 - ⏳ Sistema de agendamentos
 - ⏳ Histórico de serviços
+- ⏳ Gerenciamento de perfil
 
 ---
 

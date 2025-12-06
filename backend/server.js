@@ -272,6 +272,68 @@ app.get('/api/v1/clientes/:id', async (req, res) => {
 });
 
 // ============================================================
+// ROTAS DE AUTENTICAÇÃO
+// ============================================================
+
+/**
+ * POST /api/v1/auth/login
+ * Login de cliente
+ */
+app.post('/api/v1/auth/login', async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+
+    // Validações
+    if (!email || !senha) {
+      return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+    }
+
+    // Buscar cliente por email
+    const result = await pool.query(
+      `SELECT id, nome_completo, email, senha_hash, foto_url, is_active
+       FROM protese.usuarios_clientes
+       WHERE email = $1`,
+      [email.toLowerCase().trim()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
+    const cliente = result.rows[0];
+
+    // Verificar se está ativo
+    if (!cliente.is_active) {
+      return res.status(403).json({ error: 'Conta desativada. Entre em contato com o suporte.' });
+    }
+
+    // Verificar senha
+    const senhaValida = await bcrypt.compare(senha, cliente.senha_hash);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
+    // Login bem-sucedido - retornar dados do cliente (sem senha)
+    res.json({
+      message: 'Login realizado com sucesso!',
+      cliente: {
+        id: cliente.id,
+        nome_completo: cliente.nome_completo,
+        email: cliente.email,
+        foto_url: cliente.foto_url,
+      },
+    });
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    res.status(500).json({
+      error: 'Erro ao fazer login',
+      message: error.message,
+    });
+  }
+});
+
+// ============================================================
 // MIDDLEWARE DE ERRO
 // ============================================================
 
