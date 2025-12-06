@@ -133,3 +133,6 @@ CREATE TRIGGER update_usuarios_administrativos_updated_at
     EXECUTE FUNCTION protese.update_updated_at_column();
 
 
+
+
+
