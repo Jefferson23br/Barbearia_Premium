@@ -777,6 +777,9 @@ video {
 .-mt-4 {
   margin-top: -1rem;
 }
+.mb-12 {
+  margin-bottom: 3rem;
+}
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -821,9 +824,6 @@ video {
 }
 .mt-auto {
   margin-top: auto;
-}
-.mb-12 {
-  margin-bottom: 3rem;
 }
 .line-clamp-1 {
   overflow: hidden;
@@ -919,6 +919,9 @@ video {
 .h-12 {
   height: 3rem;
 }
+.h-16 {
+  height: 4rem;
+}
 .h-2 {
   height: 0.5rem;
 }
@@ -939,6 +942,9 @@ video {
 }
 .h-5 {
   height: 1.25rem;
+}
+.h-64 {
+  height: 16rem;
 }
 .h-7 {
   height: 1.75rem;
@@ -973,12 +979,6 @@ video {
 .h-svh {
   height: 100svh;
 }
-.h-16 {
-  height: 4rem;
-}
-.h-64 {
-  height: 16rem;
-}
 .max-h-\[300px\] {
   max-height: 300px;
 }
@@ -991,14 +991,14 @@ video {
 .min-h-4 {
   min-height: 1rem;
 }
+.min-h-\[calc\(100vh-100px\)\] {
+  min-height: calc(100vh - 100px);
+}
 .min-h-screen {
   min-height: 100vh;
 }
 .min-h-svh {
   min-height: 100svh;
-}
-.min-h-\[calc\(100vh-100px\)\] {
-  min-height: calc(100vh - 100px);
 }
 .w-0 {
   width: 0px;
@@ -1006,8 +1006,14 @@ video {
 .w-1 {
   width: 0.25rem;
 }
+.w-10 {
+  width: 2.5rem;
+}
 .w-12 {
   width: 3rem;
+}
+.w-16 {
+  width: 4rem;
 }
 .w-2 {
   width: 0.5rem;
@@ -1067,12 +1073,6 @@ video {
 }
 .w-px {
   width: 1px;
-}
-.w-10 {
-  width: 2.5rem;
-}
-.w-16 {
-  width: 4rem;
 }
 .min-w-0 {
   min-width: 0px;
@@ -1373,11 +1373,11 @@ video {
 .border-2 {
   border-width: 2px;
 }
-.border-\[1\.5px\] {
-  border-width: 1.5px;
-}
 .border-4 {
   border-width: 4px;
+}
+.border-\[1\.5px\] {
+  border-width: 1.5px;
 }
 .border-y {
   border-top-width: 1px;
@@ -1401,14 +1401,14 @@ video {
 .border-primary {
   border-color: var(--color-primary);
 }
+.border-red-500\/30 {
+  border-color: rgb(239 68 68 / 0.3);
+}
 .border-transparent {
   border-color: transparent;
 }
 .border-zinc-700 {
   border-color: oklch(.37 .013 285.805);
-}
-.border-red-500\/30 {
-  border-color: rgb(239 68 68 / 0.3);
 }
 .border-l-transparent {
   border-left-color: transparent;
@@ -1450,6 +1450,9 @@ video {
 .bg-primary {
   background-color: var(--color-primary);
 }
+.bg-red-500\/10 {
+  background-color: rgb(239 68 68 / 0.1);
+}
 .bg-secondary {
   background-color: var(--color-secondary);
 }
@@ -1462,9 +1465,6 @@ video {
 }
 .bg-zinc-800 {
   background-color: oklch(.274 .006 286.033);
-}
-.bg-red-500\/10 {
-  background-color: rgb(239 68 68 / 0.1);
 }
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
@@ -1685,6 +1685,10 @@ video {
   font-size: 1.875rem;
   line-height: 2.25rem;
 }
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
 .text-\[0\.8rem\] {
   font-size: 0.8rem;
 }
@@ -1707,10 +1711,6 @@ video {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-.text-5xl {
-  font-size: 3rem;
-  line-height: 1;
 }
 .font-bold {
   font-weight: 700;
@@ -1739,6 +1739,9 @@ video {
 }
 .text-accent-foreground {
   color: var(--color-accent-foreground);
+}
+.text-amber-400 {
+  color: oklch(.828 .189 84.429);
 }
 .text-amber-500 {
   color: oklch(.769 .188 70.08);
@@ -1774,6 +1777,10 @@ video {
 .text-primary-foreground {
   color: var(--color-primary-foreground);
 }
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
 .text-secondary-foreground {
   color: var(--color-secondary-foreground);
 }
@@ -1784,13 +1791,6 @@ video {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
-.text-amber-400 {
-  color: oklch(.828 .189 84.429);
-}
-.text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
-}
 .underline-offset-4 {
   text-underline-offset: 4px;
 }
@@ -1800,14 +1800,14 @@ video {
 .placeholder-gray-500::placeholder {
   color: oklch(.551 .027 264.364);
 }
+.opacity-10 {
+  opacity: 0.1;
+}
 .opacity-50 {
   opacity: 0.5;
 }
 .opacity-70 {
   opacity: 0.7;
-}
-.opacity-10 {
-  opacity: 0.1;
 }
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -2218,12 +2218,12 @@ html {
   background-color: var(--color-primary);
 }
 
-.hover\:bg-zinc-700:hover {
-  background-color: oklch(.37 .013 285.805);
-}
-
 .hover\:bg-red-500\/20:hover {
   background-color: rgb(239 68 68 / 0.2);
+}
+
+.hover\:bg-zinc-700:hover {
+  background-color: oklch(.37 .013 285.805);
 }
 
 .hover\:from-amber-600:hover {
@@ -3054,11 +3054,6 @@ html {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .md\:text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
   .md\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -3067,6 +3062,11 @@ html {
   .md\:text-7xl {
     font-size: 4.5rem;
     line-height: 1;
+  }
+
+  .md\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .md\:opacity-0 {

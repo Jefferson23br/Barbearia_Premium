@@ -238,3 +238,5 @@ foto: File (opcional, imagem, máximo 5MB)
 
 **Backend completo e pronto para uso!** 🎉
 
+
+

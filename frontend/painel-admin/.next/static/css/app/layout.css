@@ -1340,6 +1340,9 @@ video {
 .border-primary {
   border-color: var(--color-primary);
 }
+.border-red-500\/30 {
+  border-color: rgb(239 68 68 / 0.3);
+}
 .border-transparent {
   border-color: transparent;
 }
@@ -1382,6 +1385,9 @@ video {
 }
 .bg-primary {
   background-color: var(--color-primary);
+}
+.bg-red-500\/10 {
+  background-color: rgb(239 68 68 / 0.1);
 }
 .bg-secondary {
   background-color: var(--color-secondary);
@@ -1670,6 +1676,10 @@ video {
 }
 .text-primary-foreground {
   color: var(--color-primary-foreground);
+}
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
 }
 .text-secondary-foreground {
   color: var(--color-secondary-foreground);

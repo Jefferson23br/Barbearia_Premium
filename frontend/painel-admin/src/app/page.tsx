@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { useRouter } from 'next/navigation';
 
 type ViewType = 'login' | 'forgot';
 
@@ -12,11 +13,47 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login:', { email, password });
-    // Aqui você implementará a lógica de autenticação real
+    setIsLoggingIn(true);
+    setError(null);
+
+    try {
+      // Usar API de produção por padrão (já que API local pode não estar rodando)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.protesecapilarcuiaba.com.br';
+      
+      console.log('🔗 Tentando conectar em:', apiUrl);
+      
+      const response = await fetch(`${apiUrl}/api/v1/auth/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha: password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro no login');
+      }
+
+      // Salvar dados do admin no localStorage
+      localStorage.setItem('admin', JSON.stringify(data.admin));
+      if (rememberMe) {
+        localStorage.setItem('rememberAdmin', 'true');
+      }
+
+      // Redirecionar para dashboard
+      router.push('/dashboard');
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Erro de login:', error);
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleForgotPassword = (e: React.FormEvent) => {
@@ -110,8 +147,13 @@ export default function Home() {
                       </h2>
                       <div className="h-1 w-full bg-gradient-to-r from-amber-500/0 via-amber-500 to-amber-500/0 rounded-full"></div>
                     </div>
-                    <p className="text-gray-400 text-sm mt-3">Acesse seu Painel Administrativo</p>
+                      <p className="text-gray-400 text-sm mt-3">Acesse seu Painel Administrativo</p>
                   </div>
+                  {error && (
+                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <p className="text-red-500 text-sm text-center">{error}</p>
+                    </div>
+                  )}
                   <form onSubmit={handleLogin} className="space-y-5">
                     <div>
                       <label className="block text-gray-300 mb-2">Email</label>
@@ -164,9 +206,10 @@ export default function Home() {
 
                     <button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50"
+                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoggingIn}
                     >
-                      Entrar
+                      {isLoggingIn ? 'Entrando...' : 'Entrar'}
                     </button>
                   </form>
                 </motion.div>
