@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS protese.usuarios_administrativos (
     cep VARCHAR(9) NOT NULL,
     nis VARCHAR(11),
     data_admissao DATE NOT NULL,
-    tipo_contrato VARCHAR(2) NOT NULL,
+    tipo_contrato VARCHAR(3) NOT NULL,
     salario DECIMAL(10,2),
     tipo_usuario VARCHAR(50) NOT NULL DEFAULT 'operador',
     senha_hash VARCHAR(255) NOT NULL,
@@ -131,6 +131,8 @@ CREATE TRIGGER update_usuarios_administrativos_updated_at
     BEFORE UPDATE ON protese.usuarios_administrativos
     FOR EACH ROW
     EXECUTE FUNCTION protese.update_updated_at_column();
+
+
 
 
 
