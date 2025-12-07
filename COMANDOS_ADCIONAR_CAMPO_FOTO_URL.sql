@@ -54,3 +54,5 @@ WHERE table_schema = 'protese'
   AND table_name = 'usuarios_administrativos' 
   AND column_name = 'foto_url';
 
+
+
