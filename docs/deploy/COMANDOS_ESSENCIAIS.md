@@ -4,16 +4,19 @@
 
 ```powershell
 # Conectar na VPS
-ssh desenvolvedor@IP_DA_VPS
+ssh root@82.25.65.201
+
+# Conectar na VPS pasta
+/home/cyberpanel/app/backend
 
 # Copiar arquivo para VPS
-scp arquivo.txt desenvolvedor@IP_DA_VPS:/home/desenvolvedor/
+scp arquivo.txt root@82.25.65.201:/home/cyberpanel/app/backend
 
 # Copiar pasta para VPS
-scp -r .\pasta\ desenvolvedor@IP_DA_VPS:/home/desenvolvedor/app/
+scp -r C:\Users\vivo\Barbearia_Premium\backend root@82.25.65.201:/home/cyberpanel/app/backend
 
 # Download de arquivo da VPS
-scp desenvolvedor@IP_DA_VPS:/caminho/arquivo.txt .\local\
+scp root@82.25.65.201:/caminho/arquivo.txt .\local\
 ```
 
 ---
@@ -70,19 +73,19 @@ pm2 status
 pm2 logs
 
 # Ver logs de app específico
-pm2 logs api-backend
+pm2 logs api-protese-capilar
 
 # Reiniciar app
-pm2 restart api-backend
+pm2 restart api-protese-capilar
 
 # Parar app
-pm2 stop api-backend
+pm2 stop api-protese-capilar
 
 # Iniciar app
-pm2 start api-backend
+pm2 start api-protese-capilar
 
 # Deletar app
-pm2 delete api-backend
+pm2 delete api-protese-capilar
 
 # Salvar configuração
 pm2 save
