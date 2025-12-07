@@ -2,38 +2,35 @@
 
 ## ⏭️ Imediato (Próxima Sessão)
 
-### 1. ✅ Concluído Hoje
-- ✅ Sistema de login implementado
-- ✅ Sistema de cadastro implementado
+### 1. ✅ Concluído Recentemente
+- ✅ Sistema de login cliente implementado
+- ✅ Sistema de login admin implementado ✅
+- ✅ Sistema de cadastro cliente implementado
 - ✅ Upload de imagens funcionando
 - ✅ Dashboard do cliente criado
+- ✅ Dashboard admin criado ✅
+- ✅ Sistema de níveis de acesso (Master/Proprietário/Funcionário) ✅
 - ✅ Favicons configurados
+- ✅ SSL/HTTPS configurado ✅
+- ✅ API rodando em produção ✅
 
 ### 2. Próximas Implementações
 
-#### SSL/HTTPS
+#### Deploy Frontend para Produção
 ```bash
-# Na VPS Backend (82.25.65.201)
-ssh root@82.25.65.201
+# Build dos projetos
+cd frontend/painel-admin && npm run build
+cd frontend/painel-cliente && npm run build
+cd frontend/site-entrada && npm run build
 
-# Instalar Certbot
-sudo dnf install -y certbot python3-certbot-nginx
-
-# Configurar SSL
-sudo certbot --nginx -d api.protesecapilarcuiaba.com.br
+# Upload da pasta out/ para hospedagem
+# Veja: GUIA_DEPLOY_FRONTEND.md
 ```
 
-#### Mover para Portas Padrão
-- Atualizar Nginx para escutar nas portas 80/443
-- Configurar redirecionamento HTTP → HTTPS
-- Resolver conflito com OpenLiteSpeed
-
-#### Testar
-```
-https://api.protesecapilarcuiaba.com.br/health
-```
-
-### 2. Configurar DNS no Cloudflare
+#### Próximas Funcionalidades
+- Implementar menu lateral no dashboard admin (por nível de acesso)
+- Funcionalidades do dashboard do cliente
+- Sistema de agendamentos
 
 **Registros a adicionar:**
 
