@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, Phone, ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 type ViewType = 'login' | 'register' | 'forgot';
 
 export default function Home() {
+  const router = useRouter();
   const [currentView, setCurrentView] = useState<ViewType>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,19 +17,19 @@ export default function Home() {
   const [phone, setPhone] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoggingIn(true);
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
-        (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
-          ? 'https://api.protesecapilarcuiaba.com.br' 
-          : 'http://localhost:3001');
-
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br';
+      
       const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
@@ -47,18 +49,21 @@ export default function Home() {
 
       // Salvar dados do cliente no localStorage
       localStorage.setItem('cliente', JSON.stringify(data.cliente));
-      
-      // Se "Manter conectado" estiver marcado, salvar token/refresh
       if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
+        localStorage.setItem('rememberCliente', 'true');
       }
 
-      // Redirecionar para dashboard
-      window.location.href = '/dashboard';
-    } catch (error: any) {
-      alert(error.message || 'Erro ao fazer login. Tente novamente.');
+      setSuccess('Login realizado com sucesso!');
+      
+      // Redirecionar para o dashboard após 1 segundo
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
+    } catch (err: any) {
+      console.error('Erro ao fazer login:', err);
+      setError(err.message || 'Erro ao fazer login. Verifique suas credenciais.');
     } finally {
-      setIsLoggingIn(false);
+      setLoading(false);
     }
   };
 
@@ -162,6 +167,29 @@ export default function Home() {
                     <p className="text-gray-400 text-sm mt-3">Acesse sua conta para continuar</p>
                   </div>
                   <form onSubmit={handleLogin} className="space-y-5">
+                    {/* Mensagens de Erro/Sucesso */}
+                    {error && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm flex items-center gap-2"
+                      >
+                        <AlertCircle className="h-4 w-4" />
+                        <span>{error}</span>
+                      </motion.div>
+                    )}
+
+                    {success && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm flex items-center gap-2"
+                      >
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span>{success}</span>
+                      </motion.div>
+                    )}
+
                     <div>
                       <label className="block text-gray-300 mb-2">Email</label>
                       <div className="relative">
@@ -170,7 +198,8 @@ export default function Home() {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          disabled={loading}
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="seu@email.com"
                           required
                         />
@@ -185,7 +214,8 @@ export default function Home() {
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          disabled={loading}
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="••••••••"
                           required
                         />
@@ -198,14 +228,16 @@ export default function Home() {
                           type="checkbox"
                           checked={rememberMe}
                           onChange={(e) => setRememberMe(e.target.checked)}
-                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-800/50 text-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-0 cursor-pointer"
+                          disabled={loading}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-800/50 text-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-0 cursor-pointer disabled:opacity-50"
                         />
                         <span className="ml-2 text-sm text-gray-400">Manter conectado</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => changeTo('forgot')}
-                        className="text-amber-500 hover:text-amber-400 transition-colors text-sm"
+                        disabled={loading}
+                        className="text-amber-500 hover:text-amber-400 transition-colors text-sm disabled:opacity-50"
                       >
                         Esqueceu a senha?
                       </button>
@@ -213,22 +245,29 @@ export default function Home() {
 
                     <button
                       type="submit"
-                      disabled={isLoggingIn}
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
-                      {isLoggingIn ? 'Entrando...' : 'Entrar'}
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          Entrando...
+                        </>
+                      ) : (
+                        'Entrar'
+                      )}
                     </button>
                   </form>
 
                   <div className="mt-6 text-center">
                     <p className="text-gray-400">
                       Não tem uma conta?{' '}
-                      <a
-                        href="/cadastro-cliente"
+                      <button
+                        onClick={() => changeTo('register')}
                         className="text-amber-500 hover:text-amber-400 transition-colors"
                       >
                         Cadastre-se
-                      </a>
+                      </button>
                     </p>
                   </div>
                 </motion.div>

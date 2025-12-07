@@ -1,50 +1,6 @@
-# 💈 Sistema Prótese Capilar Cuiabá
+# 💈 Sistema Prótese Capilar - Prótese Capilar Cuiabá
 
-<div align="center">
-
-![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-
-**Sistema completo de gestão para clínica de prótese capilar** ✂️
-
-[![Status](https://img.shields.io/badge/status-fase_1_concluída-green?style=flat-square)](https://github.com)
-[![API](https://img.shields.io/badge/API-online-brightgreen?style=flat-square)](https://api.protesecapilarcuiaba.com.br/health)
-[![SSL](https://img.shields.io/badge/SSL-HTTPS-success?style=flat-square)](https://api.protesecapilarcuiaba.com.br/health)
-
-</div>
-
----
-
-## 🎯 Sobre o Projeto
-
-Sistema completo desenvolvido para **Próteses Capilares Cuiabá** com gestão de clientes, planos, agendamentos e controle financeiro.
-
-**Domínio Principal:** protesecapilarcuiaba.com.br  
-**Prazo:** 60 dias úteis (Conclusão: 19/02/2026)
-
----
-
-## 🏗️ Arquitetura
-
-### VPS Backend (82.25.65.201) ✅
-```
-https://api.protesecapilarcuiaba.com.br
-├── OpenLiteSpeed (porta 443 - SSL)
-├── Nginx (porta 8080 - proxy)
-├── Node.js 20.19.6 (porta 3001)
-├── Express + PostgreSQL 15.15
-└── PM2 (24/7 online)
-```
-
-### VPS Frontend (45.132.157.28) ⏳
-```
-www.protesecapilarcuiaba.com.br   → Site de Entrada
-app.protesecapilarcuiaba.com.br   → Painel do Cliente
-admin.protesecapilarcuiaba.com.br → Painel Administrativo
-```
+Sistema completo de gestão para clínica de prótese capilar desenvolvido com tecnologias modernas.
 
 ---
 
@@ -53,187 +9,235 @@ admin.protesecapilarcuiaba.com.br → Painel Administrativo
 ```
 Barbearia_Premium/
 │
-├── frontend/
-│   ├── site-entrada/      ✅ Página "Em Desenvolvimento"
-│   ├── painel-cliente/    ✅ Painel do cliente
-│   ├── painel-admin/      ✅ Painel administrativo
-│   └── site-publico/      🔄 Site comercial (futuro)
+├── frontend/                    # 🎨 Projetos Frontend
+│   ├── painel-admin/           # ✅ Painel Administrativo (Em produção)
+│   ├── painel-cliente/         # ✅ Painel do Cliente (Em produção)
+│   └── site-entrada/           # ✅ Site de Entrada (Em desenvolvimento)
 │
-├── backend/               ✅ API rodando (teste)
+├── backend/                     # ⚙️ API Backend
+│   ├── server.js               # Servidor Express principal
+│   ├── scripts/                # Scripts auxiliares
+│   └── README.md
 │
-├── docs/
-│   └── deploy/            📚 Guias VPS e configuração
+├── docs/                        # 📚 Documentação
+│   ├── deploy/                 # Documentação de deploy
+│   └── SEO_GUIA.md            # Guia de SEO
 │
-└── scripts/               🔧 Scripts e templates
+├── scripts/                     # 🔧 Scripts de configuração VPS
+│   └── templates-nginx/        # Templates Nginx
+│
+├── database/                    # 🗄️ Scripts SQL (na raiz)
+│   ├── COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql
+│   ├── COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql
+│   └── COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql
+│
+├── SCHEMA_DATABASE.md          # Schema do banco de dados
+├── ROADMAP_DESENVOLVIMENTO.md  # Roadmap do projeto
+└── PASSO_A_PASSO_PERMISSOES.md # Guia de sistema de permissões
 ```
 
 ---
 
-## 🛠️ Tecnologias
+## 🎯 Status do Projeto
+
+### ✅ Implementado e em Produção
+
+#### Painel Administrativo (`painel-admin/`)
+- ✅ Sistema de login e autenticação
+- ✅ Dashboard administrativo completo
+- ✅ Sistema de permissões granular (RBAC)
+- ✅ Gerenciamento de Funcionários (CRUD completo)
+- ✅ Gerenciamento de Clientes/Usuários (CRUD completo)
+- ✅ Controle de Permissões (Master apenas)
+- ✅ Controle de Acessos (logs de login)
+- ✅ Help Desk (em desenvolvimento)
+- ✅ Controle de Logs (em desenvolvimento)
+
+#### Painel Cliente (`painel-cliente/`)
+- ✅ Sistema de login e autenticação
+- ✅ Dashboard básico (em desenvolvimento)
+- ✅ Cadastro de cliente
+
+#### Backend (`backend/`)
+- ✅ API REST completa
+- ✅ Autenticação de clientes e administradores
+- ✅ CRUD de funcionários
+- ✅ CRUD de clientes
+- ✅ Sistema de permissões
+- ✅ Controle de acessos/logins
+- ✅ Upload de fotos de perfil
+- ✅ Integração com PostgreSQL
+
+#### Banco de Dados
+- ✅ Schema `protese` criado
+- ✅ Tabela `usuarios_administrativos`
+- ✅ Tabela `usuarios_clientes`
+- ✅ Tabela `permissoes_usuarios`
+- ✅ Tabela `controle_acessos`
+- ✅ Relacionamento funcionário responsável
+
+---
+
+## 🛠️ Stack Tecnológica
 
 ### Frontend
-- **Framework**: Next.js 14
-- **UI**: React 18 + TypeScript
+- **Framework**: Next.js 14 (App Router)
+- **Linguagem**: TypeScript
 - **Estilização**: Tailwind CSS
 - **Componentes**: Radix UI
-- **Animações**: Motion (Framer Motion)
+- **Animações**: Framer Motion
+- **Ícones**: Lucide React
 
 ### Backend
 - **Runtime**: Node.js 20 LTS
-- **Framework**: Express (atual) → NestJS (futuro)
-- **Banco**: PostgreSQL 15
-- **Process Manager**: PM2
-- **Proxy**: Nginx
+- **Framework**: Express.js
+- **Linguagem**: JavaScript
+- **Banco de Dados**: PostgreSQL 15+
+- **Autenticação**: bcrypt (hash de senhas)
+- **Upload**: Multer
 
 ### Infraestrutura
-- **VPS Backend**: Hostinger KVM 2 (AlmaLinux 9 + CyberPanel)
-- **VPS Frontend**: Hostinger
-- **CDN**: Cloudflare
-- **SSL**: Let's Encrypt ✅ (HTTPS funcionando)
+- **Hospedagem**: VPS Hostinger (KVM 2)
+- **Sistema**: AlmaLinux 9
+- **Painel**: CyberPanel
+- **Servidor Web**: Nginx
+- **Process Manager**: PM2
+- **DNS**: Cloudflare
 
 ---
 
-## 🚀 Desenvolvimento Local
+## 🚀 Início Rápido
 
-### Frontend
+### Pré-requisitos
+- Node.js 20+ instalado
+- PostgreSQL 15+ instalado e configurado
+- Git instalado
 
+### Backend
 ```bash
-# Painel Cliente
-cd frontend/painel-cliente && npm run dev
-# http://localhost:3000
-
-# Painel Admin
-cd frontend/painel-admin && npm run dev
-# http://localhost:3000
-
-# Site Entrada
-cd frontend/site-entrada && npm run dev
-# http://localhost:3002
+cd backend
+npm install
+cp .env.example .env  # Configurar variáveis de ambiente
+npm run dev
 ```
 
-### Testar API (Produção)
-
+### Frontend - Painel Admin
 ```bash
-# Health check (HTTPS)
-curl https://api.protesecapilarcuiaba.com.br/health
+cd frontend/painel-admin
+npm install
+npm run dev
+# Acesse: http://localhost:3000
+```
 
-# Test database (HTTPS)
-curl https://api.protesecapilarcuiaba.com.br/api/test-db
+### Frontend - Painel Cliente
+```bash
+cd frontend/painel-cliente
+npm install
+npm run dev
+# Acesse: http://localhost:3001
 ```
 
 ---
 
-## 📊 Status Atual
+## 🔐 Sistema de Permissões
 
-### ✅ Concluído (FASE 1)
+O sistema possui um controle granular de permissões baseado em roles:
 
-**Frontend:**
-- ✅ 3 projetos criados e funcionando
-- ✅ Design system implementado
-- ✅ SEO otimizado (B2B e B2C)
-- ✅ Favicon configurado
-- ✅ Login cliente implementado e funcional ✅
-- ✅ Login admin implementado e funcional ✅
-- ✅ Dashboard do cliente criado ✅
-- ✅ Dashboard admin criado ✅
-- ✅ Cadastro de cliente funcionando ✅
+- **Master**: Acesso total ao sistema (não pode ser excluído)
+- **Proprietário**: Acesso definido por permissões específicas
+- **Funcionário**: Acesso definido por permissões específicas
 
-**Backend:**
-- ✅ VPS configurada (82.25.65.201)
-- ✅ Node.js + PM2 + PostgreSQL
-- ✅ API rodando 24/7 em produção ✅
-- ✅ SSL/HTTPS configurado ✅
-- ✅ Nginx configurado (porta 8080)
-- ✅ DBeaver conectado
-- ✅ Endpoint de cadastro cliente funcionando ✅
-- ✅ Endpoint de login cliente funcionando ✅
-- ✅ Endpoint de login admin funcionando ✅
-- ✅ Upload de imagens configurado ✅
-- ✅ Sistema de níveis de acesso (Master/Proprietário/Funcionário) ✅
-
-### 🔄 Em Andamento
-
-- ⏳ Backend completo (NestJS)
-- ⏳ Deploy frontend (VPS 45.132.157.28)
-- ⏳ Dashboard completo do cliente
-
-### 📋 Próximo
-
-- [ ] Deploy frontend (VPS 45.132.157.28)
-- [ ] Desenvolver backend completo (NestJS)
-- [ ] Funcionalidades do dashboard do cliente
-- [ ] Sistema de agendamentos
+**Documentação completa**: Ver `PASSO_A_PASSO_PERMISSOES.md`
 
 ---
 
-## 🔐 Credenciais
+## 🗄️ Banco de Dados
 
-### PostgreSQL
-```
-Host: localhost (SSH Tunnel)
-Port: 5432
-Database: protese_capilar
-User: protese_user
-Password: AppProtese@2025!
-```
+### Schema: `protese`
 
-### SSH
-```bash
-# Backend
-ssh root@82.25.65.201
+**Tabelas principais:**
+- `usuarios_administrativos` - Administradores/Funcionários
+- `usuarios_clientes` - Clientes do sistema
+- `permissoes_usuarios` - Permissões granulares por módulo
+- `controle_acessos` - Logs de acesso/login
 
-# Frontend (quando configurar)
-ssh root@45.132.157.28
-```
+**Documentação completa**: Ver `SCHEMA_DATABASE.md`
 
-### API
-```
-Desenvolvimento: http://localhost:3001
-Produção: https://api.protesecapilarcuiaba.com.br ✅
-```
+**Scripts SQL importantes:**
+- `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
+- `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
+- `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
 
 ---
 
 ## 📚 Documentação
 
-- **[STATUS_PROJETO.md](./STATUS_PROJETO.md)** - Status detalhado
-- **[O_QUE_FIZEMOS_HOJE.md](./O_QUE_FIZEMOS_HOJE.md)** - Última sessão
-- **[PROXIMOS_PASSOS.md](./PROXIMOS_PASSOS.md)** - Roadmap
-- **[Cronograma.txt](./Cronograma.txt)** - Cronograma completo
-- **[SCHEMA_DATABASE.md](./SCHEMA_DATABASE.md)** - Estrutura do banco
-- **[docs/deploy/](./docs/deploy/)** - Guias de configuração
+### Documentação Principal
+- [Schema do Banco de Dados](./SCHEMA_DATABASE.md)
+- [Roadmap de Desenvolvimento](./ROADMAP_DESENVOLVIMENTO.md)
+- [Guia de Permissões](./PASSO_A_PASSO_PERMISSOES.md)
+
+### Documentação de Deploy
+- [Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)
+- [Configuração DNS](./docs/deploy/CONFIGURACAO_FINAL_DNS.md)
+- [Arquitetura VPS](./docs/deploy/ARQUITETURA_DUAS_VPS.md)
+- [Segurança VPS](./docs/deploy/SEGURANCA_VPS.md)
+
+### Frontend
+- [README Frontend](./frontend/README.md)
+- [README Painel Admin](./frontend/painel-admin/README.md)
+- [README Painel Cliente](./frontend/painel-cliente/README.md)
+
+### Backend
+- [README Backend](./backend/README.md)
 
 ---
 
-## 🎯 Progresso
+## 🌐 URLs de Produção
 
-```
-FASE 1: ████████████████████ 100% ✅ Infraestrutura
-FASE 2: ░░░░░░░░░░░░░░░░░░░░   0% 🔄 Backend Core
-FASE 3: ░░░░░░░░░░░░░░░░░░░░   0%    Módulos
+- **Painel Admin**: https://admin.protesecapilarcuiaba.com.br
+- **Painel Cliente**: https://app.protesecapilarcuiaba.com.br
+- **Site Público**: https://www.protesecapilarcuiaba.com.br
+- **API Backend**: https://api.protesecapilarcuiaba.com.br
+
+---
+
+## 🔧 Variáveis de Ambiente
+
+### Backend (`.env`)
+```env
+PORT=3001
+NODE_ENV=production
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=protese_capilar
+DB_USER=protese_user
+DB_PASSWORD=senha_segura
+
+API_BASE_URL=https://api.protesecapilarcuiaba.com.br
+CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
-**FASE 1 CONCLUÍDA COM SUCESSO!** 🎉
+---
+
+## 📋 Próximos Passos
+
+Ver documento: `PROXIMOS_PASSOS.md`
+
+**Status Atual**: 
+- ✅ Sistema base completo e funcional
+- ✅ Autenticação e permissões implementadas
+- ✅ CRUD de funcionários e clientes funcionando
+- ✅ Controle de acessos e logs implementado
+- 🔄 Próximo foco: Sistema de agendamentos e módulos financeiros
 
 ---
 
 ## 📄 Licença
 
-Projeto privado - Próteses Capilares Cuiabá
+Projeto privado - Uso comercial
 
 ---
 
-<div align="center">
-
-**Transformando vidas através do cabelo** 💈
-
-*FASE 1 Concluída | API Online | PostgreSQL Configurado*
-
-**Última atualização:** 07/12/2025  
-**SSL/HTTPS:** ✅ Configurado e funcionando  
-**Login Cliente/Admin:** ✅ Implementado e funcionando  
-**Dashboards:** ✅ Cliente e Admin criados  
-**Upload de Imagens:** ✅ Configurado  
-**Deploy Frontend:** 📋 Pronto para produção (build + upload)
-
-</div>
+*Sistema em desenvolvimento ativo* 🚀

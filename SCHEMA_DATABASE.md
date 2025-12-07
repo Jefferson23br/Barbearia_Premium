@@ -1,206 +1,178 @@
 # 🗄️ Schema do Banco de Dados - PostgreSQL
 
-## 📋 Tabelas Principais
+## 📋 Schema: `protese`
 
-### 1. users (Usuários)
+O sistema utiliza o schema `protese` no PostgreSQL para organizar todas as tabelas.
 
-```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  phone VARCHAR(20),
-  cpf VARCHAR(14),
-  role VARCHAR(20) DEFAULT 'client', -- 'client' | 'admin'
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
+---
+
+## 📊 Tabelas Principais
+
+### 1. `usuarios_administrativos` (Administradores/Funcionários)
+
+Armazena os usuários administrativos do sistema (Master, Proprietário, Funcionário).
+
+**Campos principais:**
+- `id` (UUID) - Identificador único
+- `nome_completo` (VARCHAR) - Nome completo
+- `email` (VARCHAR) - Email único
+- `cpf` (VARCHAR) - CPF (opcional)
+- `senha_hash` (VARCHAR) - Hash da senha (bcrypt)
+- `foto_url` (VARCHAR) - URL da foto de perfil
+- `tipo_usuario` (VARCHAR) - 'master' | 'proprietario' | 'funcionario'
+- `is_active` (BOOLEAN) - Status ativo/inativo
+- `created_at`, `updated_at` (TIMESTAMP)
+
+**Relacionamentos:**
+- 1:N com `permissoes_usuarios`
+- 1:N com `controle_acessos` (quando tipo = 'administrativo')
+
+---
+
+### 2. `usuarios_clientes` (Clientes)
+
+Armazena os clientes cadastrados no sistema.
+
+**Campos principais:**
+- `id` (UUID) - Identificador único
+- `nome_completo` (VARCHAR) - Nome completo
+- `email` (VARCHAR) - Email único
+- `cpf` (VARCHAR) - CPF único
+- `rg` (VARCHAR) - RG (opcional)
+- `senha_hash` (VARCHAR) - Hash da senha (bcrypt)
+- `foto_url` (VARCHAR) - URL da foto de perfil
+- `rua`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `cep` - Endereço completo
+- `funcionario_responsavel_id` (UUID) - FK para `usuarios_administrativos.id`
+- `is_active` (BOOLEAN) - Status ativo/inativo
+- `created_at`, `updated_at` (TIMESTAMP)
+
+**Relacionamentos:**
+- N:1 com `usuarios_administrativos` (funcionario_responsavel_id)
+- 1:N com `controle_acessos` (quando tipo = 'cliente')
+
+---
+
+### 3. `permissoes_usuarios` (Permissões Granulares)
+
+Armazena as permissões granulares de cada usuário administrativo (exceto Master que tem todas).
+
+**Campos principais:**
+- `id` (UUID) - Identificador único
+- `usuario_id` (UUID) - FK para `usuarios_administrativos.id` (UNIQUE)
+- **Módulos com permissões Ver/Editar/Excluir:**
+  - `dashboard_ver`
+  - `agenda_ver`, `agenda_editar`, `agenda_excluir`
+  - `lancamento_venda_ver`, `lancamento_venda_editar`, `lancamento_venda_excluir`
+  - `lancamento_despesa_ver`, `lancamento_despesa_editar`, `lancamento_despesa_excluir`
+  - `receitas_ver`, `receitas_editar`, `receitas_excluir`
+  - `despesas_ver`, `despesas_editar`, `despesas_excluir`
+  - `faturamento_ver`, `faturamento_editar`, `faturamento_excluir`
+  - `usuarios_ver`, `usuarios_editar`, `usuarios_excluir`
+  - `funcionarios_ver`, `funcionarios_editar`, `funcionarios_excluir`
+  - `help_desk_ver`, `help_desk_editar`, `help_desk_excluir`
+  - `controle_permissoes_ver`, `controle_permissoes_editar`, `controle_permissoes_excluir`
+- **Módulos apenas Visualização:**
+  - `controle_acessos_ver`
+  - `controle_logs_ver`
+- `created_at`, `updated_at` (TIMESTAMP)
+
+**Relacionamentos:**
+- 1:1 com `usuarios_administrativos` (usuario_id)
+
+**Notas:**
+- Se um usuário não tem registro nesta tabela, todas as permissões são `false` por padrão
+- Master sempre tem todas as permissões (não precisa de registro aqui)
+- Se `_ver` é `false`, `_editar` e `_excluir` são automaticamente `false`
+
+---
+
+### 4. `controle_acessos` (Logs de Login)
+
+Registra cada acesso/login de usuários (clientes e administrativos).
+
+**Campos principais:**
+- `id` (UUID) - Identificador único
+- `usuario_id` (UUID) - ID do usuário (pode ser cliente ou admin)
+- `tipo_usuario` (VARCHAR) - 'cliente' | 'administrativo'
+- `data_acesso` (DATE) - Data do acesso (UNIQUE por usuario_id + data_acesso)
+- `quantidade_login` (INTEGER) - Quantidade de logins no dia
+- `primeiro_acesso` (TIMESTAMP) - Primeiro login do dia
+- `ultimo_acesso` (TIMESTAMP) - Último login do dia
+- `created_at`, `updated_at` (TIMESTAMP)
+
+**Relacionamentos:**
+- N:1 com `usuarios_clientes` (quando tipo_usuario = 'cliente')
+- N:1 com `usuarios_administrativos` (quando tipo_usuario = 'administrativo')
+
+**Funcionalidade:**
+- Um registro por usuário por dia
+- Incrementa `quantidade_login` a cada login no mesmo dia
+- Atualiza `ultimo_acesso` a cada login
+
+---
+
+## 🔗 Relacionamentos Visuais
+
 ```
+usuarios_administrativos
+├── 1:1 ──> permissoes_usuarios
+├── 1:N ──> controle_acessos (tipo = 'administrativo')
+└── 1:N ──> usuarios_clientes (funcionario_responsavel_id)
 
-### 2. plans (Planos/Pacotes)
-
-```sql
-CREATE TABLE plans (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  price DECIMAL(10,2) NOT NULL,
-  uses_count INTEGER, -- Quantidade de usos (NULL = ilimitado)
-  validity_days INTEGER, -- Dias de validade
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 3. user_plans (Planos Adquiridos)
-
-```sql
-CREATE TABLE user_plans (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  plan_id UUID NOT NULL REFERENCES plans(id),
-  remaining_uses INTEGER,
-  expires_at TIMESTAMP,
-  status VARCHAR(20) DEFAULT 'active', -- 'active' | 'expired' | 'cancelled'
-  purchased_at TIMESTAMP DEFAULT NOW(),
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 4. services (Serviços)
-
-```sql
-CREATE TABLE services (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  uses_cost INTEGER DEFAULT 1, -- Custo em "usos"
-  duration_minutes INTEGER,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 5. appointments (Agendamentos)
-
-```sql
-CREATE TABLE appointments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  service_id UUID REFERENCES services(id),
-  scheduled_at TIMESTAMP NOT NULL,
-  status VARCHAR(20) DEFAULT 'scheduled', -- 'scheduled' | 'completed' | 'cancelled' | 'no_show'
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 6. transactions (Transações/Pagamentos)
-
-```sql
-CREATE TABLE transactions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  plan_id UUID REFERENCES plans(id),
-  amount DECIMAL(10,2) NOT NULL,
-  payment_method VARCHAR(50), -- 'pix' | 'credit_card' | 'debit_card' | 'boleto'
-  status VARCHAR(20) DEFAULT 'pending', -- 'pending' | 'paid' | 'failed' | 'refunded'
-  gateway_id VARCHAR(255), -- ID do gateway de pagamento
-  gateway_response JSONB,
-  paid_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 7. usage_history (Histórico de Uso)
-
-```sql
-CREATE TABLE usage_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id),
-  user_plan_id UUID NOT NULL REFERENCES user_plans(id),
-  service_id UUID REFERENCES services(id),
-  appointment_id UUID REFERENCES appointments(id),
-  uses_spent INTEGER DEFAULT 1,
-  notes TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 8. notifications (Notificações)
-
-```sql
-CREATE TABLE notifications (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id), -- NULL = notificação em massa
-  type VARCHAR(50) NOT NULL, -- 'appointment' | 'payment' | 'expiration' | 'promotion' | 'alert'
-  title VARCHAR(255) NOT NULL,
-  message TEXT NOT NULL,
-  channel VARCHAR(20), -- 'email' | 'whatsapp' | 'sms' | 'in_app'
-  status VARCHAR(20) DEFAULT 'pending', -- 'pending' | 'sent' | 'failed'
-  sent_at TIMESTAMP,
-  read_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 9. invoices (Faturas/Notas Fiscais)
-
-```sql
-CREATE TABLE invoices (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  transaction_id UUID REFERENCES transactions(id),
-  user_id UUID NOT NULL REFERENCES users(id),
-  nfe_number VARCHAR(50),
-  nfe_key VARCHAR(44), -- Chave de acesso NFe
-  nfe_xml TEXT,
-  status VARCHAR(20) DEFAULT 'pending', -- 'pending' | 'issued' | 'cancelled'
-  issued_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### 10. nfe_logs (Logs de Integração NFe)
-
-```sql
-CREATE TABLE nfe_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  invoice_id UUID REFERENCES invoices(id),
-  action VARCHAR(50), -- 'issue' | 'cancel' | 'status_check'
-  request_data JSONB,
-  response_data JSONB,
-  status VARCHAR(20), -- 'success' | 'error'
-  error_message TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
-);
+usuarios_clientes
+├── N:1 ──> usuarios_administrativos (funcionario_responsavel_id)
+└── 1:N ──> controle_acessos (tipo = 'cliente')
 ```
 
 ---
 
-## 🔗 Relacionamentos
+## 📝 Scripts SQL Importantes
 
-- `users` → `user_plans` (1:N)
-- `plans` → `user_plans` (1:N)
-- `users` → `appointments` (1:N)
-- `services` → `appointments` (1:N)
-- `users` → `transactions` (1:N)
-- `plans` → `transactions` (1:N)
-- `users` → `usage_history` (1:N)
-- `user_plans` → `usage_history` (1:N)
-- `transactions` → `invoices` (1:1)
-- `invoices` → `nfe_logs` (1:N)
+Os scripts para criar as tabelas estão na raiz do projeto:
+
+1. **`COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`**
+   - Cria a tabela `permissoes_usuarios`
+   - Define todas as colunas de permissões
+
+2. **`COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`**
+   - Cria a tabela `controle_acessos`
+   - Define estrutura de logs de acesso
+
+3. **`COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`**
+   - Adiciona campo `funcionario_responsavel_id` em `usuarios_clientes`
+   - Cria índice para melhor performance
 
 ---
 
 ## 📊 Índices Recomendados
 
 ```sql
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_user_plans_user_id ON user_plans(user_id);
-CREATE INDEX idx_user_plans_status ON user_plans(status);
-CREATE INDEX idx_appointments_user_id ON appointments(user_id);
-CREATE INDEX idx_appointments_scheduled_at ON appointments(scheduled_at);
-CREATE INDEX idx_transactions_user_id ON transactions(user_id);
-CREATE INDEX idx_transactions_status ON transactions(status);
-CREATE INDEX idx_usage_history_user_id ON usage_history(user_id);
-CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+-- Usuários Administrativos
+CREATE INDEX idx_usuarios_admin_email ON protese.usuarios_administrativos(email);
+CREATE INDEX idx_usuarios_admin_tipo ON protese.usuarios_administrativos(tipo_usuario);
+
+-- Usuários Clientes
+CREATE INDEX idx_usuarios_clientes_email ON protese.usuarios_clientes(email);
+CREATE INDEX idx_usuarios_clientes_cpf ON protese.usuarios_clientes(cpf);
+CREATE INDEX idx_usuarios_clientes_funcionario_responsavel ON protese.usuarios_clientes(funcionario_responsavel_id);
+
+-- Permissões
+CREATE INDEX idx_permissoes_usuario_id ON protese.permissoes_usuarios(usuario_id);
+
+-- Controle de Acessos
+CREATE INDEX idx_controle_acessos_usuario_data ON protese.controle_acessos(usuario_id, data_acesso);
+CREATE INDEX idx_controle_acessos_data ON protese.controle_acessos(data_acesso);
 ```
 
 ---
 
-*Schema baseado nas especificações do sistema*
+## 🔐 Segurança
 
+- Todas as senhas são armazenadas como hash bcrypt
+- Email e CPF têm constraint UNIQUE
+- Foreign keys com ON DELETE CASCADE onde apropriado
+- Timestamps automáticos (created_at, updated_at)
 
+---
 
-
-
-
-
+**Última atualização**: Dezembro 2024

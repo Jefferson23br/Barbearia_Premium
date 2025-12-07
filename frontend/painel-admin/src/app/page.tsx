@@ -1,74 +1,88 @@
 'use client'
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Lock, ArrowLeft } from 'lucide-react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
+import { Mail, Lock, ArrowLeft } from 'lucide-react'
+import { ImageWithFallback } from '../components/figma/ImageWithFallback'
+import { useRouter } from 'next/navigation'
 
-type ViewType = 'login' | 'forgot';
+type ViewType = 'login' | 'forgot'
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<ViewType>('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [currentView, setCurrentView] = useState<ViewType>('login')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoggingIn(true);
-    setError(null);
+    e.preventDefault()
+    setIsLoggingIn(true)
+    setError(null)
 
     try {
       // URL da API de produção
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br';
-      
-      console.log('🔗 Tentando conectar em:', apiUrl);
-      
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+
+      console.log('🔗 Tentando conectar em:', apiUrl)
+
       const response = await fetch(`${apiUrl}/api/v1/auth/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha: password }),
-      });
+      })
 
       // Verificar se a resposta é JSON válido
-      let data;
-      const contentType = response.headers.get('content-type');
+      let data
+      const contentType = response.headers.get('content-type')
       if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
+        data = await response.json()
       } else {
-        const text = await response.text();
-        throw new Error(`Erro na resposta do servidor: ${text}`);
+        const text = await response.text()
+        throw new Error(`Erro na resposta do servidor: ${text}`)
       }
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || 'Erro no login');
+        throw new Error(data.error || data.message || 'Erro no login')
       }
 
       // Salvar dados do admin no localStorage
-      localStorage.setItem('admin', JSON.stringify(data.admin));
+      localStorage.setItem('admin', JSON.stringify(data.admin))
       if (rememberMe) {
-        localStorage.setItem('rememberAdmin', 'true');
+        localStorage.setItem('rememberAdmin', 'true')
+      }
+
+      // Carregar permissões após login (apenas se não for Master)
+      if (data.admin.tipo_usuario !== 'master') {
+        try {
+          const permissoesResponse = await fetch(`${apiUrl}/api/v1/permissoes/${data.admin.id}`)
+          if (permissoesResponse.ok) {
+            const permissoesData = await permissoesResponse.json()
+            localStorage.setItem('permissoes', JSON.stringify(permissoesData.permissoes))
+          }
+        } catch (error) {
+          console.error('Erro ao carregar permissões:', error)
+          // Continua mesmo se não conseguir carregar permissões
+        }
       }
 
       // Redirecionar para dashboard
-      router.push('/dashboard');
+      router.push('/dashboard')
     } catch (error: any) {
-      setError(error.message);
-      console.error('Erro de login:', error);
+      setError(error.message || 'Erro ao fazer login. Tente novamente.')
+      console.error('Erro de login:', error)
     } finally {
-      setIsLoggingIn(false);
+      setIsLoggingIn(false)
     }
-  };
+  }
 
   const handleForgotPassword = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Forgot password:', { email });
+    e.preventDefault()
+    console.log('Forgot password:', { email })
     // Aqui você implementará a lógica de recuperação de senha
-  };
+  }
 
   const slideVariants = {
     enter: (direction: number) => ({
@@ -83,17 +97,17 @@ export default function Home() {
       x: direction < 0 ? 300 : -300,
       opacity: 0,
     }),
-  };
+  }
 
-  const [direction, setDirection] = useState(0);
+  const [direction, setDirection] = useState(0)
 
   const changeTo = (view: ViewType) => {
-    const views: ViewType[] = ['login', 'forgot'];
-    const currentIndex = views.indexOf(currentView);
-    const newIndex = views.indexOf(view);
-    setDirection(newIndex > currentIndex ? 1 : -1);
-    setCurrentView(view);
-  };
+    const views: ViewType[] = ['login', 'forgot']
+    const currentIndex = views.indexOf(currentView)
+    const newIndex = views.indexOf(view)
+    setDirection(newIndex > currentIndex ? 1 : -1)
+    setCurrentView(view)
+  }
 
   return (
     <div className="min-h-screen w-full relative flex items-center justify-center overflow-hidden bg-black">
@@ -106,8 +120,6 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/80 to-amber-950/60"></div>
       </div>
-
-      {/* Decorative Elements */}
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-md mx-4 sm:mx-auto">
@@ -127,7 +139,7 @@ export default function Home() {
             </div>
           </div>
           <h1 className="text-amber-500 mb-2">Prótese Capilar</h1>
-          <p className="text-gray-400">Transformando vidas através do cabelo!</p>
+          <p className="text-gray-400">Painel Administrativo</p>
         </motion.div>
 
         {/* Card Container */}
@@ -155,13 +167,16 @@ export default function Home() {
                       </h2>
                       <div className="h-1 w-full bg-gradient-to-r from-amber-500/0 via-amber-500 to-amber-500/0 rounded-full"></div>
                     </div>
-                      <p className="text-gray-400 text-sm mt-3">Acesse seu Painel Administrativo</p>
+                    <p className="text-gray-400 text-sm mt-3">Acesse seu Painel Administrativo</p>
                   </div>
+
+                  {/* Mensagem de Erro */}
                   {error && (
-                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                      <p className="text-red-500 text-sm text-center">{error}</p>
+                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-500 text-sm">
+                      {error}
                     </div>
                   )}
+
                   <form onSubmit={handleLogin} className="space-y-5">
                     <div>
                       <label className="block text-gray-300 mb-2">Email</label>
@@ -171,7 +186,8 @@ export default function Home() {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          disabled={isLoggingIn}
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="seu@email.com"
                           required
                         />
@@ -186,7 +202,8 @@ export default function Home() {
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                          disabled={isLoggingIn}
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="••••••••"
                           required
                         />
@@ -199,14 +216,16 @@ export default function Home() {
                           type="checkbox"
                           checked={rememberMe}
                           onChange={(e) => setRememberMe(e.target.checked)}
-                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-800/50 text-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-0 cursor-pointer"
+                          disabled={isLoggingIn}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-800/50 text-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <span className="ml-2 text-sm text-gray-400">Manter conectado</span>
                       </label>
                       <button
                         type="button"
                         onClick={() => changeTo('forgot')}
-                        className="text-amber-500 hover:text-amber-400 transition-colors text-sm"
+                        disabled={isLoggingIn}
+                        className="text-amber-500 hover:text-amber-400 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Esqueceu a senha?
                       </button>
@@ -214,12 +233,25 @@ export default function Home() {
 
                     <button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isLoggingIn}
+                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black py-3 rounded-lg transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
-                      {isLoggingIn ? 'Entrando...' : 'Entrar'}
+                      {isLoggingIn ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
+                          Entrando...
+                        </>
+                      ) : (
+                        'Entrar'
+                      )}
                     </button>
                   </form>
+
+                  <div className="mt-6 text-center">
+                    <p className="text-gray-400 text-sm">
+                      Usuários administrativos são criados apenas pelos administradores Master
+                    </p>
+                  </div>
                 </motion.div>
               )}
 
@@ -299,6 +331,5 @@ export default function Home() {
         </motion.p>
       </div>
     </div>
-  );
+  )
 }
-

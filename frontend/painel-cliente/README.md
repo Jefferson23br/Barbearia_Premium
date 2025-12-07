@@ -1,4 +1,4 @@
-# 👤 Painel do Cliente - Prótese Capilar Cuiabá
+# 💈 BarberShop Premium - Painel de Cliente
 
 <div align="center">
 
@@ -6,11 +6,13 @@
 ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
-**Painel de acesso do cliente - Prótese Capilar Cuiabá** 💈
+**Sistema completo de gestão para barbearias premium** ✂️
 
 [![Status](https://img.shields.io/badge/status-em_desenvolvimento-yellow?style=flat-square)](https://github.com)
-[![API](https://img.shields.io/badge/API-HTTPS-success?style=flat-square)](https://api.protesecapilarcuiaba.com.br)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
 </div>
 
@@ -18,9 +20,9 @@
 
 ## 🎯 Sobre o Projeto
 
-Este é o **Painel de Acesso do Cliente** do sistema Prótese Capilar Cuiabá. Interface moderna e intuitiva onde os clientes acessam seus planos, agendamentos e histórico de serviços.
+Desenvolvi este projeto como parte de um sistema completo de gestão para barbearias premium. Este é o **Painel de Acesso do Cliente**, a primeira interface que os clientes encontram ao acessar o sistema.
 
-**Domínio:** `app.protesecapilarcuiaba.com.br`
+O design foi criado no Figma com foco em uma experiência moderna, elegante e intuitiva, refletindo o padrão premium de uma barbearia de alto nível.
 
 ### ✨ Características Principais
 
@@ -67,12 +69,12 @@ Este é o **Painel de Acesso do Cliente** do sistema Prótese Capilar Cuiabá. I
 - **React Hook Form** - Formulários performáticos
 - **Class Variance Authority** - Sistema de variantes de componentes
 
-### Arquitetura
+### Arquitetura Planejada
 
-- **Back-end**: Node.js + Express (produção: NestJS)
-- **Banco de Dados**: PostgreSQL 15
-- **API**: `https://api.protesecapilarcuiaba.com.br` ✅ (HTTPS funcionando)
-- **Autenticação**: JWT + Refresh Tokens (a implementar)
+- **Back-end**: Node.js com Express/Fastify
+- **Banco de Dados**: PostgreSQL
+- **Autenticação**: JWT + Refresh Tokens
+- **APIs**: RESTful com documentação OpenAPI
 
 </div>
 
@@ -115,19 +117,15 @@ src/
 
 Atualmente, estou trabalhando na integração com o back-end e implementação das funcionalidades completas do sistema. O front-end está pronto para receber as APIs e a autenticação.
 
-### Status Atual
+### Próximas Etapas
 
-- ✅ Login implementado e funcionando (integração com API)
-- ✅ Cadastro de cliente funcionando (com upload de foto)
-- ✅ Dashboard criado (página "Em Desenvolvimento")
-- ✅ Checkbox "Manter conectado"
-- ✅ SEO otimizado (B2C)
-- ✅ Favicon configurado
-- ✅ Integração com API HTTPS funcionando
-- ⏳ Funcionalidades completas do dashboard
-- ⏳ Sistema de agendamentos
-- ⏳ Histórico de serviços
-- ⏳ Gerenciamento de perfil
+- [ ] Integração com API Node.js
+- [ ] Implementação de autenticação JWT
+- [ ] Conexão com PostgreSQL
+- [ ] Dashboard do cliente
+- [ ] Sistema de agendamentos
+- [ ] Histórico de serviços
+- [ ] Perfil e configurações
 
 ---
 
@@ -157,7 +155,7 @@ Este projeto é privado e desenvolvido exclusivamente para uso comercial.
 
 <div align="center">
 
-**Transformando vidas através do cabelo** 💈
+**Desenvolvido com ❤️ para barbearias premium**
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)

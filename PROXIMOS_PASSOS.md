@@ -1,203 +1,245 @@
-# 🚀 Próximos Passos - Projeto Prótese Capilar
+# 🚀 Próximos Passos - Sistema Prótese Capilar
 
-## ⏭️ Imediato (Próxima Sessão)
-
-### 1. ✅ Concluído Recentemente
-- ✅ Sistema de login cliente implementado
-- ✅ Sistema de login admin implementado ✅
-- ✅ Sistema de cadastro cliente implementado
-- ✅ Upload de imagens funcionando
-- ✅ Dashboard do cliente criado
-- ✅ Dashboard admin criado ✅
-- ✅ Sistema de níveis de acesso (Master/Proprietário/Funcionário) ✅
-- ✅ Favicons configurados
-- ✅ SSL/HTTPS configurado ✅
-- ✅ API rodando em produção ✅
-
-### 2. Próximas Implementações
-
-#### Deploy Frontend para Produção
-```bash
-# Build dos projetos
-cd frontend/painel-admin && npm run build
-cd frontend/painel-cliente && npm run build
-cd frontend/site-entrada && npm run build
-
-# Upload da pasta out/ para hospedagem
-# Veja: GUIA_DEPLOY_FRONTEND.md
-```
-
-#### Próximas Funcionalidades
-- Implementar menu lateral no dashboard admin (por nível de acesso)
-- Funcionalidades do dashboard do cliente
-- Sistema de agendamentos
-
-**Registros a adicionar:**
-
-```
-Type: A | Name: api   | Content: 82.25.65.201  | Proxy: DNS only
-Type: A | Name: www   | Content: 45.132.157.28 | Proxy: Proxied
-Type: A | Name: app   | Content: 45.132.157.28 | Proxy: Proxied
-Type: A | Name: admin | Content: 45.132.157.28 | Proxy: Proxied
-```
-
-**Aguardar propagação:** 2-4 horas
+Este documento lista as próximas funcionalidades e melhorias a serem implementadas no sistema.
 
 ---
 
-## 📅 Esta Semana (Dias 6-10)
+## ✅ Funcionalidades Concluídas
 
-### Backend - Estrutura Completa
-
-1. **Criar projeto NestJS**
-   ```bash
-   npm i -g @nestjs/cli
-   nest new backend-protese-capilar
-   ```
-
-2. **Configurar TypeORM + PostgreSQL**
-   - Conexão com banco
-   - Entities básicas
-   - Migrations
-
-3. **Módulo de Autenticação**
-   - JWT
-   - Login
-   - Registro
-   - Refresh tokens
-
-4. **Módulo de Usuários**
-   - CRUD básico
-   - Validações
-   - DTOs
+### Sistema Base
+- [x] Autenticação de clientes e administradores
+- [x] Sistema de permissões granular (RBAC)
+- [x] Gerenciamento de Funcionários (CRUD completo)
+- [x] Gerenciamento de Clientes/Usuários (CRUD completo)
+- [x] Controle de Permissões (Master apenas)
+- [x] Controle de Acessos (logs de login com filtros)
+- [x] Funcionário responsável por cliente
+- [x] Upload de fotos de perfil
 
 ---
 
-## 📅 Próxima Semana (Dias 11-15)
+## 📅 Prioridade Alta
 
-### Backend - Módulos Principais
+### 1. Funcionalidades do Painel Cliente
+- [ ] **Dashboard Completo do Cliente**
+  - [x] Exibir informações pessoais (básico)
+  - [ ] Histórico de agendamentos
+  - [ ] Saldo de planos/usos disponíveis
+  - [ ] Próximos agendamentos
 
-1. **Módulo de Planos**
-   - CRUD completo
-   - Validações de negócio
+- [ ] **Sistema de Agendamentos**
+  - [ ] Visualizar agenda disponível
+  - [ ] Criar novo agendamento
+  - [ ] Cancelar agendamento
+  - [ ] Reagendar
+  - [ ] Notificações de lembretes
 
-2. **Módulo de Serviços**
-   - CRUD completo
-   - Relacionamento com planos
+- [ ] **Gerenciamento de Perfil**
+  - [ ] Editar dados pessoais
+  - [ ] Alterar senha
+  - [x] Upload/alteração de foto
 
-3. **Módulo de Agendamentos**
-   - CRUD
-   - Validação de horários
-   - Conflitos
+- [ ] **Histórico de Atendimentos**
+  - [ ] Visualizar histórico completo
+  - [ ] Filtros por data/serviço
+  - [ ] Detalhes de cada atendimento
 
----
+### 2. Funcionalidades do Painel Admin
 
-## 🌐 VPS Frontend (45.132.157.28)
+- [ ] **Agenda Administrativa**
+  - [ ] Visualizar agenda completa
+  - [ ] Criar/editar/cancelar agendamentos
+  - [ ] Calendário visual
+  - [ ] Filtros por funcionário/data
 
-### A Configurar
+- [ ] **Lançamento de Venda**
+  - [ ] Registrar nova venda
+  - [ ] Selecionar cliente
+  - [ ] Adicionar produtos/serviços
+  - [ ] Aplicar descontos
+  - [ ] Gerar nota fiscal
 
-1. **Preparar VPS**
-   - Instalar Nginx
-   - Configurar firewall
-   - Criar estrutura de pastas
+- [ ] **Lançamento de Despesa**
+  - [ ] Registrar despesas
+  - [ ] Categorização de despesas
+  - [ ] Upload de comprovantes
+  - [ ] Relatórios de despesas
 
-2. **Deploy dos Frontends**
-   - Build local dos 3 projetos
-   - Upload para VPS
-   - Configurar Nginx para cada domínio
-   - Configurar SSL
+- [ ] **Receitas e Despesas (Relatórios)**
+  - [ ] Dashboard financeiro
+  - [ ] Gráficos de receitas/despesas
+  - [ ] Filtros por período
+  - [ ] Exportação de relatórios
 
-3. **Testar**
-   - https://www.protesecapilarcuiaba.com.br
-   - https://app.protesecapilarcuiaba.com.br
-   - https://admin.protesecapilarcuiaba.com.br
+- [ ] **Faturamento**
+  - [ ] Visualizar faturas pendentes
+  - [ ] Gerar novas faturas
+  - [ ] Envio automático de faturas
+  - [ ] Controle de pagamentos
 
----
+- [ ] **Controle de Logs** (Melhorias)
+  - [ ] Logs detalhados de ações do sistema
+  - [ ] Filtros avançados
+  - [ ] Exportação de logs
 
-## 🔗 Integração Frontend + Backend
+- [ ] **Help Desk** (Completar)
+  - [x] Estrutura básica da página
+  - [ ] Sistema de tickets
+  - [ ] Abertura de chamados
+  - [ ] Atribuição de responsáveis
+  - [ ] Status de tickets
 
-### Configurar Variáveis de Ambiente
+- [ ] **Controle de Logs** (Completar)
+  - [x] Estrutura básica da página
+  - [ ] Logs detalhados de ações do sistema
+  - [ ] Filtros avançados
+  - [ ] Exportação de logs
 
-Nos 3 frontends, criar `.env.local`:
+### 3. Melhorias Técnicas
 
-```env
-NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
-```
+- [ ] **Autenticação**
+  - [ ] Implementar JWT tokens
+  - [ ] Refresh tokens
+  - [ ] Logout em todas as sessões
+  - [ ] Recuperação de senha
 
-### Testar Integração
-- Login real via API
-- Registro real via API
-- Autenticação JWT
+- [ ] **Segurança**
+  - [ ] Rate limiting nas APIs
+  - [ ] Validação de inputs mais robusta
+  - [ ] Proteção contra SQL injection
+  - [ ] CORS configurado corretamente
 
----
+- [ ] **Performance**
+  - [ ] Cache de queries frequentes
+  - [ ] Paginação em listas grandes
+  - [ ] Otimização de queries SQL
+  - [ ] Compressão de imagens
 
-## 📋 Checklist Geral
-
-### Infraestrutura
-- [x] VPS Backend configurada
-- [x] PostgreSQL funcionando
-- [x] API rodando 24/7
-- [ ] SSL configurado
-- [ ] DNS no Cloudflare
-- [ ] VPS Frontend configurada
-
-### Backend
-- [x] API de teste
-- [x] Endpoint de cadastro ✅
-- [x] Endpoint de login ✅
-- [x] Upload de imagens ✅
-- [ ] Estrutura NestJS
-- [ ] Autenticação JWT
-- [ ] Módulos principais
-- [ ] Migrations
-
-### Frontend
-- [x] Painel Cliente
-- [x] Painel Admin
-- [x] Site Entrada
-- [x] Login integrado com API ✅
-- [x] Cadastro integrado com API ✅
-- [x] Dashboard criado ✅
-- [ ] Funcionalidades do dashboard
-- [ ] Deploy em produção
-
-### Deploy
-- [x] API acessível (porta 8080)
-- [ ] API com SSL (HTTPS)
-- [ ] Frontends em produção
-- [ ] Tudo integrado
-
----
-
-## 🎯 Ordem de Prioridade
-
-1. ✅ **SSL na API** (concluído)
-2. ✅ **DNS Cloudflare** (concluído)
-3. ✅ **Login/Cadastro** (concluído)
-4. **Funcionalidades do Dashboard** (próximo)
-5. **Deploy Frontend** (VPS 45.132.157.28)
-6. **Sistema de Agendamentos**
-7. **Backend NestJS** (migração futura)
+- [ ] **Testes**
+  - [ ] Testes unitários do backend
+  - [ ] Testes de integração
+  - [ ] Testes E2E do frontend
 
 ---
 
-## 📞 Suporte
+## 📅 Prioridade Média
 
-**Documentação:**
-- `STATUS_PROJETO.md` - Status atual
-- `docs/deploy/` - Guias de configuração
-- `SCHEMA_DATABASE.md` - Estrutura do banco
+### 4. Integrações
 
-**Comandos Rápidos:**
-- Ver `GUIA_RAPIDO.md`
+- [ ] **Gateway de Pagamento**
+  - [ ] Integração com Stripe/PagSeguro/Asaas
+  - [ ] Processamento de pagamentos
+  - [ ] Webhooks de confirmação
+  - [ ] Gerenciamento de assinaturas
+
+- [ ] **Emissor de Notas Fiscais**
+  - [ ] Integração com sistema NFe
+  - [ ] Emissão automática de notas
+  - [ ] Download de XML/PDF
+
+- [ ] **Notificações**
+  - [ ] Email (SendGrid/SES)
+  - [ ] WhatsApp (Twilio/Evolution API)
+  - [ ] SMS (Twilio)
+  - [ ] Notificações in-app
+
+- [ ] **Backup Automático**
+  - [ ] Backup diário do banco
+  - [ ] Armazenamento em cloud
+  - [ ] Restore automatizado
+
+### 5. Funcionalidades Extras
+
+- [ ] **Relatórios Avançados**
+  - [ ] Dashboard com métricas
+  - [ ] Relatórios personalizados
+  - [ ] Exportação em PDF/Excel
+  - [ ] Agendamento de relatórios
+
+- [ ] **Sistema de Planos**
+  - [ ] CRUD de planos
+  - [ ] Venda de planos
+  - [ ] Controle de uso de saldo
+  - [ ] Renovação automática
+
+- [ ] **Catálogo de Serviços**
+  - [ ] CRUD de serviços
+  - [ ] Categorização
+  - [ ] Preços e duração
+  - [ ] Disponibilidade
+
+- [ ] **Multi-tenant** (se necessário)
+  - [ ] Suporte a múltiplas clínicas
+  - [ ] Isolamento de dados
+  - [ ] Personalização por cliente
 
 ---
 
-*Roadmap atualizado - Pronto para continuar!* 🚀
+## 📅 Prioridade Baixa
 
+### 6. Melhorias de UX/UI
 
+- [ ] **Temas**
+  - [ ] Modo escuro/claro
+  - [ ] Personalização de cores
+  - [ ] Ajustes de fonte
 
+- [ ] **Acessibilidade**
+  - [ ] Suporte a leitores de tela
+  - [ ] Navegação por teclado
+  - [ ] Contraste adequado
+  - [ ] Alt texts em imagens
 
+- [ ] **Internacionalização**
+  - [ ] Suporte a múltiplos idiomas
+  - [ ] Tradução de interface
 
+- [ ] **Mobile**
+  - [ ] Versão mobile otimizada
+  - [ ] App mobile (React Native)
+  - [ ] PWA (Progressive Web App)
 
+### 7. Documentação
+
+- [ ] **API Documentation**
+  - [ ] Swagger/OpenAPI
+  - [ ] Exemplos de requisições
+  - [ ] Guias de integração
+
+- [ ] **Documentação de Código**
+  - [ ] JSDoc/TSDoc completo
+  - [ ] Comentários explicativos
+  - [ ] Diagramas de arquitetura
+
+- [ ] **Guias de Usuário**
+  - [ ] Manual do administrador
+  - [ ] Manual do cliente
+  - [ ] Vídeos tutoriais
+
+---
+
+## 🔄 Manutenção Contínua
+
+### Tasks Regulares
+- [ ] Atualização de dependências
+- [ ] Monitoramento de logs de erro
+- [ ] Otimização de performance
+- [ ] Backup e testes de restore
+- [ ] Revisão de segurança
+- [ ] Melhorias baseadas em feedback
+
+---
+
+## 📝 Observações
+
+- Prioridades podem ser ajustadas conforme necessidade do negócio
+- Funcionalidades podem ser adicionadas ou removidas conforme evolução do projeto
+- Testes devem ser implementados junto com novas funcionalidades
+- Documentação deve ser mantida atualizada
+
+---
+
+**Última atualização**: Dezembro 2024
+
+**Status atual**: Sistema base completo e funcional. Foco nas funcionalidades de agendamento e financeiro.
 

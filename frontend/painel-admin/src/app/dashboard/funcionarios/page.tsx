@@ -1,0 +1,722 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
+import { UserCog, Search, Edit, Trash2, Plus, Eye, Mail, X, Save, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { usePermissions } from '@/hooks/usePermissions'
+
+interface Funcionario {
+  id: string
+  nome_completo: string
+  email: string
+  cpf?: string | null
+  tipo_usuario: string
+  is_active: boolean
+  created_at: string
+}
+
+export default function FuncionariosPage() {
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
+  const [funcionariosFiltrados, setFuncionariosFiltrados] = useState<Funcionario[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [mostrarModal, setMostrarModal] = useState(false)
+  const [modalTipo, setModalTipo] = useState<'criar' | 'editar' | 'excluir' | 'visualizar'>('criar')
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<Funcionario | null>(null)
+  const [salvando, setSalvando] = useState(false)
+  const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
+  const { podeAcessar, podeEditar, podeExcluir } = usePermissions()
+
+  // Formulário
+  const [formData, setFormData] = useState({
+    nome_completo: '',
+    email: '',
+    cpf: '',
+    tipo_usuario: 'funcionario',
+    senha: '',
+    is_active: true,
+  })
+
+  useEffect(() => {
+    carregarFuncionarios()
+  }, [])
+
+  useEffect(() => {
+    filtrarFuncionarios()
+  }, [searchTerm, funcionarios])
+
+  const carregarFuncionarios = async () => {
+    setLoading(true)
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      const tipoUsuario = admin?.tipo_usuario || 'master'
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/funcionarios?tipo_usuario=${tipoUsuario}`)
+
+      if (!response.ok) {
+        throw new Error('Erro ao carregar funcionários')
+      }
+
+      const data = await response.json()
+      setFuncionarios(data.funcionarios || [])
+    } catch (error: any) {
+      console.error('Erro ao carregar funcionários:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const filtrarFuncionarios = () => {
+    if (!searchTerm.trim()) {
+      setFuncionariosFiltrados(funcionarios)
+      return
+    }
+
+    const termo = searchTerm.toLowerCase().trim()
+    const termoCpf = termo.replace(/\D/g, '')
+    
+    const filtrados = funcionarios.filter((func) => {
+      const nome = (func.nome_completo || '').toString().toLowerCase()
+      const email = (func.email || '').toString().toLowerCase()
+      const cpf = func.cpf ? func.cpf.toString().replace(/\D/g, '') : ''
+
+      const matchNome = nome.includes(termo)
+      const matchEmail = email.includes(termo)
+      const matchCpf = termoCpf && cpf && cpf.includes(termoCpf)
+
+      return matchNome || matchEmail || matchCpf
+    })
+
+    setFuncionariosFiltrados(filtrados)
+  }
+
+  const formatarCPF = (cpf: string | null | undefined) => {
+    if (!cpf) return '-'
+    const cpfLimpo = cpf.replace(/\D/g, '')
+    if (cpfLimpo.length === 11) {
+      return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+    }
+    return cpf
+  }
+
+  const getTipoUsuarioBadge = (tipo: string) => {
+    const cores = {
+      master: 'bg-red-500/20 text-red-400 border-red-500/30',
+      proprietario: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+      funcionario: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    }
+    return cores[tipo as keyof typeof cores] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+  }
+
+  const abrirModal = (tipo: 'criar' | 'editar' | 'excluir' | 'visualizar', funcionario?: Funcionario) => {
+    setModalTipo(tipo)
+    setFuncionarioSelecionado(funcionario || null)
+    
+    if (tipo === 'criar') {
+      setFormData({
+        nome_completo: '',
+        email: '',
+        cpf: '',
+        tipo_usuario: 'funcionario',
+        senha: '',
+        is_active: true,
+      })
+    } else if (tipo === 'editar' && funcionario) {
+      setFormData({
+        nome_completo: funcionario.nome_completo || '',
+        email: funcionario.email || '',
+        cpf: formatarCPF(funcionario.cpf) || '',
+        tipo_usuario: funcionario.tipo_usuario || 'funcionario',
+        senha: '',
+        is_active: funcionario.is_active,
+      })
+    }
+    
+    setMostrarModal(true)
+  }
+
+  const fecharModal = () => {
+    setMostrarModal(false)
+    setFuncionarioSelecionado(null)
+    setMensagem({ tipo: null, texto: '' })
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target
+    if (type === 'checkbox') {
+      setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked })
+    } else {
+      setFormData({ ...formData, [name]: value })
+    }
+  }
+
+  const salvarFuncionario = async () => {
+    if (!formData.nome_completo || !formData.email || !formData.tipo_usuario) {
+      setMensagem({ tipo: 'erro', texto: 'Preencha todos os campos obrigatórios' })
+      return
+    }
+
+    if (modalTipo === 'criar' && !formData.senha) {
+      setMensagem({ tipo: 'erro', texto: 'A senha é obrigatória para criar um funcionário' })
+      return
+    }
+
+    setSalvando(true)
+    setMensagem({ tipo: null, texto: '' })
+
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const body = {
+        ...formData,
+        senha: modalTipo === 'criar' ? formData.senha : (formData.senha || undefined),
+      }
+
+      // Remover senha vazia na edição
+      if (modalTipo === 'editar' && !formData.senha) {
+        delete body.senha
+      }
+
+      let response
+      if (modalTipo === 'criar') {
+        response = await fetch(`${apiUrl}/api/v1/funcionarios`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+      } else {
+        response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado?.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+      }
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao salvar funcionário')
+      }
+
+      setMensagem({ tipo: 'sucesso', texto: data.message || 'Funcionário salvo com sucesso!' })
+      await carregarFuncionarios()
+      setTimeout(() => {
+        fecharModal()
+      }, 1500)
+    } catch (error: any) {
+      console.error('Erro ao salvar funcionário:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar funcionário' })
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  const excluirFuncionario = async () => {
+    if (!funcionarioSelecionado) return
+
+    setSalvando(true)
+    setMensagem({ tipo: null, texto: '' })
+
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado.id}`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao excluir funcionário')
+      }
+
+      setMensagem({ tipo: 'sucesso', texto: data.message || 'Funcionário excluído com sucesso!' })
+      await carregarFuncionarios()
+      setTimeout(() => {
+        fecharModal()
+      }, 1500)
+    } catch (error: any) {
+      console.error('Erro ao excluir funcionário:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao excluir funcionário' })
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  // Verificar permissões
+  if (!podeAcessar('funcionarios')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-2">Acesso Negado</h2>
+          <p className="text-gray-400">Você não tem permissão para acessar esta página.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+            <UserCog className="h-8 w-8 text-amber-500" />
+            Gerenciamento de Funcionários
+          </h1>
+          <p className="text-gray-400 mt-1">Gerencie todos os funcionários do sistema</p>
+        </div>
+        {podeEditar('funcionarios') && (
+          <button
+            onClick={() => abrirModal('criar')}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors font-medium"
+          >
+            <Plus className="h-5 w-5" />
+            Novo Funcionário
+          </button>
+        )}
+      </div>
+
+      {/* Mensagem */}
+      {mensagem.tipo && !mostrarModal && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-lg border ${
+            mensagem.tipo === 'sucesso'
+              ? 'bg-green-500/10 border-green-500/30 text-green-500'
+              : 'bg-red-500/10 border-red-500/30 text-red-500'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {mensagem.tipo === 'sucesso' ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+            <p className="text-sm">{mensagem.texto}</p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Estatísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-zinc-800 p-6 rounded-lg shadow-lg border border-amber-500/20"
+        >
+          <p className="text-gray-300 text-sm">Total de Funcionários</p>
+          <h2 className="text-3xl font-bold text-amber-400 mt-1">{funcionarios.length}</h2>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="bg-zinc-800 p-6 rounded-lg shadow-lg border border-green-500/20"
+        >
+          <p className="text-gray-300 text-sm">Funcionários Ativos</p>
+          <h2 className="text-3xl font-bold text-green-400 mt-1">
+            {funcionarios.filter((f) => f.is_active).length}
+          </h2>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-zinc-800 p-6 rounded-lg shadow-lg border border-blue-500/20"
+        >
+          <p className="text-gray-300 text-sm">Masters</p>
+          <h2 className="text-3xl font-bold text-blue-400 mt-1">
+            {funcionarios.filter((f) => f.tipo_usuario === 'master').length}
+          </h2>
+        </motion.div>
+      </div>
+
+      {/* Filtro de Busca */}
+      <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar por nome, email ou CPF..."
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        {searchTerm && (
+          <p className="text-gray-400 text-sm mt-2">
+            {funcionariosFiltrados.length} resultado(s) encontrado(s)
+          </p>
+        )}
+      </div>
+
+      {/* Tabela de Funcionários */}
+      <div className="bg-zinc-900 border border-amber-500/20 rounded-lg overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+            <p className="text-gray-400">Carregando funcionários...</p>
+          </div>
+        ) : funcionariosFiltrados.length === 0 ? (
+          <div className="p-12 text-center">
+            <UserCog className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-400">
+              {searchTerm ? 'Nenhum funcionário encontrado com os filtros aplicados.' : 'Nenhum funcionário cadastrado.'}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto w-full">
+            <table className="w-full min-w-[800px]">
+              <thead className="bg-zinc-800 border-b border-zinc-700">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[150px]">
+                    Funcionário
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[120px]">
+                    CPF
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[180px]">
+                    Email
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[100px]">
+                    Tipo
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[80px]">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[120px]">
+                    Cadastrado em
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider min-w-[100px] sticky right-0 bg-zinc-800 z-10">
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800">
+                {funcionariosFiltrados.map((func) => (
+                  <motion.tr
+                    key={func.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="hover:bg-zinc-800/50 transition-colors group"
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                          <UserCog className="h-4 w-4 text-amber-500" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-white font-medium text-sm truncate max-w-[130px]">{func.nome_completo}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-gray-300 text-sm">{formatarCPF(func.cpf)}</span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Mail className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                        <span className="text-gray-300 text-sm truncate max-w-[160px]">{func.email}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold border capitalize ${getTipoUsuarioBadge(
+                          func.tipo_usuario
+                        )}`}
+                      >
+                        {func.tipo_usuario}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          func.is_active
+                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        }`}
+                      >
+                        {func.is_active ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-gray-400 text-xs">
+                      {new Date(func.created_at).toLocaleDateString('pt-BR')}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-right sticky right-0 bg-zinc-900 group-hover:bg-zinc-800/50 z-10">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => abrirModal('visualizar', func)}
+                          className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-gray-400 hover:text-blue-400"
+                          title="Visualizar"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        {podeEditar('funcionarios') && (
+                          <button
+                            onClick={() => abrirModal('editar', func)}
+                            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-gray-400 hover:text-amber-400"
+                            title="Editar"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        )}
+                        {podeExcluir('funcionarios') && func.tipo_usuario !== 'master' && (
+                          <button
+                            onClick={() => abrirModal('excluir', func)}
+                            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-gray-400 hover:text-red-400"
+                            title="Excluir"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {mostrarModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={fecharModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-zinc-900 border border-amber-500/20 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            >
+              {/* Header do Modal */}
+              <div className="flex items-center justify-between p-6 border-b border-zinc-800">
+                <h2 className="text-xl font-bold text-white">
+                  {modalTipo === 'criar' && 'Novo Funcionário'}
+                  {modalTipo === 'editar' && 'Editar Funcionário'}
+                  {modalTipo === 'excluir' && 'Excluir Funcionário'}
+                  {modalTipo === 'visualizar' && 'Detalhes do Funcionário'}
+                </h2>
+                <button
+                  onClick={fecharModal}
+                  className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-gray-400 hover:text-white"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Conteúdo do Modal */}
+              <div className="p-6">
+                {mensagem.tipo && (
+                  <div
+                    className={`p-4 rounded-lg mb-4 ${
+                      mensagem.tipo === 'sucesso'
+                        ? 'bg-green-500/10 border border-green-500/30 text-green-500'
+                        : 'bg-red-500/10 border border-red-500/30 text-red-500'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {mensagem.tipo === 'sucesso' ? (
+                        <CheckCircle2 className="h-5 w-5" />
+                      ) : (
+                        <AlertCircle className="h-5 w-5" />
+                      )}
+                      <p className="text-sm">{mensagem.texto}</p>
+                    </div>
+                  </div>
+                )}
+
+                {modalTipo === 'excluir' && (
+                  <div className="text-center py-4">
+                    <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                    <p className="text-gray-300 mb-2">
+                      Tem certeza que deseja excluir o funcionário <strong>{funcionarioSelecionado?.nome_completo}</strong>?
+                    </p>
+                    <p className="text-gray-400 text-sm">Esta ação não pode ser desfeita.</p>
+                    {funcionarioSelecionado?.tipo_usuario === 'master' && (
+                      <p className="text-red-400 text-sm mt-2">Não é permitido excluir usuários Master.</p>
+                    )}
+                    <div className="flex gap-4 justify-center mt-6">
+                      <button
+                        onClick={fecharModal}
+                        className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={excluirFuncionario}
+                        disabled={salvando || funcionarioSelecionado?.tipo_usuario === 'master'}
+                        className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {salvando ? <Loader2 className="animate-spin h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
+                        {salvando ? 'Excluindo...' : 'Excluir'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {modalTipo === 'visualizar' && funcionarioSelecionado && (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <div className="w-24 h-24 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
+                        <UserCog className="h-12 w-12 text-amber-500" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{funcionarioSelecionado.nome_completo}</h3>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-gray-400 text-sm">Email</label>
+                        <p className="text-white">{funcionarioSelecionado.email}</p>
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm">CPF</label>
+                        <p className="text-white">{formatarCPF(funcionarioSelecionado.cpf)}</p>
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm">Tipo</label>
+                        <p className="text-white">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-semibold border capitalize ${getTipoUsuarioBadge(
+                              funcionarioSelecionado.tipo_usuario
+                            )}`}
+                          >
+                            {funcionarioSelecionado.tipo_usuario}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm">Status</label>
+                        <p className="text-white">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              funcionarioSelecionado.is_active
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            }`}
+                          >
+                            {funcionarioSelecionado.is_active ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(modalTipo === 'criar' || modalTipo === 'editar') && (
+                  <div className="space-y-4">
+                    {/* Nome Completo */}
+                    <div>
+                      <label className="block text-gray-300 mb-2">Nome Completo *</label>
+                      <input
+                        type="text"
+                        name="nome_completo"
+                        value={formData.nome_completo}
+                        onChange={handleInputChange}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        required
+                      />
+                    </div>
+
+                    {/* Email e CPF */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-gray-300 mb-2">Email *</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-300 mb-2">CPF</label>
+                        <input
+                          type="text"
+                          name="cpf"
+                          value={formData.cpf}
+                          onChange={handleInputChange}
+                          placeholder="000.000.000-00"
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tipo de Usuário */}
+                    <div>
+                      <label className="block text-gray-300 mb-2">Tipo de Usuário *</label>
+                      <select
+                        name="tipo_usuario"
+                        value={formData.tipo_usuario}
+                        onChange={handleInputChange}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        required
+                      >
+                        <option value="funcionario">Funcionário</option>
+                        <option value="proprietario">Proprietário</option>
+                        <option value="master">Master</option>
+                      </select>
+                    </div>
+
+                    {/* Senha */}
+                    <div>
+                      <label className="block text-gray-300 mb-2">
+                        Senha {modalTipo === 'criar' ? '*' : '(deixe em branco para não alterar)'}
+                      </label>
+                      <input
+                        type="password"
+                        name="senha"
+                        value={formData.senha}
+                        onChange={handleInputChange}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        required={modalTipo === 'criar'}
+                      />
+                    </div>
+
+                    {/* Status */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        name="is_active"
+                        checked={formData.is_active}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500"
+                      />
+                      <label className="text-gray-300">Funcionário Ativo</label>
+                    </div>
+
+                    {/* Botões */}
+                    <div className="flex gap-4 justify-end pt-4">
+                      <button
+                        onClick={fecharModal}
+                        className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        onClick={salvarFuncionario}
+                        disabled={salvando}
+                        className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {salvando ? <Loader2 className="animate-spin h-4 w-4" /> : <Save className="h-4 w-4" />}
+                        {salvando ? 'Salvando...' : 'Salvar'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+

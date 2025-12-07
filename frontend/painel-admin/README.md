@@ -46,12 +46,9 @@ npm run build
 ## 📋 Funcionalidades
 
 ### Autenticação
-- ✅ Login administrativo (tela)
-- ✅ Recuperação de senha (tela)
+- ✅ Login administrativo
+- ✅ Recuperação de senha
 - ✅ Manter conectado
-- ✅ **Sem opção de criação de conta** (usuários criados manualmente via DBeaver)
-- ⏳ Integração com API (pendente)
-- ⏳ Endpoint de login administrativo (a criar)
 
 ### Dashboard (A implementar)
 - [ ] Visão geral do sistema
@@ -67,16 +64,10 @@ npm run build
 
 ---
 
-## 🔗 Integração com API
-
-- **API Produção**: `https://api.protesecapilarcuiaba.com.br` ✅ (HTTPS funcionando)
-- **Variável de ambiente**: `NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br`
-
 ## 🌐 Deploy
 
-URL de produção: `https://admin.protesecapilarcuiaba.com.br`
+URL de produção: https://admin.protesecapilarcuiaba.com.br
 
 ---
 
-*Painel administrativo em desenvolvimento* 👨‍💼  
-**Status:** Telas de login criadas | Integração com API pendente | Dashboard a implementar
+*Painel administrativo em desenvolvimento* 👨‍💼

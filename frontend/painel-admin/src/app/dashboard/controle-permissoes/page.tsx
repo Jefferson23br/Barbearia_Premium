@@ -1,0 +1,548 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion } from 'motion/react'
+import { Settings, User, Eye, Edit, Trash2, Save, X, Check, AlertCircle } from 'lucide-react'
+
+interface Funcionario {
+  id: string
+  nome_completo: string
+  email: string
+  tipo_usuario: string
+}
+
+interface Permissoes {
+  // Dashboard (apenas ver)
+  dashboard_ver: boolean
+
+  // Agenda
+  agenda_ver: boolean
+  agenda_editar: boolean
+  agenda_excluir: boolean
+
+  // Lançamento de Venda
+  lancamento_venda_ver: boolean
+  lancamento_venda_editar: boolean
+  lancamento_venda_excluir: boolean
+
+  // Lançamento de Despesa
+  lancamento_despesa_ver: boolean
+  lancamento_despesa_editar: boolean
+  lancamento_despesa_excluir: boolean
+
+  // Receitas
+  receitas_ver: boolean
+  receitas_editar: boolean
+  receitas_excluir: boolean
+
+  // Despesas
+  despesas_ver: boolean
+  despesas_editar: boolean
+  despesas_excluir: boolean
+
+  // Faturamento
+  faturamento_ver: boolean
+  faturamento_editar: boolean
+  faturamento_excluir: boolean
+
+  // Gerenciamento de Usuários
+  usuarios_ver: boolean
+  usuarios_editar: boolean
+  usuarios_excluir: boolean
+
+  // Gerenciamento de Funcionários
+  funcionarios_ver: boolean
+  funcionarios_editar: boolean
+  funcionarios_excluir: boolean
+
+  // Controle de Acessos (apenas ver)
+  controle_acessos_ver: boolean
+
+  // Controle de Logs (apenas ver)
+  controle_logs_ver: boolean
+
+  // Help Desk
+  help_desk_ver: boolean
+  help_desk_editar: boolean
+  help_desk_excluir: boolean
+
+  // Controle de Permissão (apenas Master)
+  controle_permissoes_ver: boolean
+  controle_permissoes_editar: boolean
+  controle_permissoes_excluir: boolean
+}
+
+const permissoesPadrao: Permissoes = {
+  dashboard_ver: false,
+  agenda_ver: false,
+  agenda_editar: false,
+  agenda_excluir: false,
+  lancamento_venda_ver: false,
+  lancamento_venda_editar: false,
+  lancamento_venda_excluir: false,
+  lancamento_despesa_ver: false,
+  lancamento_despesa_editar: false,
+  lancamento_despesa_excluir: false,
+  receitas_ver: false,
+  receitas_editar: false,
+  receitas_excluir: false,
+  despesas_ver: false,
+  despesas_editar: false,
+  despesas_excluir: false,
+  faturamento_ver: false,
+  faturamento_editar: false,
+  faturamento_excluir: false,
+  usuarios_ver: false,
+  usuarios_editar: false,
+  usuarios_excluir: false,
+  funcionarios_ver: false,
+  funcionarios_editar: false,
+  funcionarios_excluir: false,
+  controle_acessos_ver: false,
+  controle_logs_ver: false,
+  help_desk_ver: false,
+  help_desk_editar: false,
+  help_desk_excluir: false,
+  controle_permissoes_ver: false,
+  controle_permissoes_editar: false,
+  controle_permissoes_excluir: false,
+}
+
+interface ModuloPermissao {
+  id: string
+  nome: string
+  apenasVer: boolean
+  permissoes: {
+    ver?: boolean
+    editar?: boolean
+    excluir?: boolean
+  }
+}
+
+export default function ControlePermissoesPage() {
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<string>('')
+  const [permissoes, setPermissoes] = useState<Permissoes>(permissoesPadrao)
+  const [permissoesOriginais, setPermissoesOriginais] = useState<Permissoes>(permissoesPadrao)
+  const [loading, setLoading] = useState(false)
+  const [salvando, setSalvando] = useState(false)
+  const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
+
+  // Carregar lista de funcionários
+  useEffect(() => {
+    carregarFuncionarios()
+  }, [])
+
+  // Carregar permissões quando selecionar funcionário
+  useEffect(() => {
+    if (funcionarioSelecionado) {
+      carregarPermissoes(funcionarioSelecionado)
+    } else {
+      setPermissoes(permissoesPadrao)
+      setPermissoesOriginais(permissoesPadrao)
+    }
+  }, [funcionarioSelecionado])
+
+  const carregarFuncionarios = async () => {
+    setLoading(true)
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Buscar tipo do usuário logado para filtrar corretamente
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      const tipoUsuario = admin?.tipo_usuario || 'master'
+      
+      // Adicionar tipo_usuario na query para o backend filtrar corretamente
+      const response = await fetch(`${apiUrl}/api/v1/funcionarios?tipo_usuario=${tipoUsuario}`)
+      
+      if (!response.ok) {
+        throw new Error('Erro ao carregar funcionários')
+      }
+
+      const data = await response.json()
+      setFuncionarios(data.funcionarios || [])
+    } catch (error: any) {
+      console.error('Erro ao carregar funcionários:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar funcionários' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const carregarPermissoes = async (usuarioId: string) => {
+    setLoading(true)
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/permissoes/${usuarioId}`)
+      
+      if (!response.ok) {
+        throw new Error('Erro ao carregar permissões')
+      }
+
+      const data = await response.json()
+      const permissoesCarregadas = data.permissoes || permissoesPadrao
+      setPermissoes(permissoesCarregadas)
+      setPermissoesOriginais(permissoesCarregadas)
+    } catch (error: any) {
+      console.error('Erro ao carregar permissões:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar permissões' })
+      setPermissoes(permissoesPadrao)
+      setPermissoesOriginais(permissoesPadrao)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const atualizarPermissao = (chave: keyof Permissoes, valor: boolean) => {
+    setPermissoes((prev) => ({ ...prev, [chave]: valor }))
+  }
+
+  const salvarPermissoes = async () => {
+    if (!funcionarioSelecionado) {
+      setMensagem({ tipo: 'erro', texto: 'Selecione um funcionário primeiro' })
+      return
+    }
+
+    setSalvando(true)
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/permissoes/${funcionarioSelecionado}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(permissoes),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erro ao salvar permissões')
+      }
+
+      setPermissoesOriginais(permissoes)
+      setMensagem({ tipo: 'sucesso', texto: 'Permissões salvas com sucesso!' })
+      setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
+    } catch (error: any) {
+      console.error('Erro ao salvar permissões:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar permissões' })
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  const temAlteracoes = JSON.stringify(permissoes) !== JSON.stringify(permissoesOriginais)
+
+  const modulosPermissoes: ModuloPermissao[] = [
+    {
+      id: 'dashboard',
+      nome: 'Dashboard',
+      apenasVer: true,
+      permissoes: {
+        ver: permissoes.dashboard_ver,
+      },
+    },
+    {
+      id: 'agenda',
+      nome: 'Agenda',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.agenda_ver,
+        editar: permissoes.agenda_editar,
+        excluir: permissoes.agenda_excluir,
+      },
+    },
+    {
+      id: 'lancamento_venda',
+      nome: 'Lançamento de Venda',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.lancamento_venda_ver,
+        editar: permissoes.lancamento_venda_editar,
+        excluir: permissoes.lancamento_venda_excluir,
+      },
+    },
+    {
+      id: 'lancamento_despesa',
+      nome: 'Lançamento de Despesa',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.lancamento_despesa_ver,
+        editar: permissoes.lancamento_despesa_editar,
+        excluir: permissoes.lancamento_despesa_excluir,
+      },
+    },
+    {
+      id: 'receitas',
+      nome: 'Receitas',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.receitas_ver,
+        editar: permissoes.receitas_editar,
+        excluir: permissoes.receitas_excluir,
+      },
+    },
+    {
+      id: 'despesas',
+      nome: 'Despesas',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.despesas_ver,
+        editar: permissoes.despesas_editar,
+        excluir: permissoes.despesas_excluir,
+      },
+    },
+    {
+      id: 'faturamento',
+      nome: 'Faturamento',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.faturamento_ver,
+        editar: permissoes.faturamento_editar,
+        excluir: permissoes.faturamento_excluir,
+      },
+    },
+    {
+      id: 'usuarios',
+      nome: 'Gerenciamento de Usuários',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.usuarios_ver,
+        editar: permissoes.usuarios_editar,
+        excluir: permissoes.usuarios_excluir,
+      },
+    },
+    {
+      id: 'funcionarios',
+      nome: 'Gerenciamento de Funcionários',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.funcionarios_ver,
+        editar: permissoes.funcionarios_editar,
+        excluir: permissoes.funcionarios_excluir,
+      },
+    },
+    {
+      id: 'controle_acessos',
+      nome: 'Controle de Acessos',
+      apenasVer: true,
+      permissoes: {
+        ver: permissoes.controle_acessos_ver,
+      },
+    },
+    {
+      id: 'controle_logs',
+      nome: 'Controle de Logs',
+      apenasVer: true,
+      permissoes: {
+        ver: permissoes.controle_logs_ver,
+      },
+    },
+    {
+      id: 'help_desk',
+      nome: 'Help Desk',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.help_desk_ver,
+        editar: permissoes.help_desk_editar,
+        excluir: permissoes.help_desk_excluir,
+      },
+    },
+  ]
+
+  const funcionario = funcionarios.find((f) => f.id === funcionarioSelecionado)
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+          <Settings className="h-8 w-8 text-amber-500" />
+          Controle de Permissão
+        </h1>
+        <p className="text-gray-400 mt-1">Configure as permissões de cada funcionário</p>
+      </div>
+
+      {/* Mensagem */}
+      {mensagem.tipo && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-lg border ${
+            mensagem.tipo === 'sucesso'
+              ? 'bg-green-500/10 border-green-500/30 text-green-500'
+              : 'bg-red-500/10 border-red-500/30 text-red-500'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {mensagem.tipo === 'sucesso' ? (
+              <Check className="h-5 w-5" />
+            ) : (
+              <AlertCircle className="h-5 w-5" />
+            )}
+            <span>{mensagem.texto}</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Seleção de Funcionário */}
+      <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6">
+        <label className="block text-gray-300 mb-3 font-medium">Selecione o Funcionário</label>
+        <select
+          value={funcionarioSelecionado}
+          onChange={(e) => setFuncionarioSelecionado(e.target.value)}
+          disabled={loading}
+          className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <option value="">-- Selecione um funcionário --</option>
+          {funcionarios.map((func) => (
+            <option key={func.id} value={func.id}>
+              {func.nome_completo} - {func.email} ({func.tipo_usuario})
+            </option>
+          ))}
+        </select>
+        {funcionario && (
+          <div className="mt-4 p-4 bg-zinc-800 rounded-lg">
+            <div className="flex items-center gap-3">
+              <User className="h-5 w-5 text-amber-500" />
+              <div>
+                <p className="text-white font-medium">{funcionario.nome_completo}</p>
+                <p className="text-gray-400 text-sm">{funcionario.email}</p>
+                <p className="text-gray-500 text-xs capitalize mt-1">Nível: {funcionario.tipo_usuario}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Permissões */}
+      {funcionarioSelecionado && (
+        <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-6">Permissões do Funcionário</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {modulosPermissoes.map((modulo) => (
+              <motion.div
+                key={modulo.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-zinc-800 border border-zinc-700 rounded-lg p-4"
+              >
+                <h3 className="text-white font-semibold mb-4">{modulo.nome}</h3>
+                <div className="space-y-3">
+                  {modulo.apenasVer ? (
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={modulo.permissoes.ver || false}
+                        onChange={(e) => {
+                          const chave = `${modulo.id}_ver` as keyof Permissoes
+                          atualizarPermissao(chave, e.target.checked)
+                        }}
+                        className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                      />
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <Eye className="h-4 w-4" />
+                        <span>Visualizar</span>
+                      </div>
+                    </label>
+                  ) : (
+                    <>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={modulo.permissoes.ver || false}
+                          onChange={(e) => {
+                            const chave = `${modulo.id}_ver` as keyof Permissoes
+                            atualizarPermissao(chave, e.target.checked)
+                            // Se desmarcar "ver", desmarca editar e excluir
+                            if (!e.target.checked) {
+                              atualizarPermissao(`${modulo.id}_editar` as keyof Permissoes, false)
+                              atualizarPermissao(`${modulo.id}_excluir` as keyof Permissoes, false)
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                        />
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <Eye className="h-4 w-4" />
+                          <span>Visualizar</span>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={modulo.permissoes.editar || false}
+                          disabled={!modulo.permissoes.ver}
+                          onChange={(e) => {
+                            const chave = `${modulo.id}_editar` as keyof Permissoes
+                            atualizarPermissao(chave, e.target.checked)
+                          }}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <Edit className="h-4 w-4" />
+                          <span>Editar</span>
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={modulo.permissoes.excluir || false}
+                          disabled={!modulo.permissoes.ver}
+                          onChange={(e) => {
+                            const chave = `${modulo.id}_excluir` as keyof Permissoes
+                            atualizarPermissao(chave, e.target.checked)
+                          }}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <Trash2 className="h-4 w-4" />
+                          <span>Excluir</span>
+                        </div>
+                      </label>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Botões de Ação */}
+          <div className="mt-6 flex items-center gap-4">
+            <button
+              onClick={salvarPermissoes}
+              disabled={salvando || !temAlteracoes}
+              className="flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              <Save className="h-5 w-5" />
+              {salvando ? 'Salvando...' : 'Salvar Permissões'}
+            </button>
+            {temAlteracoes && (
+              <button
+                onClick={() => {
+                  setPermissoes(permissoesOriginais)
+                  setMensagem({ tipo: null, texto: '' })
+                }}
+                disabled={salvando}
+                className="flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <X className="h-5 w-5" />
+                Cancelar
+              </button>
+            )}
+            {!temAlteracoes && (
+              <p className="text-gray-400 text-sm">Nenhuma alteração pendente</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Aviso quando não há funcionário selecionado */}
+      {!funcionarioSelecionado && (
+        <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-12 text-center">
+          <User className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-400 text-lg">Selecione um funcionário para configurar as permissões</p>
+        </div>
+      )}
+    </div>
+  )
+}
+

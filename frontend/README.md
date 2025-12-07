@@ -1,101 +1,230 @@
 # 🎨 Frontend - Sistema Prótese Capilar
 
-## 📁 Estrutura
+Projetos frontend desenvolvidos com Next.js 14 (App Router), TypeScript e Tailwind CSS.
 
-Esta pasta contém todos os projetos frontend do sistema:
+---
+
+## 📁 Estrutura
 
 ```
 frontend/
-├── site-entrada/            # ✅ Página inicial (Em desenvolvimento)
-├── painel-cliente/          # ✅ Painel do Cliente (Em desenvolvimento)
-├── painel-admin/            # ✅ Painel Admin (Em desenvolvimento)
-└── site-publico/            # 🔄 Site Público completo (A criar)
+├── painel-admin/       # Painel Administrativo (Produção)
+├── painel-cliente/     # Painel do Cliente (Produção)
+└── site-entrada/       # Site Público (Desenvolvimento)
 ```
 
 ---
 
 ## 🚀 Projetos
 
-### 1. Painel do Cliente (`painel-cliente/`)
-- **Status**: ✅ Em desenvolvimento
-- **Tecnologia**: Next.js 14 + React + TypeScript
-- **Funcionalidades**:
-  - ✅ Login funcional (integração com API)
-  - ✅ Cadastro de cliente (com upload de foto)
-  - ✅ Dashboard criado (página "Em Desenvolvimento")
-  - ✅ Recuperação de senha (tela)
-  - ⏳ Visualização de planos
-  - ⏳ Histórico de atendimentos
-  - ⏳ Agendamentos
-  - ⏳ Perfil do cliente completo
+### 1. Painel Administrativo (`painel-admin/`)
 
-### 2. Site Público (`site-publico/`)
-- **Status**: 🔄 A criar
-- **Tecnologia**: Next.js 14 + React + TypeScript
-- **Funcionalidades**:
-  - Página institucional
-  - Apresentação de serviços
-  - Catálogo de planos
-  - Área de compra/checkout
-  - Integração com gateway de pagamento
+**Status**: ✅ Em Produção  
+**URL**: https://admin.protesecapilarcuiaba.com.br
 
-### 3. Painel Administrativo (`painel-admin/`)
-- **Status**: ✅ Em desenvolvimento
-- **Tecnologia**: Next.js 14 + React + TypeScript
-- **Funcionalidades**:
-  - Login administrativo ✅
-  - Dashboard administrativo (em desenvolvimento)
-  - Gerenciamento de clientes
-  - Gerenciamento de planos
-  - Agenda administrativa
-  - Controle financeiro
-  - Sistema de notificações
+**Funcionalidades:**
+- ✅ Sistema de login e autenticação
+- ✅ Dashboard administrativo
+- ✅ Sistema de permissões granular (RBAC)
+- ✅ Gerenciamento de Funcionários
+- ✅ Gerenciamento de Clientes/Usuários
+- ✅ Controle de Permissões
+- ✅ Controle de Acessos (logs de login)
+- ✅ Help Desk (estrutura básica)
+- ✅ Controle de Logs (estrutura básica)
+
+**Porta de desenvolvimento**: `3000`
 
 ---
 
-## 🛠️ Tecnologias Comuns
+### 2. Painel Cliente (`painel-cliente/`)
 
-- **Framework**: Next.js 14
-- **UI**: React 18
+**Status**: ✅ Em Produção  
+**URL**: https://app.protesecapilarcuiaba.com.br
+
+**Funcionalidades:**
+- ✅ Sistema de login e autenticação
+- ✅ Dashboard básico
+- ✅ Cadastro de cliente
+
+**Porta de desenvolvimento**: `3001`
+
+---
+
+### 3. Site de Entrada (`site-entrada/`)
+
+**Status**: 🔄 Em Desenvolvimento  
+**URL**: https://www.protesecapilarcuiaba.com.br
+
+**Funcionalidades:**
+- [ ] Site institucional
+- [ ] Catálogo de serviços
+- [ ] Sistema de compra
+
+**Porta de desenvolvimento**: `3002`
+
+---
+
+## 🛠️ Tecnologias
+
+- **Framework**: Next.js 14 (App Router)
 - **Linguagem**: TypeScript
 - **Estilização**: Tailwind CSS
-- **Componentes**: Radix UI
-- **Animações**: Motion (Framer Motion)
+- **Componentes UI**: Radix UI (shadcn/ui)
+- **Animações**: Framer Motion
 - **Ícones**: Lucide React
+- **Formulários**: React Hook Form
+- **Validação**: Zod
 
 ---
 
-## 📝 Comandos Úteis
+## 📦 Instalação
 
-### Desenvolvimento
+### Pré-requisitos
+- Node.js 20+
+- npm ou yarn
+
+### Instalar dependências de um projeto
+
 ```bash
-cd painel-cliente
-npm run dev
+cd frontend/painel-admin  # ou painel-cliente ou site-entrada
+npm install
 ```
 
-### Build
+---
+
+## 🏃 Desenvolvimento
+
+### Executar em desenvolvimento
+
+```bash
+# Painel Admin
+cd frontend/painel-admin
+npm run dev
+# Acesse: http://localhost:3000
+
+# Painel Cliente
+cd frontend/painel-cliente
+npm run dev
+# Acesse: http://localhost:3001
+
+# Site Entrada
+cd frontend/site-entrada
+npm run dev
+# Acesse: http://localhost:3002
+```
+
+---
+
+## 🏗️ Build para Produção
+
+### Build estático (SSG)
+
 ```bash
 npm run build
 ```
 
+Os arquivos serão gerados na pasta `out/`.
+
+### Deploy
+
+```bash
+# Usar script de deploy
+./deploy.sh
+
+# Ou manualmente
+npm run build
+scp -r out/* root@servidor:/caminho/destino/
+```
+
 ---
 
-## 🔗 Integração
+## 📚 Estrutura de Componentes
 
-Todos os projetos frontend se conectam ao backend através da API REST:
-- **Desenvolvimento**: `http://localhost:3001/api`
-- **Produção**: `https://api.protesecapilarcuiaba.com.br/api` ✅ (HTTPS funcionando)
+### Componentes Compartilhados
 
-**Configurar variável de ambiente:**
+Todos os projetos compartilham a mesma estrutura de componentes UI (shadcn/ui):
+- `components/ui/` - Componentes base (Button, Input, Card, etc.)
+- `components/admin/` - Componentes específicos do admin
+- `components/figma/` - Componentes customizados
+
+### Hooks Customizados
+
+- `hooks/usePermissions.ts` - Hook para verificar permissões do usuário
+
+---
+
+## 🔐 Autenticação
+
+### Painel Admin
+- Login em: `/`
+- Dashboard em: `/dashboard`
+- Dados salvos em `localStorage` como `admin`
+- Permissões salvas em `localStorage` como `permissoes`
+
+### Painel Cliente
+- Login em: `/`
+- Dashboard em: `/dashboard`
+- Dados salvos em `localStorage` como `cliente`
+
+---
+
+## 🌐 Variáveis de Ambiente
+
+Criar arquivo `.env.local` em cada projeto:
+
 ```env
+# API Backend
 NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
 ```
 
 ---
 
-*Estrutura organizada para fácil manutenção e desenvolvimento*
+## 📝 Convenções
 
+### Nomenclatura
+- Componentes: PascalCase (`DashboardLayout.tsx`)
+- Hooks: camelCase com prefixo `use` (`usePermissions.ts`)
+- Páginas: `page.tsx` (Next.js App Router)
+- Estilos: Tailwind CSS classes
 
+### Estrutura de Páginas
+```
+src/app/
+├── page.tsx              # Página inicial (login)
+├── layout.tsx            # Layout raiz
+└── dashboard/
+    ├── layout.tsx        # Layout do dashboard
+    ├── page.tsx          # Dashboard principal
+    └── [module]/
+        └── page.tsx      # Páginas de módulos
+```
 
+---
 
+## 🐛 Debugging
 
+### Verificar permissões
+```javascript
+// No console do navegador
+console.log(JSON.parse(localStorage.getItem('permissoes')))
+console.log(JSON.parse(localStorage.getItem('admin')))
+```
+
+### Verificar chamadas API
+- Abrir DevTools (F12)
+- Aba Network
+- Filtrar por XHR/Fetch
+
+---
+
+## 📚 Documentação Adicional
+
+- [README Painel Admin](./painel-admin/README.md)
+- [README Painel Cliente](./painel-cliente/README.md)
+- [README Site Entrada](./site-entrada/README.md)
+- [Guia de Deploy](../docs/deploy/README.md)
+
+---
+
+**Última atualização**: Dezembro 2024
