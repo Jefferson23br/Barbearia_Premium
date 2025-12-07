@@ -23,8 +23,8 @@ export default function Home() {
     setError(null);
 
     try {
-      // Usar API de produção por padrão (já que API local pode não estar rodando)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.protesecapilarcuiaba.com.br';
+      // URL da API de produção
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br';
       
       console.log('🔗 Tentando conectar em:', apiUrl);
       
@@ -34,10 +34,18 @@ export default function Home() {
         body: JSON.stringify({ email, senha: password }),
       });
 
-      const data = await response.json();
+      // Verificar se a resposta é JSON válido
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Erro na resposta do servidor: ${text}`);
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erro no login');
+        throw new Error(data.error || data.message || 'Erro no login');
       }
 
       // Salvar dados do admin no localStorage

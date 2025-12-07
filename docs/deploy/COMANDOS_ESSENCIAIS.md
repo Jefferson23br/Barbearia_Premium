@@ -197,4 +197,20 @@ psql -h localhost -U protese_user protese_capilar < backup_20250101.sql
 *Comandos prontos para copiar e colar!* ⚡
 
 
+#Senhas 
 
+═══════════════════════════════════════════════════════════
+   HASHS GERADOS COM SUCESSO!
+═══════════════════════════════════════════════════════════
+
+📌 MASTER (Jefferson Lima)
+   Senha: 010216Dp@
+   Hash:  $2b$10$jD2/mZmxaR9yVXU4O0Qq7OfvlWfIXkApmZQGmtGKQo70YV2UIsZFW
+
+📌 PROPRIETÁRIO (Carlos Silva)
+   Senha: Proprietario@2025
+   Hash:  $2b$10$jZd42Cxc6ANp9qphZgm2BeRdsBpJrDhvetr.ajzwsx6xu592sQaaG
+
+📌 FUNCIONÁRIO (Maria Santos)
+   Senha: Funcionario@2025
+   Hash:  $2b$10$SPoh1pzy2KLFolXWOVIp2OZMhoKnWsov2DYp0fKvDh4lnb8B2GaTG
