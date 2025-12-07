@@ -333,6 +333,66 @@ app.post('/api/v1/auth/login', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/v1/auth/admin/login
+ * Login de usuário administrativo
+ */
+app.post('/api/v1/auth/admin/login', async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+
+    // Validações
+    if (!email || !senha) {
+      return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+    }
+
+    // Buscar usuário administrativo por email
+    const result = await pool.query(
+      `SELECT id, nome_completo, email, senha_hash, foto_url, is_active, tipo_usuario
+       FROM protese.usuarios_administrativos
+       WHERE email = $1`,
+      [email.toLowerCase().trim()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
+    const admin = result.rows[0];
+
+    // Verificar se está ativo
+    if (!admin.is_active) {
+      return res.status(403).json({ error: 'Conta desativada. Entre em contato com o suporte.' });
+    }
+
+    // Verificar senha
+    const senhaValida = await bcrypt.compare(senha, admin.senha_hash);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
+    // Login bem-sucedido - retornar dados do admin (sem senha)
+    res.json({
+      message: 'Login realizado com sucesso!',
+      admin: {
+        id: admin.id,
+        nome_completo: admin.nome_completo,
+        email: admin.email,
+        foto_url: admin.foto_url,
+        tipo_usuario: admin.tipo_usuario, // master, proprietario, funcionario
+      },
+      // TODO: Adicionar JWT token aqui
+    });
+  } catch (error) {
+    console.error('Erro ao fazer login administrativo:', error);
+    res.status(500).json({
+      error: 'Erro ao fazer login',
+      message: error.message,
+    });
+  }
+});
+
 // ============================================================
 // MIDDLEWARE DE ERRO
 // ============================================================
