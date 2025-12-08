@@ -1694,6 +1694,9 @@ video {
 .pt-6 {
   padding-top: 1.5rem;
 }
+.pr-12 {
+  padding-right: 3rem;
+}
 .text-left {
   text-align: left;
 }
@@ -2298,6 +2301,10 @@ html {
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-amber-500:hover {
+  color: oklch(.769 .188 70.08);
 }
 
 .hover\:underline:hover {

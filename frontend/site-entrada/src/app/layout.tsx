@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: 'Estamos preparando algo incrível para você! Em breve, novo site da Prótese Capilar Cuiabá - Transformando vidas através do cabelo.',
   keywords: ['prótese capilar', 'cuiabá', 'peruca masculina', 'calvície', 'implante capilar'],
   authors: [{ name: 'Prótese Capilar Cuiabá' }],
+  icons: {
+    icon: '/images/logo.webp',
+    shortcut: '/images/logo.webp',
+    apple: '/images/logo.webp',
+  },
   robots: {
     index: true,
     follow: true,
@@ -17,6 +22,7 @@ export const metadata: Metadata = {
     siteName: 'Prótese Capilar Cuiabá',
     title: 'Prótese Capilar Cuiabá - Em Breve',
     description: 'Estamos preparando algo incrível para você! Transformando vidas através do cabelo.',
+    images: ['/images/logo.webp'],
   },
 }
 

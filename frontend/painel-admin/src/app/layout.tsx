@@ -4,6 +4,11 @@ import '../styles/globals.css'
 export const metadata: Metadata = {
   title: 'Painel Administrativo - Prótese Capilar Cuiabá',
   description: 'Painel administrativo para gestão completa de clientes, planos, agendamentos e serviços de prótese capilar.',
+  icons: {
+    icon: '/images/logo.webp',
+    shortcut: '/images/logo.webp',
+    apple: '/images/logo.webp',
+  },
   robots: {
     index: false, // Não indexar área administrativa
     follow: false,
@@ -15,6 +20,7 @@ export const metadata: Metadata = {
     siteName: 'Prótese Capilar Cuiabá - Admin',
     title: 'Painel Administrativo',
     description: 'Sistema de gestão administrativa para Prótese Capilar Cuiabá.',
+    images: ['/images/logo.webp'],
   },
 }
 

@@ -207,9 +207,23 @@ export default function ControlePermissoesPage() {
     setSalvando(true)
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Obter dados do admin logado para enviar nos headers
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      
+      // Preparar headers
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+      
       const response = await fetch(`${apiUrl}/api/v1/permissoes/${funcionarioSelecionado}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(permissoes),
       })
 

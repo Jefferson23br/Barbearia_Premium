@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Users, Search, Edit, Trash2, Plus, Eye, Mail, User, X, Save, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Users, Search, Edit, Trash2, Plus, Eye, Mail, User, X, Save, Loader2, AlertCircle, CheckCircle2, EyeOff } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface Cliente {
@@ -64,6 +64,7 @@ export default function UsuariosPage() {
   })
   const [fotoPreview, setFotoPreview] = useState<string | null>(null)
   const [fotoFile, setFotoFile] = useState<File | null>(null)
+  const [mostrarSenha, setMostrarSenha] = useState(false)
 
   useEffect(() => {
     carregarClientes()
@@ -78,13 +79,21 @@ export default function UsuariosPage() {
     setLoading(true)
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
-      const response = await fetch(`${apiUrl}/api/v1/clientes`)
+      // Usar cache: 'no-store' para sempre buscar dados atualizados
+      const response = await fetch(`${apiUrl}/api/v1/clientes`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store', // Evitar cache do navegador
+      })
 
       if (!response.ok) {
         throw new Error('Erro ao carregar clientes')
       }
 
       const data = await response.json()
+      console.log('[DEBUG] Clientes carregados:', data.clientes?.length || 0)
       setClientes(data.clientes || [])
     } catch (error: any) {
       console.error('Erro ao carregar clientes:', error)
@@ -157,6 +166,8 @@ export default function UsuariosPage() {
   const abrirModal = (tipo: 'criar' | 'editar' | 'excluir' | 'visualizar', cliente?: Cliente) => {
     setModalTipo(tipo)
     setClienteSelecionado(cliente || null)
+    setMostrarSenha(false) // Resetar visualização de senha ao abrir modal
+    setSearchTerm('') // Limpar campo de pesquisa ao abrir modal (corrige bug do email aparecendo)
     
     if (tipo === 'criar') {
       setFormData({
@@ -243,6 +254,11 @@ export default function UsuariosPage() {
 
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Obter dados do admin logado para enviar nos headers
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      
       const formDataToSend = new FormData()
 
       // Adicionar campos ao FormData
@@ -256,6 +272,13 @@ export default function UsuariosPage() {
         formDataToSend.append('foto', fotoFile)
       }
 
+      // Preparar headers (não incluir Content-Type para FormData - o navegador define automaticamente)
+      const headers: HeadersInit = {}
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+
       let response
       if (modalTipo === 'criar') {
         if (!formData.senha) {
@@ -265,11 +288,13 @@ export default function UsuariosPage() {
         }
         response = await fetch(`${apiUrl}/api/v1/clientes`, {
           method: 'POST',
+          headers,
           body: formDataToSend,
         })
       } else {
         response = await fetch(`${apiUrl}/api/v1/clientes/${clienteSelecionado?.id}`, {
           method: 'PUT',
+          headers,
           body: formDataToSend,
         })
       }
@@ -281,10 +306,12 @@ export default function UsuariosPage() {
       }
 
       setMensagem({ tipo: 'sucesso', texto: data.message || 'Cliente salvo com sucesso!' })
+      
+      // Recarregar os dados imediatamente após salvar
       await carregarClientes()
       setTimeout(() => {
         fecharModal()
-      }, 1500)
+      }, 1000)
     } catch (error: any) {
       console.error('Erro ao salvar cliente:', error)
       setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar cliente' })
@@ -301,8 +328,23 @@ export default function UsuariosPage() {
 
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Obter dados do admin logado para enviar nos headers
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      
+      // Preparar headers
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+      
       const response = await fetch(`${apiUrl}/api/v1/clientes/${clienteSelecionado.id}`, {
         method: 'DELETE',
+        headers,
       })
 
       const data = await response.json()
@@ -312,10 +354,12 @@ export default function UsuariosPage() {
       }
 
       setMensagem({ tipo: 'sucesso', texto: data.message || 'Cliente excluído com sucesso!' })
+      
+      // Recarregar os dados imediatamente após excluir
       await carregarClientes()
       setTimeout(() => {
         fecharModal()
-      }, 1500)
+      }, 1000)
     } catch (error: any) {
       console.error('Erro ao excluir cliente:', error)
       setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao excluir cliente' })
@@ -902,14 +946,24 @@ export default function UsuariosPage() {
                       <label className="block text-gray-300 mb-2">
                         Senha {modalTipo === 'criar' ? '*' : '(deixe em branco para não alterar)'}
                       </label>
-                      <input
-                        type="password"
-                        name="senha"
-                        value={formData.senha}
-                        onChange={handleInputChange}
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                        required={modalTipo === 'criar'}
-                      />
+                      <div className="relative">
+                        <input
+                          type={mostrarSenha ? 'text' : 'password'}
+                          name="senha"
+                          value={formData.senha}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:border-amber-500"
+                          required={modalTipo === 'criar'}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setMostrarSenha(!mostrarSenha)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-500 transition-colors"
+                          tabIndex={-1}
+                        >
+                          {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Status */}

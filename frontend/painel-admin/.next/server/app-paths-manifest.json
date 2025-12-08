@@ -1,9 +1,9 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/controle-acessos/page": "app/dashboard/controle-acessos/page.js",
+  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js",
   "/dashboard/usuarios/page": "app/dashboard/usuarios/page.js",
-  "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js",
-  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js"
+  "/dashboard/controle-logs/page": "app/dashboard/controle-logs/page.js",
+  "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js"
 }

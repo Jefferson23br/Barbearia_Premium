@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { UserCog, Search, Edit, Trash2, Plus, Eye, Mail, X, Save, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { UserCog, Search, Edit, Trash2, Plus, Eye, Mail, X, Save, Loader2, AlertCircle, CheckCircle2, EyeOff } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface Funcionario {
@@ -113,6 +113,7 @@ export default function FuncionariosPage() {
   const abrirModal = (tipo: 'criar' | 'editar' | 'excluir' | 'visualizar', funcionario?: Funcionario) => {
     setModalTipo(tipo)
     setFuncionarioSelecionado(funcionario || null)
+    setMostrarSenha(false) // Resetar visualização de senha ao abrir modal
     
     if (tipo === 'criar') {
       setFormData({
@@ -168,6 +169,11 @@ export default function FuncionariosPage() {
 
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Obter dados do admin logado para enviar nos headers
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      
       const body = {
         ...formData,
         senha: modalTipo === 'criar' ? formData.senha : (formData.senha || undefined),
@@ -178,17 +184,26 @@ export default function FuncionariosPage() {
         delete body.senha
       }
 
+      // Preparar headers
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+
       let response
       if (modalTipo === 'criar') {
         response = await fetch(`${apiUrl}/api/v1/funcionarios`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(body),
         })
       } else {
         response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado?.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(body),
         })
       }
@@ -220,8 +235,23 @@ export default function FuncionariosPage() {
 
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Obter dados do admin logado para enviar nos headers
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      
+      // Preparar headers
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+      
       const response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado.id}`, {
         method: 'DELETE',
+        headers,
       })
 
       const data = await response.json()
@@ -670,14 +700,24 @@ export default function FuncionariosPage() {
                       <label className="block text-gray-300 mb-2">
                         Senha {modalTipo === 'criar' ? '*' : '(deixe em branco para não alterar)'}
                       </label>
-                      <input
-                        type="password"
-                        name="senha"
-                        value={formData.senha}
-                        onChange={handleInputChange}
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                        required={modalTipo === 'criar'}
-                      />
+                      <div className="relative">
+                        <input
+                          type={mostrarSenha ? 'text' : 'password'}
+                          name="senha"
+                          value={formData.senha}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 pr-10 text-white focus:outline-none focus:border-amber-500"
+                          required={modalTipo === 'criar'}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setMostrarSenha(!mostrarSenha)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-500 transition-colors"
+                          tabIndex={-1}
+                        >
+                          {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Status */}

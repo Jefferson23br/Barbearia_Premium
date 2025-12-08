@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Mail, Lock, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { ImageWithFallback } from '../components/figma/ImageWithFallback'
 import { useRouter } from 'next/navigation'
 
@@ -15,6 +15,7 @@ export default function Home() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -199,14 +200,23 @@ export default function Home() {
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
-                          type="password"
+                          type={mostrarSenha ? 'text' : 'password'}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           disabled={isLoggingIn}
-                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-white border border-zinc-700 rounded-lg pl-12 pr-12 py-3 text-black placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           placeholder="••••••••"
                           required
                         />
+                        <button
+                          type="button"
+                          onClick={() => setMostrarSenha(!mostrarSenha)}
+                          disabled={isLoggingIn}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-500 transition-colors disabled:opacity-50"
+                          tabIndex={-1}
+                        >
+                          {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        </button>
                       </div>
                     </div>
 
