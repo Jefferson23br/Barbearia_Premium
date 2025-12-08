@@ -7,10 +7,10 @@
 ssh root@82.25.65.201
 
 # Conectar na VPS pasta
-/home/cyberpanel/app/backend
+cd /home/cyberpanel/app/backend
 
 # Copiar arquivo para VPS
-scp arquivo.txt root@82.25.65.201:/home/cyberpanel/app/backend
+scp server.js root@82.25.65.201:/home/cyberpanel/app/backend
 
 # Copiar pasta para VPS
 scp -r C:\Users\vivo\Barbearia_Premium\backend root@82.25.65.201:/home/cyberpanel/app/backend
