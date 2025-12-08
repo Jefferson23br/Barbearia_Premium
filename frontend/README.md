@@ -30,8 +30,8 @@ frontend/
 - ✅ Gerenciamento de Clientes/Usuários
 - ✅ Controle de Permissões
 - ✅ Controle de Acessos (logs de login)
-- ✅ Help Desk (estrutura básica)
-- ✅ Controle de Logs (estrutura básica)
+- ✅ Help Desk (sistema completo)
+- ✅ Controle de Logs (sistema completo com exportação CSV)
 
 **Porta de desenvolvimento**: `3000`
 

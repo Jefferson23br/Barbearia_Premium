@@ -17,11 +17,12 @@ Barbearia_Premium/
 │   ├── painel-cliente/         # ✅ Painel do Cliente (Em produção)
 │   └── site-entrada/           # ✅ Site de Entrada (Em desenvolvimento)
 │
-├── backend/                     # ⚙️ API Backend
-│   ├── server.js               # Servidor Express principal
+├── backend/                     # ⚙️ API Backend (Estrutura Modular)
+│   ├── server.js               # Servidor Express central
+│   ├── config/                 # Configurações (database, cors, multer)
+│   ├── routes/                 # Rotas modulares por funcionalidade
 │   ├── middlewares/            # Middlewares customizados
 │   ├── utils/                  # Utilitários (logger, etc)
-│   ├── scripts/                # Scripts auxiliares
 │   └── README.md
 │
 ├── docs/                        # 📚 Documentação
@@ -35,12 +36,6 @@ Barbearia_Premium/
 │   ├── setup-vps.sh           # Setup completo
 │   ├── configurar-postgres.sh # Configurar PostgreSQL
 │   └── templates-nginx/        # Templates Nginx
-│
-├── SCHEMA_DATABASE.md          # Schema do banco de dados
-├── ROADMAP_DESENVOLVIMENTO.md  # Roadmap do projeto
-├── PROXIMOS_PASSOS.md          # Próximos passos do projeto
-├── GUIA_INTEGRAR_LOGS_EM_NOVOS_ENDPOINTS.md  # Guia de integração
-├── MIDDLEWARE_API_LOGGER_README.md  # Documentação do middleware
 │
 └── [Scripts SQL na raiz]       # Scripts SQL de criação/correção
 ```
@@ -201,8 +196,17 @@ Barbearia_Premium/
 - **Variáveis de Ambiente**: dotenv
 - **Logging**: Sistema customizado com middleware automático
 
-**Estrutura:**
-- `server.js` - Servidor Express principal (~2.200 linhas)
+**Estrutura Modular:**
+- `server.js` - Servidor Express central (98 linhas)
+- `config/` - Configurações compartilhadas (database, cors, multer)
+- `routes/` - Rotas modulares organizadas por funcionalidade:
+  - `clientes.js` - CRUD de clientes
+  - `funcionarios.js` - CRUD de funcionários
+  - `auth.js` - Autenticação
+  - `permissoes.js` - Permissões
+  - `controle-acessos.js` - Controle de acessos
+  - `logs.js` - Sistema de logs
+  - `help-desk.js` - Help Desk
 - `middlewares/apiLogger.js` - Middleware de logs automático
 - `utils/logger.js` - Helper de logs com normalização
 
@@ -285,16 +289,10 @@ O sistema possui um controle granular de permissões baseado em roles:
 
 ### 📖 Documentação Principal
 - **[README Principal](./README.md)** - Este arquivo (visão geral)
-- **[Schema do Banco de Dados](./SCHEMA_DATABASE.md)** - Estrutura completa do banco
-- **[Roadmap de Desenvolvimento](./ROADMAP_DESENVOLVIMENTO.md)** - Planejamento do projeto
-- **[Próximos Passos](./PROXIMOS_PASSOS.md)** - Funcionalidades planejadas
 - **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - ✅ Tudo que foi feito até agora
+- **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura e organização completa
 - **[Estrutura de Arquivos](./docs/ARQUIVOS_PROJETO.md)** - Organização do projeto
-
-### 📊 Sistema de Logs
-- **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação consolidada
-- **[Middleware API Logger](./MIDDLEWARE_API_LOGGER_README.md)** - Guia do middleware
-- **[Guia de Integração](./GUIA_INTEGRAR_LOGS_EM_NOVOS_ENDPOINTS.md)** - Como integrar logs em novos endpoints
+- **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação consolidada de logs
 
 ### 🚀 Documentação de Deploy
 - **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - ⚠️ **NÃO ALTERAR** (usado muito)
@@ -310,6 +308,8 @@ O sistema possui um controle granular de permissões baseado em roles:
 
 ### ⚙️ Backend
 - **[README Backend](./backend/README.md)** - Documentação da API
+- **[Estrutura Modular](./backend/ESTRUTURA_MODULAR.md)** - Documentação da estrutura modular
+- **[Guia de Migração VPS](./backend/GUIA_MIGRACAO_VPS.md)** - Passo a passo para migração
 
 ### 🗄️ Scripts SQL
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql` - Criar tabela de permissões
@@ -351,33 +351,38 @@ CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarc
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: ~21 endpoints implementados
-- **Páginas Frontend**: 11 páginas principais
-- **Tabelas no Banco**: 5 tabelas principais
-- **Linhas de Código Backend**: ~2.200 linhas (`server.js`)
+- **Endpoints API**: ~30 endpoints implementados
+- **Módulos Backend**: 8 módulos modulares
+- **Páginas Frontend**: 15+ páginas principais
+- **Tabelas no Banco**: 8 tabelas principais
+- **Linhas de Código Backend**: ~2.000 linhas (modularizado)
 - **Componentes UI**: 48 componentes shadcn/ui
-- **Módulos Implementados**: 6 módulos completos
+- **Módulos Implementados**: 8 módulos completos
 
 ---
 
 ## 📋 Próximos Passos
 
-Ver documento detalhado: **[PROXIMOS_PASSOS.md](./PROXIMOS_PASSOS.md)**
+**Status Atual**: ✅ Sistema base completo e funcional com estrutura modular
 
-**Status Atual**: ✅ Sistema base completo e funcional
+**Última Implementação (Dezembro 2024):**
+- ✅ **Refatoração Backend**: Estrutura modular implementada
+  - Backend reorganizado em módulos independentes
+  - Facilita manutenção e escalabilidade
+  - Documentação completa criada
 
 **Foco Atual:**
 - 🔄 Sistema de agendamentos
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
 - 🔄 Faturamento
-- 🔄 Help Desk completo
+- 🔄 Melhorias no Help Desk
 
 **Funcionalidades Planejadas:**
 - Sistema de agendamentos (visualizar, criar, editar, cancelar)
 - Lançamento de vendas e despesas
 - Relatórios financeiros (gráficos, filtros, exportação)
 - Faturamento (geração, envio, controle de pagamentos)
-- Sistema completo de tickets (Help Desk)
+- Melhorias no Help Desk (notificações, templates)
 
 ---
 
@@ -389,15 +394,16 @@ Ver documento detalhado: **[PROXIMOS_PASSOS.md](./PROXIMOS_PASSOS.md)**
 3. **Gerenciamento de Clientes** - CRUD completo
 4. **Sistema de Permissões** - RBAC granular
 5. **Controle de Acessos** - Logs de login
-6. **Controle de Logs** - Sistema de auditoria
+6. **Controle de Logs** - Sistema de auditoria completo
+7. **Help Desk** - Sistema completo de tickets
+8. **Estrutura Modular Backend** - Arquitetura modular implementada
 
 ### 🔄 Estrutura Criada (Aguardando Implementação)
-7. **Agenda** - Estrutura básica
-8. **Help Desk** - Estrutura básica
-9. **Lançamento de Venda** - Planejado
-10. **Lançamento de Despesa** - Planejado
-11. **Receitas/Despesas** - Planejado
-12. **Faturamento** - Planejado
+9. **Agenda** - Estrutura básica
+10. **Lançamento de Venda** - Planejado
+11. **Lançamento de Despesa** - Planejado
+12. **Receitas/Despesas** - Planejado
+13. **Faturamento** - Planejado
 
 ---
 
@@ -405,8 +411,13 @@ Ver documento detalhado: **[PROXIMOS_PASSOS.md](./PROXIMOS_PASSOS.md)**
 
 ## 🧹 Organização do Projeto
 
-O projeto foi organizado e limpo, removendo arquivos temporários e consolidando documentação.  
-**Ver detalhes**: [Limpeza Realizada](./LIMPEZA_ARQUIVOS_REALIZADA.md) e [Estrutura de Arquivos](./docs/ARQUIVOS_PROJETO.md)
+O projeto está organizado com:
+- ✅ Estrutura modular no backend
+- ✅ Documentação consolidada
+- ✅ Arquivos temporários removidos
+- ✅ READMEs atualizados
+
+**Ver detalhes**: [Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md) e [Estrutura de Arquivos](./docs/ARQUIVOS_PROJETO.md)
 
 ---
 

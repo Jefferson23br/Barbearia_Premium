@@ -9,15 +9,30 @@ Documentação sobre os arquivos do projeto, quais são necessários e quais pod
 ```
 Barbearia_Premium/
 │
-├── backend/                        # ⚙️ API Backend
-│   ├── middlewares/                # Middlewares customizados
+├── backend/                        # ⚙️ API Backend (Estrutura Modular)
+│   ├── config/                     # ✅ Configurações compartilhadas
+│   │   ├── database.js            # ✅ Configuração PostgreSQL
+│   │   ├── cors.js                # ✅ Configuração CORS
+│   │   └── multer.js              # ✅ Configuração upload
+│   ├── routes/                     # ✅ Rotas modulares
+│   │   ├── index.js               # ✅ Agrupa todas as rotas
+│   │   ├── clientes.js            # ✅ CRUD de clientes
+│   │   ├── funcionarios.js        # ✅ CRUD de funcionários
+│   │   ├── auth.js                # ✅ Autenticação
+│   │   ├── permissoes.js         # ✅ Permissões
+│   │   ├── controle-acessos.js   # ✅ Controle de acessos
+│   │   ├── logs.js                # ✅ Sistema de logs
+│   │   └── help-desk.js           # ✅ Help Desk
+│   ├── middlewares/                # ✅ Middlewares customizados
 │   │   └── apiLogger.js           # ✅ Middleware de logs automático
-│   ├── utils/                      # Utilitários
+│   ├── utils/                      # ✅ Utilitários
 │   │   ├── logger.js              # ✅ Helper de logs
 │   │   └── logHelper.js           # ⚠️ Helper opcional (não usado atualmente)
-│   ├── scripts/                    # Scripts auxiliares
-│   ├── server.js                  # ✅ Servidor principal
-│   └── README.md                  # ✅ Documentação do backend
+│   ├── server.js                  # ✅ Servidor Express central (98 linhas)
+│   ├── README.md                  # ✅ Documentação do backend
+│   ├── ESTRUTURA_MODULAR.md       # ✅ Documentação da estrutura modular
+│   ├── GUIA_MIGRACAO_VPS.md       # ✅ Guia de migração para VPS
+│   └── RESUMO_MIGRACAO.md         # ✅ Resumo da migração
 │
 ├── frontend/                       # 🎨 Projetos Frontend
 │   ├── painel-admin/              # ✅ Painel Administrativo
@@ -30,6 +45,7 @@ Barbearia_Premium/
 │   │   └── COMANDOS_ESSENCIAIS.md # ⚠️ NÃO ALTERAR (usado muito)
 │   ├── SISTEMA_LOGS.md            # ✅ Documentação consolidada de logs
 │   ├── HISTORICO_IMPLEMENTACOES.md # ✅ Histórico completo
+│   ├── ESTRUTURA_PROJETO.md       # ✅ Arquitetura e estrutura do projeto
 │   └── ARQUIVOS_PROJETO.md        # ✅ Este arquivo
 │
 ├── scripts/                        # 🔧 Scripts de configuração
@@ -39,11 +55,8 @@ Barbearia_Premium/
 │
 ├── .gitignore                     # ✅ Configuração Git
 ├── README.md                      # ✅ README principal
-├── SCHEMA_DATABASE.md             # ✅ Schema do banco
-├── ROADMAP_DESENVOLVIMENTO.md     # ✅ Roadmap
-├── PROXIMOS_PASSOS.md             # ✅ Próximos passos
 │
-└── [Scripts SQL e Docs Temporários] # Ver seção abaixo
+└── [Scripts SQL na raiz]          # ✅ Scripts SQL de criação/correção
 ```
 
 ---
@@ -51,10 +64,15 @@ Barbearia_Premium/
 ## ✅ Arquivos Necessários (Manter)
 
 ### Backend
-- `backend/server.js` - ✅ Servidor principal
+- `backend/server.js` - ✅ Servidor Express central (modularizado)
+- `backend/config/` - ✅ Configurações (database, cors, multer)
+- `backend/routes/` - ✅ Rotas modulares por funcionalidade
 - `backend/utils/logger.js` - ✅ Sistema de logs
 - `backend/middlewares/apiLogger.js` - ✅ Middleware de logs automático
 - `backend/README.md` - ✅ Documentação
+- `backend/ESTRUTURA_MODULAR.md` - ✅ Documentação da estrutura modular
+- `backend/GUIA_MIGRACAO_VPS.md` - ✅ Guia de migração
+- `backend/RESUMO_MIGRACAO.md` - ✅ Resumo da migração
 
 ### Frontend
 - Todos os arquivos em `frontend/painel-admin/src/` - ✅ Código fonte
@@ -66,14 +84,13 @@ Barbearia_Premium/
 - `frontend/*/public/images/logo.webp` - ✅ Logo do projeto
 
 ### Documentação Essencial
-- `README.md` - ✅ Visão geral
-- `SCHEMA_DATABASE.md` - ✅ Schema do banco
-- `ROADMAP_DESENVOLVIMENTO.md` - ✅ Roadmap
-- `PROXIMOS_PASSOS.md` - ✅ Próximos passos
-- `docs/deploy/COMANDOS_ESSENCIAIS.md` - ⚠️ **NÃO ALTERAR**
+- `README.md` - ✅ Visão geral do projeto
+- `docs/deploy/COMANDOS_ESSENCIAIS.md` - ⚠️ **NÃO ALTERAR** (usado muito)
 - `docs/deploy/README.md` - ✅ Visão geral deploy
 - `docs/SISTEMA_LOGS.md` - ✅ Documentação de logs
-- `docs/HISTORICO_IMPLEMENTACOES.md` - ✅ Histórico
+- `docs/HISTORICO_IMPLEMENTACOES.md` - ✅ Histórico completo
+- `docs/ESTRUTURA_PROJETO.md` - ✅ Arquitetura e estrutura do projeto
+- `docs/ARQUIVOS_PROJETO.md` - ✅ Este arquivo
 
 ### Scripts SQL Essenciais
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql` - ✅ Criar permissões
@@ -82,6 +99,7 @@ Barbearia_Premium/
 - `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql` - ✅ Criar logs
 - `CORRIGIR_TABELA_LOGS_SISTEMA.sql` - ✅ Correções de logs
 - `ATUALIZAR_CHECK_CONSTRAINT_LOGS.sql` - ✅ Atualizar constraint
+- `COMANDOS_CRIAR_TABELAS_HELP_DESK.sql` - ✅ Criar tabelas Help Desk
 
 ### Scripts de Configuração
 - `scripts/setup-vps.sh` - ✅ Setup VPS
@@ -90,7 +108,22 @@ Barbearia_Premium/
 
 ---
 
-## ✅ Arquivos Removidos (Limpeza Realizada)
+## ✅ Arquivos Removidos (Limpeza Realizada - Dezembro 2024)
+
+### Limpeza Inicial (Anterior)
+Arquivos de troubleshooting e guias consolidados foram removidos anteriormente.
+
+### Limpeza Atual (Dezembro 2024)
+Arquivos removidos na organização atual:
+
+- ✅ `LIMPEZA_ARQUIVOS_REALIZADA.md` - Removido (arquivo de explicação)
+- ✅ `MIDDLEWARE_API_LOGGER_README.md` - Removido (consolidado em `docs/SISTEMA_LOGS.md`)
+- ✅ `GUIA_INTEGRAR_LOGS_EM_NOVOS_ENDPOINTS.md` - Removido (consolidado)
+- ✅ `PROXIMOS_PASSOS.md` - Removido (consolidado no README principal)
+- ✅ `ROADMAP_DESENVOLVIMENTO.md` - Removido (consolidado no README principal)
+- ✅ `SCHEMA_DATABASE.md` - Removido (consolidado em `docs/ESTRUTURA_PROJETO.md`)
+
+## ✅ Arquivos Removidos Anteriormente
 
 ### Documentação de Troubleshooting (Removidos)
 Estes arquivos foram removidos pois documentavam problemas já resolvidos:

@@ -22,14 +22,37 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL.
 
 ---
 
-## 📁 Estrutura
+## 📁 Estrutura Modular
 
 ```
 backend/
-├── server.js           # Servidor Express principal
-├── scripts/            # Scripts auxiliares
+├── server.js           # Servidor Express central (98 linhas)
+├── config/             # Configurações compartilhadas
+│   ├── database.js    # Configuração PostgreSQL
+│   ├── cors.js        # Configuração CORS
+│   └── multer.js      # Configuração upload
+├── routes/             # Rotas modulares por funcionalidade
+│   ├── index.js       # Agrupa todas as rotas
+│   ├── clientes.js    # CRUD de clientes
+│   ├── funcionarios.js # CRUD de funcionários
+│   ├── auth.js        # Autenticação
+│   ├── permissoes.js  # Permissões
+│   ├── controle-acessos.js # Controle de acessos
+│   ├── logs.js        # Sistema de logs
+│   └── help-desk.js   # Help Desk
+├── middlewares/         # Middlewares customizados
+│   └── apiLogger.js   # Middleware de logs automático
+├── utils/              # Utilitários
+│   ├── logger.js      # Sistema de logs
+│   └── logHelper.js   # Helpers de logs
 └── README.md
 ```
+
+**Benefícios da Estrutura Modular:**
+- ✅ Manutenibilidade: Cada módulo é independente
+- ✅ Escalabilidade: Fácil adicionar novos módulos
+- ✅ Organização: Código organizado por funcionalidade
+- ✅ Colaboração: Múltiplos desenvolvedores podem trabalhar em paralelo
 
 ---
 
@@ -88,6 +111,8 @@ pm2 save
 
 ## 📡 Endpoints Principais
 
+> **Nota**: Todos os endpoints estão organizados em módulos em `routes/`. O `server.js` central apenas inicializa o servidor e registra as rotas.
+
 ### Autenticação
 
 - `POST /api/v1/auth/login` - Login de cliente
@@ -119,6 +144,21 @@ pm2 save
 - `GET /api/v1/controle-acessos` - Listar acessos (com filtros)
 - `GET /api/v1/controle-acessos/estatisticas` - Estatísticas de acesso
 
+### Logs
+
+- `GET /api/v1/logs` - Listar logs (com filtros)
+- `GET /api/v1/logs/estatisticas` - Estatísticas de logs
+- `GET /api/v1/logs/:id` - Buscar log específico
+
+### Help Desk
+
+- `GET /api/v1/help-desk/chamados` - Listar chamados
+- `POST /api/v1/help-desk/chamados` - Criar chamado
+- `GET /api/v1/help-desk/chamados/:id` - Buscar chamado
+- `PUT /api/v1/help-desk/chamados/:id` - Atualizar chamado
+- `POST /api/v1/help-desk/chamados/:id/respostas` - Adicionar resposta
+- `GET /api/v1/help-desk/funcionarios` - Listar funcionários para responsável
+
 ### Health Check
 
 - `GET /health` - Status da API
@@ -135,8 +175,12 @@ pm2 save
 - `usuarios_clientes` - Clientes
 - `permissoes_usuarios` - Permissões granulares
 - `controle_acessos` - Logs de login
+- `logs_sistema` - Logs de ações do sistema
+- `help_desk_chamados` - Chamados do Help Desk
+- `help_desk_respostas` - Respostas dos chamados
+- `help_desk_anexos` - Anexos dos chamados/respostas
 
-Ver documentação completa: `../SCHEMA_DATABASE.md`
+Ver documentação completa: [Estrutura do Projeto](../docs/ESTRUTURA_PROJETO.md)
 
 ### Scripts SQL
 
@@ -155,6 +199,13 @@ Scripts para criar tabelas estão na raiz do projeto:
 - Endpoint: `/uploads/fotos/{filename}`
 - Limite: 5MB por arquivo
 - Formatos aceitos: Imagens (image/*)
+
+### Anexos Help Desk
+
+- Diretório: `backend/uploads/help-desk/`
+- Endpoint: `/uploads/help-desk/{filename}`
+- Limite: 10MB por arquivo
+- Formatos aceitos: Imagens (image/*) e PDFs (application/pdf)
 
 ---
 
@@ -278,6 +329,13 @@ Scripts úteis estão em `scripts/`:
 - [ ] Cache de queries frequentes
 - [ ] Paginação em endpoints de listagem
 
+## 📚 Documentação Adicional
+
+- [Estrutura Modular](./ESTRUTURA_MODULAR.md) - Documentação da estrutura modular
+- [Guia de Migração VPS](./GUIA_MIGRACAO_VPS.md) - Passo a passo para migração
+- [Resumo da Migração](./RESUMO_MIGRACAO.md) - Resumo rápido
+
 ---
 
-**Última atualização**: Dezembro 2024
+**Última atualização**: Dezembro 2024  
+**Estrutura**: ✅ Modular (implementada em Dezembro 2024)
