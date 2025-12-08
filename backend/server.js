@@ -7,6 +7,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const { initLogger, registrarLog, getClientIp, getUserAgent } = require('./utils/logger');
+const apiLoggerMiddleware = require('./middlewares/apiLogger');
+// const { logCriar, logEditar, logExcluir, buscarDadosAnteriores } = require('./utils/logHelper');
+// Nota: logHelper.js é opcional - descomente quando copiar o arquivo para a VPS
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -49,11 +53,15 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-user-tipo'],
 }));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Middleware de logging automático de requisições API
+// IMPORTANTE: Deve vir depois dos middlewares de parsing (json/urlencoded) mas antes das rotas
+app.use(apiLoggerMiddleware);
 
 // Criar diretório de uploads se não existir
 const uploadsDir = path.join(__dirname, 'uploads', 'fotos');
@@ -93,6 +101,9 @@ const upload = multer({
 
 // Middleware para servir arquivos estáticos (fotos)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Inicializar sistema de logs ANTES do middleware de API logger
+initLogger(pool);
 
 // ============================================================
 // ROTAS DE HEALTH CHECK
@@ -243,9 +254,49 @@ app.post('/api/v1/clientes', upload.single('foto'), async (req, res) => {
       ]
     );
 
+    const novoCliente = result.rows[0];
+
+    // Registrar log (sempre, mesmo sem usuário - será 'sistema' se não houver)
+    const usuarioId = req.headers['x-user-id'] || null;
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    
+    // Debug temporário
+    console.log('[LOG DEBUG] Criar Cliente:', {
+      usuarioId,
+      usuarioTipo,
+      temUsuarioId: !!usuarioId,
+      headers: {
+        'x-user-id': req.headers['x-user-id'],
+        'x-user-tipo': req.headers['x-user-tipo'],
+      },
+      allHeaders: Object.keys(req.headers).filter(h => h.toLowerCase().includes('user')),
+    });
+    
+    try {
+      await registrarLog({
+        usuarioId: usuarioId || null,
+        usuarioTipo: usuarioId ? usuarioTipo : 'sistema',
+        acao: 'criar',
+        modulo: 'cliente',
+        entidadeId: novoCliente.id,
+        entidadeTipo: 'cliente',
+        descricao: `Cliente ${nome_completo} (${email}) criado`,
+        dadosNovos: {
+          nome_completo,
+          email,
+          cpf: cpfLimpo,
+        },
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+      console.log('[LOG DEBUG] Log registrado com sucesso');
+    } catch (logError) {
+      console.error('[LOG DEBUG] Erro ao registrar log:', logError.message, logError.stack);
+    }
+
     res.status(201).json({
       message: 'Cliente cadastrado com sucesso!',
-      cliente: result.rows[0],
+      cliente: novoCliente,
     });
   } catch (error) {
     // Se houve erro e foto foi enviada, deletar a foto
@@ -274,12 +325,25 @@ app.get('/api/v1/clientes', async (req, res) => {
     // Verificar se o usuário logado tem permissão
     // TODO: Implementar verificação de autenticação/token
 
+    // Adicionar headers para evitar cache
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
     const result = await pool.query(
       `SELECT 
         uc.id, 
         uc.nome_completo, 
         uc.email, 
-        uc.cpf, 
+        uc.cpf,
+        uc.rg,
+        uc.rua,
+        uc.numero,
+        uc.complemento,
+        uc.bairro,
+        uc.cidade,
+        uc.estado,
+        uc.cep,
         uc.foto_url, 
         uc.is_active, 
         uc.funcionario_responsavel_id,
@@ -288,8 +352,10 @@ app.get('/api/v1/clientes', async (req, res) => {
         ua.nome_completo as funcionario_responsavel_nome
        FROM protese.usuarios_clientes uc
        LEFT JOIN protese.usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
-       ORDER BY uc.nome_completo ASC`
+       ORDER BY uc.updated_at DESC, uc.nome_completo ASC`
     );
+
+    console.log(`[GET /api/v1/clientes] Retornando ${result.rows.length} clientes`);
 
     res.json({
       clientes: result.rows,
@@ -362,9 +428,9 @@ app.put('/api/v1/clientes/:id', upload.single('foto'), async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Verificar se cliente existe
+    // Verificar se cliente existe e buscar dados completos (para log)
     const clienteCheck = await pool.query(
-      'SELECT id, foto_url FROM protese.usuarios_clientes WHERE id = $1',
+      'SELECT id, nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep, foto_url, is_active, funcionario_responsavel_id FROM protese.usuarios_clientes WHERE id = $1',
       [id]
     );
 
@@ -546,10 +612,78 @@ app.put('/api/v1/clientes/:id', upload.single('foto'), async (req, res) => {
     }
 
     const result = await pool.query(query, params);
+    const clienteAtualizado = result.rows[0];
+
+    // Registrar log (sempre, mesmo sem usuário - será 'sistema' se não houver)
+    // Headers podem estar em minúsculas ou com hífen, verificar ambos
+    const usuarioId = req.headers['x-user-id'] || req.headers['X-User-Id'] || null;
+    const usuarioTipo = req.headers['x-user-tipo'] || req.headers['X-User-Tipo'] || null;
+    
+    // Debug temporário
+    console.log('[LOG DEBUG] Editar Cliente:', {
+      usuarioId,
+      usuarioTipo,
+      temUsuarioId: !!usuarioId,
+      headers: {
+        'x-user-id': req.headers['x-user-id'],
+        'x-user-tipo': req.headers['x-user-tipo'],
+        'X-User-Id': req.headers['X-User-Id'],
+        'X-User-Tipo': req.headers['X-User-Tipo'],
+      },
+      allHeaders: Object.keys(req.headers).filter(h => h.toLowerCase().includes('user')),
+    });
+    
+    // Sempre registrar log, mesmo sem usuário (será 'sistema')
+    try {
+      await registrarLog({
+        usuarioId: usuarioId || null,
+        usuarioTipo: usuarioTipo || (usuarioId ? 'administrativo' : 'sistema'),
+        acao: 'editar',
+        modulo: 'cliente',
+        entidadeId: id,
+        entidadeTipo: 'cliente',
+        descricao: `Cliente ${nome_completo} (${email}) atualizado`,
+        dadosAnteriores: {
+          nome_completo: clienteAtual.nome_completo,
+          email: clienteAtual.email,
+          cpf: clienteAtual.cpf,
+          rg: clienteAtual.rg,
+          rua: clienteAtual.rua,
+          numero: clienteAtual.numero,
+          complemento: clienteAtual.complemento,
+          bairro: clienteAtual.bairro,
+          cidade: clienteAtual.cidade,
+          estado: clienteAtual.estado,
+          cep: clienteAtual.cep,
+          funcionario_responsavel_id: clienteAtual.funcionario_responsavel_id,
+          is_active: clienteAtual.is_active,
+        },
+        dadosNovos: {
+          nome_completo,
+          email,
+          cpf: cpfLimpo,
+          rg: rg || null,
+          rua,
+          numero,
+          complemento: complemento || null,
+          bairro,
+          cidade,
+          estado: estado.toUpperCase(),
+          cep: cepLimpo,
+          funcionario_responsavel_id: funcionario_responsavel_id || null,
+          is_active: is_active !== undefined ? is_active : true,
+        },
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+      console.log('[LOG DEBUG] Log registrado com sucesso');
+    } catch (logError) {
+      console.error('[LOG DEBUG] Erro ao registrar log:', logError.message, logError.stack);
+    }
 
     res.json({
       message: 'Cliente atualizado com sucesso!',
-      cliente: result.rows[0],
+      cliente: clienteAtualizado,
     });
   } catch (error) {
     if (req.file) {
@@ -588,6 +722,13 @@ app.delete('/api/v1/clientes/:id', async (req, res) => {
 
     const cliente = clienteCheck.rows[0];
 
+    // Buscar dados completos do cliente antes de deletar (para log)
+    const clienteCompleto = await pool.query(
+      'SELECT nome_completo, email, cpf FROM protese.usuarios_clientes WHERE id = $1',
+      [id]
+    );
+    const dadosCliente = clienteCompleto.rows[0] || {};
+
     // Deletar foto se existir
     if (cliente.foto_url) {
       const fotoPath = path.join(uploadsDir, path.basename(cliente.foto_url));
@@ -602,6 +743,28 @@ app.delete('/api/v1/clientes/:id', async (req, res) => {
 
     // Deletar cliente do banco
     await pool.query('DELETE FROM protese.usuarios_clientes WHERE id = $1', [id]);
+
+    // Registrar log (se houver usuário autenticado)
+    const usuarioId = req.headers['x-user-id'] || null;
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    if (usuarioId) {
+      await registrarLog({
+        usuarioId,
+        usuarioTipo,
+        acao: 'excluir',
+        modulo: 'cliente',
+        entidadeId: id,
+        entidadeTipo: 'cliente',
+        descricao: `Cliente ${dadosCliente.nome_completo || 'N/A'} (${dadosCliente.email || 'N/A'}) excluído`,
+        dadosAnteriores: {
+          nome_completo: dadosCliente.nome_completo,
+          email: dadosCliente.email,
+          cpf: dadosCliente.cpf,
+        },
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+    }
 
     res.json({
       message: 'Cliente excluído com sucesso!',
@@ -1069,9 +1232,34 @@ app.post('/api/v1/funcionarios', async (req, res) => {
       ]
     );
 
+    const novoFuncionario = result.rows[0];
+
+    // Registrar log (se houver usuário autenticado)
+    const usuarioId = req.headers['x-user-id'] || null;
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    if (usuarioId) {
+      await registrarLog({
+        usuarioId,
+        usuarioTipo,
+        acao: 'criar',
+        modulo: 'funcionario',
+        entidadeId: novoFuncionario.id,
+        entidadeTipo: 'funcionario',
+        descricao: `Funcionário ${nome_completo} (${email}) - ${tipo_usuario} criado`,
+        dadosNovos: {
+          nome_completo,
+          email,
+          cpf: cpfLimpo,
+          tipo_usuario,
+        },
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+    }
+
     res.status(201).json({
       message: 'Funcionário cadastrado com sucesso!',
-      funcionario: result.rows[0],
+      funcionario: novoFuncionario,
     });
   } catch (error) {
     console.error('Erro ao cadastrar funcionário:', error);
@@ -1268,11 +1456,47 @@ app.put('/api/v1/funcionarios/:id', async (req, res) => {
       params = paramArray;
     }
 
+    // Buscar dados anteriores do funcionário (para log)
+    const funcionarioAnterior = await pool.query(
+      'SELECT nome_completo, email, cpf, tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
+      [id]
+    );
+    const dadosAnteriores = funcionarioAnterior.rows[0] || {};
+
     const result = await pool.query(query, params);
+    const funcionarioAtualizado = result.rows[0];
+
+    // Registrar log (se houver usuário autenticado)
+    const usuarioId = req.headers['x-user-id'] || null;
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    if (usuarioId) {
+      await registrarLog({
+        usuarioId,
+        usuarioTipo,
+        acao: 'editar',
+        modulo: 'funcionario',
+        entidadeId: id,
+        entidadeTipo: 'funcionario',
+        descricao: `Funcionário ${nome_completo} (${email}) atualizado`,
+        dadosAnteriores: {
+          nome_completo: dadosAnteriores.nome_completo,
+          email: dadosAnteriores.email,
+          tipo_usuario: dadosAnteriores.tipo_usuario,
+        },
+        dadosNovos: {
+          nome_completo,
+          email,
+          cpf: cpfLimpo,
+          tipo_usuario: tipo_usuario || dadosAnteriores.tipo_usuario,
+        },
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+    }
 
     res.json({
       message: 'Funcionário atualizado com sucesso!',
-      funcionario: result.rows[0],
+      funcionario: funcionarioAtualizado,
     });
   } catch (error) {
     console.error('Erro ao atualizar funcionário:', error);
@@ -1306,8 +1530,38 @@ app.delete('/api/v1/funcionarios/:id', async (req, res) => {
       return res.status(403).json({ error: 'Não é permitido excluir usuários Master' });
     }
 
+    // Buscar dados completos do funcionário antes de deletar (para log)
+    const funcionarioCompleto = await pool.query(
+      'SELECT nome_completo, email, cpf, tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
+      [id]
+    );
+    const dadosFuncionario = funcionarioCompleto.rows[0] || {};
+
     // Deletar funcionário do banco
     await pool.query('DELETE FROM protese.usuarios_administrativos WHERE id = $1', [id]);
+
+    // Registrar log (se houver usuário autenticado)
+    const usuarioId = req.headers['x-user-id'] || null;
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    if (usuarioId) {
+      await registrarLog({
+        usuarioId,
+        usuarioTipo,
+        acao: 'excluir',
+        modulo: 'funcionario',
+        entidadeId: id,
+        entidadeTipo: 'funcionario',
+        descricao: `Funcionário ${dadosFuncionario.nome_completo || 'N/A'} (${dadosFuncionario.email || 'N/A'}) - ${dadosFuncionario.tipo_usuario || 'N/A'} excluído`,
+        dadosAnteriores: {
+          nome_completo: dadosFuncionario.nome_completo,
+          email: dadosFuncionario.email,
+          cpf: dadosFuncionario.cpf,
+          tipo_usuario: dadosFuncionario.tipo_usuario,
+        },
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+    }
 
     res.json({
       message: 'Funcionário excluído com sucesso!',
@@ -1600,6 +1854,31 @@ app.put('/api/v1/permissoes/:usuarioId', async (req, res) => {
       );
     }
 
+    // Registrar log (se houver usuário autenticado)
+    const usuarioLogadoId = req.headers['x-user-id'] || null;
+    const usuarioLogadoTipo = req.headers['x-user-tipo'] || 'administrativo';
+    if (usuarioLogadoId) {
+      // Buscar nome do usuário que teve as permissões alteradas
+      const usuarioAlvo = await pool.query(
+        'SELECT nome_completo FROM protese.usuarios_administrativos WHERE id = $1',
+        [usuarioId]
+      );
+      const nomeUsuarioAlvo = usuarioAlvo.rows[0]?.nome_completo || 'N/A';
+
+      await registrarLog({
+        usuarioId: usuarioLogadoId, // ID do usuário que fez a alteração
+        usuarioTipo: usuarioLogadoTipo,
+        acao: 'editar',
+        modulo: 'permissao',
+        entidadeId: usuarioId, // ID do usuário que teve as permissões alteradas
+        entidadeTipo: 'permissao',
+        descricao: `Permissões do usuário ${nomeUsuarioAlvo} atualizadas`,
+        dadosNovos: valoresPermissoes,
+        ipAddress: getClientIp(req),
+        userAgent: getUserAgent(req),
+      });
+    }
+
     res.json({
       message: 'Permissões atualizadas com sucesso!',
     });
@@ -1607,6 +1886,297 @@ app.put('/api/v1/permissoes/:usuarioId', async (req, res) => {
     console.error('Erro ao atualizar permissões:', error);
     res.status(500).json({
       error: 'Erro ao atualizar permissões',
+      message: error.message,
+    });
+  }
+});
+
+// ============================================================
+// ROTAS DE LOGS DO SISTEMA
+// ============================================================
+
+/**
+ * GET /api/v1/logs
+ * Lista logs do sistema com filtros
+ * 
+ * Query params:
+ * - data_inicio (YYYY-MM-DD)
+ * - data_fim (YYYY-MM-DD)
+ * - modulo (funcionario, cliente, venda, etc.)
+ * - acao (criar, editar, excluir, etc.)
+ * - usuario_id (UUID)
+ * - usuario_tipo (cliente, administrativo)
+ * - status (sucesso, erro, cancelado)
+ * - limit (número, padrão: 100)
+ * - offset (número, padrão: 0)
+ */
+app.get('/api/v1/logs', async (req, res) => {
+  try {
+    const {
+      data_inicio,
+      data_fim,
+      modulo,
+      acao,
+      usuario_id,
+      usuario_tipo,
+      status,
+      limit = 100,
+      offset = 0,
+    } = req.query;
+
+    // Valores padrão: último mês
+    const hoje = new Date();
+    const umMesAtras = new Date(hoje);
+    umMesAtras.setMonth(umMesAtras.getMonth() - 1);
+
+    const dataInicio = data_inicio || umMesAtras.toISOString().split('T')[0];
+    const dataFim = data_fim || hoje.toISOString().split('T')[0];
+
+    // Construir query dinâmica
+    let query = `
+      SELECT 
+        ls.id,
+        ls.usuario_id,
+        ls.usuario_tipo,
+        ls.usuario_nome,
+        ls.acao,
+        ls.modulo,
+        ls.entidade_id,
+        ls.entidade_tipo,
+        ls.descricao,
+        ls.dados_anteriores,
+        ls.dados_novos,
+        ls.ip_address,
+        ls.user_agent,
+        ls.status,
+        ls.mensagem_erro,
+        ls.created_at
+      FROM protese.logs_sistema ls
+      WHERE DATE(ls.created_at) BETWEEN $1 AND $2
+    `;
+
+    const params = [dataInicio, dataFim];
+    let paramIndex = 3;
+
+    // Filtros opcionais
+    if (modulo) {
+      query += ` AND ls.modulo = $${paramIndex}`;
+      params.push(modulo);
+      paramIndex++;
+    }
+
+    if (acao) {
+      query += ` AND ls.acao = $${paramIndex}`;
+      params.push(acao);
+      paramIndex++;
+    }
+
+    if (usuario_id) {
+      query += ` AND ls.usuario_id = $${paramIndex}`;
+      params.push(usuario_id);
+      paramIndex++;
+    }
+
+    if (usuario_tipo) {
+      query += ` AND ls.usuario_tipo = $${paramIndex}`;
+      params.push(usuario_tipo);
+      paramIndex++;
+    }
+
+    if (status) {
+      query += ` AND ls.status = $${paramIndex}`;
+      params.push(status);
+      paramIndex++;
+    }
+
+    // Ordenação e paginação
+    query += ` ORDER BY ls.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    params.push(parseInt(limit), parseInt(offset));
+
+    const result = await pool.query(query, params);
+
+    // Contar total (para paginação)
+    let countQuery = `
+      SELECT COUNT(*) as total
+      FROM protese.logs_sistema ls
+      WHERE DATE(ls.created_at) BETWEEN $1 AND $2
+    `;
+    const countParams = [dataInicio, dataFim];
+    let countParamIndex = 3;
+
+    if (modulo) {
+      countQuery += ` AND ls.modulo = $${countParamIndex}`;
+      countParams.push(modulo);
+      countParamIndex++;
+    }
+
+    if (acao) {
+      countQuery += ` AND ls.acao = $${countParamIndex}`;
+      countParams.push(acao);
+      countParamIndex++;
+    }
+
+    if (usuario_id) {
+      countQuery += ` AND ls.usuario_id = $${countParamIndex}`;
+      countParams.push(usuario_id);
+      countParamIndex++;
+    }
+
+    if (usuario_tipo) {
+      countQuery += ` AND ls.usuario_tipo = $${countParamIndex}`;
+      countParams.push(usuario_tipo);
+      countParamIndex++;
+    }
+
+    if (status) {
+      countQuery += ` AND ls.status = $${countParamIndex}`;
+      countParams.push(status);
+      countParamIndex++;
+    }
+
+    const countResult = await pool.query(countQuery, countParams);
+    const total = parseInt(countResult.rows[0].total);
+
+    res.json({
+      logs: result.rows,
+      paginacao: {
+        total,
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        total_paginas: Math.ceil(total / limit),
+      },
+      periodo: {
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+      },
+    });
+  } catch (error) {
+    console.error('Erro ao buscar logs:', error);
+    res.status(500).json({
+      error: 'Erro ao buscar logs',
+      message: error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/v1/logs/estatisticas
+ * Retorna estatísticas dos logs no período
+ */
+app.get('/api/v1/logs/estatisticas', async (req, res) => {
+  try {
+    const { data_inicio, data_fim } = req.query;
+
+    // Valores padrão: último mês
+    const hoje = new Date();
+    const umMesAtras = new Date(hoje);
+    umMesAtras.setMonth(umMesAtras.getMonth() - 1);
+
+    const dataInicio = data_inicio || umMesAtras.toISOString().split('T')[0];
+    const dataFim = data_fim || hoje.toISOString().split('T')[0];
+
+    // Total de logs
+    const totalLogs = await pool.query(
+      `SELECT COUNT(*) as total
+       FROM protese.logs_sistema
+       WHERE DATE(created_at) BETWEEN $1 AND $2`,
+      [dataInicio, dataFim]
+    );
+
+    // Por módulo
+    const porModulo = await pool.query(
+      `SELECT modulo, COUNT(*) as quantidade
+       FROM protese.logs_sistema
+       WHERE DATE(created_at) BETWEEN $1 AND $2
+       GROUP BY modulo
+       ORDER BY quantidade DESC`,
+      [dataInicio, dataFim]
+    );
+
+    // Por ação
+    const porAcao = await pool.query(
+      `SELECT acao, COUNT(*) as quantidade
+       FROM protese.logs_sistema
+       WHERE DATE(created_at) BETWEEN $1 AND $2
+       GROUP BY acao
+       ORDER BY quantidade DESC`,
+      [dataInicio, dataFim]
+    );
+
+    // Por status
+    const porStatus = await pool.query(
+      `SELECT status, COUNT(*) as quantidade
+       FROM protese.logs_sistema
+       WHERE DATE(created_at) BETWEEN $1 AND $2
+       GROUP BY status
+       ORDER BY quantidade DESC`,
+      [dataInicio, dataFim]
+    );
+
+    // Por usuário (top 10)
+    const porUsuario = await pool.query(
+      `SELECT usuario_nome, usuario_tipo, COUNT(*) as quantidade
+       FROM protese.logs_sistema
+       WHERE DATE(created_at) BETWEEN $1 AND $2
+       GROUP BY usuario_nome, usuario_tipo
+       ORDER BY quantidade DESC
+       LIMIT 10`,
+      [dataInicio, dataFim]
+    );
+
+    // Por dia
+    const porDia = await pool.query(
+      `SELECT DATE(created_at) as data, COUNT(*) as quantidade
+       FROM protese.logs_sistema
+       WHERE DATE(created_at) BETWEEN $1 AND $2
+       GROUP BY DATE(created_at)
+       ORDER BY data DESC`,
+      [dataInicio, dataFim]
+    );
+
+    res.json({
+      periodo: {
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+      },
+      total_logs: parseInt(totalLogs.rows[0].total),
+      por_modulo: porModulo.rows,
+      por_acao: porAcao.rows,
+      por_status: porStatus.rows,
+      por_usuario: porUsuario.rows,
+      por_dia: porDia.rows,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas de logs:', error);
+    res.status(500).json({
+      error: 'Erro ao buscar estatísticas de logs',
+      message: error.message,
+    });
+  }
+});
+
+/**
+ * GET /api/v1/logs/:id
+ * Busca um log específico por ID
+ */
+app.get('/api/v1/logs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `SELECT * FROM protese.logs_sistema WHERE id = $1`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Log não encontrado' });
+    }
+
+    res.json({ log: result.rows[0] });
+  } catch (error) {
+    console.error('Erro ao buscar log:', error);
+    res.status(500).json({
+      error: 'Erro ao buscar log',
       message: error.message,
     });
   }
