@@ -88,3 +88,4 @@ COMMENT ON COLUMN protese.permissoes_usuarios.usuario_id IS 'ID do usuário admi
 COMMENT ON COLUMN protese.permissoes_usuarios.dashboard_ver IS 'Permissão para visualizar o dashboard';
 COMMENT ON COLUMN protese.permissoes_usuarios.controle_permissoes_ver IS 'Permissão para visualizar controle de permissões (Master apenas)';
 
+

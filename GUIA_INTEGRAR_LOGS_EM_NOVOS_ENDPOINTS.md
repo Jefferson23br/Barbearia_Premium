@@ -351,3 +351,4 @@ Quando implementar novos módulos (vendas, agendas, marcações):
 
 **Última atualização**: Dezembro 2024
 
+

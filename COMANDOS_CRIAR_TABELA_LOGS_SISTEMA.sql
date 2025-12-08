@@ -47,3 +47,4 @@ COMMENT ON COLUMN protese.logs_sistema.dados_anteriores IS 'Dados antes da alter
 COMMENT ON COLUMN protese.logs_sistema.dados_novos IS 'Dados após a alteração (JSON)';
 COMMENT ON COLUMN protese.logs_sistema.status IS 'Status da ação: sucesso, erro, cancelado';
 
+

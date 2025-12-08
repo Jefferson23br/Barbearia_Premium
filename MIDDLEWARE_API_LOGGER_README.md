@@ -240,3 +240,4 @@ Se você adicionar uma rota de logs que não está na lista de ignoradas, pode c
 - Logs são registrados **após** a resposta ser enviada (não bloqueia)
 - Em ambiente de desenvolvimento, logs também aparecem no console
 
+

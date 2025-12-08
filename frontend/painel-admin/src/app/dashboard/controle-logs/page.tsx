@@ -175,6 +175,147 @@ export default function ControleLogsPage() {
     return modulos[modulo] || modulo
   }
 
+  const exportarParaCSV = async () => {
+    try {
+      setLoading(true)
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      // Construir parâmetros base
+      const baseParams = new URLSearchParams()
+      if (dataInicio) baseParams.append('data_inicio', dataInicio)
+      if (dataFim) baseParams.append('data_fim', dataFim)
+      if (filtroModulo) baseParams.append('modulo', filtroModulo)
+      if (filtroAcao) baseParams.append('acao', filtroAcao)
+      if (filtroStatus) baseParams.append('status', filtroStatus)
+      if (filtroUsuario) baseParams.append('usuario_id', filtroUsuario)
+
+      // Buscar todos os logs com paginação
+      const logsParaExportar: Log[] = []
+      const limit = 1000 // Limite por requisição
+      let offset = 0
+      let hasMore = true
+
+      while (hasMore) {
+        const params = new URLSearchParams(baseParams.toString())
+        params.append('limit', limit.toString())
+        params.append('offset', offset.toString())
+
+        const response = await fetch(`${apiUrl}/api/v1/logs?${params.toString()}`)
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar logs para exportação')
+        }
+
+        const logs = data.logs || []
+        logsParaExportar.push(...logs)
+
+        // Verificar se há mais logs
+        const total = data.paginacao?.total || 0
+        hasMore = offset + logs.length < total
+        offset += logs.length
+
+        // Limite de segurança (máximo 100.000 logs)
+        if (logsParaExportar.length >= 100000) {
+          console.warn('Limite de 100.000 logs atingido. Exportando os primeiros 100.000.')
+          break
+        }
+      }
+
+      // Converter para CSV
+      const headers = [
+        'Data/Hora',
+        'ID do Log',
+        'Usuário ID',
+        'Usuário Nome',
+        'Tipo de Usuário',
+        'Ação',
+        'Módulo',
+        'Entidade ID',
+        'Tipo de Entidade',
+        'Descrição',
+        'Status',
+        'IP Address',
+        'User Agent',
+        'Mensagem de Erro',
+        'Dados Anteriores',
+        'Dados Novos'
+      ]
+
+      // Função para escapar valores CSV
+      const escapeCSV = (value: any): string => {
+        if (value === null || value === undefined) return ''
+        const str = typeof value === 'object' ? JSON.stringify(value) : String(value)
+        // Se contém vírgula, aspas ou quebra de linha, envolver em aspas e escapar aspas
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`
+        }
+        return str
+      }
+
+      // Criar linhas CSV
+      const csvRows = [
+        headers.join(',')
+      ]
+
+      logsParaExportar.forEach((log: Log) => {
+        const row = [
+          new Date(log.created_at).toLocaleString('pt-BR'),
+          log.id,
+          log.usuario_id || '',
+          log.usuario_nome || '',
+          log.usuario_tipo || '',
+          log.acao,
+          log.modulo,
+          log.entidade_id || '',
+          log.entidade_tipo || '',
+          log.descricao || '',
+          log.status,
+          log.ip_address || '',
+          log.user_agent || '',
+          log.mensagem_erro || '',
+          log.dados_anteriores ? JSON.stringify(log.dados_anteriores) : '',
+          log.dados_novos ? JSON.stringify(log.dados_novos) : ''
+        ]
+        csvRows.push(row.map(escapeCSV).join(','))
+      })
+
+      // Criar blob e fazer download
+      const csvContent = csvRows.join('\n')
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' }) // BOM para Excel
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      
+      // Nome do arquivo com data e filtros
+      const dataAtual = new Date().toISOString().split('T')[0]
+      const periodo = dataInicio && dataFim ? `${dataInicio}_${dataFim}` : 'todos'
+      const filtros = []
+      if (filtroModulo) filtros.push(`modulo-${filtroModulo}`)
+      if (filtroAcao) filtros.push(`acao-${filtroAcao}`)
+      if (filtroStatus) filtros.push(`status-${filtroStatus}`)
+      const sufixoFiltros = filtros.length > 0 ? `_${filtros.join('-')}` : ''
+      const nomeArquivo = `logs_${dataAtual}_${periodo}${sufixoFiltros}.csv`
+      link.download = nomeArquivo
+      
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      // Notificar sucesso
+      const mensagem = logsParaExportar.length > 0 
+        ? `✅ Exportação concluída!\n\n${logsParaExportar.length} log(s) exportado(s) com sucesso.\n\nArquivo: ${nomeArquivo}`
+        : '⚠️ Nenhum log encontrado para exportar com os filtros aplicados.'
+      alert(mensagem)
+    } catch (error) {
+      console.error('Erro ao exportar logs:', error)
+      alert(`❌ Erro ao exportar logs.\n\n${error instanceof Error ? error.message : 'Tente novamente.'}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (permissoesLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -206,9 +347,13 @@ export default function ControleLogsPage() {
           </h1>
           <p className="text-gray-400 mt-1">Registro de todas as ações do sistema</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors">
+        <button 
+          onClick={exportarParaCSV}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           <Download className="h-5 w-5" />
-          <span>Exportar</span>
+          <span>Exportar CSV</span>
         </button>
       </div>
 
@@ -529,4 +674,5 @@ export default function ControleLogsPage() {
     </div>
   )
 }
+
 

@@ -21,30 +21,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
-    "/dashboard/funcionarios/page": [
+    "/dashboard/controle-logs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/funcionarios/page.js"
+      "static/chunks/app/dashboard/controle-logs/page.js"
     ],
     "/dashboard/usuarios/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/usuarios/page.js"
     ],
-    "/dashboard/controle-acessos/page": [
+    "/dashboard/help-desk/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-acessos/page.js"
+      "static/chunks/app/dashboard/help-desk/page.js"
     ],
     "/dashboard/controle-permissoes/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/controle-permissoes/page.js"
-    ],
-    "/dashboard/controle-logs/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-logs/page.js"
     ]
   }
 }

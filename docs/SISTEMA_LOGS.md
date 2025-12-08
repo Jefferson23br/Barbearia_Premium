@@ -246,3 +246,4 @@ ORDER BY created_at DESC;
 
 **Última atualização**: Dezembro 2024
 
+

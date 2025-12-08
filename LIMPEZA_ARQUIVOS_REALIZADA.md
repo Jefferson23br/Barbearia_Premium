@@ -95,3 +95,4 @@ Todos os arquivos em `docs/deploy/` foram mantidos pois são documentação de p
 **Arquivos removidos**: 22  
 **Status**: ✅ Concluído
 
+
