@@ -46,3 +46,4 @@ COMMENT ON COLUMN protese.servicos.imagem_2_url IS 'URL da segunda imagem do ser
 COMMENT ON COLUMN protese.servicos.imagem_3_url IS 'URL da terceira imagem do serviço (opcional)';
 
 
+
