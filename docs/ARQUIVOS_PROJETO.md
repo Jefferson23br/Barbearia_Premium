@@ -108,12 +108,12 @@ Barbearia_Premium/
 
 ---
 
-## ✅ Arquivos Removidos (Limpeza Realizada - Dezembro 2024)
+## ✅ Arquivos Removidos (Limpeza Realizada - Dezembro 2024/2025)
 
 ### Limpeza Inicial (Anterior)
 Arquivos de troubleshooting e guias consolidados foram removidos anteriormente.
 
-### Limpeza Atual (Dezembro 2024)
+### Limpeza Atual (Dezembro 2024 - Histórico)
 Arquivos removidos na organização atual:
 
 - ✅ `LIMPEZA_ARQUIVOS_REALIZADA.md` - Removido (arquivo de explicação)
@@ -211,5 +211,5 @@ docs/
 
 ---
 
-**Última atualização**: Dezembro 2024
+**Última atualização**: Dezembro 2025
 
