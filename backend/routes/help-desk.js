@@ -634,3 +634,4 @@ router.get('/funcionarios', async (req, res) => {
 
 module.exports = router;
 
+

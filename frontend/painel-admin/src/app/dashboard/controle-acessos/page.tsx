@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Shield, Calendar, Users, TrendingUp, Filter, Download } from 'lucide-react'
+import { Shield, Calendar, Users, TrendingUp, Filter, UserCheck, Activity } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface Acesso {
@@ -31,6 +31,9 @@ interface Estatisticas {
   }
   total_usuarios_unicos: number
   total_logins: number
+  total_usuarios_cadastrados?: number
+  total_clientes_cadastrados?: number
+  total_administrativos_cadastrados?: number
   por_tipo: Array<{
     usuario_tipo: string
     usuarios_unicos: number
@@ -104,7 +107,7 @@ export default function ControleAcessosPage() {
       
       let urlAcessos = `${apiUrl}/api/v1/controle-acessos?data_inicio=${dataInicio}&data_fim=${dataFim}`
       if (funcionarioFiltro) {
-        urlAcessos += `&funcionario_id=${funcionarioFiltro}`
+        urlAcessos += `&funcionario_responsavel_id=${funcionarioFiltro}`
       }
       
       const [acessosRes, estatisticasRes] = await Promise.all([
@@ -149,48 +152,48 @@ export default function ControleAcessosPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 p-4 md:p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-          <Shield className="h-8 w-8 text-amber-500" />
+        <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+          <Shield className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
           Controle de Acessos
         </h1>
-        <p className="text-gray-400 mt-1">Monitore os acessos e logins dos usuários do sistema</p>
+        <p className="text-gray-400 mt-1 text-sm md:text-base">Monitore os acessos e logins dos usuários do sistema</p>
       </div>
 
       {/* Filtros */}
       <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-4">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-amber-500" />
-            <span className="text-gray-300 font-medium">Filtros:</span>
+            <Filter className="h-4 w-4 md:h-5 md:w-5 text-amber-500" />
+            <span className="text-gray-300 font-medium text-sm md:text-base">Filtros:</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-gray-300 text-sm mb-1">Data Início</label>
+              <label className="block text-gray-300 text-xs md:text-sm mb-1">Data Início</label>
               <input
                 type="date"
                 value={dataInicio}
                 onChange={(e) => setDataInicio(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm md:text-base text-white focus:outline-none focus:border-amber-500"
               />
             </div>
             <div>
-              <label className="block text-gray-300 text-sm mb-1">Data Fim</label>
+              <label className="block text-gray-300 text-xs md:text-sm mb-1">Data Fim</label>
               <input
                 type="date"
                 value={dataFim}
                 onChange={(e) => setDataFim(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm md:text-base text-white focus:outline-none focus:border-amber-500"
               />
             </div>
             <div>
-              <label className="block text-gray-300 text-sm mb-1">Funcionário Responsável</label>
+              <label className="block text-gray-300 text-xs md:text-sm mb-1">Funcionário Responsável</label>
               <select
                 value={funcionarioFiltro}
                 onChange={(e) => setFuncionarioFiltro(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm md:text-base text-white focus:outline-none focus:border-amber-500"
               >
                 <option value="">Todos</option>
                 {funcionarios.map((func) => (
@@ -206,51 +209,95 @@ export default function ControleAcessosPage() {
 
       {/* Estatísticas */}
       {estatisticas && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {/* Total de Usuários Cadastrados */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-zinc-800 p-6 rounded-lg shadow-lg border border-amber-500/20"
+            className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 p-4 md:p-6 rounded-lg shadow-lg border border-blue-500/30 backdrop-blur-sm"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-300 text-sm">Total de Usuários</p>
-                <h2 className="text-3xl font-bold text-amber-400 mt-1">{estatisticas.total_usuarios_unicos}</h2>
+              <div className="flex-1">
+                <p className="text-gray-300 text-xs md:text-sm font-medium">Total Cadastrados</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-blue-400 mt-1">
+                  {estatisticas.total_usuarios_cadastrados || 0}
+                </h2>
+                <div className="flex gap-2 mt-2 text-xs text-gray-400">
+                  <span>{estatisticas.total_clientes_cadastrados || 0} clientes</span>
+                  <span>•</span>
+                  <span>{estatisticas.total_administrativos_cadastrados || 0} admin</span>
+                </div>
               </div>
-              <Users className="h-8 w-8 text-amber-500" />
+              <UserCheck className="h-6 w-6 md:h-8 md:w-8 text-blue-400 flex-shrink-0" />
             </div>
           </motion.div>
 
+          {/* Total de Usuários que Acessaram */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05 }}
+            className="bg-gradient-to-br from-amber-600/20 to-amber-800/20 p-4 md:p-6 rounded-lg shadow-lg border border-amber-500/30 backdrop-blur-sm"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-gray-300 text-xs md:text-sm font-medium">Usuários Ativos</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-amber-400 mt-1">
+                  {estatisticas.total_usuarios_unicos || 0}
+                </h2>
+                <p className="text-gray-400 text-xs mt-1">no período</p>
+              </div>
+              <Activity className="h-6 w-6 md:h-8 md:w-8 text-amber-400 flex-shrink-0" />
+            </div>
+          </motion.div>
+
+          {/* Total de Logins */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="bg-zinc-800 p-6 rounded-lg shadow-lg border border-green-500/20"
+            className="bg-gradient-to-br from-green-600/20 to-green-800/20 p-4 md:p-6 rounded-lg shadow-lg border border-green-500/30 backdrop-blur-sm"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-300 text-sm">Total de Logins</p>
-                <h2 className="text-3xl font-bold text-green-400 mt-1">{estatisticas.total_logins}</h2>
+              <div className="flex-1">
+                <p className="text-gray-300 text-xs md:text-sm font-medium">Total de Logins</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-green-400 mt-1">
+                  {estatisticas.total_logins || 0}
+                </h2>
+                <p className="text-gray-400 text-xs mt-1">no período</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
+              <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-green-400 flex-shrink-0" />
             </div>
           </motion.div>
 
+          {/* Por Tipo */}
           {estatisticas.por_tipo.map((tipo, index) => (
             <motion.div
               key={tipo.usuario_tipo}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-              className="bg-zinc-800 p-6 rounded-lg shadow-lg border border-blue-500/20"
+              transition={{ delay: 0.15 + index * 0.05 }}
+              className={`bg-gradient-to-br ${
+                tipo.usuario_tipo === 'cliente'
+                  ? 'from-purple-600/20 to-purple-800/20 border-purple-500/30'
+                  : 'from-indigo-600/20 to-indigo-800/20 border-indigo-500/30'
+              } p-4 md:p-6 rounded-lg shadow-lg border backdrop-blur-sm`}
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-300 text-sm capitalize">{tipo.usuario_tipo}</p>
-                  <h2 className="text-3xl font-bold text-blue-400 mt-1">{tipo.usuarios_unicos}</h2>
-                  <p className="text-gray-400 text-xs mt-1">{tipo.total_logins} logins</p>
+                <div className="flex-1">
+                  <p className="text-gray-300 text-xs md:text-sm font-medium capitalize">
+                    {tipo.usuario_tipo === 'cliente' ? 'Clientes' : 'Administrativos'}
+                  </p>
+                  <h2 className={`text-2xl md:text-3xl font-bold mt-1 ${
+                    tipo.usuario_tipo === 'cliente' ? 'text-purple-400' : 'text-indigo-400'
+                  }`}>
+                    {tipo.usuarios_unicos || 0}
+                  </h2>
+                  <p className="text-gray-400 text-xs mt-1">{tipo.total_logins || 0} logins</p>
                 </div>
-                <Users className="h-8 w-8 text-blue-500" />
+                <Users className={`h-6 w-6 md:h-8 md:w-8 flex-shrink-0 ${
+                  tipo.usuario_tipo === 'cliente' ? 'text-purple-400' : 'text-indigo-400'
+                }`} />
               </div>
             </motion.div>
           ))}
@@ -259,24 +306,24 @@ export default function ControleAcessosPage() {
 
       {/* Gráfico de Acessos por Dia */}
       {estatisticas && estatisticas.por_dia.length > 0 && (
-        <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-amber-500" />
+        <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-4 md:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <Calendar className="h-4 w-4 md:h-5 md:w-5 text-amber-500" />
             Acessos por Dia
           </h2>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-64 md:max-h-96 overflow-y-auto">
             {estatisticas.por_dia.map((dia) => (
-              <div key={dia.data_acesso} className="bg-zinc-800 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white font-medium">{formatarData(dia.data_acesso)}</span>
-                  <div className="flex items-center gap-4">
-                    <span className="text-gray-300 text-sm">{dia.usuarios_unicos} usuários</span>
+              <div key={dia.data_acesso} className="bg-zinc-800 rounded-lg p-3 md:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                  <span className="text-white font-medium text-sm md:text-base">{formatarData(dia.data_acesso)}</span>
+                  <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm">
+                    <span className="text-gray-300">{dia.usuarios_unicos} usuários</span>
                     <span className="text-amber-400 font-semibold">{dia.total_logins} logins</span>
                   </div>
                 </div>
                 <div className="w-full bg-zinc-700 rounded-full h-2">
                   <div
-                    className="bg-amber-500 h-2 rounded-full transition-all"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full transition-all"
                     style={{
                       width: `${Math.min((dia.total_logins / (estatisticas.total_logins || 1)) * 100, 100)}%`,
                     }}
@@ -291,60 +338,114 @@ export default function ControleAcessosPage() {
       {/* Tabela de Acessos */}
       <div className="bg-zinc-900 border border-amber-500/20 rounded-lg overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Carregando acessos...</p>
+          <div className="p-8 md:p-12 text-center">
+            <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+            <p className="text-gray-400 text-sm md:text-base">Carregando acessos...</p>
           </div>
         ) : acessos.length === 0 ? (
-          <div className="p-12 text-center">
-            <Shield className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">Nenhum acesso encontrado no período selecionado.</p>
+          <div className="p-8 md:p-12 text-center">
+            <Shield className="h-12 w-12 md:h-16 md:w-16 text-gray-600 mx-auto mb-4" />
+            <p className="text-gray-400 text-sm md:text-base">Nenhum acesso encontrado no período selecionado.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px]">
-              <thead className="bg-zinc-800 border-b border-zinc-700">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Usuário
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Tipo
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Funcionário Responsável
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Data
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Quantidade de Logins
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Primeiro Acesso
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Último Acesso
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800">
-                {acessos.map((acesso) => (
-                  <motion.tr
-                    key={acesso.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="hover:bg-zinc-800/50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-white font-medium">{acesso.nome_usuario || 'N/A'}</div>
-                        <div className="text-gray-400 text-sm">{acesso.email_usuario || 'N/A'}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-zinc-800 border-b border-zinc-700">
+                  <tr>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Usuário
+                    </th>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Tipo
+                    </th>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Funcionário Responsável
+                    </th>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Data
+                    </th>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Logins
+                    </th>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Primeiro Acesso
+                    </th>
+                    <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                      Último Acesso
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800">
+                  {acessos.map((acesso) => (
+                    <motion.tr
+                      key={acesso.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="hover:bg-zinc-800/50 transition-colors"
+                    >
+                      <td className="px-4 md:px-6 py-3 md:py-4">
+                        <div>
+                          <div className="text-white font-medium text-sm md:text-base">{acesso.nome_usuario || 'N/A'}</div>
+                          <div className="text-gray-400 text-xs md:text-sm">{acesso.email_usuario || 'N/A'}</div>
+                        </div>
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${
+                            acesso.usuario_tipo === 'cliente'
+                              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                              : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                          }`}
+                        >
+                          {acesso.usuario_tipo}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4">
+                        <span className="text-gray-300 text-sm">
+                          {acesso.funcionario_responsavel_nome ? (
+                            acesso.funcionario_responsavel_nome
+                          ) : (
+                            <span className="text-gray-500 italic">
+                              {acesso.usuario_tipo === 'cliente' ? 'Nenhum' : '-'}
+                            </span>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-gray-300 text-sm">
+                        {formatarData(acesso.data_acesso)}
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4">
+                        <span className="text-amber-400 font-semibold">{acesso.quantidade_login}</span>
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-gray-400 text-xs md:text-sm">
+                        {formatarDataHora(acesso.primeiro_acesso)}
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-gray-400 text-xs md:text-sm">
+                        {formatarDataHora(acesso.ultimo_acesso)}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden p-4 space-y-4">
+              {acessos.map((acesso) => (
+                <motion.div
+                  key={acesso.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-zinc-800 rounded-lg p-4 border border-zinc-700"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="text-white font-medium text-base mb-1">{acesso.nome_usuario || 'N/A'}</div>
+                      <div className="text-gray-400 text-xs mb-2">{acesso.email_usuario || 'N/A'}</div>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${
+                        className={`inline-block px-2 py-1 rounded-full text-xs font-semibold capitalize ${
                           acesso.usuario_tipo === 'cliente'
                             ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                             : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
@@ -352,38 +453,35 @@ export default function ControleAcessosPage() {
                       >
                         {acesso.usuario_tipo}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-gray-300 text-sm">
-                        {acesso.funcionario_responsavel_nome ? (
-                          acesso.funcionario_responsavel_nome
-                        ) : (
-                          <span className="text-gray-500 italic">
-                            {acesso.usuario_tipo === 'cliente' ? 'Nenhum' : '-'}
-                          </span>
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-300">
-                      {formatarData(acesso.data_acesso)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-amber-400 font-semibold">{acesso.quantidade_login}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
-                      {formatarDataHora(acesso.primeiro_acesso)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-400 text-sm">
-                      {formatarDataHora(acesso.ultimo_acesso)}
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    <span className="text-amber-400 font-bold text-lg">{acesso.quantidade_login}</span>
+                  </div>
+                  <div className="space-y-2 text-xs text-gray-400 border-t border-zinc-700 pt-3">
+                    <div className="flex justify-between">
+                      <span>Data:</span>
+                      <span className="text-gray-300">{formatarData(acesso.data_acesso)}</span>
+                    </div>
+                    {acesso.funcionario_responsavel_nome && (
+                      <div className="flex justify-between">
+                        <span>Responsável:</span>
+                        <span className="text-gray-300">{acesso.funcionario_responsavel_nome}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>Primeiro:</span>
+                      <span className="text-gray-300">{formatarDataHora(acesso.primeiro_acesso)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Último:</span>
+                      <span className="text-gray-300">{formatarDataHora(acesso.ultimo_acesso)}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
   )
 }
-

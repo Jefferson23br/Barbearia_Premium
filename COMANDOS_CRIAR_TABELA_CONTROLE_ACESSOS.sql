@@ -34,3 +34,4 @@ COMMENT ON COLUMN protese.controle_acessos.primeiro_acesso IS 'Timestamp do prim
 COMMENT ON COLUMN protese.controle_acessos.ultimo_acesso IS 'Timestamp do último login do dia';
 
 
+

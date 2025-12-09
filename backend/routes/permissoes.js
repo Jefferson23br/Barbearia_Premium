@@ -52,6 +52,9 @@ router.get('/:usuarioId', async (req, res) => {
           help_desk_ver: false,
           help_desk_editar: false,
           help_desk_excluir: false,
+          servicos_ver: false,
+          servicos_editar: false,
+          servicos_excluir: false,
           controle_permissoes_ver: false,
           controle_permissoes_editar: false,
           controle_permissoes_excluir: false,
@@ -129,6 +132,9 @@ router.put('/:usuarioId', async (req, res) => {
       help_desk_ver: permissoesBody.help_desk_ver || false,
       help_desk_editar: permissoesBody.help_desk_editar || false,
       help_desk_excluir: permissoesBody.help_desk_excluir || false,
+      servicos_ver: permissoesBody.servicos_ver || false,
+      servicos_editar: permissoesBody.servicos_editar || false,
+      servicos_excluir: permissoesBody.servicos_excluir || false,
       controle_permissoes_ver: permissoesBody.controle_permissoes_ver || false,
       controle_permissoes_editar: permissoesBody.controle_permissoes_editar || false,
       controle_permissoes_excluir: permissoesBody.controle_permissoes_excluir || false,
@@ -158,7 +164,10 @@ router.put('/:usuarioId', async (req, res) => {
           help_desk_ver = $29,
           help_desk_editar = $30,
           help_desk_excluir = $31,
-          controle_permissoes_ver = $32, controle_permissoes_editar = $33, controle_permissoes_excluir = $34,
+          servicos_ver = $32,
+          servicos_editar = $33,
+          servicos_excluir = $34,
+          controle_permissoes_ver = $35, controle_permissoes_editar = $36, controle_permissoes_excluir = $37,
           updated_at = NOW()
         WHERE usuario_id = $1`,
         [
@@ -193,6 +202,9 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.help_desk_ver,
           valoresPermissoes.help_desk_editar,
           valoresPermissoes.help_desk_excluir,
+          valoresPermissoes.servicos_ver,
+          valoresPermissoes.servicos_editar,
+          valoresPermissoes.servicos_excluir,
           valoresPermissoes.controle_permissoes_ver,
           valoresPermissoes.controle_permissoes_editar,
           valoresPermissoes.controle_permissoes_excluir,
@@ -215,9 +227,10 @@ router.put('/:usuarioId', async (req, res) => {
           controle_acessos_ver,
           controle_logs_ver,
           help_desk_ver, help_desk_editar, help_desk_excluir,
+          servicos_ver, servicos_editar, servicos_excluir,
           controle_permissoes_ver, controle_permissoes_editar, controle_permissoes_excluir
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37
         )`,
         [
           usuarioId,
@@ -251,6 +264,9 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.help_desk_ver,
           valoresPermissoes.help_desk_editar,
           valoresPermissoes.help_desk_excluir,
+          valoresPermissoes.servicos_ver,
+          valoresPermissoes.servicos_editar,
+          valoresPermissoes.servicos_excluir,
           valoresPermissoes.controle_permissoes_ver,
           valoresPermissoes.controle_permissoes_editar,
           valoresPermissoes.controle_permissoes_excluir,
@@ -290,4 +306,5 @@ router.put('/:usuarioId', async (req, res) => {
 });
 
 module.exports = router;
+
 

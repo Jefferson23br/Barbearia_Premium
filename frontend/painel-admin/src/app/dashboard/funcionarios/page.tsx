@@ -25,6 +25,7 @@ export default function FuncionariosPage() {
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<Funcionario | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const { podeAcessar, podeEditar, podeExcluir } = usePermissions()
 
   // Formulário

@@ -66,6 +66,11 @@ interface Permissoes {
   help_desk_editar: boolean
   help_desk_excluir: boolean
 
+  // Serviços
+  servicos_ver: boolean
+  servicos_editar: boolean
+  servicos_excluir: boolean
+
   // Controle de Permissão (apenas Master)
   controle_permissoes_ver: boolean
   controle_permissoes_editar: boolean
@@ -103,6 +108,9 @@ const permissoesPadrao: Permissoes = {
   help_desk_ver: false,
   help_desk_editar: false,
   help_desk_excluir: false,
+  servicos_ver: false,
+  servicos_editar: false,
+  servicos_excluir: false,
   controle_permissoes_ver: false,
   controle_permissoes_editar: false,
   controle_permissoes_excluir: false,
@@ -358,6 +366,16 @@ export default function ControlePermissoesPage() {
         ver: permissoes.help_desk_ver,
         editar: permissoes.help_desk_editar,
         excluir: permissoes.help_desk_excluir,
+      },
+    },
+    {
+      id: 'servicos',
+      nome: 'Serviços',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.servicos_ver,
+        editar: permissoes.servicos_editar,
+        excluir: permissoes.servicos_excluir,
       },
     },
   ]

@@ -89,3 +89,4 @@ COMMENT ON COLUMN protese.permissoes_usuarios.dashboard_ver IS 'Permissão para 
 COMMENT ON COLUMN protese.permissoes_usuarios.controle_permissoes_ver IS 'Permissão para visualizar controle de permissões (Master apenas)';
 
 
+

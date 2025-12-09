@@ -6,37 +6,29 @@ const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 
 /**
  * Função auxiliar para registrar acesso/login
+ * Agrupa por usuário, tipo e data (um registro por dia por usuário)
  */
 async function registrarAcesso(usuarioId, usuarioTipo) {
   try {
-    const dataAcesso = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    // Usar data local do servidor (timezone do banco)
     const agora = new Date();
+    // Extrair apenas a data (YYYY-MM-DD) sem considerar timezone
+    const dataAcesso = agora.toISOString().split('T')[0];
 
-    // Verificar se já existe registro para hoje
-    const existe = await pool.query(
-      `SELECT id, quantidade_login FROM protese.controle_acessos
-       WHERE usuario_id = $1 AND usuario_tipo = $2 AND data_acesso = $3`,
-      [usuarioId, usuarioTipo, dataAcesso]
+    // Usar UPSERT para garantir que só existe um registro por usuário/tipo/data
+    // Se já existe registro para hoje, incrementa quantidade_login
+    // Se não existe, cria novo registro com quantidade_login = 1
+    // A constraint UNIQUE (usuario_id, usuario_tipo, data_acesso) garante que só existe um registro por dia
+    await pool.query(
+      `INSERT INTO protese.controle_acessos (usuario_id, usuario_tipo, data_acesso, quantidade_login, primeiro_acesso, ultimo_acesso, created_at, updated_at)
+       VALUES ($1, $2, $3, 1, $4, $4, $4, $4)
+       ON CONFLICT (usuario_id, usuario_tipo, data_acesso)
+       DO UPDATE SET
+         quantidade_login = protese.controle_acessos.quantidade_login + 1,
+         ultimo_acesso = $4,
+         updated_at = $4`,
+      [usuarioId, usuarioTipo, dataAcesso, agora]
     );
-
-    if (existe.rows.length > 0) {
-      // Atualizar quantidade de login
-      await pool.query(
-        `UPDATE protese.controle_acessos
-         SET quantidade_login = quantidade_login + 1,
-             ultimo_acesso = $1,
-             updated_at = $1
-         WHERE id = $2`,
-        [agora, existe.rows[0].id]
-      );
-    } else {
-      // Criar novo registro
-      await pool.query(
-        `INSERT INTO protese.controle_acessos (usuario_id, usuario_tipo, data_acesso, quantidade_login, primeiro_acesso, ultimo_acesso)
-         VALUES ($1, $2, $3, 1, $4, $4)`,
-        [usuarioId, usuarioTipo, dataAcesso, agora]
-      );
-    }
   } catch (error) {
     console.error('Erro ao registrar acesso:', error);
     // Não falhar o login se der erro ao registrar acesso
@@ -156,4 +148,5 @@ router.post('/admin/login', async (req, res) => {
 });
 
 module.exports = router;
+
 

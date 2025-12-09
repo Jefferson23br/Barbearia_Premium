@@ -22,7 +22,22 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(apiLoggerMiddleware);
 
 // Middleware para servir arquivos estáticos (fotos e anexos)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// IMPORTANTE: Deve vir antes das rotas da API para ter prioridade
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '1d', // Cache de 1 dia para melhor performance
+  etag: true, // Suporte a ETag para cache
+  index: false, // Não listar diretórios
+  dotfiles: 'ignore', // Ignorar arquivos ocultos
+  setHeaders: (res, path) => {
+    // Headers para permitir CORS e cache
+    res.set('Access-Control-Allow-Origin', '*');
+    if (path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png')) {
+      res.set('Content-Type', 'image/jpeg');
+    } else if (path.endsWith('.pdf')) {
+      res.set('Content-Type', 'application/pdf');
+    }
+  },
+}));
 
 // Inicializar sistema de logs ANTES do middleware de API logger
 initLogger(pool);

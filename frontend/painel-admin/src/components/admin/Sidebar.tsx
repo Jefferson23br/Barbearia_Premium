@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   Menu,
   X,
+  Scissors,
 } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
@@ -65,6 +66,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'agenda',
       badge: 'Em breve',
+    },
+    {
+      id: 'servicos',
+      label: 'Serviços',
+      icon: Scissors,
+      path: '/dashboard/servicos',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'servicos',
     },
     {
       id: 'lancamento-venda',

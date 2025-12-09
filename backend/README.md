@@ -1,32 +1,37 @@
 # ⚙️ Backend - Sistema Prótese Capilar
 
-API REST desenvolvida com Node.js, Express.js e PostgreSQL.
+API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do backend que desenvolvi para gerenciar toda a lógica de negócio e comunicação com o banco de dados.
 
 ---
 
 ## 🚀 Status
 
-**Status**: ✅ Em Produção  
-**URL**: https://api.protesecapilarcuiaba.com.br
+**Status**: ✅ **Em Produção**  
+**URL**: https://api.protesecapilarcuiaba.com.br  
+**Porta**: 3001
 
 ---
 
-## 🛠️ Tecnologias
+## 🛠️ Tecnologias que Utilizei
 
-- **Runtime**: Node.js 20 LTS
-- **Framework**: Express.js
-- **Banco de Dados**: PostgreSQL 15+
-- **Autenticação**: bcrypt (hash de senhas)
-- **Upload**: Multer
-- **CORS**: Configurado para múltiplas origens
+Desenvolvi este backend utilizando as seguintes tecnologias:
+
+- **Node.js 20 LTS** - Runtime JavaScript
+- **Express.js 4.x** - Framework web minimalista e flexível
+- **PostgreSQL 15+** - Banco de dados relacional robusto
+- **bcrypt** - Hash de senhas com 10 rounds
+- **Multer** - Upload de arquivos (fotos e anexos)
+- **dotenv** - Gerenciamento de variáveis de ambiente
 
 ---
 
-## 📁 Estrutura Modular
+## 📁 Estrutura Modular que Criei
+
+Organizei o backend em uma estrutura modular para facilitar a manutenção e escalabilidade:
 
 ```
 backend/
-├── server.js           # Servidor Express central (98 linhas)
+├── server.js           # Servidor Express central (ponto de entrada)
 ├── config/             # Configurações compartilhadas
 │   ├── database.js    # Configuração PostgreSQL
 │   ├── cors.js        # Configuração CORS
@@ -35,32 +40,32 @@ backend/
 │   ├── index.js       # Agrupa todas as rotas
 │   ├── clientes.js    # CRUD de clientes
 │   ├── funcionarios.js # CRUD de funcionários
-│   ├── auth.js        # Autenticação
-│   ├── permissoes.js  # Permissões
-│   ├── controle-acessos.js # Controle de acessos
-│   ├── logs.js        # Sistema de logs
-│   └── help-desk.js   # Help Desk
+│   ├── auth.js        # Autenticação (login)
+│   ├── permissoes.js  # Sistema de permissões
+│   ├── controle-acessos.js # Controle de acessos/login
+│   ├── logs.js        # Sistema de logs/auditoria
+│   ├── help-desk.js   # Help Desk (tickets)
+│   └── servicos.js    # Gerenciamento de serviços
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
-├── utils/              # Utilitários
-│   ├── logger.js      # Sistema de logs
-│   └── logHelper.js   # Helpers de logs
-└── README.md
+└── utils/              # Utilitários
+    ├── logger.js      # Sistema de logs
+    └── logHelper.js   # Helpers de logs
 ```
 
-**Benefícios da Estrutura Modular:**
-- ✅ Manutenibilidade: Cada módulo é independente
-- ✅ Escalabilidade: Fácil adicionar novos módulos
-- ✅ Organização: Código organizado por funcionalidade
-- ✅ Colaboração: Múltiplos desenvolvedores podem trabalhar em paralelo
+**Por que escolhi essa estrutura?**
+- ✅ **Manutenibilidade**: Cada módulo é independente e fácil de entender
+- ✅ **Escalabilidade**: Posso adicionar novos módulos sem afetar os existentes
+- ✅ **Organização**: Código organizado por funcionalidade, não por tipo
+- ✅ **Colaboração**: Múltiplos desenvolvedores podem trabalhar em paralelo
 
 ---
 
 ## 🔧 Configuração
 
 ### Pré-requisitos
-- Node.js 20+
-- PostgreSQL 15+
+- Node.js 20+ instalado
+- PostgreSQL 15+ instalado e configurado
 - npm ou yarn
 
 ### Instalação
@@ -72,7 +77,7 @@ npm install
 
 ### Variáveis de Ambiente
 
-Criar arquivo `.env` na raiz do backend:
+Criei um arquivo `.env` na raiz do backend com as seguintes variáveis:
 
 ```env
 PORT=3001
@@ -90,7 +95,7 @@ CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarc
 
 ---
 
-## 🏃 Executar
+## 🏃 Como Executar
 
 ### Desenvolvimento
 
@@ -109,49 +114,42 @@ pm2 save
 
 ---
 
-## 📡 Endpoints Principais
+## 📡 Endpoints que Implementei
 
-> **Nota**: Todos os endpoints estão organizados em módulos em `routes/`. O `server.js` central apenas inicializa o servidor e registra as rotas.
+Desenvolvi uma API REST completa com os seguintes endpoints:
 
-### Autenticação
-
+### 🔐 Autenticação
 - `POST /api/v1/auth/login` - Login de cliente
 - `POST /api/v1/auth/admin/login` - Login de administrador
 
-### Funcionários
-
-- `GET /api/v1/funcionarios` - Listar funcionários
+### 👥 Funcionários
+- `GET /api/v1/funcionarios` - Listar funcionários (com filtro de Master)
 - `POST /api/v1/funcionarios` - Criar funcionário
-- `GET /api/v1/funcionarios/:id` - Buscar funcionário
+- `GET /api/v1/funcionarios/:id` - Buscar funcionário específico
 - `PUT /api/v1/funcionarios/:id` - Atualizar funcionário
-- `DELETE /api/v1/funcionarios/:id` - Excluir funcionário
+- `DELETE /api/v1/funcionarios/:id` - Excluir funcionário (proteção Master)
 
-### Clientes
-
-- `GET /api/v1/clientes` - Listar clientes
+### 👤 Clientes
+- `GET /api/v1/clientes` - Listar clientes (com funcionário responsável)
 - `POST /api/v1/clientes` - Criar cliente
-- `GET /api/v1/clientes/:id` - Buscar cliente
+- `GET /api/v1/clientes/:id` - Buscar cliente específico
 - `PUT /api/v1/clientes/:id` - Atualizar cliente
 - `DELETE /api/v1/clientes/:id` - Excluir cliente
 
-### Permissões
-
-- `GET /api/v1/permissoes/:usuarioId` - Buscar permissões
+### 🔐 Permissões
+- `GET /api/v1/permissoes/:usuarioId` - Buscar permissões do usuário
 - `PUT /api/v1/permissoes/:usuarioId` - Atualizar permissões
 
-### Controle de Acessos
-
-- `GET /api/v1/controle-acessos` - Listar acessos (com filtros)
+### 📊 Controle de Acessos
+- `GET /api/v1/controle-acessos` - Listar acessos (com filtros avançados)
 - `GET /api/v1/controle-acessos/estatisticas` - Estatísticas de acesso
 
-### Logs
-
-- `GET /api/v1/logs` - Listar logs (com filtros)
+### 📋 Logs do Sistema
+- `GET /api/v1/logs` - Listar logs (com filtros avançados)
 - `GET /api/v1/logs/estatisticas` - Estatísticas de logs
 - `GET /api/v1/logs/:id` - Buscar log específico
 
-### Help Desk
-
+### 🎫 Help Desk
 - `GET /api/v1/help-desk/chamados` - Listar chamados
 - `POST /api/v1/help-desk/chamados` - Criar chamado
 - `GET /api/v1/help-desk/chamados/:id` - Buscar chamado
@@ -159,8 +157,17 @@ pm2 save
 - `POST /api/v1/help-desk/chamados/:id/respostas` - Adicionar resposta
 - `GET /api/v1/help-desk/funcionarios` - Listar funcionários para responsável
 
-### Health Check
+### 🛍️ Serviços
+- `GET /api/v1/servicos` - Listar serviços
+- `POST /api/v1/servicos` - Criar serviço
+- `GET /api/v1/servicos/:id` - Buscar serviço
+- `PUT /api/v1/servicos/:id` - Atualizar serviço
+- `DELETE /api/v1/servicos/:id` - Excluir serviço
+- `POST /api/v1/servicos/:id/imagens` - Upload de imagens
+- `DELETE /api/v1/servicos/:id/imagens/:campo` - Excluir imagem
+- `PUT /api/v1/servicos/:id/imagens/capa` - Definir imagem de capa
 
+### 🏥 Health Check
 - `GET /health` - Status da API
 - `GET /api/test-db` - Teste de conexão com banco
 
@@ -170,94 +177,102 @@ pm2 save
 
 ### Schema: `protese`
 
-**Tabelas principais:**
+Implementei as seguintes tabelas principais:
+
 - `usuarios_administrativos` - Administradores/Funcionários
-- `usuarios_clientes` - Clientes
-- `permissoes_usuarios` - Permissões granulares
-- `controle_acessos` - Logs de login
+- `usuarios_clientes` - Clientes do sistema
+- `permissoes_usuarios` - Permissões granulares por módulo
+- `controle_acessos` - Logs de acesso/login (agrupado por dia)
 - `logs_sistema` - Logs de ações do sistema
 - `help_desk_chamados` - Chamados do Help Desk
 - `help_desk_respostas` - Respostas dos chamados
 - `help_desk_anexos` - Anexos dos chamados/respostas
-
-Ver documentação completa: [Estrutura do Projeto](../docs/ESTRUTURA_PROJETO.md)
+- `servicos` - Serviços oferecidos pela clínica
+- `servicos_imagens` - Imagens dos serviços
 
 ### Scripts SQL
 
-Scripts para criar tabelas estão na raiz do projeto:
+Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
 - `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
 - `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
+- `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql`
 
 ---
 
 ## 📁 Uploads
 
 ### Fotos de Perfil
-
-- Diretório: `backend/uploads/fotos/`
-- Endpoint: `/uploads/fotos/{filename}`
-- Limite: 5MB por arquivo
-- Formatos aceitos: Imagens (image/*)
+- **Diretório**: `backend/uploads/fotos/`
+- **Endpoint**: `/uploads/fotos/{filename}`
+- **Limite**: 5MB por arquivo
+- **Formatos**: Imagens (image/*)
 
 ### Anexos Help Desk
+- **Diretório**: `backend/uploads/help-desk/`
+- **Endpoint**: `/uploads/help-desk/{filename}`
+- **Limite**: 10MB por arquivo
+- **Formatos**: Imagens (image/*) e PDFs (application/pdf)
 
-- Diretório: `backend/uploads/help-desk/`
-- Endpoint: `/uploads/help-desk/{filename}`
-- Limite: 10MB por arquivo
-- Formatos aceitos: Imagens (image/*) e PDFs (application/pdf)
+### Imagens de Serviços
+- **Diretório**: `backend/uploads/servicos/`
+- **Endpoint**: `/uploads/servicos/{filename}`
+- **Limite**: 5MB por arquivo
+- **Formatos**: Imagens (image/*)
 
 ---
 
 ## 🔐 Segurança
 
-- Senhas hasheadas com bcrypt (10 rounds)
-- CORS configurado para origens específicas
-- Validação de inputs
-- Sanitização de dados
+Implementei as seguintes medidas de segurança:
 
-**TODOs de Segurança:**
-- [ ] Implementar JWT tokens
+- ✅ Senhas hasheadas com bcrypt (10 rounds)
+- ✅ CORS configurado para origens específicas
+- ✅ Validação de inputs em todos os endpoints
+- ✅ Sanitização de dados
+- ✅ Sistema de permissões granular (RBAC)
+- ✅ Logs de auditoria para ações críticas
+
+**Melhorias futuras que pretendo implementar:**
+- [ ] JWT tokens para autenticação
 - [ ] Rate limiting
-- [ ] Validação mais robusta
+- [ ] Validação mais robusta com biblioteca (Joi/Zod)
 - [ ] Middleware de autenticação nas rotas protegidas
 
 ---
 
-## 📊 Logs
+## 📊 Sistema de Logs
 
-### PM2
+Criei um sistema completo de logs que registra automaticamente todas as ações importantes:
 
-```bash
-pm2 logs api-protese-capilar
-pm2 logs api-protese-capilar --lines 100
-```
+### Middleware Automático
+O middleware `apiLogger.js` registra automaticamente:
+- Todas as requisições HTTP
+- Ações de CRUD (criar, editar, excluir)
+- Dados anteriores e novos (JSON)
+- IP do cliente e User-Agent
 
-### Nginx
-
-```bash
-tail -f /var/log/nginx/access.log
-tail -f /var/log/nginx/error.log
-```
+### Logs Manuais
+Em endpoints específicos, adiciono logs manuais com mais detalhes:
+- Contexto específico da ação
+- Dados relacionados
+- Status da operação
 
 ---
 
 ## 🐛 Debugging
 
 ### Testar conexão com banco
-
 ```bash
 curl http://localhost:3001/api/test-db
 ```
 
 ### Verificar saúde da API
-
 ```bash
 curl http://localhost:3001/health
 ```
 
 ### Verificar logs
-
 ```bash
 # Logs do PM2
 pm2 logs api-protese-capilar --lines 50
@@ -270,14 +285,14 @@ tail -f /var/log/nodejs/api-protese-capilar.log
 
 ## 🔄 Deploy
 
-### VPS Hostinger (srv842883)
+### VPS Hostinger
 
 **Localização do código:**
 ```
-/home/backend/
+/home/cyberpanel/app/backend
 ```
 
-**Comandos úteis:**
+**Comandos úteis que uso:**
 ```bash
 # Reiniciar API
 pm2 restart api-protese-capilar
@@ -299,7 +314,7 @@ pm2 start api-protese-capilar
 
 ```bash
 # No servidor
-cd /home/backend
+cd /home/cyberpanel/app/backend
 git pull  # se usando git
 # ou fazer upload via SCP
 
@@ -309,17 +324,9 @@ pm2 restart api-protese-capilar
 
 ---
 
-## 📚 Scripts Auxiliares
-
-Scripts úteis estão em `scripts/`:
-- `configurar-postgres.sh` - Setup inicial do PostgreSQL
-- `configurar-ssl-api.sh` - Configurar SSL
-- `setup-vps.sh` - Setup completo da VPS
-- `verificar-vps-backend.sh` - Verificar status
-
----
-
 ## 📝 Próximas Melhorias
+
+Melhorias que pretendo implementar no futuro:
 
 - [ ] Implementar JWT tokens
 - [ ] Rate limiting
@@ -328,6 +335,9 @@ Scripts úteis estão em `scripts/`:
 - [ ] Documentação Swagger/OpenAPI
 - [ ] Cache de queries frequentes
 - [ ] Paginação em endpoints de listagem
+- [ ] WebSockets para notificações em tempo real
+
+---
 
 ## 📚 Documentação Adicional
 
@@ -338,4 +348,5 @@ Scripts úteis estão em `scripts/`:
 ---
 
 **Última atualização**: Dezembro 2024  
-**Estrutura**: ✅ Modular (implementada em Dezembro 2024)
+**Estrutura**: ✅ Modular (implementada em Dezembro 2024)  
+**Status**: ✅ Em Produção

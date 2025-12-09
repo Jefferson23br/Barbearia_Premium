@@ -14,6 +14,12 @@ if (!fs.existsSync(helpDeskUploadsDir)) {
   fs.mkdirSync(helpDeskUploadsDir, { recursive: true });
 }
 
+// Criar diretório de uploads de imagens de serviços
+const servicosUploadsDir = path.join(__dirname, '..', 'uploads', 'servicos');
+if (!fs.existsSync(servicosUploadsDir)) {
+  fs.mkdirSync(servicosUploadsDir, { recursive: true });
+}
+
 // Configuração do Multer para upload de imagens
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -73,14 +79,46 @@ const uploadHelpDesk = multer({
   },
 });
 
+// Configuração do Multer para upload de imagens de serviços (máximo 3)
+const servicosStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, servicosUploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, `servico-${uniqueSuffix}${ext}`);
+  },
+});
+
+const servicosFileFilter = (req, file, cb) => {
+  // Aceitar apenas imagens
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Apenas arquivos de imagem são permitidos!'), false);
+  }
+};
+
+const uploadServicos = multer({
+  storage: servicosStorage,
+  fileFilter: servicosFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB por imagem
+  },
+});
+
 module.exports = {
   upload,
   uploadHelpDesk,
+  uploadServicos,
   uploadsDir,
   helpDeskUploadsDir,
+  servicosUploadsDir,
 };
 
 // Exportar também individualmente para compatibilidade
 module.exports.uploadsDir = uploadsDir;
 module.exports.helpDeskUploadsDir = helpDeskUploadsDir;
+module.exports.servicosUploadsDir = servicosUploadsDir;
 

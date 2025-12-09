@@ -16,3 +16,4 @@ WHERE conrelid = 'protese.logs_sistema'::regclass
   AND conname = 'logs_sistema_usuario_tipo_check';
 
 
+

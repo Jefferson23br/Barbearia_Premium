@@ -48,3 +48,4 @@ COMMENT ON COLUMN protese.logs_sistema.dados_novos IS 'Dados após a alteração
 COMMENT ON COLUMN protese.logs_sistema.status IS 'Status da ação: sucesso, erro, cancelado';
 
 
+

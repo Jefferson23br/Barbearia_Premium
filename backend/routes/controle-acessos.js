@@ -25,6 +25,7 @@ router.get('/', async (req, res) => {
     const dataFim = data_fim || hoje.toISOString().split('T')[0];
 
     // Construir query base
+    // Usar subqueries para garantir que os dados sejam encontrados corretamente
     let query = `
       SELECT 
         ca.id,
@@ -36,20 +37,19 @@ router.get('/', async (req, res) => {
         ca.ultimo_acesso,
         ca.created_at,
         ca.updated_at,
-        CASE 
-          WHEN ca.usuario_tipo = 'cliente' THEN uc.nome_completo
-          WHEN ca.usuario_tipo = 'administrativo' THEN ua.nome_completo
-        END as usuario_nome,
-        CASE 
-          WHEN ca.usuario_tipo = 'cliente' AND uc.funcionario_responsavel_id IS NOT NULL THEN ua_responsavel.nome_completo
-        END as funcionario_responsavel_nome,
-        CASE 
-          WHEN ca.usuario_tipo = 'cliente' THEN uc.funcionario_responsavel_id
-        END as funcionario_responsavel_id
+        COALESCE(uc.nome_completo, ua.nome_completo, 'Usuário não encontrado') as nome_usuario,
+        COALESCE(uc.email, ua.email, NULL) as email_usuario,
+        ua_responsavel.nome_completo as funcionario_responsavel_nome,
+        uc.funcionario_responsavel_id
       FROM protese.controle_acessos ca
-      LEFT JOIN protese.usuarios_clientes uc ON ca.usuario_tipo = 'cliente' AND ca.usuario_id = uc.id
-      LEFT JOIN protese.usuarios_administrativos ua ON ca.usuario_tipo = 'administrativo' AND ca.usuario_id = ua.id
-      LEFT JOIN protese.usuarios_administrativos ua_responsavel ON uc.funcionario_responsavel_id IS NOT NULL AND uc.funcionario_responsavel_id = ua_responsavel.id
+      LEFT JOIN protese.usuarios_clientes uc 
+        ON ca.usuario_tipo = 'cliente' 
+        AND ca.usuario_id = uc.id
+      LEFT JOIN protese.usuarios_administrativos ua 
+        ON ca.usuario_tipo = 'administrativo' 
+        AND ca.usuario_id = ua.id
+      LEFT JOIN protese.usuarios_administrativos ua_responsavel 
+        ON uc.funcionario_responsavel_id = ua_responsavel.id
       WHERE ca.data_acesso BETWEEN $1 AND $2
     `;
 
@@ -153,6 +153,17 @@ router.get('/estatisticas', async (req, res) => {
       [dataInicio, dataFim]
     );
 
+    // Total de usuários cadastrados no sistema (ativos)
+    const totalClientes = await pool.query(
+      `SELECT COUNT(*) as total FROM protese.usuarios_clientes WHERE is_active = true`
+    );
+    const totalAdministrativos = await pool.query(
+      `SELECT COUNT(*) as total FROM protese.usuarios_administrativos WHERE is_active = true`
+    );
+    const totalUsuariosCadastrados = 
+      parseInt(totalClientes.rows[0].total || 0) + 
+      parseInt(totalAdministrativos.rows[0].total || 0);
+
     res.json({
       periodo: {
         data_inicio: dataInicio,
@@ -160,6 +171,9 @@ router.get('/estatisticas', async (req, res) => {
       },
       total_acessos: parseInt(totalAcessos.rows[0].total || 0),
       total_logins: parseInt(totalLogins.rows[0].total || 0),
+      total_usuarios_cadastrados: totalUsuariosCadastrados,
+      total_clientes_cadastrados: parseInt(totalClientes.rows[0].total || 0),
+      total_administrativos_cadastrados: parseInt(totalAdministrativos.rows[0].total || 0),
       por_tipo: porTipo.rows,
       por_dia: porDia.rows,
       top_usuarios: topUsuarios.rows,
@@ -174,4 +188,5 @@ router.get('/estatisticas', async (req, res) => {
 });
 
 module.exports = router;
+
 

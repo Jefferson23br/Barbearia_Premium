@@ -57,6 +57,11 @@ export interface PermissoesUsuario {
   help_desk_editar: boolean
   help_desk_excluir: boolean
 
+  // Serviços
+  servicos_ver: boolean
+  servicos_editar: boolean
+  servicos_excluir: boolean
+
   // Controle de Permissão (apenas Master)
   controle_permissoes_ver: boolean
   controle_permissoes_editar: boolean
@@ -202,6 +207,9 @@ function criarPermissoesMaster(): PermissoesUsuario {
     help_desk_ver: true,
     help_desk_editar: true,
     help_desk_excluir: true,
+    servicos_ver: true,
+    servicos_editar: true,
+    servicos_excluir: true,
     controle_permissoes_ver: true,
     controle_permissoes_editar: true,
     controle_permissoes_excluir: true,
@@ -241,6 +249,9 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     help_desk_ver: false,
     help_desk_editar: false,
     help_desk_excluir: false,
+    servicos_ver: false,
+    servicos_editar: false,
+    servicos_excluir: false,
     controle_permissoes_ver: false,
     controle_permissoes_editar: false,
     controle_permissoes_excluir: false,
@@ -278,6 +289,9 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.help_desk_ver = true
     padrao.help_desk_editar = true
     padrao.help_desk_excluir = true
+    padrao.servicos_ver = true
+    padrao.servicos_editar = true
+    padrao.servicos_excluir = true
   }
 
   // Funcionário tem acesso limitado
@@ -290,6 +304,7 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.despesas_ver = true
     padrao.faturamento_ver = true
     padrao.help_desk_ver = true
+    padrao.servicos_ver = true
   }
 
   return padrao

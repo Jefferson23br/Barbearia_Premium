@@ -25,3 +25,4 @@ COMMENT ON COLUMN protese.usuarios_clientes.funcionario_responsavel_id IS 'ID do
 -- \d protese.usuarios_clientes
 
 
+

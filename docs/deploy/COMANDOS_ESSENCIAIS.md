@@ -13,7 +13,7 @@ cd /home/cyberpanel/app/backend
 scp server.js root@82.25.65.201:/home/cyberpanel/app/backend
 
 # Copiar pasta para VPS
-scp -r C:\Users\vivo\Barbearia_Premium\backend root@82.25.65.201:/home/cyberpanel/app/backend
+scp -r C:\Users\vivo\Barbearia_Premium\backend\ root@82.25.65.201:/home/cyberpanel/app/
 
 # Download de arquivo da VPS
 scp root@82.25.65.201:/caminho/arquivo.txt .\local\

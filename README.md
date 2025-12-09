@@ -1,9 +1,87 @@
 # 💈 Sistema Prótese Capilar - Prótese Capilar Cuiabá
 
-Sistema completo de gestão para clínica de prótese capilar desenvolvido com tecnologias modernas.
+<div align="center">
 
-> **Status**: ✅ Sistema base completo e em produção  
-> **Última atualização**: Dezembro 2024
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?style=for-the-badge&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-20_LTS-green?style=for-the-badge&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?style=for-the-badge&logo=postgresql&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-4.x-gray?style=for-the-badge&logo=express&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React](https://img.shields.io/badge/React-18.3-61dafb?style=for-the-badge&logo=react&logoColor=white)
+
+</div>
+
+<div align="center">
+
+![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
+![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2024-blue?style=flat-square)
+
+</div>
+
+---
+
+## 🎯 Sobre o Projeto
+
+Olá! Este é o **Sistema Prótese Capilar**, uma solução completa de gestão desenvolvida especificamente para a clínica Prótese Capilar Cuiabá. Desenvolvi este sistema do zero pensando em facilitar o gerenciamento de clientes, funcionários, serviços e todo o fluxo operacional da clínica.
+
+O sistema foi construído com tecnologias modernas e está **100% em produção**, atendendo diariamente as necessidades da clínica. Atualmente, temos três aplicações principais rodando:
+
+- **Painel Administrativo** - Para gestão completa da clínica
+- **Painel do Cliente** - Para que os clientes acompanhem seus atendimentos
+- **Site Público** - Site institucional (em desenvolvimento)
+
+---
+
+## 🛠️ Stack Tecnológica
+
+### Frontend
+
+<div align="left">
+
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
+| ![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js) | 14.2 | Framework principal (App Router) |
+| ![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?logo=typescript) | 5.5 | Linguagem de programação |
+| ![React](https://img.shields.io/badge/React-18.3-61dafb?logo=react) | 18.3 | Biblioteca UI |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?logo=tailwind-css) | 3.4 | Framework CSS |
+| ![Radix UI](https://img.shields.io/badge/Radix_UI-Latest-black?logo=radix-ui) | Latest | Componentes acessíveis |
+| ![Framer Motion](https://img.shields.io/badge/Framer_Motion-11.11-black?logo=framer) | 11.11 | Animações |
+| ![Lucide React](https://img.shields.io/badge/Lucide-Latest-gray?logo=lucide) | Latest | Ícones |
+| ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-7.55-pink?logo=react-hook-form) | 7.55 | Formulários |
+
+</div>
+
+### Backend
+
+<div align="left">
+
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
+| ![Node.js](https://img.shields.io/badge/Node.js-20_LTS-green?logo=node.js) | 20 LTS | Runtime |
+| ![Express.js](https://img.shields.io/badge/Express-4.x-gray?logo=express) | 4.x | Framework web |
+| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?logo=postgresql) | 15+ | Banco de dados |
+| ![bcrypt](https://img.shields.io/badge/bcrypt-Latest-green?logo=bcrypt) | Latest | Hash de senhas |
+| ![Multer](https://img.shields.io/badge/Multer-Latest-orange?logo=multer) | Latest | Upload de arquivos |
+
+</div>
+
+### Infraestrutura
+
+<div align="left">
+
+| Tecnologia | Uso |
+|------------|-----|
+| ![VPS Hostinger](https://img.shields.io/badge/VPS-Hostinger-orange) | Hospedagem |
+| ![AlmaLinux](https://img.shields.io/badge/OS-AlmaLinux_9-red) | Sistema operacional |
+| ![CyberPanel](https://img.shields.io/badge/Painel-CyberPanel-blue) | Painel de controle |
+| ![Nginx](https://img.shields.io/badge/Nginx-Latest-green?logo=nginx) | Servidor web |
+| ![PM2](https://img.shields.io/badge/PM2-Latest-yellow?logo=pm2) | Gerenciador de processos |
+| ![Cloudflare](https://img.shields.io/badge/DNS-Cloudflare-orange?logo=cloudflare) | DNS e CDN |
+| ![Let's Encrypt](https://img.shields.io/badge/SSL-Let's_Encrypt-green?logo=lets-encrypt) | Certificados SSL |
+
+</div>
 
 ---
 
@@ -12,223 +90,76 @@ Sistema completo de gestão para clínica de prótese capilar desenvolvido com t
 ```
 Barbearia_Premium/
 │
-├── frontend/                    # 🎨 Projetos Frontend
-│   ├── painel-admin/           # ✅ Painel Administrativo (Em produção)
-│   ├── painel-cliente/         # ✅ Painel do Cliente (Em produção)
-│   └── site-entrada/           # ✅ Site de Entrada (Em desenvolvimento)
+├── 📱 frontend/                    # Aplicações Frontend
+│   ├── painel-admin/              # ✅ Painel Administrativo (Produção)
+│   ├── painel-cliente/            # ✅ Painel do Cliente (Produção)
+│   └── site-entrada/              # 🔄 Site Público (Desenvolvimento)
 │
-├── backend/                     # ⚙️ API Backend (Estrutura Modular)
-│   ├── server.js               # Servidor Express central
-│   ├── config/                 # Configurações (database, cors, multer)
-│   ├── routes/                 # Rotas modulares por funcionalidade
-│   ├── middlewares/            # Middlewares customizados
-│   ├── utils/                  # Utilitários (logger, etc)
-│   └── README.md
+├── ⚙️ backend/                     # API Backend (Estrutura Modular)
+│   ├── server.js                  # Servidor Express central
+│   ├── config/                    # Configurações (database, cors, multer)
+│   ├── routes/                    # Rotas modulares por funcionalidade
+│   ├── middlewares/               # Middlewares customizados
+│   └── utils/                     # Utilitários (logger, etc)
 │
-├── docs/                        # 📚 Documentação
-│   ├── deploy/                 # Documentação de deploy
-│   ├── SISTEMA_LOGS.md         # Documentação de logs (consolidada)
-│   ├── HISTORICO_IMPLEMENTACOES.md  # Histórico completo
-│   ├── ARQUIVOS_PROJETO.md     # Estrutura de arquivos
-│   └── SEO_GUIA.md            # Guia de SEO
+├── 📚 docs/                        # Documentação Completa
+│   ├── deploy/                    # Guias de deploy
+│   ├── HISTORICO_IMPLEMENTACOES.md # Histórico completo
+│   └── ESTRUTURA_PROJETO.md       # Arquitetura detalhada
 │
-├── scripts/                     # 🔧 Scripts de configuração VPS
-│   ├── setup-vps.sh           # Setup completo
-│   ├── configurar-postgres.sh # Configurar PostgreSQL
-│   └── templates-nginx/        # Templates Nginx
+├── 🔧 scripts/                     # Scripts de configuração VPS
+│   └── templates-nginx/           # Templates de configuração
 │
-└── [Scripts SQL na raiz]       # Scripts SQL de criação/correção
-```
+└── 📄 [Scripts SQL]               # Scripts SQL de criação/correção
 ```
 
 ---
 
-## 🎯 Status do Projeto
+## ✨ Funcionalidades Implementadas
 
-### ✅ Funcionalidades Implementadas e em Produção
-
-#### 🔐 Autenticação e Segurança
-- ✅ Login de clientes (`POST /api/v1/auth/login`)
-- ✅ Login de administradores (`POST /api/v1/auth/admin/login`)
-- ✅ Senhas hasheadas com bcrypt
+### 🔐 Autenticação e Segurança
+- ✅ Sistema de login para clientes e administradores
+- ✅ Senhas hasheadas com bcrypt (10 rounds)
 - ✅ Validação de contas ativas/inativas
 - ✅ CORS configurado para múltiplas origens
-- ✅ Headers customizados (`x-user-id`, `x-user-tipo`)
+- ✅ Sistema de permissões granular (RBAC)
 
-#### 👥 Gerenciamento de Usuários
+### 👥 Gerenciamento de Usuários
+- ✅ **Funcionários**: CRUD completo com upload de foto, busca avançada, logs de ações
+- ✅ **Clientes**: CRUD completo com funcionário responsável, busca unificada, validações
+- ✅ Sistema de permissões por módulo (Master, Proprietário, Funcionário)
 
-**Painel Administrativo:**
-- ✅ **Gerenciamento de Funcionários** (`/dashboard/funcionarios`)
-  - CRUD completo (criar, ler, atualizar, excluir)
-  - Upload de foto de perfil
-  - Busca por CPF, nome ou email
-  - Filtro de Master (só Master vê Master)
-  - Botão mostrar/ocultar senha
-  - Layout responsivo
-  - Logs de ações
+### 📊 Controle e Monitoramento
+- ✅ **Controle de Acessos**: Dashboard com estatísticas, logs de login, filtros avançados
+- ✅ **Controle de Logs**: Sistema completo de auditoria com filtros e exportação CSV
+- ✅ **Help Desk**: Sistema de tickets completo com anexos e respostas
 
-- ✅ **Gerenciamento de Clientes** (`/dashboard/usuarios`)
-  - CRUD completo
-  - Upload de foto de perfil
-  - Campo "Funcionário Responsável"
-  - Busca unificada por CPF, nome ou email
-  - Botão mostrar/ocultar senha
-  - Layout responsivo
-  - Cache control (dados sempre atualizados)
-  - Logs detalhados de ações
+### 🎨 Interface e UX
+- ✅ Design moderno e responsivo (mobile, tablet, desktop)
+- ✅ Componentes shadcn/ui (Radix UI) para acessibilidade
+- ✅ Animações suaves com Framer Motion
+- ✅ Dark mode nativo
+- ✅ Feedback visual em todas as ações
 
-**Painel Cliente:**
-- ✅ Sistema de login e autenticação
-- ✅ Dashboard básico
-- ✅ Cadastro de cliente
-
-#### 🔐 Sistema de Permissões (RBAC)
-
-**Status**: ✅ **Completo e Funcionando**
-
-- ✅ Permissões granulares por módulo
-- ✅ Interface de gerenciamento (`/dashboard/controle-permissoes`)
-- ✅ Controle de acesso no sidebar (itens aparecem/desaparecem)
-- ✅ Controle de acesso em botões (editar/excluir)
-- ✅ Tipos de usuário: Master, Proprietário, Funcionário
-- ✅ Proteção: Master não pode ser excluído, só Master vê Master
-
-**Módulos com Permissões:**
-- Dashboard, Agenda, Lançamento de Venda/Despesa
-- Receitas, Despesas, Faturamento
-- Usuários, Funcionários
-- Controle de Acessos, Controle de Logs, Help Desk
-- Controle de Permissões (Master apenas)
-
-#### 📊 Controle de Acessos
-
-**Status**: ✅ **Completo e Funcionando**
-
-- ✅ Dashboard de estatísticas (`/dashboard/controle-acessos`)
-- ✅ Logs de login automáticos
-- ✅ Filtros por data e funcionário responsável
-- ✅ Estatísticas: total de usuários, logins, por tipo, por dia
-- ✅ Visualização de funcionário responsável por cliente
-
-#### 📋 Controle de Logs do Sistema
-
-**Status**: ✅ **Completo e Funcionando**
-
-- ✅ Middleware automático de logging (`backend/middlewares/apiLogger.js`)
-- ✅ Logs manuais em endpoints específicos
-- ✅ Interface de visualização (`/dashboard/controle-logs`)
-- ✅ Filtros avançados (data, módulo, ação, usuário, status)
-- ✅ Exibição de dados anteriores e novos (JSON)
-- ✅ Normalização automática de tipos (`master` → `administrativo`)
-- ✅ Remoção de campos sensíveis (senhas)
-
-#### 🎨 Interface e UX
-
-- ✅ Favicon/Logo em todas as páginas (3 frontends)
-- ✅ Layout responsivo em todas as páginas
-- ✅ Botão mostrar/ocultar senha em todos os formulários
-- ✅ Animações suaves (Framer Motion)
-- ✅ Componentes shadcn/ui (Radix UI)
-- ✅ Design system consistente
-- ✅ Sidebar colapsável
-- ✅ Feedback visual (loading, sucesso, erro)
-
-#### Backend (`backend/`)
-
-**Status**: ✅ **Completo e Funcionando**
-
-- ✅ API REST completa (~21 endpoints)
-- ✅ Autenticação de clientes e administradores
-- ✅ CRUD de funcionários (5 endpoints)
-- ✅ CRUD de clientes (5 endpoints)
-- ✅ Sistema de permissões (2 endpoints)
-- ✅ Controle de acessos (2 endpoints)
-- ✅ Sistema de logs (3 endpoints)
-- ✅ Upload de fotos de perfil (Multer)
-- ✅ Integração com PostgreSQL
-- ✅ Middleware de logging automático
-- ✅ Health checks
-
-#### 🗄️ Banco de Dados
-
-**Schema**: `protese`
-
-**Tabelas Implementadas:**
-- ✅ `usuarios_administrativos` - Administradores/Funcionários
-- ✅ `usuarios_clientes` - Clientes
-- ✅ `permissoes_usuarios` - Permissões granulares
-- ✅ `controle_acessos` - Logs de login
-- ✅ `logs_sistema` - Logs de ações do sistema
-
-**Relacionamentos:**
-- ✅ `funcionario_responsavel_id` em `usuarios_clientes` (FK)
-- ✅ 1:1 entre `usuarios_administrativos` e `permissoes_usuarios`
+### ⚙️ Backend
+- ✅ API REST completa (~30+ endpoints)
+- ✅ Estrutura modular e escalável
+- ✅ Middleware automático de logging
+- ✅ Upload de arquivos (fotos e anexos)
+- ✅ Integração completa com PostgreSQL
 
 ---
 
-## 🛠️ Stack Tecnológica Completa
-
-### Frontend
-- **Framework**: Next.js 14 (App Router)
-- **Linguagem**: TypeScript
-- **Estilização**: Tailwind CSS
-- **Componentes UI**: Radix UI (shadcn/ui)
-- **Animações**: Framer Motion
-- **Ícones**: Lucide React
-- **Formulários**: React Hook Form
-- **Validação**: Validação customizada
-- **Gerenciamento de Estado**: React Hooks (useState, useEffect)
-- **Armazenamento Local**: localStorage
-
-**Projetos Frontend:**
-- `painel-admin` - Painel Administrativo (Porta 3000, Produção)
-- `painel-cliente` - Painel do Cliente (Porta 3001, Produção)
-- `site-entrada` - Site Público (Porta 3002, Desenvolvimento)
-
-### Backend
-- **Runtime**: Node.js 20 LTS
-- **Framework**: Express.js
-- **Linguagem**: JavaScript
-- **Banco de Dados**: PostgreSQL 15+
-- **Autenticação**: bcrypt (hash de senhas, 10 rounds)
-- **Upload**: Multer (5MB, apenas imagens)
-- **CORS**: express-cors (múltiplas origens)
-- **Variáveis de Ambiente**: dotenv
-- **Logging**: Sistema customizado com middleware automático
-
-**Estrutura Modular:**
-- `server.js` - Servidor Express central (98 linhas)
-- `config/` - Configurações compartilhadas (database, cors, multer)
-- `routes/` - Rotas modulares organizadas por funcionalidade:
-  - `clientes.js` - CRUD de clientes
-  - `funcionarios.js` - CRUD de funcionários
-  - `auth.js` - Autenticação
-  - `permissoes.js` - Permissões
-  - `controle-acessos.js` - Controle de acessos
-  - `logs.js` - Sistema de logs
-  - `help-desk.js` - Help Desk
-- `middlewares/apiLogger.js` - Middleware de logs automático
-- `utils/logger.js` - Helper de logs com normalização
-
-### Infraestrutura
-- **Hospedagem**: VPS Hostinger (KVM 2)
-- **Sistema Operacional**: AlmaLinux 9
-- **Painel**: CyberPanel
-- **Servidor Web**: Nginx (proxy reverso)
-- **Process Manager**: PM2
-- **DNS**: Cloudflare
-- **SSL**: Certbot (Let's Encrypt)
-
----
-
-## 🚀 Início Rápido
+## 🚀 Como Começar
 
 ### Pré-requisitos
 - Node.js 20+ instalado
 - PostgreSQL 15+ instalado e configurado
 - Git instalado
 
-### Backend
+### Instalação
+
+#### Backend
 ```bash
 cd backend
 npm install
@@ -236,7 +167,7 @@ cp .env.example .env  # Configurar variáveis de ambiente
 npm run dev
 ```
 
-### Frontend - Painel Admin
+#### Frontend - Painel Admin
 ```bash
 cd frontend/painel-admin
 npm install
@@ -244,7 +175,7 @@ npm run dev
 # Acesse: http://localhost:3000
 ```
 
-### Frontend - Painel Cliente
+#### Frontend - Painel Cliente
 ```bash
 cd frontend/painel-cliente
 npm install
@@ -254,15 +185,45 @@ npm run dev
 
 ---
 
-## 🔐 Sistema de Permissões
+## 🌐 URLs de Produção
 
-O sistema possui um controle granular de permissões baseado em roles:
+| Aplicação | URL | Status |
+|-----------|-----|--------|
+| **Painel Admin** | https://admin.protesecapilarcuiaba.com.br | ✅ Produção |
+| **Painel Cliente** | https://app.protesecapilarcuiaba.com.br | ✅ Produção |
+| **Site Público** | https://www.protesecapilarcuiaba.com.br | 🔄 Desenvolvimento |
+| **API Backend** | https://api.protesecapilarcuiaba.com.br | ✅ Produção |
 
-- **Master**: Acesso total ao sistema (não pode ser excluído)
-- **Proprietário**: Acesso definido por permissões específicas
-- **Funcionário**: Acesso definido por permissões específicas
+---
 
-**Documentação completa**: Sistema implementado com permissões granulares por módulo. Ver código em `frontend/painel-admin/src/app/dashboard/controle-permissoes/`
+## 📊 Estatísticas do Projeto
+
+- **Endpoints API**: 30+ endpoints implementados
+- **Módulos Backend**: 8 módulos modulares
+- **Páginas Frontend**: 15+ páginas principais
+- **Tabelas no Banco**: 8 tabelas principais
+- **Componentes UI**: 48 componentes shadcn/ui
+- **Módulos Implementados**: 8 módulos completos
+
+---
+
+## 🎯 Módulos do Sistema
+
+### ✅ Implementados e Funcionando
+1. **Autenticação** - Login cliente e admin
+2. **Gerenciamento de Funcionários** - CRUD completo
+3. **Gerenciamento de Clientes** - CRUD completo
+4. **Sistema de Permissões** - RBAC granular
+5. **Controle de Acessos** - Logs de login com estatísticas
+6. **Controle de Logs** - Sistema de auditoria completo
+7. **Help Desk** - Sistema completo de tickets
+8. **Serviços** - Gerenciamento de serviços da clínica
+
+### 🔄 Em Desenvolvimento
+- Sistema de agendamentos
+- Módulos financeiros (vendas, despesas, receitas)
+- Faturamento
+- Melhorias no Help Desk
 
 ---
 
@@ -275,58 +236,34 @@ O sistema possui um controle granular de permissões baseado em roles:
 - `usuarios_clientes` - Clientes do sistema
 - `permissoes_usuarios` - Permissões granulares por módulo
 - `controle_acessos` - Logs de acesso/login
-
-**Documentação completa**: Ver `SCHEMA_DATABASE.md`
+- `logs_sistema` - Logs de ações do sistema
+- `help_desk_chamados` - Chamados do Help Desk
+- `help_desk_respostas` - Respostas dos chamados
+- `servicos` - Serviços oferecidos pela clínica
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
 - `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
 - `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
+- `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql`
 
 ---
 
-## 📚 Documentação Completa
+## 📚 Documentação
 
-### 📖 Documentação Principal
-- **[README Principal](./README.md)** - Este arquivo (visão geral)
-- **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - ✅ Tudo que foi feito até agora
-- **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura e organização completa
-- **[Estrutura de Arquivos](./docs/ARQUIVOS_PROJETO.md)** - Organização do projeto
-- **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação consolidada de logs
+### Documentação Principal
+- **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - Tudo que foi implementado
+- **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
+- **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação de logs
 
-### 🚀 Documentação de Deploy
-- **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - ⚠️ **NÃO ALTERAR** (usado muito)
-- **[README Deploy](./docs/deploy/README.md)** - Visão geral de deploy
-- **[Configuração DNS](./docs/deploy/CONFIGURACAO_FINAL_DNS.md)** - Setup de domínios
+### Documentação de Deploy
+- **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - Comandos úteis
 - **[Arquitetura VPS](./docs/deploy/ARQUITETURA_DUAS_VPS.md)** - Estrutura do servidor
-- **[Segurança VPS](./docs/deploy/SEGURANCA_VPS.md)** - Boas práticas de segurança
+- **[Segurança VPS](./docs/deploy/SEGURANCA_VPS.md)** - Boas práticas
 
-### 🎨 Frontend
-- **[README Frontend](./frontend/README.md)** - Visão geral dos frontends
-- **[README Painel Admin](./frontend/painel-admin/README.md)** - Painel administrativo
-- **[README Painel Cliente](./frontend/painel-cliente/README.md)** - Painel do cliente
-
-### ⚙️ Backend
+### READMEs Específicos
 - **[README Backend](./backend/README.md)** - Documentação da API
-- **[Estrutura Modular](./backend/ESTRUTURA_MODULAR.md)** - Documentação da estrutura modular
-- **[Guia de Migração VPS](./backend/GUIA_MIGRACAO_VPS.md)** - Passo a passo para migração
-
-### 🗄️ Scripts SQL
-- `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql` - Criar tabela de permissões
-- `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql` - Criar controle de acessos
-- `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql` - Adicionar campo funcionário responsável
-- `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql` - Criar tabela de logs
-- `CORRIGIR_TABELA_LOGS_SISTEMA.sql` - Correções na tabela de logs
-- `ATUALIZAR_CHECK_CONSTRAINT_LOGS.sql` - Atualizar constraint
-
----
-
-## 🌐 URLs de Produção
-
-- **Painel Admin**: https://admin.protesecapilarcuiaba.com.br
-- **Painel Cliente**: https://app.protesecapilarcuiaba.com.br
-- **Site Público**: https://www.protesecapilarcuiaba.com.br
-- **API Backend**: https://api.protesecapilarcuiaba.com.br
+- **[README Frontend](./frontend/README.md)** - Visão geral dos frontends
 
 ---
 
@@ -341,35 +278,35 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=protese_capilar
 DB_USER=protese_user
-DB_PASSWORD=senha_segura
+DB_PASSWORD=sua_senha_segura
 
 API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br
 ```
 
 ---
 
-## 📊 Estatísticas do Projeto
+## 🎨 Design e UX
 
-- **Endpoints API**: ~30 endpoints implementados
-- **Módulos Backend**: 8 módulos modulares
-- **Páginas Frontend**: 15+ páginas principais
-- **Tabelas no Banco**: 8 tabelas principais
-- **Linhas de Código Backend**: ~2.000 linhas (modularizado)
-- **Componentes UI**: 48 componentes shadcn/ui
-- **Módulos Implementados**: 8 módulos completos
+O sistema foi desenvolvido com foco em:
+- **Acessibilidade**: Componentes Radix UI seguindo padrões WCAG
+- **Responsividade**: Layout adaptativo para todos os dispositivos
+- **Performance**: Otimizações de build e carregamento
+- **Experiência do Usuário**: Interface intuitiva e feedback visual
 
 ---
 
-## 📋 Próximos Passos
+## 🔐 Segurança
 
-**Status Atual**: ✅ Sistema base completo e funcional com estrutura modular
+- Senhas hasheadas com bcrypt (10 rounds)
+- CORS configurado para origens específicas
+- Validação de inputs em todos os formulários
+- Sistema de permissões granular (RBAC)
+- Logs de auditoria para todas as ações críticas
 
-**Última Implementação (Dezembro 2024):**
-- ✅ **Refatoração Backend**: Estrutura modular implementada
-  - Backend reorganizado em módulos independentes
-  - Facilita manutenção e escalabilidade
-  - Documentação completa criada
+---
+
+## 📈 Próximos Passos
 
 **Foco Atual:**
 - 🔄 Sistema de agendamentos
@@ -377,54 +314,31 @@ CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarc
 - 🔄 Faturamento
 - 🔄 Melhorias no Help Desk
 
-**Funcionalidades Planejadas:**
-- Sistema de agendamentos (visualizar, criar, editar, cancelar)
-- Lançamento de vendas e despesas
-- Relatórios financeiros (gráficos, filtros, exportação)
-- Faturamento (geração, envio, controle de pagamentos)
-- Melhorias no Help Desk (notificações, templates)
-
 ---
 
-## 🎯 Módulos do Sistema
+## 💡 Sobre o Desenvolvimento
 
-### ✅ Implementados e Funcionando
-1. **Autenticação** - Login cliente e admin
-2. **Gerenciamento de Funcionários** - CRUD completo
-3. **Gerenciamento de Clientes** - CRUD completo
-4. **Sistema de Permissões** - RBAC granular
-5. **Controle de Acessos** - Logs de login
-6. **Controle de Logs** - Sistema de auditoria completo
-7. **Help Desk** - Sistema completo de tickets
-8. **Estrutura Modular Backend** - Arquitetura modular implementada
+Este projeto foi desenvolvido pensando em escalabilidade, manutenibilidade e performance. A estrutura modular do backend facilita a adição de novos módulos, e o uso de tecnologias modernas garante que o sistema esteja sempre atualizado.
 
-### 🔄 Estrutura Criada (Aguardando Implementação)
-9. **Agenda** - Estrutura básica
-10. **Lançamento de Venda** - Planejado
-11. **Lançamento de Despesa** - Planejado
-12. **Receitas/Despesas** - Planejado
-13. **Faturamento** - Planejado
-
----
-
----
-
-## 🧹 Organização do Projeto
-
-O projeto está organizado com:
-- ✅ Estrutura modular no backend
-- ✅ Documentação consolidada
-- ✅ Arquivos temporários removidos
-- ✅ READMEs atualizados
-
-**Ver detalhes**: [Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md) e [Estrutura de Arquivos](./docs/ARQUIVOS_PROJETO.md)
+Todas as decisões técnicas foram tomadas considerando:
+- Facilidade de manutenção
+- Performance
+- Segurança
+- Experiência do usuário
+- Escalabilidade
 
 ---
 
 ## 📄 Licença
 
-Projeto privado - Uso comercial
+Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar Cuiabá.
 
 ---
 
+<div align="center">
+
+**Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
+
 *Sistema em desenvolvimento ativo* 🚀
+
+</div>

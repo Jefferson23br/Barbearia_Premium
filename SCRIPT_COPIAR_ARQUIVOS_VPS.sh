@@ -9,7 +9,7 @@ echo ""
 
 # Configurações
 VPS_USER="root"
-VPS_HOST="seu-servidor.com.br"  # ALTERE AQUI
+VPS_HOST="82.25.65.201"  # ALTERE AQUI
 VPS_PATH="/home/cyberpanel/app/backend"
 LOCAL_BACKEND_PATH="./backend"
 
@@ -23,7 +23,9 @@ echo "📁 Estrutura de arquivos a copiar:"
 echo "  - config/"
 echo "  - routes/"
 echo "  - server.js"
-echo ""
+echo "  - middlewares/"
+echo "  - scripts/"
+echo "  - utils/"
 
 read -p "Deseja continuar? (s/n): " -n 1 -r
 echo
@@ -89,4 +91,5 @@ echo "  1. Verificar sintaxe: node -c server.js"
 echo "  2. Reiniciar PM2: pm2 restart api-protese-capilar"
 echo "  3. Verificar logs: pm2 logs api-protese-capilar"
 echo ""
+
 
