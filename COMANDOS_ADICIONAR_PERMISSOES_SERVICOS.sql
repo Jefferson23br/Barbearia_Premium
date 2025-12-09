@@ -46,3 +46,4 @@ COMMENT ON COLUMN protese.permissoes_usuarios.servicos_editar IS 'Permissão par
 COMMENT ON COLUMN protese.permissoes_usuarios.servicos_excluir IS 'Permissão para excluir serviços';
 
 
+
