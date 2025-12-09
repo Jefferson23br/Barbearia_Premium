@@ -1,7 +1,4 @@
 {
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/servicos/page": "app/dashboard/servicos/page.js",
-  "/dashboard/integracoes-apis/page": "app/dashboard/integracoes-apis/page.js",
-  "/dashboard/configuracoes/page": "app/dashboard/configuracoes/page.js",
-  "/dashboard/habilitar-api/page": "app/dashboard/habilitar-api/page.js"
+  "/page": "app/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
