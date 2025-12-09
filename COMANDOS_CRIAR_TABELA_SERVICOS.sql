@@ -30,3 +30,4 @@ COMMENT ON COLUMN protese.servicos.duracao_minutos IS 'Duração estimada do ser
 COMMENT ON COLUMN protese.servicos.categoria IS 'Categoria do serviço (ex: Corte, Barba, Tratamento, etc.)';
 COMMENT ON COLUMN protese.servicos.is_active IS 'Indica se o serviço está ativo e disponível';
 
+

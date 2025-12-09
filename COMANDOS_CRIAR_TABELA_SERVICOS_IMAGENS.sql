@@ -58,3 +58,4 @@ COMMENT ON COLUMN protese.servicos_imagens.url_imagem IS 'URL completa da imagem
 COMMENT ON COLUMN protese.servicos_imagens.is_capa IS 'Indica se a imagem é a capa do serviço (primeira imagem automaticamente)';
 COMMENT ON COLUMN protese.servicos_imagens.ordem IS 'Ordem de exibição das imagens';
 
+

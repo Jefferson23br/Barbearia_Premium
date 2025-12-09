@@ -180,3 +180,4 @@ curl https://api.protesecapilarcuiaba.com.br/api/v1/controle-acessos/estatistica
 **Data da Alteração:** $(date)  
 **Versão:** 1.0
 
+

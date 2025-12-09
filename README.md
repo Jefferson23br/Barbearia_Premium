@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2024-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2025-blue?style=flat-square)
 
 </div>
 
