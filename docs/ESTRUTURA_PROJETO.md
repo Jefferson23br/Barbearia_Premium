@@ -1,4 +1,4 @@
-# 📁 Estrutura do Projeto - Sistema Prótese Capilar
+# 📁 Estrutura do Projeto - Sistema Barbearia Premium
 
 Documentação completa da estrutura e organização do projeto.
 
@@ -24,7 +24,10 @@ Barbearia_Premium/
 │   │   ├── permissoes.js             # Rotas de permissões
 │   │   ├── controle-acessos.js       # Rotas de controle de acessos
 │   │   ├── logs.js                   # Rotas de logs
-│   │   └── help-desk.js              # Rotas de Help Desk
+│   │   ├── help-desk.js              # Rotas de Help Desk
+│   │   ├── servicos.js               # Rotas de serviços
+│   │   ├── configuracoes.js          # Rotas de configurações
+│   │   └── integracoes.js            # Rotas de integrações
 │   ├── utils/                        # Utilitários
 │   │   ├── logger.js                 # Sistema de logs
 │   │   └── logHelper.js              # Helpers de logs
@@ -215,7 +218,8 @@ src/app/
 
 ---
 
-**Última atualização**: Dezembro 2024
+**Última atualização**: Dezembro 2025
+
 
 
 

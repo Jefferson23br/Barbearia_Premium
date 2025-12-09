@@ -20,7 +20,11 @@
 
 ## 🎯 Sobre o Projeto
 
-Desenvolvi este projeto como parte de um sistema completo de gestão para barbearias premium. Este é o **Painel de Acesso do Cliente**, a primeira interface que os clientes encontram ao acessar o sistema.
+Este é o **Painel do Cliente** do Sistema Barbearia Premium, desenvolvido para que os clientes possam acompanhar seus atendimentos e interagir com a barbearia.
+
+**Status**: ✅ **Em Produção**  
+**URL**: https://app.protesecapilarcuiaba.com.br  
+**VPS**: 45.132.157.28 (Hostinger - m.br)
 
 O design foi criado no Figma com foco em uma experiência moderna, elegante e intuitiva, refletindo o padrão premium de uma barbearia de alto nível.
 
@@ -115,17 +119,21 @@ src/
 
 ## 🚀 Estado do Projeto
 
-Atualmente, estou trabalhando na integração com o back-end e implementação das funcionalidades completas do sistema. O front-end está pronto para receber as APIs e a autenticação.
+**Status**: ✅ **Em Produção**
+
+### Funcionalidades Implementadas
+
+- ✅ Sistema de login e autenticação
+- ✅ Dashboard básico do cliente
+- ✅ Cadastro de cliente
+- ✅ Visualização de perfil
 
 ### Próximas Etapas
 
-- [ ] Integração com API Node.js
-- [ ] Implementação de autenticação JWT
-- [ ] Conexão com PostgreSQL
-- [ ] Dashboard do cliente
-- [ ] Sistema de agendamentos
-- [ ] Histórico de serviços
-- [ ] Perfil e configurações
+- 🔄 Sistema de agendamentos
+- 🔄 Histórico de atendimentos
+- 🔄 Serviços contratados
+- 🔄 Comunicação com a barbearia
 
 ---
 

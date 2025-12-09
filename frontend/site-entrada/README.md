@@ -31,6 +31,9 @@ Acesse: http://localhost:3002
 
 URL: https://www.protesecapilarcuiaba.com.br
 
+**Status**: 🔄 **Em Desenvolvimento**  
+**VPS**: 45.132.157.28 (Hostinger - m.br)
+
 ---
 
 ## 📝 Notas

@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2024-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2025-blue?style=flat-square)
 
 </div>
 
@@ -73,13 +73,17 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 
 | Tecnologia | Uso |
 |------------|-----|
-| ![VPS Hostinger](https://img.shields.io/badge/VPS-Hostinger-orange) | Hospedagem |
+| ![VPS Hostinger](https://img.shields.io/badge/VPS-Hostinger-orange) | Hospedagem (2 VPS) |
 | ![AlmaLinux](https://img.shields.io/badge/OS-AlmaLinux_9-red) | Sistema operacional |
 | ![CyberPanel](https://img.shields.io/badge/Painel-CyberPanel-blue) | Painel de controle |
 | ![Nginx](https://img.shields.io/badge/Nginx-Latest-green?logo=nginx) | Servidor web |
 | ![PM2](https://img.shields.io/badge/PM2-Latest-yellow?logo=pm2) | Gerenciador de processos |
 | ![Cloudflare](https://img.shields.io/badge/DNS-Cloudflare-orange?logo=cloudflare) | DNS e CDN |
 | ![Let's Encrypt](https://img.shields.io/badge/SSL-Let's_Encrypt-green?logo=lets-encrypt) | Certificados SSL |
+
+**Infraestrutura:**
+- **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger)
+- **Frontend**: VPS 45.132.157.28 (Hostinger - m.br - conta com domínio liberado)
 
 </div>
 
@@ -189,21 +193,22 @@ npm run dev
 
 | Aplicação | URL | Status |
 |-----------|-----|--------|
-| **Painel Admin** | https://admin.barbeariapremium.com.br | ✅ Produção |
-| **Painel Cliente** | https://app.barbeariapremium.com.br | ✅ Produção |
-| **Site Público** | https://www.barbeariapremium.com.br | 🔄 Desenvolvimento |
-| **API Backend** | https://api.barbeariapremium.com.br | ✅ Produção |
+| **Painel Admin** | https://admin.protesecapilarcuiaba.com.br | ✅ Produção |
+| **Painel Cliente** | https://app.protesecapilarcuiaba.com.br | ✅ Produção |
+| **Site Público** | https://www.protesecapilarcuiaba.com.br | 🔄 Desenvolvimento |
+| **API Backend** | https://api.protesecapilarcuiaba.com.br | ✅ Produção |
 
 ---
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 30+ endpoints implementados
-- **Módulos Backend**: 8 módulos modulares
-- **Páginas Frontend**: 15+ páginas principais
-- **Tabelas no Banco**: 8 tabelas principais
-- **Componentes UI**: 48 componentes shadcn/ui
-- **Módulos Implementados**: 8 módulos completos
+- **Endpoints API**: 35+ endpoints implementados
+- **Módulos Backend**: 10 módulos modulares
+- **Páginas Frontend**: 18+ páginas principais
+- **Tabelas no Banco**: 12+ tabelas principais
+- **Componentes UI**: 48+ componentes shadcn/ui
+- **Módulos Implementados**: 10 módulos completos
+- **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
 
 ---
 
@@ -218,6 +223,8 @@ npm run dev
 6. **Controle de Logs** - Sistema de auditoria completo
 7. **Help Desk** - Sistema completo de tickets
 8. **Serviços** - Gerenciamento de serviços da barbearia
+9. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
+10. **Integrações de APIs** - Sistema escalável de integrações (Focus NFe implementado)
 
 ### 🔄 Em Desenvolvimento
 - Sistema de agendamentos
@@ -229,7 +236,7 @@ npm run dev
 
 ## 🗄️ Banco de Dados
 
-### Schema: `barbearia`
+### Schema: `protese` (em uso)
 
 **Tabelas principais:**
 - `usuarios_administrativos` - Administradores/Funcionários
@@ -239,13 +246,20 @@ npm run dev
 - `logs_sistema` - Logs de ações do sistema
 - `help_desk_chamados` - Chamados do Help Desk
 - `help_desk_respostas` - Respostas dos chamados
+- `help_desk_anexos` - Anexos dos chamados
 - `servicos` - Serviços oferecidos pela barbearia
+- `configuracoes` - Configurações gerais do sistema
+- `integracoes` - Integrações com APIs externas
+- `integracoes_habilitadas` - Funcionalidades habilitadas por integração
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
 - `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
 - `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
 - `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql`
+- `COMANDOS_CRIAR_TABELA_CONFIGURACOES.sql`
+- `COMANDOS_CRIAR_TABELA_INTEGRACOES.sql`
+- `COMANDOS_ADICIONAR_NOVAS_PERMISSOES.sql`
 
 ---
 
@@ -253,19 +267,22 @@ npm run dev
 
 ### Documentação Principal
 - **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - Tudo que foi implementado
+- **[Implementações Dezembro 2024](./docs/IMPLEMENTACOES_DEZEMBRO_2024.md)** - Implementações recentes detalhadas
 - **[Status do Projeto](./docs/STATUS_PROJETO.md)** - Status atual completo
 - **[Roadmap](./docs/ROADMAP.md)** - Próximos passos e planejamento
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
 - **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação de logs
+- **[Guia de Deploy](./docs/DEPLOY_GUIA_COMPLETO.md)** - Instruções consolidadas de deploy
 
 ### Documentação de Deploy
 - **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - Comandos úteis
 - **[Arquitetura VPS](./docs/deploy/ARQUITETURA_DUAS_VPS.md)** - Estrutura do servidor
 - **[Segurança VPS](./docs/deploy/SEGURANCA_VPS.md)** - Boas práticas
 
-### READMEs Específicos
-- **[README Backend](./backend/README.md)** - Documentação da API
-- **[README Frontend](./frontend/README.md)** - Visão geral dos frontends
+- **Painel Admin**: https://admin.protesecapilarcuiaba.com.br
+- **Painel Cliente**: https://app.protesecapilarcuiaba.com.br
+- **Site Público**: https://www.protesecapilarcuiaba.com.br
+- **API Backend**: https://api.protesecapilarcuiaba.com.br
 
 ---
 
@@ -278,12 +295,12 @@ NODE_ENV=production
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=barbearia_premium
-DB_USER=barbearia_user
-DB_PASSWORD=sua_senha_segura
+DB_NAME=protese_capilar
+DB_USER=protese_user
+DB_PASSWORD=senha_segura
 
-API_BASE_URL=https://api.barbeariapremium.com.br
-CORS_ORIGINS=https://www.barbeariapremium.com.br,https://app.barbeariapremium.com.br,https://admin.barbeariapremium.com.br
+API_BASE_URL=https://api.protesecapilarcuiaba.com.br
+CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 ---
@@ -312,9 +329,10 @@ O sistema foi desenvolvido com foco em:
 
 Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap](./docs/ROADMAP.md)**.
 
-**Foco Atual (Q1 2025):**
-- 🔄 Sistema de agendamentos
+**Foco Atual (Q1 2026):**
+- 🔄 Sistema de agendamentos (usará horários das Configurações)
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
+- 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
 - 🔄 Melhorias no Help Desk
 
 **Planejado:**

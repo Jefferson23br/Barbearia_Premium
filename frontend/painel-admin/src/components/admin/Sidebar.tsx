@@ -22,6 +22,11 @@ import {
   Menu,
   X,
   Scissors,
+  FileCheck,
+  BarChart3,
+  Plug,
+  Key,
+  Cog,
 } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
@@ -48,7 +53,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { podeAcessar, loading: permissoesLoading } = usePermissions()
 
-  // Definir itens do menu com controle de acesso
+  // Definir itens do menu com controle de acesso (na ordem especificada)
   const menuItems: MenuItem[] = [
     {
       id: 'dashboard',
@@ -92,6 +97,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       permissionKey: 'lancamento_despesa',
     },
     {
+      id: 'emissao-nfe',
+      label: 'Emissão de NFe',
+      icon: FileCheck,
+      path: '/dashboard/emissao-nfe',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'emissao_nfe',
+    },
+    {
       id: 'receitas',
       label: 'Receitas',
       icon: TrendingUp,
@@ -114,6 +127,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       path: '/dashboard/faturamento',
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'faturamento',
+    },
+    {
+      id: 'emissao-relatorios',
+      label: 'Emissão de Relatórios',
+      icon: BarChart3,
+      path: '/dashboard/emissao-relatorios',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'emissao_relatorios',
     },
     {
       id: 'usuarios',
@@ -162,6 +183,30 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       path: '/dashboard/help-desk',
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'help_desk',
+    },
+    {
+      id: 'integracao-apis',
+      label: 'Integração de APIs Externas',
+      icon: Plug,
+      path: '/dashboard/integracoes-apis',
+      levels: ['master', 'proprietario'],
+      permissionKey: 'integracao_apis',
+    },
+    {
+      id: 'habilitar-api',
+      label: 'Habilitar API',
+      icon: Key,
+      path: '/dashboard/habilitar-api',
+      levels: ['master', 'proprietario'],
+      permissionKey: 'habilitar_api',
+    },
+    {
+      id: 'configuracoes',
+      label: 'Configurações',
+      icon: Cog,
+      path: '/dashboard/configuracoes',
+      levels: ['master', 'proprietario'],
+      permissionKey: 'configuracoes',
     },
   ]
 
@@ -324,7 +369,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       {!isCollapsed && (
         <div className="p-4 border-t border-amber-500/20">
           <div className="text-xs text-gray-500 text-center">
-            Prótese Capilar
+            Barbearia Premium
           </div>
         </div>
       )}

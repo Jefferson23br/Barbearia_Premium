@@ -299,5 +299,5 @@ Se você vê **↺ 16** (ou muitos restarts), isso indica instabilidade:
 
 ---
 
-**Última atualização**: Dezembro 2024
+**Última atualização**: Dezembro 2025
 

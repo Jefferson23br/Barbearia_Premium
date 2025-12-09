@@ -66,6 +66,31 @@ export interface PermissoesUsuario {
   controle_permissoes_ver: boolean
   controle_permissoes_editar: boolean
   controle_permissoes_excluir: boolean
+
+  // Emissão de NFe
+  emissao_nfe_ver: boolean
+  emissao_nfe_editar: boolean
+  emissao_nfe_excluir: boolean
+
+  // Emissão de Relatórios
+  emissao_relatorios_ver: boolean
+  emissao_relatorios_editar: boolean
+  emissao_relatorios_excluir: boolean
+
+  // Integração de APIs Externas
+  integracao_apis_ver: boolean
+  integracao_apis_editar: boolean
+  integracao_apis_excluir: boolean
+
+  // Habilitar API
+  habilitar_api_ver: boolean
+  habilitar_api_editar: boolean
+  habilitar_api_excluir: boolean
+
+  // Configurações
+  configuracoes_ver: boolean
+  configuracoes_editar: boolean
+  configuracoes_excluir: boolean
 }
 
 export function usePermissions() {
@@ -213,6 +238,21 @@ function criarPermissoesMaster(): PermissoesUsuario {
     controle_permissoes_ver: true,
     controle_permissoes_editar: true,
     controle_permissoes_excluir: true,
+    emissao_nfe_ver: true,
+    emissao_nfe_editar: true,
+    emissao_nfe_excluir: true,
+    emissao_relatorios_ver: true,
+    emissao_relatorios_editar: true,
+    emissao_relatorios_excluir: true,
+    integracao_apis_ver: true,
+    integracao_apis_editar: true,
+    integracao_apis_excluir: true,
+    habilitar_api_ver: true,
+    habilitar_api_editar: true,
+    habilitar_api_excluir: true,
+    configuracoes_ver: true,
+    configuracoes_editar: true,
+    configuracoes_excluir: true,
   }
 }
 
@@ -255,6 +295,21 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     controle_permissoes_ver: false,
     controle_permissoes_editar: false,
     controle_permissoes_excluir: false,
+    emissao_nfe_ver: false,
+    emissao_nfe_editar: false,
+    emissao_nfe_excluir: false,
+    emissao_relatorios_ver: false,
+    emissao_relatorios_editar: false,
+    emissao_relatorios_excluir: false,
+    integracao_apis_ver: false,
+    integracao_apis_editar: false,
+    integracao_apis_excluir: false,
+    habilitar_api_ver: false,
+    habilitar_api_editar: false,
+    habilitar_api_excluir: false,
+    configuracoes_ver: false,
+    configuracoes_editar: false,
+    configuracoes_excluir: false,
   }
 
   // Proprietário tem acesso padrão a mais coisas
@@ -292,6 +347,21 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.servicos_ver = true
     padrao.servicos_editar = true
     padrao.servicos_excluir = true
+    padrao.emissao_nfe_ver = true
+    padrao.emissao_nfe_editar = true
+    padrao.emissao_nfe_excluir = true
+    padrao.emissao_relatorios_ver = true
+    padrao.emissao_relatorios_editar = true
+    padrao.emissao_relatorios_excluir = true
+    padrao.integracao_apis_ver = true
+    padrao.integracao_apis_editar = true
+    padrao.integracao_apis_excluir = true
+    padrao.habilitar_api_ver = true
+    padrao.habilitar_api_editar = true
+    padrao.habilitar_api_excluir = true
+    padrao.configuracoes_ver = true
+    padrao.configuracoes_editar = true
+    padrao.configuracoes_excluir = true
   }
 
   // Funcionário tem acesso limitado
@@ -305,6 +375,8 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.faturamento_ver = true
     padrao.help_desk_ver = true
     padrao.servicos_ver = true
+    padrao.emissao_nfe_ver = true
+    padrao.emissao_relatorios_ver = true
   }
 
   return padrao

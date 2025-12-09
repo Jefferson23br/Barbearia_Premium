@@ -75,6 +75,31 @@ interface Permissoes {
   controle_permissoes_ver: boolean
   controle_permissoes_editar: boolean
   controle_permissoes_excluir: boolean
+
+  // Emissão de NFe
+  emissao_nfe_ver: boolean
+  emissao_nfe_editar: boolean
+  emissao_nfe_excluir: boolean
+
+  // Emissão de Relatórios
+  emissao_relatorios_ver: boolean
+  emissao_relatorios_editar: boolean
+  emissao_relatorios_excluir: boolean
+
+  // Integração de APIs Externas
+  integracao_apis_ver: boolean
+  integracao_apis_editar: boolean
+  integracao_apis_excluir: boolean
+
+  // Habilitar API
+  habilitar_api_ver: boolean
+  habilitar_api_editar: boolean
+  habilitar_api_excluir: boolean
+
+  // Configurações
+  configuracoes_ver: boolean
+  configuracoes_editar: boolean
+  configuracoes_excluir: boolean
 }
 
 const permissoesPadrao: Permissoes = {
@@ -108,13 +133,28 @@ const permissoesPadrao: Permissoes = {
   help_desk_ver: false,
   help_desk_editar: false,
   help_desk_excluir: false,
-  servicos_ver: false,
-  servicos_editar: false,
-  servicos_excluir: false,
-  controle_permissoes_ver: false,
-  controle_permissoes_editar: false,
-  controle_permissoes_excluir: false,
-}
+    servicos_ver: false,
+    servicos_editar: false,
+    servicos_excluir: false,
+    controle_permissoes_ver: false,
+    controle_permissoes_editar: false,
+    controle_permissoes_excluir: false,
+    emissao_nfe_ver: false,
+    emissao_nfe_editar: false,
+    emissao_nfe_excluir: false,
+    emissao_relatorios_ver: false,
+    emissao_relatorios_editar: false,
+    emissao_relatorios_excluir: false,
+    integracao_apis_ver: false,
+    integracao_apis_editar: false,
+    integracao_apis_excluir: false,
+    habilitar_api_ver: false,
+    habilitar_api_editar: false,
+    habilitar_api_excluir: false,
+    configuracoes_ver: false,
+    configuracoes_editar: false,
+    configuracoes_excluir: false,
+  }
 
 interface ModuloPermissao {
   id: string
@@ -376,6 +416,56 @@ export default function ControlePermissoesPage() {
         ver: permissoes.servicos_ver,
         editar: permissoes.servicos_editar,
         excluir: permissoes.servicos_excluir,
+      },
+    },
+    {
+      id: 'emissao_nfe',
+      nome: 'Emissão de NFe',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.emissao_nfe_ver,
+        editar: permissoes.emissao_nfe_editar,
+        excluir: permissoes.emissao_nfe_excluir,
+      },
+    },
+    {
+      id: 'emissao_relatorios',
+      nome: 'Emissão de Relatórios',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.emissao_relatorios_ver,
+        editar: permissoes.emissao_relatorios_editar,
+        excluir: permissoes.emissao_relatorios_excluir,
+      },
+    },
+    {
+      id: 'integracao_apis',
+      nome: 'Integração de APIs Externas',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.integracao_apis_ver,
+        editar: permissoes.integracao_apis_editar,
+        excluir: permissoes.integracao_apis_excluir,
+      },
+    },
+    {
+      id: 'habilitar_api',
+      nome: 'Habilitar API',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.habilitar_api_ver,
+        editar: permissoes.habilitar_api_editar,
+        excluir: permissoes.habilitar_api_excluir,
+      },
+    },
+    {
+      id: 'configuracoes',
+      nome: 'Configurações',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.configuracoes_ver,
+        editar: permissoes.configuracoes_editar,
+        excluir: permissoes.configuracoes_excluir,
       },
     },
   ]

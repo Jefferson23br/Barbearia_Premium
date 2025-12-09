@@ -32,6 +32,22 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 - ✅ Imagem de capa
 - ✅ Gerenciamento de imagens
 
+### ⚙️ Configurações do Sistema
+- ✅ Dados da Empresa (CNPJ, CNAE, Razão Social)
+- ✅ Endereço Completo
+- ✅ Contato (Email, Telefones, WhatsApp)
+- ✅ Horários de Funcionamento (configuração por dia)
+- ✅ Configurações de Agendamento (intervalos e tempos)
+- ✅ Interface com abas organizadas
+- ✅ Formatação automática de campos
+
+### 🔌 Integrações de APIs Externas
+- ✅ Estrutura escalável para múltiplas integrações
+- ✅ Integração Focus NFe (Nota Fiscal)
+- ✅ Sistema de habilitação de funcionalidades
+- ✅ Interface de gerenciamento completa
+- ✅ Suporte a múltiplos ambientes
+
 ### 🎨 Interface
 - ✅ Design responsivo (mobile, tablet, desktop)
 - ✅ Componentes shadcn/ui
@@ -184,7 +200,7 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🔄 Atualizações do Roadmap
 
-Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **Dezembro 2024**
+Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **Dezembro 2025**
 
 ---
 

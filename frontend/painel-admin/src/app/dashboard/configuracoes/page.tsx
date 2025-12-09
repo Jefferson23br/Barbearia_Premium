@@ -1,0 +1,560 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion } from 'motion/react'
+import { Cog, Save, Building2, MapPin, Clock, Mail, Phone, AlertCircle, Check } from 'lucide-react'
+import { usePermissions } from '@/hooks/usePermissions'
+
+interface Configuracoes {
+  id?: string
+  // Dados da Empresa
+  nome_empresarial?: string
+  nome_fantasia?: string
+  cnpj?: string
+  cnae?: string
+  cnae_secundario?: string
+  inscricao_estadual?: string
+  
+  // Endereço
+  endereco_rua?: string
+  endereco_numero?: string
+  endereco_complemento?: string
+  endereco_bairro?: string
+  endereco_cidade?: string
+  endereco_estado?: string
+  endereco_cep?: string
+  
+  // Contato
+  email_contato?: string
+  telefone_principal?: string
+  telefone_secundario?: string
+  whatsapp?: string
+  
+  // Horários (Segunda a Domingo)
+  segunda_abertura?: string
+  segunda_fechamento?: string
+  segunda_ativo?: boolean
+  terca_abertura?: string
+  terca_fechamento?: string
+  terca_ativo?: boolean
+  quarta_abertura?: string
+  quarta_fechamento?: string
+  quarta_ativo?: boolean
+  quinta_abertura?: string
+  quinta_fechamento?: string
+  quinta_ativo?: boolean
+  sexta_abertura?: string
+  sexta_fechamento?: string
+  sexta_ativo?: boolean
+  sabado_abertura?: string
+  sabado_fechamento?: string
+  sabado_ativo?: boolean
+  domingo_abertura?: string
+  domingo_fechamento?: string
+  domingo_ativo?: boolean
+  
+  // Configurações de Agendamento
+  intervalo_agendamento?: number
+  tempo_antecedencia_agendamento?: number
+  tempo_cancelamento_agendamento?: number
+}
+
+const diasSemana = [
+  { key: 'segunda', label: 'Segunda-feira', abertura: 'segunda_abertura', fechamento: 'segunda_fechamento', ativo: 'segunda_ativo' },
+  { key: 'terca', label: 'Terça-feira', abertura: 'terca_abertura', fechamento: 'terca_fechamento', ativo: 'terca_ativo' },
+  { key: 'quarta', label: 'Quarta-feira', abertura: 'quarta_abertura', fechamento: 'quarta_fechamento', ativo: 'quarta_ativo' },
+  { key: 'quinta', label: 'Quinta-feira', abertura: 'quinta_abertura', fechamento: 'quinta_fechamento', ativo: 'quinta_ativo' },
+  { key: 'sexta', label: 'Sexta-feira', abertura: 'sexta_abertura', fechamento: 'sexta_fechamento', ativo: 'sexta_ativo' },
+  { key: 'sabado', label: 'Sábado', abertura: 'sabado_abertura', fechamento: 'sabado_fechamento', ativo: 'sabado_ativo' },
+  { key: 'domingo', label: 'Domingo', abertura: 'domingo_abertura', fechamento: 'domingo_fechamento', ativo: 'domingo_ativo' },
+]
+
+export default function ConfiguracoesPage() {
+  const [configuracoes, setConfiguracoes] = useState<Configuracoes>({})
+  const [loading, setLoading] = useState(true)
+  const [salvando, setSalvando] = useState(false)
+  const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
+  const [abaAtiva, setAbaAtiva] = useState('empresa')
+  const { podeEditar } = usePermissions()
+
+  useEffect(() => {
+    carregarConfiguracoes()
+  }, [])
+
+  const carregarConfiguracoes = async () => {
+    setLoading(true)
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/configuracoes`)
+
+      if (!response.ok) {
+        throw new Error('Erro ao carregar configurações')
+      }
+
+      const data = await response.json()
+      setConfiguracoes(data.configuracoes || {})
+    } catch (error: any) {
+      console.error('Erro ao carregar configurações:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar configurações' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const atualizarCampo = (campo: keyof Configuracoes, valor: any) => {
+    setConfiguracoes((prev) => ({ ...prev, [campo]: valor }))
+  }
+
+  const salvarConfiguracoes = async () => {
+    if (!podeEditar('configuracoes')) {
+      setMensagem({ tipo: 'erro', texto: 'Você não tem permissão para editar configurações' })
+      return
+    }
+
+    setSalvando(true)
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/configuracoes`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(configuracoes),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erro ao salvar configurações')
+      }
+
+      const data = await response.json()
+      setConfiguracoes(data.configuracoes || {})
+      setMensagem({ tipo: 'sucesso', texto: 'Configurações salvas com sucesso!' })
+      setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
+    } catch (error: any) {
+      console.error('Erro ao salvar configurações:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar configurações' })
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  const formatarTelefone = (valor: string) => {
+    const apenasNumeros = valor.replace(/\D/g, '')
+    if (apenasNumeros.length <= 10) {
+      return apenasNumeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+    }
+    return apenasNumeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  }
+
+  const formatarCNPJ = (valor: string) => {
+    const apenasNumeros = valor.replace(/\D/g, '')
+    return apenasNumeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
+  }
+
+  const formatarCEP = (valor: string) => {
+    const apenasNumeros = valor.replace(/\D/g, '')
+    return apenasNumeros.replace(/(\d{5})(\d{3})/, '$1-$2')
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Carregando configurações...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6 p-4 md:p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+          <Cog className="h-6 w-6 md:h-8 md:w-8 text-amber-500" />
+          Configurações do Sistema
+        </h1>
+        <p className="text-gray-400 mt-1 text-sm md:text-base">Gerencie todas as configurações do sistema</p>
+      </div>
+
+      {/* Mensagem */}
+      {mensagem.tipo && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-lg border ${
+            mensagem.tipo === 'sucesso'
+              ? 'bg-green-500/10 border-green-500/30 text-green-500'
+              : 'bg-red-500/10 border-red-500/30 text-red-500'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {mensagem.tipo === 'sucesso' ? (
+              <Check className="h-5 w-5" />
+            ) : (
+              <AlertCircle className="h-5 w-5" />
+            )}
+            <span>{mensagem.texto}</span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Abas */}
+      <div className="bg-zinc-900 border border-amber-500/20 rounded-lg overflow-hidden">
+        <div className="flex flex-wrap border-b border-zinc-700">
+          {[
+            { id: 'empresa', label: 'Dados da Empresa', icon: Building2 },
+            { id: 'endereco', label: 'Endereço', icon: MapPin },
+            { id: 'contato', label: 'Contato', icon: Phone },
+            { id: 'horarios', label: 'Horários de Funcionamento', icon: Clock },
+            { id: 'agendamento', label: 'Agendamento', icon: Clock },
+          ].map((aba) => {
+            const Icon = aba.icon
+            return (
+              <button
+                key={aba.id}
+                onClick={() => setAbaAtiva(aba.id)}
+                className={`flex items-center gap-2 px-4 md:px-6 py-3 text-sm md:text-base font-medium transition-colors ${
+                  abaAtiva === aba.id
+                    ? 'bg-amber-500/10 text-amber-500 border-b-2 border-amber-500'
+                    : 'text-gray-400 hover:text-white hover:bg-zinc-800'
+                }`}
+              >
+                <Icon className="h-4 w-4 md:h-5 md:w-5" />
+                <span className="hidden sm:inline">{aba.label}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="p-4 md:p-6">
+          {/* Aba: Dados da Empresa */}
+          {abaAtiva === 'empresa' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Nome Empresarial (Razão Social)</label>
+                  <input
+                    type="text"
+                    value={configuracoes.nome_empresarial || ''}
+                    onChange={(e) => atualizarCampo('nome_empresarial', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Nome Empresarial"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Nome Fantasia</label>
+                  <input
+                    type="text"
+                    value={configuracoes.nome_fantasia || ''}
+                    onChange={(e) => atualizarCampo('nome_fantasia', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Nome Fantasia"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">CNPJ</label>
+                  <input
+                    type="text"
+                    value={configuracoes.cnpj || ''}
+                    onChange={(e) => {
+                      const formatado = formatarCNPJ(e.target.value)
+                      atualizarCampo('cnpj', formatado)
+                    }}
+                    maxLength={18}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="00.000.000/0000-00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">CNAE Principal</label>
+                  <input
+                    type="text"
+                    value={configuracoes.cnae || ''}
+                    onChange={(e) => atualizarCampo('cnae', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="0000-0/00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">CNAEs Secundários</label>
+                  <input
+                    type="text"
+                    value={configuracoes.cnae_secundario || ''}
+                    onChange={(e) => atualizarCampo('cnae_secundario', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Separados por vírgula"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Inscrição Estadual</label>
+                  <input
+                    type="text"
+                    value={configuracoes.inscricao_estadual || ''}
+                    onChange={(e) => atualizarCampo('inscricao_estadual', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Inscrição Estadual"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Aba: Endereço */}
+          {abaAtiva === 'endereco' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-gray-300 text-sm mb-1">Rua</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_rua || ''}
+                    onChange={(e) => atualizarCampo('endereco_rua', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Nome da rua"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Número</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_numero || ''}
+                    onChange={(e) => atualizarCampo('endereco_numero', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Número"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">CEP</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_cep || ''}
+                    onChange={(e) => {
+                      const formatado = formatarCEP(e.target.value)
+                      atualizarCampo('endereco_cep', formatado)
+                    }}
+                    maxLength={9}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="00000-000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Complemento</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_complemento || ''}
+                    onChange={(e) => atualizarCampo('endereco_complemento', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Complemento"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Bairro</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_bairro || ''}
+                    onChange={(e) => atualizarCampo('endereco_bairro', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Bairro"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Cidade</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_cidade || ''}
+                    onChange={(e) => atualizarCampo('endereco_cidade', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="Cidade"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Estado (UF)</label>
+                  <input
+                    type="text"
+                    value={configuracoes.endereco_estado || ''}
+                    onChange={(e) => atualizarCampo('endereco_estado', e.target.value.toUpperCase())}
+                    maxLength={2}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="MT"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Aba: Contato */}
+          {abaAtiva === 'contato' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Email de Contato</label>
+                  <input
+                    type="email"
+                    value={configuracoes.email_contato || ''}
+                    onChange={(e) => atualizarCampo('email_contato', e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="contato@empresa.com.br"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Telefone Principal</label>
+                  <input
+                    type="text"
+                    value={configuracoes.telefone_principal || ''}
+                    onChange={(e) => {
+                      const formatado = formatarTelefone(e.target.value)
+                      atualizarCampo('telefone_principal', formatado)
+                    }}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Telefone Secundário</label>
+                  <input
+                    type="text"
+                    value={configuracoes.telefone_secundario || ''}
+                    onChange={(e) => {
+                      const formatado = formatarTelefone(e.target.value)
+                      atualizarCampo('telefone_secundario', formatado)
+                    }}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">WhatsApp</label>
+                  <input
+                    type="text"
+                    value={configuracoes.whatsapp || ''}
+                    onChange={(e) => {
+                      const formatado = formatarTelefone(e.target.value)
+                      atualizarCampo('whatsapp', formatado)
+                    }}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Aba: Horários de Funcionamento */}
+          {abaAtiva === 'horarios' && (
+            <div className="space-y-4">
+              <p className="text-gray-400 text-sm mb-4">Configure os horários de funcionamento para cada dia da semana</p>
+              <div className="space-y-3">
+                {diasSemana.map((dia) => (
+                  <div key={dia.key} className="bg-zinc-800 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="flex items-center gap-2 text-white font-medium">
+                        <input
+                          type="checkbox"
+                          checked={configuracoes[dia.ativo as keyof Configuracoes] as boolean || false}
+                          onChange={(e) => atualizarCampo(dia.ativo as keyof Configuracoes, e.target.checked)}
+                          className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                        />
+                        <span>{dia.label}</span>
+                      </label>
+                    </div>
+                    {configuracoes[dia.ativo as keyof Configuracoes] && (
+                      <div className="grid grid-cols-2 gap-4 mt-3">
+                        <div>
+                          <label className="block text-gray-300 text-sm mb-1">Abertura</label>
+                          <input
+                            type="time"
+                            value={configuracoes[dia.abertura as keyof Configuracoes] as string || ''}
+                            onChange={(e) => atualizarCampo(dia.abertura as keyof Configuracoes, e.target.value)}
+                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-gray-300 text-sm mb-1">Fechamento</label>
+                          <input
+                            type="time"
+                            value={configuracoes[dia.fechamento as keyof Configuracoes] as string || ''}
+                            onChange={(e) => atualizarCampo(dia.fechamento as keyof Configuracoes, e.target.value)}
+                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Aba: Agendamento */}
+          {abaAtiva === 'agendamento' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Intervalo entre Agendamentos (minutos)</label>
+                  <input
+                    type="number"
+                    value={configuracoes.intervalo_agendamento || 30}
+                    onChange={(e) => atualizarCampo('intervalo_agendamento', parseInt(e.target.value) || 30)}
+                    min={15}
+                    step={15}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                  />
+                  <p className="text-gray-500 text-xs mt-1">Ex: 30 minutos entre cada agendamento</p>
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Tempo Mínimo para Agendar (minutos)</label>
+                  <input
+                    type="number"
+                    value={configuracoes.tempo_antecedencia_agendamento || 60}
+                    onChange={(e) => atualizarCampo('tempo_antecedencia_agendamento', parseInt(e.target.value) || 60)}
+                    min={0}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                  />
+                  <p className="text-gray-500 text-xs mt-1">Tempo mínimo antes do horário para agendar</p>
+                </div>
+                <div>
+                  <label className="block text-gray-300 text-sm mb-1">Tempo Mínimo para Cancelar (minutos)</label>
+                  <input
+                    type="number"
+                    value={configuracoes.tempo_cancelamento_agendamento || 120}
+                    onChange={(e) => atualizarCampo('tempo_cancelamento_agendamento', parseInt(e.target.value) || 120)}
+                    min={0}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                  />
+                  <p className="text-gray-500 text-xs mt-1">Tempo mínimo antes do horário para cancelar</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* Botão Salvar */}
+      <div className="flex justify-end">
+        <button
+          onClick={salvarConfiguracoes}
+          disabled={salvando || !podeEditar('configuracoes')}
+          className="flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+        >
+          <Save className="h-5 w-5" />
+          {salvando ? 'Salvando...' : 'Salvar Configurações'}
+        </button>
+      </div>
+    </div>
+  )
+}
+

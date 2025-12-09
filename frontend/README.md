@@ -20,8 +20,9 @@ frontend/
 ### 1. Painel Administrativo (`painel-admin/`)
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://admin.barbeariapremium.com.br  
-**Porta de desenvolvimento**: `3000`
+**URL**: https://admin.protesecapilarcuiaba.com.br  
+**Porta de desenvolvimento**: `3000`  
+**VPS**: 45.132.157.28 (Hostinger - m.br)
 
 Este é o painel principal que desenvolvi para a gestão completa da barbearia. Aqui os administradores podem gerenciar tudo:
 
@@ -36,6 +37,9 @@ Este é o painel principal que desenvolvi para a gestão completa da barbearia. 
 - ✅ Help Desk (sistema completo de tickets)
 - ✅ Controle de Logs (sistema completo com exportação CSV)
 - ✅ Gerenciamento de Serviços (CRUD com imagens)
+- ✅ Configurações do Sistema (dados da empresa, horários, agendamento)
+- ✅ Integrações de APIs Externas (Focus NFe e estrutura escalável)
+- ✅ Habilitar API (controle de funcionalidades das integrações)
 
 **Tecnologias que utilizei:**
 - Next.js 14 (App Router)
@@ -50,8 +54,9 @@ Este é o painel principal que desenvolvi para a gestão completa da barbearia. 
 ### 2. Painel Cliente (`painel-cliente/`)
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://app.barbeariapremium.com.br  
-**Porta de desenvolvimento**: `3001`
+**URL**: https://app.protesecapilarcuiaba.com.br  
+**Porta de desenvolvimento**: `3001`  
+**VPS**: 45.132.157.28 (Hostinger - m.br)
 
 Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos e interagir com a barbearia:
 
@@ -72,8 +77,9 @@ Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos 
 ### 3. Site de Entrada (`site-entrada/`)
 
 **Status**: 🔄 **Em Desenvolvimento**  
-**URL**: https://www.barbeariapremium.com.br  
-**Porta de desenvolvimento**: `3002`
+**URL**: https://www.protesecapilarcuiaba.com.br  
+**Porta de desenvolvimento**: `3002`  
+**VPS**: 45.132.157.28 (Hostinger - m.br)
 
 Este será o site institucional da barbearia:
 
@@ -307,6 +313,6 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: Dezembro 2024  
+**Última atualização**: Dezembro 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI

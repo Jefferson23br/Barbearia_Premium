@@ -1,0 +1,17 @@
+Fique para registro e informações apenas o Backend e API e o banco de dados de imagens e PostgreSQL estao na vps, os arquivos de frontend eu coloquei na hostinger em outra conta, mas as configurações de direcionamentos ja foram feitas no cloudflare 
+
+testei o que me pediu e deu certo 
+
+Agora vamos criar uma parte crucial de nosso sistema a AGenda 
+
+O que quero fazer eu quero realmente transformar a agenda em uma agenda de serviços e disponibilidades, entao eu preciso que ela tenha integração e o coração do meu negocio seja no PostgreSQL, entao por exemplo hoje ja temos, cliente, funcionario, serviço, e dentro do serviço o valor e o tempo, no controle do postgresql ele automaticamente ja registra isso e na agenda ja reserva o tempo de acordo com o tempo marcado no serviço e na agenda individual que cada funcionario vai ter, entao precisaremos criar um front end que coloque o calendario em dois formatos, formato do dia, que mostra detalhado nome do cliente, serviço e mostre as horas, e aquela marcação expandida mostrando que ele tem o trabalho da hora inicial marcada pelo cleiente ate o termino, e o formato semana, e mes, que comprime mais a informação na horizontal, mas mantendo as horas e vendo de forma mais ampla o calendario, alem disso gostaria de colocar um campo no campo agenda abaixo, aonde ele pode marcar a data e o sistema mostra horariso vagos exemplo
+
+dia 09/12/2025 
+
+Ai ele mostra 
+
+Livre das 09:00 ás 10:30 
+Livre das 12:00 ás 14:00
+Livre das 16:00 ás 18:00
+
+ 
