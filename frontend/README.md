@@ -1,6 +1,6 @@
-# 🎨 Frontend - Sistema Prótese Capilar
+# 🎨 Frontend - Sistema Barbearia Premium
 
-Projetos frontend que desenvolvi utilizando Next.js 14 (App Router), TypeScript e Tailwind CSS. Criei três aplicações distintas para atender diferentes necessidades da clínica.
+Projetos frontend que desenvolvi utilizando Next.js 14 (App Router), TypeScript e Tailwind CSS. Criei três aplicações distintas para atender diferentes necessidades da barbearia.
 
 ---
 
@@ -20,10 +20,10 @@ frontend/
 ### 1. Painel Administrativo (`painel-admin/`)
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://admin.protesecapilarcuiaba.com.br  
+**URL**: https://admin.barbeariapremium.com.br  
 **Porta de desenvolvimento**: `3000`
 
-Este é o painel principal que desenvolvi para a gestão completa da clínica. Aqui os administradores podem gerenciar tudo:
+Este é o painel principal que desenvolvi para a gestão completa da barbearia. Aqui os administradores podem gerenciar tudo:
 
 **Funcionalidades implementadas:**
 - ✅ Sistema de login e autenticação
@@ -50,10 +50,10 @@ Este é o painel principal que desenvolvi para a gestão completa da clínica. A
 ### 2. Painel Cliente (`painel-cliente/`)
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://app.protesecapilarcuiaba.com.br  
+**URL**: https://app.barbeariapremium.com.br  
 **Porta de desenvolvimento**: `3001`
 
-Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos e interagir com a clínica:
+Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos e interagir com a barbearia:
 
 **Funcionalidades implementadas:**
 - ✅ Sistema de login e autenticação
@@ -65,17 +65,17 @@ Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos 
 - 🔄 Agendamentos
 - 🔄 Histórico de atendimentos
 - 🔄 Serviços contratados
-- 🔄 Comunicação com a clínica
+- 🔄 Comunicação com a barbearia
 
 ---
 
 ### 3. Site de Entrada (`site-entrada/`)
 
 **Status**: 🔄 **Em Desenvolvimento**  
-**URL**: https://www.protesecapilarcuiaba.com.br  
+**URL**: https://www.barbeariapremium.com.br  
 **Porta de desenvolvimento**: `3002`
 
-Este será o site institucional da clínica:
+Este será o site institucional da barbearia:
 
 **Funcionalidades planejadas:**
 - 🔄 Site institucional
@@ -230,7 +230,7 @@ Criei arquivos `.env.local` em cada projeto:
 
 ```env
 # API Backend
-NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
+NEXT_PUBLIC_API_URL=https://api.barbeariapremium.com.br
 ```
 
 ---

@@ -1,4 +1,4 @@
-# 💈 Sistema Prótese Capilar - Prótese Capilar Cuiabá
+# 💈 Sistema Barbearia Premium - Barbearia Premium
 
 <div align="center">
 
@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2024-blue?style=flat-square)
 
 </div>
 
@@ -24,11 +24,11 @@
 
 ## 🎯 Sobre o Projeto
 
-Olá! Este é o **Sistema Prótese Capilar**, uma solução completa de gestão desenvolvida especificamente para a clínica Prótese Capilar Cuiabá. Desenvolvi este sistema do zero pensando em facilitar o gerenciamento de clientes, funcionários, serviços e todo o fluxo operacional da clínica.
+Olá! Este é o **Sistema Barbearia Premium**, uma solução completa de gestão desenvolvida especificamente para a barbearia. Desenvolvi este sistema do zero pensando em facilitar o gerenciamento de clientes, funcionários, serviços e todo o fluxo operacional da barbearia.
 
-O sistema foi construído com tecnologias modernas e está **100% em produção**, atendendo diariamente as necessidades da clínica. Atualmente, temos três aplicações principais rodando:
+O sistema foi construído com tecnologias modernas e está **100% em produção**, atendendo diariamente as necessidades da barbearia. Atualmente, temos três aplicações principais rodando:
 
-- **Painel Administrativo** - Para gestão completa da clínica
+- **Painel Administrativo** - Para gestão completa da barbearia
 - **Painel do Cliente** - Para que os clientes acompanhem seus atendimentos
 - **Site Público** - Site institucional (em desenvolvimento)
 
@@ -189,10 +189,10 @@ npm run dev
 
 | Aplicação | URL | Status |
 |-----------|-----|--------|
-| **Painel Admin** | https://admin.protesecapilarcuiaba.com.br | ✅ Produção |
-| **Painel Cliente** | https://app.protesecapilarcuiaba.com.br | ✅ Produção |
-| **Site Público** | https://www.protesecapilarcuiaba.com.br | 🔄 Desenvolvimento |
-| **API Backend** | https://api.protesecapilarcuiaba.com.br | ✅ Produção |
+| **Painel Admin** | https://admin.barbeariapremium.com.br | ✅ Produção |
+| **Painel Cliente** | https://app.barbeariapremium.com.br | ✅ Produção |
+| **Site Público** | https://www.barbeariapremium.com.br | 🔄 Desenvolvimento |
+| **API Backend** | https://api.barbeariapremium.com.br | ✅ Produção |
 
 ---
 
@@ -217,7 +217,7 @@ npm run dev
 5. **Controle de Acessos** - Logs de login com estatísticas
 6. **Controle de Logs** - Sistema de auditoria completo
 7. **Help Desk** - Sistema completo de tickets
-8. **Serviços** - Gerenciamento de serviços da clínica
+8. **Serviços** - Gerenciamento de serviços da barbearia
 
 ### 🔄 Em Desenvolvimento
 - Sistema de agendamentos
@@ -229,7 +229,7 @@ npm run dev
 
 ## 🗄️ Banco de Dados
 
-### Schema: `protese`
+### Schema: `barbearia`
 
 **Tabelas principais:**
 - `usuarios_administrativos` - Administradores/Funcionários
@@ -239,7 +239,7 @@ npm run dev
 - `logs_sistema` - Logs de ações do sistema
 - `help_desk_chamados` - Chamados do Help Desk
 - `help_desk_respostas` - Respostas dos chamados
-- `servicos` - Serviços oferecidos pela clínica
+- `servicos` - Serviços oferecidos pela barbearia
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -253,6 +253,8 @@ npm run dev
 
 ### Documentação Principal
 - **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - Tudo que foi implementado
+- **[Status do Projeto](./docs/STATUS_PROJETO.md)** - Status atual completo
+- **[Roadmap](./docs/ROADMAP.md)** - Próximos passos e planejamento
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
 - **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação de logs
 
@@ -276,12 +278,12 @@ NODE_ENV=production
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=protese_capilar
-DB_USER=protese_user
+DB_NAME=barbearia_premium
+DB_USER=barbearia_user
 DB_PASSWORD=sua_senha_segura
 
-API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br
+API_BASE_URL=https://api.barbeariapremium.com.br
+CORS_ORIGINS=https://www.barbeariapremium.com.br,https://app.barbeariapremium.com.br,https://admin.barbeariapremium.com.br
 ```
 
 ---
@@ -308,11 +310,17 @@ O sistema foi desenvolvido com foco em:
 
 ## 📈 Próximos Passos
 
-**Foco Atual:**
+Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap](./docs/ROADMAP.md)**.
+
+**Foco Atual (Q1 2025):**
 - 🔄 Sistema de agendamentos
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
-- 🔄 Faturamento
 - 🔄 Melhorias no Help Desk
+
+**Planejado:**
+- 🔄 Faturamento
+- 🔄 Analytics e relatórios
+- 🔄 Sistema de notificações
 
 ---
 
@@ -331,13 +339,13 @@ Todas as decisões técnicas foram tomadas considerando:
 
 ## 📄 Licença
 
-Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar Cuiabá.
+Este é um projeto privado desenvolvido para uso comercial da Barbearia Premium.
 
 ---
 
 <div align="center">
 
-**Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
+**Desenvolvido com ❤️ para Barbearia Premium**
 
 *Sistema em desenvolvimento ativo* 🚀
 

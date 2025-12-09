@@ -1,4 +1,4 @@
-# ⚙️ Backend - Sistema Prótese Capilar
+# ⚙️ Backend - Sistema Barbearia Premium
 
 API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do backend que desenvolvi para gerenciar toda a lógica de negócio e comunicação com o banco de dados.
 
@@ -7,7 +7,7 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 ## 🚀 Status
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://api.protesecapilarcuiaba.com.br  
+**URL**: https://api.barbeariapremium.com.br  
 **Porta**: 3001
 
 ---
@@ -85,12 +85,12 @@ NODE_ENV=production
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=protese_capilar
-DB_USER=protese_user
+DB_NAME=barbearia_premium
+DB_USER=barbearia_user
 DB_PASSWORD=sua_senha_segura
 
-API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+API_BASE_URL=https://api.barbeariapremium.com.br
+CORS_ORIGINS=https://www.barbeariapremium.com.br,https://app.barbeariapremium.com.br,https://admin.barbeariapremium.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 ---
@@ -108,7 +108,7 @@ node server.js
 ### Produção (PM2)
 
 ```bash
-pm2 start server.js --name api-protese-capilar
+pm2 start server.js --name api-barbearia-premium
 pm2 save
 ```
 
@@ -175,7 +175,7 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 
 ## 🗄️ Banco de Dados
 
-### Schema: `protese`
+### Schema: `barbearia`
 
 Implementei as seguintes tabelas principais:
 
@@ -187,7 +187,7 @@ Implementei as seguintes tabelas principais:
 - `help_desk_chamados` - Chamados do Help Desk
 - `help_desk_respostas` - Respostas dos chamados
 - `help_desk_anexos` - Anexos dos chamados/respostas
-- `servicos` - Serviços oferecidos pela clínica
+- `servicos` - Serviços oferecidos pela barbearia
 - `servicos_imagens` - Imagens dos serviços
 
 ### Scripts SQL
@@ -275,7 +275,7 @@ curl http://localhost:3001/health
 ### Verificar logs
 ```bash
 # Logs do PM2
-pm2 logs api-protese-capilar --lines 50
+pm2 logs api-barbearia-premium --lines 50
 
 # Logs do servidor
 tail -f /var/log/nodejs/api-protese-capilar.log
@@ -301,7 +301,7 @@ pm2 restart api-protese-capilar
 pm2 status
 
 # Ver logs
-pm2 logs api-protese-capilar
+pm2 logs api-barbearia-premium
 
 # Parar API
 pm2 stop api-protese-capilar

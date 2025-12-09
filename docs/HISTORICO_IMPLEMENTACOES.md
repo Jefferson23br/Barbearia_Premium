@@ -1,4 +1,4 @@
-# 📚 Histórico de Implementações - Sistema Prótese Capilar
+# 📚 Histórico de Implementações - Sistema Barbearia Premium
 
 Documentação completa de tudo que foi implementado até agora no projeto.
 
