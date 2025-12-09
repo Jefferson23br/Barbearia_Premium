@@ -59,3 +59,4 @@ COMMENT ON COLUMN protese.servicos_imagens.is_capa IS 'Indica se a imagem é a c
 COMMENT ON COLUMN protese.servicos_imagens.ordem IS 'Ordem de exibição das imagens';
 
 
+
