@@ -58,6 +58,21 @@ router.get('/:usuarioId', async (req, res) => {
           controle_permissoes_ver: false,
           controle_permissoes_editar: false,
           controle_permissoes_excluir: false,
+          emissao_nfe_ver: false,
+          emissao_nfe_editar: false,
+          emissao_nfe_excluir: false,
+          emissao_relatorios_ver: false,
+          emissao_relatorios_editar: false,
+          emissao_relatorios_excluir: false,
+          integracao_apis_ver: false,
+          integracao_apis_editar: false,
+          integracao_apis_excluir: false,
+          habilitar_api_ver: false,
+          habilitar_api_editar: false,
+          habilitar_api_excluir: false,
+          configuracoes_ver: false,
+          configuracoes_editar: false,
+          configuracoes_excluir: false,
         },
       });
     }
@@ -138,6 +153,21 @@ router.put('/:usuarioId', async (req, res) => {
       controle_permissoes_ver: permissoesBody.controle_permissoes_ver || false,
       controle_permissoes_editar: permissoesBody.controle_permissoes_editar || false,
       controle_permissoes_excluir: permissoesBody.controle_permissoes_excluir || false,
+      emissao_nfe_ver: permissoesBody.emissao_nfe_ver || false,
+      emissao_nfe_editar: permissoesBody.emissao_nfe_editar || false,
+      emissao_nfe_excluir: permissoesBody.emissao_nfe_excluir || false,
+      emissao_relatorios_ver: permissoesBody.emissao_relatorios_ver || false,
+      emissao_relatorios_editar: permissoesBody.emissao_relatorios_editar || false,
+      emissao_relatorios_excluir: permissoesBody.emissao_relatorios_excluir || false,
+      integracao_apis_ver: permissoesBody.integracao_apis_ver || false,
+      integracao_apis_editar: permissoesBody.integracao_apis_editar || false,
+      integracao_apis_excluir: permissoesBody.integracao_apis_excluir || false,
+      habilitar_api_ver: permissoesBody.habilitar_api_ver || false,
+      habilitar_api_editar: permissoesBody.habilitar_api_editar || false,
+      habilitar_api_excluir: permissoesBody.habilitar_api_excluir || false,
+      configuracoes_ver: permissoesBody.configuracoes_ver || false,
+      configuracoes_editar: permissoesBody.configuracoes_editar || false,
+      configuracoes_excluir: permissoesBody.configuracoes_excluir || false,
     };
 
     // Verificar se já existe registro de permissões
@@ -168,6 +198,11 @@ router.put('/:usuarioId', async (req, res) => {
           servicos_editar = $33,
           servicos_excluir = $34,
           controle_permissoes_ver = $35, controle_permissoes_editar = $36, controle_permissoes_excluir = $37,
+          emissao_nfe_ver = $38, emissao_nfe_editar = $39, emissao_nfe_excluir = $40,
+          emissao_relatorios_ver = $41, emissao_relatorios_editar = $42, emissao_relatorios_excluir = $43,
+          integracao_apis_ver = $44, integracao_apis_editar = $45, integracao_apis_excluir = $46,
+          habilitar_api_ver = $47, habilitar_api_editar = $48, habilitar_api_excluir = $49,
+          configuracoes_ver = $50, configuracoes_editar = $51, configuracoes_excluir = $52,
           updated_at = NOW()
         WHERE usuario_id = $1`,
         [
@@ -208,6 +243,21 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.controle_permissoes_ver,
           valoresPermissoes.controle_permissoes_editar,
           valoresPermissoes.controle_permissoes_excluir,
+          valoresPermissoes.emissao_nfe_ver,
+          valoresPermissoes.emissao_nfe_editar,
+          valoresPermissoes.emissao_nfe_excluir,
+          valoresPermissoes.emissao_relatorios_ver,
+          valoresPermissoes.emissao_relatorios_editar,
+          valoresPermissoes.emissao_relatorios_excluir,
+          valoresPermissoes.integracao_apis_ver,
+          valoresPermissoes.integracao_apis_editar,
+          valoresPermissoes.integracao_apis_excluir,
+          valoresPermissoes.habilitar_api_ver,
+          valoresPermissoes.habilitar_api_editar,
+          valoresPermissoes.habilitar_api_excluir,
+          valoresPermissoes.configuracoes_ver,
+          valoresPermissoes.configuracoes_editar,
+          valoresPermissoes.configuracoes_excluir,
         ]
       );
     } else {
@@ -228,9 +278,14 @@ router.put('/:usuarioId', async (req, res) => {
           controle_logs_ver,
           help_desk_ver, help_desk_editar, help_desk_excluir,
           servicos_ver, servicos_editar, servicos_excluir,
-          controle_permissoes_ver, controle_permissoes_editar, controle_permissoes_excluir
+          controle_permissoes_ver, controle_permissoes_editar, controle_permissoes_excluir,
+          emissao_nfe_ver, emissao_nfe_editar, emissao_nfe_excluir,
+          emissao_relatorios_ver, emissao_relatorios_editar, emissao_relatorios_excluir,
+          integracao_apis_ver, integracao_apis_editar, integracao_apis_excluir,
+          habilitar_api_ver, habilitar_api_editar, habilitar_api_excluir,
+          configuracoes_ver, configuracoes_editar, configuracoes_excluir
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52
         )`,
         [
           usuarioId,
@@ -270,6 +325,21 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.controle_permissoes_ver,
           valoresPermissoes.controle_permissoes_editar,
           valoresPermissoes.controle_permissoes_excluir,
+          valoresPermissoes.emissao_nfe_ver,
+          valoresPermissoes.emissao_nfe_editar,
+          valoresPermissoes.emissao_nfe_excluir,
+          valoresPermissoes.emissao_relatorios_ver,
+          valoresPermissoes.emissao_relatorios_editar,
+          valoresPermissoes.emissao_relatorios_excluir,
+          valoresPermissoes.integracao_apis_ver,
+          valoresPermissoes.integracao_apis_editar,
+          valoresPermissoes.integracao_apis_excluir,
+          valoresPermissoes.habilitar_api_ver,
+          valoresPermissoes.habilitar_api_editar,
+          valoresPermissoes.habilitar_api_excluir,
+          valoresPermissoes.configuracoes_ver,
+          valoresPermissoes.configuracoes_editar,
+          valoresPermissoes.configuracoes_excluir,
         ]
       );
     }
