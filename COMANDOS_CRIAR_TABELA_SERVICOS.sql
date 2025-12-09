@@ -31,3 +31,4 @@ COMMENT ON COLUMN protese.servicos.categoria IS 'Categoria do serviço (ex: Cort
 COMMENT ON COLUMN protese.servicos.is_active IS 'Indica se o serviço está ativo e disponível';
 
 
+
