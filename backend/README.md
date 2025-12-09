@@ -7,8 +7,9 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 ## 🚀 Status
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://api.barbeariapremium.com.br  
-**Porta**: 3001
+**URL**: https://api.protesecapilarcuiaba.com.br  
+**Porta**: 3001  
+**VPS**: 82.25.65.201 (Hostinger)
 
 ---
 
@@ -85,12 +86,12 @@ NODE_ENV=production
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=barbearia_premium
-DB_USER=barbearia_user
+DB_NAME=protese_capilar
+DB_USER=protese_user
 DB_PASSWORD=sua_senha_segura
 
-API_BASE_URL=https://api.barbeariapremium.com.br
-CORS_ORIGINS=https://www.barbeariapremium.com.br,https://app.barbeariapremium.com.br,https://admin.barbeariapremium.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+API_BASE_URL=https://api.protesecapilarcuiaba.com.br
+CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 ---
@@ -147,6 +148,28 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 ### 📋 Logs do Sistema
 - `GET /api/v1/logs` - Listar logs (com filtros avançados)
 - `GET /api/v1/logs/estatisticas` - Estatísticas de logs
+- `GET /api/v1/logs/:id` - Buscar log específico
+
+### 🛍️ Serviços
+- `GET /api/v1/servicos` - Listar serviços (com filtros)
+- `POST /api/v1/servicos` - Criar serviço
+- `GET /api/v1/servicos/:id` - Buscar serviço específico
+- `PUT /api/v1/servicos/:id` - Atualizar serviço
+- `DELETE /api/v1/servicos/:id` - Excluir serviço
+- `POST /api/v1/servicos/:id/imagens` - Upload de imagens
+- `PUT /api/v1/servicos/:id/imagens/reordenar` - Reordenar imagens
+- `DELETE /api/v1/servicos/:id/imagens/:campo` - Excluir imagem específica
+
+### ⚙️ Configurações
+- `GET /api/v1/configuracoes` - Buscar configurações do sistema
+- `PUT /api/v1/configuracoes` - Atualizar configurações
+
+### 🔌 Integrações
+- `GET /api/v1/integracoes` - Listar todas as integrações
+- `GET /api/v1/integracoes/:tipo` - Buscar integração específica
+- `POST /api/v1/integracoes` - Criar nova integração
+- `PUT /api/v1/integracoes/:tipo` - Atualizar integração
+- `PUT /api/v1/integracoes/:tipo/funcionalidade/:funcionalidade` - Habilitar/desabilitar funcionalidade
 - `GET /api/v1/logs/:id` - Buscar log específico
 
 ### 🎫 Help Desk
@@ -347,6 +370,6 @@ Melhorias que pretendo implementar no futuro:
 
 ---
 
-**Última atualização**: Dezembro 2024  
-**Estrutura**: ✅ Modular (implementada em Dezembro 2024)  
+**Última atualização**: Dezembro 2025  
+**Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Dezembro 2025)  
 **Status**: ✅ Em Produção
