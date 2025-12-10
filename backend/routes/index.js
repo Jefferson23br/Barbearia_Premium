@@ -12,6 +12,7 @@ const controleAcessosRoutes = require('./controle-acessos');
 const servicosRoutes = require('./servicos');
 const configuracoesRoutes = require('./configuracoes');
 const integracoesRoutes = require('./integracoes');
+const agendamentosRoutes = require('./agendamentos');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -24,6 +25,7 @@ router.use('/controle-acessos', controleAcessosRoutes);
 router.use('/servicos', servicosRoutes);
 router.use('/configuracoes', configuracoesRoutes);
 router.use('/integracoes', integracoesRoutes);
+router.use('/agendamentos', agendamentosRoutes);
 
 module.exports = router;
 
