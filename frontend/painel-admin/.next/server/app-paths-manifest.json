@@ -1,5 +1,5 @@
 {
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/integracoes-apis/page": "app/dashboard/integracoes-apis/page.js",
-  "/dashboard/agenda/page": "app/dashboard/agenda/page.js"
+  "/page": "app/page.js",
+  "/dashboard/agenda/page": "app/dashboard/agenda/page.js",
+  "/dashboard/controle-logs/page": "app/dashboard/controle-logs/page.js"
 }

@@ -264,20 +264,43 @@ router.get('/horarios-funcionamento', async (req, res) => {
     }
 
     // 2. Parse da Data (Seguro)
+    console.log('📅 Parseando data recebida:', data);
     const [ano, mes, dia] = data.split('-').map(Number);
     const dataObj = new Date(ano, mes - 1, dia);
     const diaSemana = dataObj.getDay(); // 0-6
     const diasSemana = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
     const diaNome = diasSemana[diaSemana];
+    
+    console.log('📅 Data parseada:', {
+      ano,
+      mes,
+      dia,
+      diaSemana,
+      diaNome,
+      dataObj: dataObj.toISOString()
+    });
 
     // 3. Pega dados do dia
     const campoAbertura = `${diaNome}_abertura`;
     const campoFechamento = `${diaNome}_fechamento`;
     const campoAtivo = `${diaNome}_ativo`;
     
+    console.log('🔍 Campos a buscar:', {
+      campoAbertura,
+      campoFechamento,
+      campoAtivo
+    });
+    
     const horaAbertura = config[campoAbertura];
     const horaFechamento = config[campoFechamento];
     const diaAtivoRaw = config[campoAtivo];
+    
+    console.log('📊 Valores encontrados no config:', {
+      horaAbertura,
+      horaFechamento,
+      diaAtivoRaw,
+      tipoDiaAtivo: typeof diaAtivoRaw
+    });
 
     console.log('📅 Dados do dia:', {
       diaNome,
