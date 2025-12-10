@@ -17,12 +17,16 @@ import { Calendar } from '@/components/ui/calendar'
 
 // Função para obter URL da API
 function getApiBaseUrl() {
-  if (typeof window !== 'undefined') {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:3001'
-    }
-  }
+  // Sempre usar a API de produção, pois o backend está rodando lá
   return 'https://api.protesecapilarcuiaba.com.br'
+  
+  // Código antigo (comentado para referência):
+  // if (typeof window !== 'undefined') {
+  //   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  //     return 'http://localhost:3001'
+  //   }
+  // }
+  // return 'https://api.protesecapilarcuiaba.com.br'
 }
 
 interface Funcionario {
