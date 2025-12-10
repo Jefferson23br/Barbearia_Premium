@@ -222,6 +222,7 @@ router.get('/disponibilidades', async (req, res) => {
 /**
  * GET /api/v1/agendamentos/horarios-funcionamento
  * Retorna os horários de funcionamento para uma data específica
+ * CORREÇÃO: Tratamento robusto para evitar travas no frontend
  */
 router.get('/horarios-funcionamento', async (req, res) => {
   try {
@@ -231,76 +232,129 @@ router.get('/horarios-funcionamento', async (req, res) => {
       return res.status(400).json({ error: 'Data é obrigatória' });
     }
 
-    // Obter configurações
-    const configResult = await pool.query('SELECT * FROM protese.configuracoes ORDER BY created_at DESC LIMIT 1');
-    if (configResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Configurações não encontradas' });
+    // 1. Tenta buscar configuração
+    console.log('🔍 Buscando configurações no banco...');
+    const configResult = await pool.query('SELECT * FROM protese.configuracoes ORDER BY updated_at DESC LIMIT 1');
+    
+    // Objeto padrão caso não exista config ou dê erro
+    let config = {
+      intervalo_agendamento: 30
+    };
+    
+    // Se achou config no banco, usa ela
+    if (configResult.rows.length > 0) {
+      config = configResult.rows[0];
+      console.log('✅ Configuração encontrada:', {
+        id: config.id,
+        segunda_abertura: config.segunda_abertura,
+        segunda_fechamento: config.segunda_fechamento,
+        segunda_ativo: config.segunda_ativo
+      });
+    } else {
+      console.log('⚠️ Nenhuma configuração encontrada no banco');
+      // Se não achou, retorna um dia "inativo" seguro para não travar o front
+      return res.json({
+        dia_ativo: false,
+        dia_semana: 'nao_configurado',
+        hora_abertura: null,
+        hora_fechamento: null,
+        horarios: [],
+        aviso: 'Configuração não encontrada'
+      });
     }
 
-    const config = configResult.rows[0];
-
-    // Determinar o dia da semana (0 = domingo, 1 = segunda, etc.)
-    // A data vem no formato 'yyyy-MM-dd', precisamos parsear corretamente
+    // 2. Parse da Data (Seguro)
     const [ano, mes, dia] = data.split('-').map(Number);
-    const dataObj = new Date(ano, mes - 1, dia); // mes - 1 porque Date usa 0-11 para meses
-    const diaSemana = dataObj.getDay();
+    const dataObj = new Date(ano, mes - 1, dia);
+    const diaSemana = dataObj.getDay(); // 0-6
     const diasSemana = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
     const diaNome = diasSemana[diaSemana];
 
-    // Obter horário de funcionamento do dia
+    // 3. Pega dados do dia
     const campoAbertura = `${diaNome}_abertura`;
     const campoFechamento = `${diaNome}_fechamento`;
     const campoAtivo = `${diaNome}_ativo`;
-
+    
     const horaAbertura = config[campoAbertura];
     const horaFechamento = config[campoFechamento];
-    const diaAtivo = config[campoAtivo];
+    const diaAtivoRaw = config[campoAtivo];
 
-    // Verificar se os valores existem e são válidos
-    // PostgreSQL pode retornar boolean como true/false ou 't'/'f'
-    const diaAtivoBool = diaAtivo === true || diaAtivo === 't' || diaAtivo === 'true';
-    
-    if (!diaAtivoBool || !horaAbertura || !horaFechamento) {
+    console.log('📅 Dados do dia:', {
+      diaNome,
+      campoAbertura,
+      campoFechamento,
+      campoAtivo,
+      horaAbertura,
+      horaFechamento,
+      diaAtivoRaw,
+      tipoDiaAtivo: typeof diaAtivoRaw
+    });
+
+    // Tratamento booleano seguro (Postgres pode retornar true, 't', 'true')
+    const diaAtivo = diaAtivoRaw === true || diaAtivoRaw === 't' || diaAtivoRaw === 'true';
+
+    // Se fechado ou horários inválidos
+    if (!diaAtivo || !horaAbertura || !horaFechamento) {
+      console.log('⚠️ Dia fechado ou horários inválidos:', {
+        diaAtivo,
+        horaAbertura,
+        horaFechamento
+      });
       return res.json({
         dia_ativo: false,
+        dia_semana: diaNome,
         hora_abertura: null,
         hora_fechamento: null,
         horarios: []
       });
     }
 
-    // Gerar horários de 15 em 15 minutos
-    // O PostgreSQL retorna TIME como 'HH:MM:SS', precisamos pegar apenas HH:MM
-    const horaAberturaStr = horaAbertura.toString();
-    const horaFechamentoStr = horaFechamento.toString();
-    const horaAberturaFormatada = horaAberturaStr.length > 5 ? horaAberturaStr.substring(0, 5) : horaAberturaStr;
-    const horaFechamentoFormatada = horaFechamentoStr.length > 5 ? horaFechamentoStr.substring(0, 5) : horaFechamentoStr;
+    // 4. Gerar Grade de Horários (15 em 15 min para visualização)
+    // Converte Time (HH:MM:SS) para HH:MM
+    const horaAberturaFormatada = horaAbertura.toString().substring(0, 5);
+    const horaFechamentoFormatada = horaFechamento.toString().substring(0, 5);
+    const [hInicio, mInicio] = horaAberturaFormatada.split(':').map(Number);
+    const [hFim, mFim] = horaFechamentoFormatada.split(':').map(Number);
     
-    const [horaAberturaH, minutoAberturaM] = horaAberturaFormatada.split(':').map(Number);
-    const [horaFechamentoH, minutoFechamentoM] = horaFechamentoFormatada.split(':').map(Number);
-    const inicioMinutos = horaAberturaH * 60 + minutoAberturaM;
-    const fimMinutos = horaFechamentoH * 60 + minutoFechamentoM;
-
+    const inicioMinutos = hInicio * 60 + mInicio;
+    const fimMinutos = hFim * 60 + mFim;
     const horarios = [];
-    let minutosAtuais = inicioMinutos;
 
-    while (minutosAtuais <= fimMinutos) {
-      const horas = Math.floor(minutosAtuais / 60);
-      const minutos = minutosAtuais % 60;
-      horarios.push(`${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`);
-      minutosAtuais += 15;
+    // Proteção contra loops infinitos (ex: inicio > fim)
+    if (inicioMinutos < fimMinutos) {
+        let minutosAtuais = inicioMinutos;
+        while (minutosAtuais < fimMinutos) { // < Para não incluir a hora exata de fechar se não quiser
+            const horas = Math.floor(minutosAtuais / 60);
+            const minutos = minutosAtuais % 60;
+            horarios.push(`${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`);
+            minutosAtuais += 15; // Intervalo visual fixo de 15min
+        }
     }
 
-    res.json({
+    const resposta = {
       dia_ativo: true,
       dia_semana: diaNome,
       hora_abertura: horaAberturaFormatada,
       hora_fechamento: horaFechamentoFormatada,
       horarios: horarios
+    };
+
+    console.log('✅ Resposta enviada:', {
+      ...resposta,
+      totalHorarios: horarios.length,
+      primeiroHorario: horarios[0],
+      ultimoHorario: horarios[horarios.length - 1]
     });
+
+    res.json(resposta);
   } catch (error) {
-    console.error('Erro ao buscar horários de funcionamento:', error);
-    res.status(500).json({ error: 'Erro ao buscar horários de funcionamento' });
+    console.error('Erro CRÍTICO em horários-funcionamento:', error);
+    // Retorna JSON válido mesmo no erro para destrava o front
+    res.status(500).json({ 
+        dia_ativo: false, 
+        horarios: [], 
+        error: 'Erro interno ao calcular horários' 
+    });
   }
 });
 
