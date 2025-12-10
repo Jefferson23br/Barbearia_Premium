@@ -122,11 +122,19 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     // Verificar tipo de usuário da requisição (prioridade: query param > header x-user-tipo > header x-user-type > default 'funcionario')
-    const tipoUsuarioRequisicao = req.query.tipo_usuario || 
+    const tipoUsuarioRequisicao = (req.query.tipo_usuario || 
                                   req.query.requestingUserType || 
                                   req.headers['x-user-tipo'] || 
                                   req.headers['x-user-type'] || 
-                                  'funcionario'; // Default para 'funcionario' para não mostrar masters por padrão
+                                  'funcionario').toLowerCase(); // Normalizar para lowercase
+
+    console.log('👥 GET /api/v1/funcionarios - Headers recebidos:', {
+      'x-user-tipo': req.headers['x-user-tipo'],
+      'x-user-type': req.headers['x-user-type'],
+      'x-user-id': req.headers['x-user-id'],
+      'tipo_usuario_query': req.query.tipo_usuario,
+      'tipoUsuarioRequisicao_final': tipoUsuarioRequisicao
+    });
 
     let query;
     let params = [];
@@ -135,22 +143,35 @@ router.get('/', async (req, res) => {
       // Master vê TODOS os funcionários (incluindo outros Masters)
       query = `SELECT id, nome_completo, email, cpf, tipo_usuario, is_active, created_at
                FROM protese.usuarios_administrativos
+               WHERE is_active = true
                ORDER BY nome_completo ASC`;
+      console.log('👥 Query para Master: retornando TODOS os funcionários ativos');
     } else {
       // Proprietário e Funcionário NÃO veem Masters
+      // Retorna TODOS os funcionários ativos (não apenas os que têm agendamentos)
+      // IMPORTANTE: Comparar com LOWER() para garantir case-insensitive
       query = `SELECT id, nome_completo, email, cpf, tipo_usuario, is_active, created_at
                FROM protese.usuarios_administrativos
-               WHERE tipo_usuario != 'master'
+               WHERE LOWER(tipo_usuario) != 'master' AND is_active = true
                ORDER BY nome_completo ASC`;
+      console.log('👥 Query para não-Master: retornando funcionários ativos (exceto masters)');
     }
 
+    console.log('📋 Executando query:', query);
     const result = await pool.query(query, params);
+    console.log('✅ Resultado da query:', result.rows.length, 'funcionários encontrados');
+    console.log('📋 Lista de funcionários:', result.rows.map(f => ({ 
+      id: f.id, 
+      nome: f.nome_completo, 
+      tipo: f.tipo_usuario, 
+      ativo: f.is_active 
+    })));
 
     res.json({
       funcionarios: result.rows,
     });
   } catch (error) {
-    console.error('Erro ao buscar funcionários:', error);
+    console.error('❌ Erro ao buscar funcionários:', error);
     res.status(500).json({
       error: 'Erro ao buscar funcionários',
       message: error.message,

@@ -29,11 +29,20 @@ function getApiBaseUrl() {
   // return 'https://api.protesecapilarcuiaba.com.br'
 }
 
+// Tipo Funcionario conforme resposta da API
 interface Funcionario {
   id: string
   nome_completo: string
-  tipo_usuario: string
+  email: string
+  cpf: string
+  tipo_usuario: 'master' | 'proprietario' | 'funcionario'
   is_active: boolean
+  created_at: string
+}
+
+// Tipo da resposta da API de funcionários
+interface GetFuncionariosResponse {
+  funcionarios: Funcionario[]
 }
 
 interface Cliente {
@@ -86,7 +95,11 @@ export default function AgendaPage() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([])
   const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>([])
   const [loading, setLoading] = useState(false)
-  const [funcionarioFiltro, setFuncionarioFiltro] = useState<string>('all')
+  // Estado do filtro de funcionário no calendário
+  // "todos" = Todos os funcionários (não envia funcionario_id na query)
+  // "uuid-do-funcionario" = Filtra por funcionário específico
+  // NOTA: Não usar "" (vazio) porque Select.Item do Radix UI não aceita value vazio
+  const [funcionarioFiltro, setFuncionarioFiltro] = useState<string>('todos')
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
   const [funcionariosCarregando, setFuncionariosCarregando] = useState(false)
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -108,9 +121,11 @@ export default function AgendaPage() {
   const [calendarioBuscaAberto, setCalendarioBuscaAberto] = useState(false)
   const [usuarioLogado, setUsuarioLogado] = useState<any>(null)
 
-  const { podeAcessar, podeEditar, permissoesLoading } = usePermissions()
+  const { podeAcessar, podeEditar, loading: permissoesLoading } = usePermissions()
   
   console.log('📊 Estado atual - permissoesLoading:', permissoesLoading, 'gradeLoading:', gradeLoading, 'horariosFuncionamento:', horariosFuncionamento)
+  console.log('👥 Estado funcionários - carregando:', funcionariosCarregando, 'total:', funcionarios.length, 'funcionários:', funcionarios.map(f => ({ nome: f.nome_completo, tipo: f.tipo_usuario, ativo: f.is_active })))
+  console.log('🔍 Estado filtro - funcionarioFiltro:', funcionarioFiltro, 'agendamentos:', agendamentos.length)
 
   useEffect(() => {
     const adminData = localStorage.getItem('admin')
@@ -119,54 +134,62 @@ export default function AgendaPage() {
     }
   }, [])
 
+  /**
+   * CORREÇÃO: Carregar funcionários para o filtro do calendário
+   * 
+   * PROBLEMA ORIGINAL:
+   * - Estava usando tipo_usuario do admin logado, o que poderia retornar lista incompleta
+   * - Havia código duplicado (carregarFuncionarios e fetchFuncionarios)
+   * 
+   * SOLUÇÃO:
+   * - Sempre usar tipo_usuario=master na chamada para garantir lista completa
+   * - Filtrar masters no frontend (não devem aparecer no filtro)
+   * - Mostrar apenas funcionários ativos
+   */
   const carregarFuncionarios = useCallback(async () => {
     setFuncionariosCarregando(true)
     try {
-      // Tentar buscar token de várias formas
-      let token = localStorage.getItem('token') || 
-                  localStorage.getItem('authToken') || 
-                  localStorage.getItem('accessToken') ||
-                  sessionStorage.getItem('token') ||
-                  sessionStorage.getItem('authToken')
-      
       const apiUrl = getApiBaseUrl()
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
+      // CORREÇÃO: Sempre usar tipo_usuario=master para garantir lista completa
+      // O backend retornará todos os funcionários (incluindo masters)
+      // Filtraremos masters no frontend
+      const url = `${apiUrl}/api/v1/funcionarios?tipo_usuario=master`
+      
+      console.log('👥 [FILTRO] Carregando funcionários de:', url)
+      
+      const response = await fetch(url)
+      
+      if (!response.ok) {
+        throw new Error(`Erro ao carregar funcionários: ${response.status} ${response.statusText}`)
       }
       
-      // Só adiciona Authorization se tiver token válido
-      if (token && token.length > 10) {
-        headers['Authorization'] = `Bearer ${token}`
-      }
+      const data: GetFuncionariosResponse = await response.json()
+      console.log('✅ [FILTRO] Funcionários recebidos da API:', data.funcionarios?.length || 0)
       
-      // Adicionar headers do admin se disponível
-      const adminData = localStorage.getItem('admin')
-      const admin = adminData ? JSON.parse(adminData) : null
-      if (admin?.id) {
-        headers['x-user-id'] = admin.id
-        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
-      }
+      // CORREÇÃO: Filtrar masters e inativos no frontend
+      // Apenas funcionários ativos (exceto masters) devem aparecer no filtro
+      const funcionariosFiltrados = (data.funcionarios || []).filter((func: Funcionario) => {
+        const tipoLower = (func.tipo_usuario || '').toLowerCase()
+        const isNotMaster = tipoLower !== 'master'
+        const isActive = func.is_active === true
+        return isNotMaster && isActive
+      })
       
-      console.log('👥 Carregando funcionários de:', `${apiUrl}/api/v1/funcionarios`)
-      const response = await fetch(`${apiUrl}/api/v1/funcionarios`, { headers })
+      console.log('✅ [FILTRO] Funcionários filtrados (sem master, apenas ativos):', funcionariosFiltrados.length)
+      console.log('📋 [FILTRO] Lista completa:', funcionariosFiltrados.map(f => ({ 
+        id: f.id, 
+        nome: f.nome_completo, 
+        tipo: f.tipo_usuario,
+        ativo: f.is_active
+      })))
       
-      if (response.ok) {
-        const data = await response.json()
-        console.log('✅ Funcionários recebidos:', data.funcionarios?.length || 0)
-        
-        // Filtrar: remover 'master' e inativos
-        const funcionariosFiltrados = (data.funcionarios || []).filter(
-          (func: Funcionario) => func.tipo_usuario !== 'master' && func.is_active !== false
-        )
-        
-        console.log('👥 Funcionários filtrados (sem master):', funcionariosFiltrados.length)
-        setFuncionarios(funcionariosFiltrados)
-      } else {
-        const errorText = await response.text()
-        console.error('❌ Erro ao carregar funcionários:', response.status, errorText)
-      }
-    } catch (error) {
-      console.error('❌ Erro ao carregar funcionários:', error)
+      setFuncionarios(funcionariosFiltrados)
+      // LOG TEMPORÁRIO: Confirmar que o estado foi atualizado
+      console.log('✅ [FILTRO] Estado funcionarios atualizado com', funcionariosFiltrados.length, 'funcionários')
+    } catch (error: any) {
+      console.error('❌ [FILTRO] Erro ao carregar funcionários:', error)
+      // Em caso de erro, definir array vazio para não travar a UI
+      setFuncionarios([])
     } finally {
       setFuncionariosCarregando(false)
     }
@@ -276,10 +299,17 @@ export default function AgendaPage() {
   }, [])
 
   const carregarAgendamentos = useCallback(async () => {
+    console.log('🚀 [AGENDAMENTOS] carregarAgendamentos chamado com:', {
+      funcionarioFiltro,
+      viewMode,
+      dataSelecionada: format(dataSelecionada, 'yyyy-MM-dd')
+    })
+    
     setLoading(true)
     try {
       const token = localStorage.getItem('token')
       if (!token) {
+        console.warn('⚠️ [AGENDAMENTOS] Token não encontrado')
         setLoading(false)
         return
       }
@@ -303,10 +333,29 @@ export default function AgendaPage() {
         dataFim = format(fimMes, 'yyyy-MM-dd')
       }
 
-      let url = `${apiUrl}/api/v1/agendamentos?data_inicio=${dataInicio}&data_fim=${dataFim}`
-      if (funcionarioFiltro && funcionarioFiltro !== 'all') {
-        url += `&funcionario_id=${funcionarioFiltro}`
+      // CORREÇÃO: Montar URL com query parameters corretos usando URLSearchParams
+      const params = new URLSearchParams()
+      params.append('data_inicio', dataInicio)
+      params.append('data_fim', dataFim)
+      
+      // Se funcionarioFiltro for "todos", não enviar funcionario_id (mostra todos)
+      // Se funcionarioFiltro tiver um ID (UUID), enviar funcionario_id para filtrar
+      console.log('🔍 [AGENDAMENTOS] Verificando filtro:', { 
+        funcionarioFiltro, 
+        isTodos: funcionarioFiltro === 'todos',
+        isEmpty: !funcionarioFiltro || funcionarioFiltro.trim() === '',
+        tipo: typeof funcionarioFiltro
+      })
+      
+      if (funcionarioFiltro && funcionarioFiltro !== 'todos' && funcionarioFiltro.trim() !== '') {
+        params.append('funcionario_id', funcionarioFiltro)
+        console.log('🔍 [AGENDAMENTOS] Filtrando por funcionário:', funcionarioFiltro)
+      } else {
+        console.log('📋 [AGENDAMENTOS] Mostrando todos os funcionários (sem filtro)')
       }
+      
+      const url = `${apiUrl}/api/v1/agendamentos?${params.toString()}`
+      console.log('📅 [AGENDAMENTOS] URL final:', url)
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -324,10 +373,25 @@ export default function AgendaPage() {
 
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ [AGENDAMENTOS] Agendamentos recebidos:', data.agendamentos?.length || 0)
+        console.log('📋 [AGENDAMENTOS] Lista de agendamentos:', data.agendamentos?.map((a: Agendamento) => ({
+          id: a.id,
+          cliente: a.cliente_nome,
+          funcionario: a.funcionario_nome,
+          data: a.data_agendamento,
+          hora: a.hora_inicio
+        })))
         setAgendamentos(data.agendamentos || [])
+        // LOG TEMPORÁRIO: Confirmar que o estado foi atualizado
+        console.log('✅ [AGENDAMENTOS] Estado agendamentos atualizado com', data.agendamentos?.length || 0, 'agendamentos')
+      } else {
+        const errorText = await response.text()
+        console.error('❌ [AGENDAMENTOS] Erro ao carregar agendamentos:', response.status, errorText)
+        setAgendamentos([]) // Em caso de erro, definir array vazio
       }
     } catch (error) {
-      console.error('Erro ao carregar agendamentos:', error)
+      console.error('❌ [AGENDAMENTOS] Erro ao carregar agendamentos:', error)
+      setAgendamentos([]) // Em caso de erro, definir array vazio
     } finally {
       setLoading(false)
     }
@@ -409,60 +473,8 @@ export default function AgendaPage() {
       console.log('⚠️ Continuando sem token para carregar funcionários')
     }
 
-    // Carregar funcionários inline para evitar dependências
-    setFuncionariosCarregando(true)
-    const fetchFuncionarios = async () => {
-      try {
-        // Tentar buscar token de várias formas
-        let tokenFunc = localStorage.getItem('token') || 
-                        localStorage.getItem('authToken') || 
-                        localStorage.getItem('accessToken') ||
-                        sessionStorage.getItem('token') ||
-                        sessionStorage.getItem('authToken')
-        
-        const apiUrl = getApiBaseUrl()
-        const headers: HeadersInit = {
-          'Content-Type': 'application/json',
-        }
-        
-        // Só adiciona Authorization se tiver token válido
-        if (tokenFunc && tokenFunc.length > 10) {
-          headers['Authorization'] = `Bearer ${tokenFunc}`
-        }
-        
-        // Adicionar headers do admin se disponível
-        const adminData = localStorage.getItem('admin')
-        const admin = adminData ? JSON.parse(adminData) : null
-        if (admin?.id) {
-          headers['x-user-id'] = admin.id
-          headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
-        }
-        
-        console.log('👥 Carregando funcionários (useEffect):', `${apiUrl}/api/v1/funcionarios`)
-        const response = await fetch(`${apiUrl}/api/v1/funcionarios`, { headers })
-        
-        if (response.ok) {
-          const data = await response.json()
-          console.log('✅ Funcionários recebidos (useEffect):', data.funcionarios?.length || 0)
-          
-          // Filtrar: remover 'master' e inativos
-          const funcionariosFiltrados = (data.funcionarios || []).filter(
-            (func: Funcionario) => func.tipo_usuario !== 'master' && func.is_active !== false
-          )
-          
-          console.log('👥 Funcionários filtrados (sem master):', funcionariosFiltrados.length)
-          console.log('👥 Lista de funcionários:', funcionariosFiltrados.map(f => ({ id: f.id, nome: f.nome_completo, tipo: f.tipo_usuario })))
-          setFuncionarios(funcionariosFiltrados)
-        } else {
-          const errorText = await response.text()
-          console.error('❌ Erro ao carregar funcionários:', response.status, errorText)
-        }
-      } catch (error) {
-        console.error('❌ Erro ao carregar funcionários:', error)
-      } finally {
-        setFuncionariosCarregando(false)
-      }
-    }
+    // CORREÇÃO: Remover código duplicado - usar apenas carregarFuncionarios
+    // A função carregarFuncionarios já está definida acima e faz o trabalho correto
 
     // Carregar clientes inline
     const fetchClientes = async () => {
@@ -534,7 +546,9 @@ export default function AgendaPage() {
       }
     }
 
-    fetchFuncionarios()
+    // CORREÇÃO: Carregar funcionários usando a função useCallback (sem duplicação)
+    console.log('🔄 Iniciando carregamento de dados iniciais...')
+    carregarFuncionarios()
     fetchClientes()
     fetchServicos()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -779,60 +793,11 @@ export default function AgendaPage() {
     fetchDados()
     console.log('✅ fetchDados() chamado')
     
-    // Carregar agendamentos
-    const fetchAgendamentos = async () => {
-      try {
-        const apiUrl = getApiBaseUrl()
-        let dataInicio = ''
-        let dataFim = ''
-
-        if (viewMode === 'dia') {
-          dataInicio = format(dataSelecionada, 'yyyy-MM-dd')
-          dataFim = format(dataSelecionada, 'yyyy-MM-dd')
-        } else if (viewMode === 'semana') {
-          const inicioSemana = startOfWeek(dataSelecionada, { locale: ptBR })
-          const fimSemana = endOfWeek(dataSelecionada, { locale: ptBR })
-          dataInicio = format(inicioSemana, 'yyyy-MM-dd')
-          dataFim = format(fimSemana, 'yyyy-MM-dd')
-        } else {
-          const inicioMes = startOfMonth(dataSelecionada)
-          const fimMes = endOfMonth(dataSelecionada)
-          dataInicio = format(inicioMes, 'yyyy-MM-dd')
-          dataFim = format(fimMes, 'yyyy-MM-dd')
-        }
-
-        let url = `${apiUrl}/api/v1/agendamentos?data_inicio=${dataInicio}&data_fim=${dataFim}`
-        if (funcionarioFiltro && funcionarioFiltro !== 'all') {
-          url += `&funcionario_id=${funcionarioFiltro}`
-        }
-
-        const adminData = localStorage.getItem('admin')
-        const admin = adminData ? JSON.parse(adminData) : null
-
-        const headers: HeadersInit = {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        }
-        if (admin?.id) {
-          headers['x-user-id'] = admin.id
-          headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
-        }
-
-        const response = await fetch(url, { headers })
-        if (response.ok) {
-          const data = await response.json()
-          setAgendamentos(data.agendamentos || [])
-        }
-      } catch (error) {
-        console.error('Erro ao carregar agendamentos:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAgendamentos()
+    // CORREÇÃO: Usar carregarAgendamentos (useCallback) em vez de função duplicada
+    // A função carregarAgendamentos já está definida acima e faz o trabalho correto
+    carregarAgendamentos()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSelecionada, funcionarioFiltro, viewMode, permissoesLoading]) // NÃO incluir podeAcessar para evitar loops
+  }, [dataSelecionada, funcionarioFiltro, viewMode, permissoesLoading, carregarAgendamentos]) // Incluir carregarAgendamentos nas dependências
 
   const criarAgendamento = async () => {
     if (!formData.cliente_id || !formData.funcionario_id || !formData.servico_id || !formData.hora_inicio) {
@@ -1332,12 +1297,24 @@ export default function AgendaPage() {
               <CardDescription className="text-gray-400">Visualize e gerencie seus agendamentos</CardDescription>
             </div>
             <div className="flex items-center gap-4">
-              <Select value={funcionarioFiltro} onValueChange={setFuncionarioFiltro}>
+              <Select 
+                value={funcionarioFiltro} 
+                onValueChange={(value) => {
+                  console.log('🔄 [FILTRO SELECT] Mudança detectada:', { 
+                    valorAnterior: funcionarioFiltro, 
+                    valorNovo: value,
+                    funcionariosDisponiveis: funcionarios.length
+                  })
+                  setFuncionarioFiltro(value)
+                  // O useEffect que depende de funcionarioFiltro vai chamar carregarAgendamentos automaticamente
+                }}
+              >
                 <SelectTrigger className="w-48 bg-zinc-800 border-amber-500/20 text-gray-300">
                   <SelectValue placeholder="Filtrar por funcionário" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-amber-500/20">
-                  <SelectItem value="all" className="text-gray-300">Todos os funcionários</SelectItem>
+                  {/* CORREÇÃO: Usar value="todos" (não pode ser vazio - Radix UI não aceita) */}
+                  <SelectItem value="todos" className="text-gray-300">Todos os funcionários</SelectItem>
                   {funcionariosCarregando ? (
                     <div className="px-2 py-1.5 text-sm text-gray-500">Carregando funcionários...</div>
                   ) : funcionarios.length === 0 ? (
