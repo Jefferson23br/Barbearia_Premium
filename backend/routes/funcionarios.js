@@ -121,7 +121,12 @@ router.post('/', async (req, res) => {
  */
 router.get('/', async (req, res) => {
   try {
-    const tipoUsuarioRequisicao = req.query.tipo_usuario || req.query.requestingUserType || req.headers['x-user-type'] || 'master';
+    // Verificar tipo de usuário da requisição (prioridade: query param > header x-user-tipo > header x-user-type > default 'funcionario')
+    const tipoUsuarioRequisicao = req.query.tipo_usuario || 
+                                  req.query.requestingUserType || 
+                                  req.headers['x-user-tipo'] || 
+                                  req.headers['x-user-type'] || 
+                                  'funcionario'; // Default para 'funcionario' para não mostrar masters por padrão
 
     let query;
     let params = [];

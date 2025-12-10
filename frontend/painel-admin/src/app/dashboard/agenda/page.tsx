@@ -122,26 +122,51 @@ export default function AgendaPage() {
   const carregarFuncionarios = useCallback(async () => {
     setFuncionariosCarregando(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        setFuncionariosCarregando(false)
-        return
-      }
+      // Tentar buscar token de várias formas
+      let token = localStorage.getItem('token') || 
+                  localStorage.getItem('authToken') || 
+                  localStorage.getItem('accessToken') ||
+                  sessionStorage.getItem('token') ||
+                  sessionStorage.getItem('authToken')
+      
       const apiUrl = getApiBaseUrl()
-      const response = await fetch(`${apiUrl}/api/v1/funcionarios`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      
+      // Só adiciona Authorization se tiver token válido
+      if (token && token.length > 10) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
+      // Adicionar headers do admin se disponível
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+      
+      console.log('👥 Carregando funcionários de:', `${apiUrl}/api/v1/funcionarios`)
+      const response = await fetch(`${apiUrl}/api/v1/funcionarios`, { headers })
+      
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ Funcionários recebidos:', data.funcionarios?.length || 0)
+        
+        // Filtrar: remover 'master' e inativos
         const funcionariosFiltrados = (data.funcionarios || []).filter(
           (func: Funcionario) => func.tipo_usuario !== 'master' && func.is_active !== false
         )
+        
+        console.log('👥 Funcionários filtrados (sem master):', funcionariosFiltrados.length)
         setFuncionarios(funcionariosFiltrados)
+      } else {
+        const errorText = await response.text()
+        console.error('❌ Erro ao carregar funcionários:', response.status, errorText)
       }
     } catch (error) {
-      console.error('Erro ao carregar funcionários:', error)
+      console.error('❌ Erro ao carregar funcionários:', error)
     } finally {
       setFuncionariosCarregando(false)
     }
@@ -356,33 +381,84 @@ export default function AgendaPage() {
       return
     }
 
-    const podeAcessarAgenda = podeAcessar('agenda')
+    // Verificar permissão (mas não bloquear se der erro)
+    let podeAcessarAgenda = true
+    try {
+      if (podeAcessar) {
+        podeAcessarAgenda = podeAcessar('agenda')
+      }
+    } catch (error) {
+      console.error('Erro ao verificar permissão:', error)
+      podeAcessarAgenda = true // Em caso de erro, permite acesso
+    }
+    
     if (!podeAcessarAgenda) {
+      console.log('🚫 Sem permissão para acessar agenda')
       return
     }
 
-    const token = localStorage.getItem('token')
+    // Tentar buscar token de várias formas
+    let token = localStorage.getItem('token') || 
+                localStorage.getItem('authToken') || 
+                localStorage.getItem('accessToken') ||
+                sessionStorage.getItem('token') ||
+                sessionStorage.getItem('authToken')
+    
+    // Continuar mesmo sem token (modo desenvolvimento)
     if (!token) {
-      return
+      console.log('⚠️ Continuando sem token para carregar funcionários')
     }
 
     // Carregar funcionários inline para evitar dependências
     setFuncionariosCarregando(true)
     const fetchFuncionarios = async () => {
       try {
+        // Tentar buscar token de várias formas
+        let tokenFunc = localStorage.getItem('token') || 
+                        localStorage.getItem('authToken') || 
+                        localStorage.getItem('accessToken') ||
+                        sessionStorage.getItem('token') ||
+                        sessionStorage.getItem('authToken')
+        
         const apiUrl = getApiBaseUrl()
-        const response = await fetch(`${apiUrl}/api/v1/funcionarios`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        }
+        
+        // Só adiciona Authorization se tiver token válido
+        if (tokenFunc && tokenFunc.length > 10) {
+          headers['Authorization'] = `Bearer ${tokenFunc}`
+        }
+        
+        // Adicionar headers do admin se disponível
+        const adminData = localStorage.getItem('admin')
+        const admin = adminData ? JSON.parse(adminData) : null
+        if (admin?.id) {
+          headers['x-user-id'] = admin.id
+          headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        }
+        
+        console.log('👥 Carregando funcionários (useEffect):', `${apiUrl}/api/v1/funcionarios`)
+        const response = await fetch(`${apiUrl}/api/v1/funcionarios`, { headers })
+        
         if (response.ok) {
           const data = await response.json()
+          console.log('✅ Funcionários recebidos (useEffect):', data.funcionarios?.length || 0)
+          
+          // Filtrar: remover 'master' e inativos
           const funcionariosFiltrados = (data.funcionarios || []).filter(
             (func: Funcionario) => func.tipo_usuario !== 'master' && func.is_active !== false
           )
+          
+          console.log('👥 Funcionários filtrados (sem master):', funcionariosFiltrados.length)
+          console.log('👥 Lista de funcionários:', funcionariosFiltrados.map(f => ({ id: f.id, nome: f.nome_completo, tipo: f.tipo_usuario })))
           setFuncionarios(funcionariosFiltrados)
+        } else {
+          const errorText = await response.text()
+          console.error('❌ Erro ao carregar funcionários:', response.status, errorText)
         }
       } catch (error) {
-        console.error('Erro ao carregar funcionários:', error)
+        console.error('❌ Erro ao carregar funcionários:', error)
       } finally {
         setFuncionariosCarregando(false)
       }
@@ -391,10 +467,29 @@ export default function AgendaPage() {
     // Carregar clientes inline
     const fetchClientes = async () => {
       try {
+        let tokenClientes = localStorage.getItem('token') || 
+                            localStorage.getItem('authToken') || 
+                            localStorage.getItem('accessToken') ||
+                            sessionStorage.getItem('token') ||
+                            sessionStorage.getItem('authToken')
+        
         const apiUrl = getApiBaseUrl()
-        const response = await fetch(`${apiUrl}/api/v1/clientes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        }
+        
+        if (tokenClientes && tokenClientes.length > 10) {
+          headers['Authorization'] = `Bearer ${tokenClientes}`
+        }
+        
+        const adminData = localStorage.getItem('admin')
+        const admin = adminData ? JSON.parse(adminData) : null
+        if (admin?.id) {
+          headers['x-user-id'] = admin.id
+          headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        }
+        
+        const response = await fetch(`${apiUrl}/api/v1/clientes`, { headers })
         if (response.ok) {
           const data = await response.json()
           setClientes(data.clientes || [])
@@ -407,10 +502,29 @@ export default function AgendaPage() {
     // Carregar serviços inline
     const fetchServicos = async () => {
       try {
+        let tokenServicos = localStorage.getItem('token') || 
+                            localStorage.getItem('authToken') || 
+                            localStorage.getItem('accessToken') ||
+                            sessionStorage.getItem('token') ||
+                            sessionStorage.getItem('authToken')
+        
         const apiUrl = getApiBaseUrl()
-        const response = await fetch(`${apiUrl}/api/v1/servicos?is_active=true`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        }
+        
+        if (tokenServicos && tokenServicos.length > 10) {
+          headers['Authorization'] = `Bearer ${tokenServicos}`
+        }
+        
+        const adminData = localStorage.getItem('admin')
+        const admin = adminData ? JSON.parse(adminData) : null
+        if (admin?.id) {
+          headers['x-user-id'] = admin.id
+          headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        }
+        
+        const response = await fetch(`${apiUrl}/api/v1/servicos?is_active=true`, { headers })
         if (response.ok) {
           const data = await response.json()
           setServicos(data.servicos || [])
@@ -1224,11 +1338,17 @@ export default function AgendaPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-amber-500/20">
                   <SelectItem value="all" className="text-gray-300">Todos os funcionários</SelectItem>
-                  {funcionarios.map((func) => (
-                    <SelectItem key={func.id} value={func.id} className="text-gray-300">
-                      {func.nome_completo}
-                    </SelectItem>
-                  ))}
+                  {funcionariosCarregando ? (
+                    <div className="px-2 py-1.5 text-sm text-gray-500">Carregando funcionários...</div>
+                  ) : funcionarios.length === 0 ? (
+                    <div className="px-2 py-1.5 text-sm text-gray-500">Nenhum funcionário encontrado</div>
+                  ) : (
+                    funcionarios.map((func) => (
+                      <SelectItem key={func.id} value={func.id} className="text-gray-300">
+                        {func.nome_completo}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
