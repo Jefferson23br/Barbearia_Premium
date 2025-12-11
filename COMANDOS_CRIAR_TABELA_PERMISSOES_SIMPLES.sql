@@ -94,3 +94,4 @@ COMMENT ON COLUMN protese.permissoes_usuarios.controle_permissoes_ver IS 'Permis
 
 
 
+
