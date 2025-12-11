@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Cog, Save, Building2, MapPin, Clock, Mail, Phone, AlertCircle, Check } from 'lucide-react'
+import { Cog, Save, Building2, MapPin, Clock, Mail, Phone, AlertCircle, Check, Calendar, Plus, Trash2, Edit2, X } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 interface Configuracoes {
   id?: string
@@ -76,10 +78,24 @@ export default function ConfiguracoesPage() {
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
   const [abaAtiva, setAbaAtiva] = useState('empresa')
   const { podeEditar } = usePermissions()
+  
+  // Estados para fechamentos especiais
+  const [fechamentos, setFechamentos] = useState<any[]>([])
+  const [carregandoFechamentos, setCarregandoFechamentos] = useState(false)
+  const [dialogFechamentoAberto, setDialogFechamentoAberto] = useState(false)
+  const [fechamentoEditando, setFechamentoEditando] = useState<any>(null)
+  const [formFechamento, setFormFechamento] = useState({
+    data_fechamento: '',
+    descricao: '',
+    is_active: true,
+  })
 
   useEffect(() => {
     carregarConfiguracoes()
-  }, [])
+    if (abaAtiva === 'fechamentos') {
+      carregarFechamentos()
+    }
+  }, [abaAtiva])
 
   const carregarConfiguracoes = async () => {
     setLoading(true)
@@ -167,6 +183,144 @@ export default function ConfiguracoesPage() {
     return apenasNumeros.replace(/(\d{5})(\d{3})/, '$1-$2')
   }
 
+  // Funções para gerenciar fechamentos especiais
+  const carregarFechamentos = async () => {
+    setCarregandoFechamentos(true)
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/fechamentos-especiais`)
+
+      if (!response.ok) {
+        throw new Error('Erro ao carregar fechamentos')
+      }
+
+      const data = await response.json()
+      setFechamentos(data.fechamentos || [])
+    } catch (error: any) {
+      console.error('Erro ao carregar fechamentos:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar fechamentos' })
+    } finally {
+      setCarregandoFechamentos(false)
+    }
+  }
+
+  const abrirDialogFechamento = (fechamento?: any) => {
+    if (fechamento) {
+      setFechamentoEditando(fechamento)
+      setFormFechamento({
+        data_fechamento: fechamento.data_fechamento,
+        descricao: fechamento.descricao,
+        is_active: fechamento.is_active,
+      })
+    } else {
+      setFechamentoEditando(null)
+      setFormFechamento({
+        data_fechamento: '',
+        descricao: '',
+        is_active: true,
+      })
+    }
+    setDialogFechamentoAberto(true)
+  }
+
+  const fecharDialogFechamento = () => {
+    setDialogFechamentoAberto(false)
+    setFechamentoEditando(null)
+    setFormFechamento({
+      data_fechamento: '',
+      descricao: '',
+      is_active: true,
+    })
+  }
+
+  const salvarFechamento = async () => {
+    if (!formFechamento.data_fechamento || !formFechamento.descricao.trim()) {
+      setMensagem({ tipo: 'erro', texto: 'Preencha todos os campos obrigatórios' })
+      return
+    }
+
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+
+      let response
+      if (fechamentoEditando) {
+        // Atualizar
+        response = await fetch(`${apiUrl}/api/v1/fechamentos-especiais/${fechamentoEditando.id}`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify(formFechamento),
+        })
+      } else {
+        // Criar
+        response = await fetch(`${apiUrl}/api/v1/fechamentos-especiais`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(formFechamento),
+        })
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erro ao salvar fechamento')
+      }
+
+      setMensagem({ tipo: 'sucesso', texto: fechamentoEditando ? 'Fechamento atualizado com sucesso!' : 'Fechamento criado com sucesso!' })
+      setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
+      fecharDialogFechamento()
+      carregarFechamentos()
+    } catch (error: any) {
+      console.error('Erro ao salvar fechamento:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar fechamento' })
+    }
+  }
+
+  const excluirFechamento = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este fechamento?')) {
+      return
+    }
+
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/fechamentos-especiais/${id}`, {
+        method: 'DELETE',
+        headers,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erro ao excluir fechamento')
+      }
+
+      setMensagem({ tipo: 'sucesso', texto: 'Fechamento excluído com sucesso!' })
+      setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
+      carregarFechamentos()
+    } catch (error: any) {
+      console.error('Erro ao excluir fechamento:', error)
+      setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao excluir fechamento' })
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -220,6 +374,7 @@ export default function ConfiguracoesPage() {
             { id: 'contato', label: 'Contato', icon: Phone },
             { id: 'horarios', label: 'Horários de Funcionamento', icon: Clock },
             { id: 'agendamento', label: 'Agendamento', icon: Clock },
+            { id: 'fechamentos', label: 'Fechamentos Especiais', icon: Calendar },
           ].map((aba) => {
             const Icon = aba.icon
             return (
@@ -540,20 +695,216 @@ export default function ConfiguracoesPage() {
             </div>
           )}
 
+          {/* Aba: Fechamentos Especiais */}
+          {abaAtiva === 'fechamentos' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Dias de Fechamento Especiais</h3>
+                  <p className="text-gray-400 text-sm mt-1">Gerencie feriados, férias e outros dias de fechamento</p>
+                </div>
+                {podeEditar('configuracoes') && (
+                  <button
+                    onClick={() => abrirDialogFechamento()}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors font-medium"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Novo Fechamento
+                  </button>
+                )}
+              </div>
+
+              {carregandoFechamentos ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                </div>
+              ) : fechamentos.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>Nenhum fechamento especial cadastrado</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {fechamentos.map((fechamento) => (
+                    <div
+                      key={fechamento.id}
+                      className={`bg-zinc-800 rounded-lg p-4 border ${
+                        fechamento.is_active
+                          ? 'border-amber-500/30'
+                          : 'border-zinc-700 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <Calendar className="h-5 w-5 text-amber-500" />
+                            <div>
+                              <p className="text-white font-medium">
+                                {fechamento.data_fechamento ? (
+                                  (() => {
+                                    try {
+                                      // A data pode vir como string ISO ou como date do PostgreSQL
+                                      let dataString = fechamento.data_fechamento
+                                      
+                                      // Se vier como objeto Date ou ISO string completa, extrair apenas a parte da data
+                                      if (dataString.includes('T')) {
+                                        dataString = dataString.split('T')[0] // Pega apenas YYYY-MM-DD
+                                      }
+                                      
+                                      // Parse seguro: YYYY-MM-DD
+                                      const [ano, mes, dia] = dataString.split('-').map(Number)
+                                      const data = new Date(ano, mes - 1, dia)
+                                      
+                                      if (isNaN(data.getTime())) {
+                                        return dataString // Retorna a string original se inválida
+                                      }
+                                      
+                                      // Formato brasileiro: 10/12/2025
+                                      return format(data, "dd/MM/yyyy", { locale: ptBR })
+                                    } catch (error) {
+                                      console.error('Erro ao formatar data:', error, fechamento.data_fechamento)
+                                      // Tentar exibir pelo menos a parte da data se for ISO
+                                      if (fechamento.data_fechamento.includes('T')) {
+                                        const partes = fechamento.data_fechamento.split('T')[0].split('-')
+                                        if (partes.length === 3) {
+                                          return `${partes[2]}/${partes[1]}/${partes[0]}`
+                                        }
+                                      }
+                                      return fechamento.data_fechamento
+                                    }
+                                  })()
+                                ) : (
+                                  'Data inválida'
+                                )}
+                              </p>
+                              <p className="text-gray-400 text-sm">{fechamento.descricao}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {!fechamento.is_active && (
+                            <span className="px-2 py-1 bg-zinc-700 text-gray-400 text-xs rounded">Inativo</span>
+                          )}
+                          {podeEditar('configuracoes') && (
+                            <>
+                              <button
+                                onClick={() => abrirDialogFechamento(fechamento)}
+                                className="p-2 text-amber-500 hover:bg-amber-500/10 rounded transition-colors"
+                                title="Editar"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => excluirFechamento(fechamento.id)}
+                                className="p-2 text-red-500 hover:bg-red-500/10 rounded transition-colors"
+                                title="Excluir"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 
       {/* Botão Salvar */}
-      <div className="flex justify-end">
-        <button
-          onClick={salvarConfiguracoes}
-          disabled={salvando || !podeEditar('configuracoes')}
-          className="flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-        >
-          <Save className="h-5 w-5" />
-          {salvando ? 'Salvando...' : 'Salvar Configurações'}
-        </button>
-      </div>
+      {abaAtiva !== 'fechamentos' && (
+        <div className="flex justify-end">
+          <button
+            onClick={salvarConfiguracoes}
+            disabled={salvando || !podeEditar('configuracoes')}
+            className="flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          >
+            <Save className="h-5 w-5" />
+            {salvando ? 'Salvando...' : 'Salvar Configurações'}
+          </button>
+        </div>
+      )}
+
+      {/* Dialog para criar/editar fechamento */}
+      {dialogFechamentoAberto && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6 w-full max-w-md"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">
+                {fechamentoEditando ? 'Editar Fechamento' : 'Novo Fechamento'}
+              </h3>
+              <button
+                onClick={fecharDialogFechamento}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-300 text-sm mb-1">Data do Fechamento *</label>
+                <input
+                  type="date"
+                  value={formFechamento.data_fechamento}
+                  onChange={(e) => setFormFechamento({ ...formFechamento, data_fechamento: e.target.value })}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-sm mb-1">Descrição *</label>
+                <input
+                  type="text"
+                  value={formFechamento.descricao}
+                  onChange={(e) => setFormFechamento({ ...formFechamento, descricao: e.target.value })}
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                  placeholder="Ex: Feriado - Natal, Férias coletivas, etc."
+                  required
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="is_active"
+                  checked={formFechamento.is_active}
+                  onChange={(e) => setFormFechamento({ ...formFechamento, is_active: e.target.checked })}
+                  className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                />
+                <label htmlFor="is_active" className="text-gray-300 text-sm cursor-pointer">
+                  Fechamento ativo
+                </label>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={fecharDialogFechamento}
+                className="flex-1 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarFechamento}
+                disabled={!podeEditar('configuracoes')}
+                className="flex-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              >
+                {fechamentoEditando ? 'Atualizar' : 'Criar'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

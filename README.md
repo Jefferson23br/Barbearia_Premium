@@ -1,4 +1,4 @@
-# 💈 Sistema Barbearia Premium - Barbearia Premium
+# 💈 Sistema Barbearia Premium - Prótese Capilar Cuiabá
 
 <div align="center">
 
@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-Janeiro_2025-blue?style=flat-square)
 
 </div>
 
@@ -24,7 +24,7 @@
 
 ## 🎯 Sobre o Projeto
 
-Olá! Este é o **Sistema Barbearia Premium**, uma solução completa de gestão desenvolvida especificamente para a barbearia. Desenvolvi este sistema do zero pensando em facilitar o gerenciamento de clientes, funcionários, serviços e todo o fluxo operacional da barbearia.
+Olá! Este é o **Sistema Barbearia Premium**, uma solução completa de gestão desenvolvida especificamente para a Prótese Capilar Cuiabá. Desenvolvi este sistema do zero pensando em facilitar o gerenciamento de clientes, funcionários, serviços, agendamentos e todo o fluxo operacional da barbearia.
 
 O sistema foi construído com tecnologias modernas e está **100% em produção**, atendendo diariamente as necessidades da barbearia. Atualmente, temos três aplicações principais rodando:
 
@@ -83,7 +83,7 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 
 **Infraestrutura:**
 - **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger)
-- **Frontend**: VPS 45.132.157.28 (Hostinger - m.br - conta com domínio liberado)
+- **Frontend**: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
 
 </div>
 
@@ -138,6 +138,15 @@ Barbearia_Premium/
 - ✅ **Controle de Logs**: Sistema completo de auditoria com filtros e exportação CSV
 - ✅ **Help Desk**: Sistema de tickets completo com anexos e respostas
 
+### 📅 Sistema de Agendamentos
+- ✅ **Agenda Completa**: Visualização em dia, semana e mês
+- ✅ **Busca de Horários Disponíveis**: Sistema inteligente que calcula horários livres
+- ✅ **Filtro por Funcionário**: Visualização individual ou todos os funcionários
+- ✅ **Fechamentos Especiais**: Configuração de dias de fechamento (feriados, férias)
+- ✅ **Integração com Configurações**: Usa horários de funcionamento configurados
+- ✅ **Cálculo Automático**: Calcula duração baseada no serviço selecionado
+- ✅ **Validação de Conflitos**: Previne sobreposição de agendamentos
+
 ### 🎨 Interface e UX
 - ✅ Design moderno e responsivo (mobile, tablet, desktop)
 - ✅ Componentes shadcn/ui (Radix UI) para acessibilidade
@@ -146,7 +155,7 @@ Barbearia_Premium/
 - ✅ Feedback visual em todas as ações
 
 ### ⚙️ Backend
-- ✅ API REST completa (~30+ endpoints)
+- ✅ API REST completa (~40+ endpoints)
 - ✅ Estrutura modular e escalável
 - ✅ Middleware automático de logging
 - ✅ Upload de arquivos (fotos e anexos)
@@ -202,12 +211,12 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 35+ endpoints implementados
-- **Módulos Backend**: 10 módulos modulares
-- **Páginas Frontend**: 18+ páginas principais
-- **Tabelas no Banco**: 12+ tabelas principais
+- **Endpoints API**: 40+ endpoints implementados
+- **Módulos Backend**: 12 módulos modulares
+- **Páginas Frontend**: 20+ páginas principais
+- **Tabelas no Banco**: 15+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 10 módulos completos
+- **Módulos Implementados**: 12 módulos completos
 - **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
 
 ---
@@ -225,9 +234,10 @@ npm run dev
 8. **Serviços** - Gerenciamento de serviços da barbearia
 9. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
 10. **Integrações de APIs** - Sistema escalável de integrações (Focus NFe implementado)
+11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade
+12. **Fechamentos Especiais** - Configuração de dias de fechamento
 
 ### 🔄 Em Desenvolvimento
-- Sistema de agendamentos
 - Módulos financeiros (vendas, despesas, receitas)
 - Faturamento
 - Melhorias no Help Desk
@@ -251,6 +261,8 @@ npm run dev
 - `configuracoes` - Configurações gerais do sistema
 - `integracoes` - Integrações com APIs externas
 - `integracoes_habilitadas` - Funcionalidades habilitadas por integração
+- `agendamentos` - Agendamentos de serviços
+- `fechamentos_especiais` - Dias de fechamento especiais
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -259,7 +271,8 @@ npm run dev
 - `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql`
 - `COMANDOS_CRIAR_TABELA_CONFIGURACOES.sql`
 - `COMANDOS_CRIAR_TABELA_INTEGRACOES.sql`
-- `COMANDOS_ADICIONAR_NOVAS_PERMISSOES.sql`
+- `COMANDOS_CRIAR_TABELA_AGENDAMENTOS.sql`
+- `DDL_FECHAMENTOS_ESPECIAIS.sql`
 
 ---
 
@@ -267,7 +280,7 @@ npm run dev
 
 ### Documentação Principal
 - **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - Tudo que foi implementado
-- **[Implementações Dezembro 2024](./docs/IMPLEMENTACOES_DEZEMBRO_2024.md)** - Implementações recentes detalhadas
+- **[Implementações Janeiro 2025](./docs/IMPLEMENTACOES_JANEIRO_2025.md)** - Implementações recentes detalhadas
 - **[Status do Projeto](./docs/STATUS_PROJETO.md)** - Status atual completo
 - **[Roadmap](./docs/ROADMAP.md)** - Próximos passos e planejamento
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
@@ -278,11 +291,6 @@ npm run dev
 - **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - Comandos úteis
 - **[Arquitetura VPS](./docs/deploy/ARQUITETURA_DUAS_VPS.md)** - Estrutura do servidor
 - **[Segurança VPS](./docs/deploy/SEGURANCA_VPS.md)** - Boas práticas
-
-- **Painel Admin**: https://admin.protesecapilarcuiaba.com.br
-- **Painel Cliente**: https://app.protesecapilarcuiaba.com.br
-- **Site Público**: https://www.protesecapilarcuiaba.com.br
-- **API Backend**: https://api.protesecapilarcuiaba.com.br
 
 ---
 
@@ -329,11 +337,11 @@ O sistema foi desenvolvido com foco em:
 
 Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap](./docs/ROADMAP.md)**.
 
-**Foco Atual (Q1 2026):**
-- 🔄 Sistema de agendamentos (usará horários das Configurações)
+**Foco Atual (Q1 2025):**
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
 - 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
 - 🔄 Melhorias no Help Desk
+- 🔄 Melhorias no sistema de agendamentos
 
 **Planejado:**
 - 🔄 Faturamento
@@ -357,13 +365,13 @@ Todas as decisões técnicas foram tomadas considerando:
 
 ## 📄 Licença
 
-Este é um projeto privado desenvolvido para uso comercial da Barbearia Premium.
+Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar Cuiabá.
 
 ---
 
 <div align="center">
 
-**Desenvolvido com ❤️ para Barbearia Premium**
+**Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
 
 *Sistema em desenvolvimento ativo* 🚀
 

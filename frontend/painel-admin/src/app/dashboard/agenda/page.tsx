@@ -76,7 +76,6 @@ interface Agendamento {
 
 interface Disponibilidade {
   hora_inicio: string
-  hora_fim: string
 }
 
 interface HorariosFuncionamento {
@@ -85,6 +84,7 @@ interface HorariosFuncionamento {
   hora_abertura: string | null
   hora_fechamento: string | null
   horarios: string[]
+  motivo_fechamento?: string // Motivo do fechamento especial (feriado, férias, etc.)
 }
 
 export default function AgendaPage() {
@@ -118,10 +118,14 @@ export default function AgendaPage() {
   })
   const [dataBusca, setDataBusca] = useState<Date | undefined>(undefined)
   const [funcionarioBusca, setFuncionarioBusca] = useState<string>('')
-  const [calendarioBuscaAberto, setCalendarioBuscaAberto] = useState(false)
   const [usuarioLogado, setUsuarioLogado] = useState<any>(null)
 
   const { podeAcessar, podeEditar, loading: permissoesLoading } = usePermissions()
+  
+  // Log para monitorar mudanças no estado dataBusca
+  useEffect(() => {
+    console.log('🔍 [BUSCA CALENDARIO] Estado dataBusca mudou:', dataBusca)
+  }, [dataBusca])
   
   console.log('📊 Estado atual - permissoesLoading:', permissoesLoading, 'gradeLoading:', gradeLoading, 'horariosFuncionamento:', horariosFuncionamento)
   console.log('👥 Estado funcionários - carregando:', funcionariosCarregando, 'total:', funcionarios.length, 'funcionários:', funcionarios.map(f => ({ nome: f.nome_completo, tipo: f.tipo_usuario, ativo: f.is_active })))
@@ -397,15 +401,51 @@ export default function AgendaPage() {
     }
   }, [dataSelecionada, funcionarioFiltro, viewMode])
 
+  const [mensagemDisponibilidade, setMensagemDisponibilidade] = useState<{ tipo: 'sucesso' | 'erro' | 'info' | null; texto: string }>({ tipo: null, texto: '' })
+
   const buscarDisponibilidades = useCallback(async () => {
-    if (!dataBusca || !funcionarioBusca) return
+    // Validações iniciais
+    if (!dataBusca) {
+      setMensagemDisponibilidade({ tipo: 'erro', texto: 'Selecione uma data' })
+      setTimeout(() => setMensagemDisponibilidade({ tipo: null, texto: '' }), 3000)
+      return
+    }
+
+    if (!funcionarioBusca) {
+      setMensagemDisponibilidade({ tipo: 'erro', texto: 'Selecione um funcionário' })
+      setTimeout(() => setMensagemDisponibilidade({ tipo: null, texto: '' }), 3000)
+      return
+    }
 
     setLoading(true)
+    setMensagemDisponibilidade({ tipo: null, texto: '' })
+    setDisponibilidades([])
+
     try {
-      const token = localStorage.getItem('token')
+      // Buscar token em múltiplas chaves possíveis (mesma lógica usada em outras partes)
+      let token = localStorage.getItem('token') || 
+                  localStorage.getItem('authToken') || 
+                  localStorage.getItem('accessToken') ||
+                  sessionStorage.getItem('token') ||
+                  sessionStorage.getItem('authToken')
+      
+      // Se ainda não encontrou, tentar outras chaves comuns
       if (!token) {
-        setLoading(false)
-        return
+        const possibleTokenKeys = ['token', 'authToken', 'accessToken', 'auth_token', 'jwt', 'bearer']
+        for (const key of possibleTokenKeys) {
+          const value = localStorage.getItem(key) || sessionStorage.getItem(key)
+          if (value && value.length > 10) {
+            token = value
+            break
+          }
+        }
+      }
+      
+      if (!token) {
+        // Não exibir erro crítico na tela, apenas log no console
+        console.warn('⚠️ [BUSCA DISPONIBILIDADES] Token não encontrado - tentando continuar sem token')
+        // Continuar o fluxo - o backend pode permitir ou retornar erro apropriado
+        // Não definir mensagem de erro para não assustar o usuário
       }
 
       const apiUrl = getApiBaseUrl()
@@ -416,12 +456,19 @@ export default function AgendaPage() {
 
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       }
+      
+      // Só adiciona Authorization se tiver token válido
+      if (token && token.length > 10) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
       if (admin?.id) {
         headers['x-user-id'] = admin.id
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
       }
+
+      console.log('🔍 [BUSCA DISPONIBILIDADES] Buscando:', { data: dataFormatada, funcionario_id: funcionarioBusca })
 
       const response = await fetch(
         `${apiUrl}/api/v1/agendamentos/disponibilidades?data=${dataFormatada}&funcionario_id=${funcionarioBusca}`,
@@ -430,10 +477,50 @@ export default function AgendaPage() {
 
       if (response.ok) {
         const data = await response.json()
-        setDisponibilidades(data.disponibilidades || [])
+        console.log('✅ [BUSCA DISPONIBILIDADES] Resposta:', data)
+
+        // Verificar se está fechado
+        if (data.fechado || data.motivo_fechamento) {
+          setMensagemDisponibilidade({ 
+            tipo: 'info', 
+            texto: `Fechamento especial: ${data.motivo_fechamento || 'Data não disponível para agendamento'}` 
+          })
+          setDisponibilidades([])
+        } else if (data.motivo) {
+          setMensagemDisponibilidade({ 
+            tipo: 'info', 
+            texto: data.motivo 
+          })
+          setDisponibilidades([])
+        } else if (data.disponibilidades && data.disponibilidades.length > 0) {
+          setDisponibilidades(data.disponibilidades || [])
+          setMensagemDisponibilidade({ 
+            tipo: 'sucesso', 
+            texto: `${data.disponibilidades.length} horários disponíveis encontrados` 
+          })
+          setTimeout(() => setMensagemDisponibilidade({ tipo: null, texto: '' }), 3000)
+        } else {
+          setMensagemDisponibilidade({ 
+            tipo: 'info', 
+            texto: 'Nenhum horário disponível para esta data' 
+          })
+          setDisponibilidades([])
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        setMensagemDisponibilidade({ 
+          tipo: 'erro', 
+          texto: errorData.error || 'Erro ao buscar disponibilidades' 
+        })
+        setDisponibilidades([])
       }
-    } catch (error) {
-      console.error('Erro ao buscar disponibilidades:', error)
+    } catch (error: any) {
+      console.error('❌ [BUSCA DISPONIBILIDADES] Erro:', error)
+      setMensagemDisponibilidade({ 
+        tipo: 'erro', 
+        texto: error.message || 'Erro ao buscar disponibilidades' 
+      })
+      setDisponibilidades([])
     } finally {
       setLoading(false)
     }
@@ -687,7 +774,8 @@ export default function AgendaPage() {
               dia_semana: data.dia_semana || '',
               hora_abertura: data.hora_abertura || null,
               hora_fechamento: data.hora_fechamento || null,
-              horarios: horariosArray
+              horarios: horariosArray,
+              motivo_fechamento: data.motivo_fechamento || undefined
             } as HorariosFuncionamento)
           } else {
             console.warn('⚠️ Resposta inválida:', data)
@@ -902,20 +990,20 @@ export default function AgendaPage() {
         hora_abertura: horariosFuncionamento.hora_abertura,
         hora_fechamento: horariosFuncionamento.hora_fechamento
       })
+      // Verificar se é fechamento especial
+      const isFechamentoEspecial = horariosFuncionamento.dia_semana === 'fechamento_especial' || horariosFuncionamento.motivo_fechamento
+      
       return (
         <div className="flex flex-col items-center justify-center h-64 border border-zinc-800 rounded-lg bg-zinc-950">
           <Clock className="h-10 w-10 text-zinc-600 mb-3" />
-          <div className="text-gray-400 font-medium">Barbearia fechada neste dia</div>
-          <p className="text-xs text-zinc-500 mt-1">Verifique as configurações de horários.</p>
-          <p className="text-xs text-zinc-600 mt-2">
-            Dia: {format(dataSelecionada, 'EEEE, dd/MM/yyyy', { locale: ptBR })}
-          </p>
-          <p className="text-xs text-zinc-500 mt-1">
-            Dia da semana: {horariosFuncionamento.dia_semana || 'N/A'}
-          </p>
-          <p className="text-xs text-zinc-500 mt-1">
-            Abertura: {horariosFuncionamento.hora_abertura || 'N/A'} | Fechamento: {horariosFuncionamento.hora_fechamento || 'N/A'}
-          </p>
+          <div className="text-gray-400 font-medium">
+            {isFechamentoEspecial ? 'Fechamento Especial' : 'Barbearia fechada neste dia'}
+          </div>
+          {horariosFuncionamento.motivo_fechamento ? (
+            <p className="text-xs text-amber-500 mt-1 font-medium">{horariosFuncionamento.motivo_fechamento}</p>
+          ) : (
+            <p className="text-xs text-zinc-500 mt-1">Verifique as configurações de horários.</p>
+          )}
         </div>
       )
     }
@@ -1205,83 +1293,110 @@ export default function AgendaPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 items-end">
-            <div className="flex-1">
-              <Label className="text-gray-300">Data</Label>
-              <Popover open={calendarioBuscaAberto} onOpenChange={setCalendarioBuscaAberto}>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal bg-zinc-800 border-amber-500/20 text-gray-300 hover:bg-zinc-700 ${
-                      !dataBusca && 'text-gray-500'
-                    }`}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dataBusca ? (
-                      format(dataBusca, "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })
-                    ) : (
-                      <span>Selecione uma data</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-zinc-900 border-amber-500/20" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dataBusca}
-                    onSelect={(date) => {
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Linha 1: Campos de Data, Funcionário e Botão */}
+            <div className="flex flex-col sm:flex-row gap-4 flex-1 items-end">
+              {/* Campo de Data - Menor */}
+              <div className="w-full sm:w-48 min-w-0">
+                <Label className="text-gray-300 mb-1.5 block">Data</Label>
+                <Input
+                  type="date"
+                  value={dataBusca ? format(dataBusca, 'yyyy-MM-dd') : ''}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    console.log('📅 [BUSCA] Input date onChange:', value)
+                    if (value) {
+                      const date = new Date(value + 'T00:00:00')
+                      console.log('📅 [BUSCA] Data parseada:', date)
                       setDataBusca(date)
-                      setCalendarioBuscaAberto(false)
-                    }}
-                    initialFocus
-                    locale={ptBR}
-                    className="bg-zinc-900"
-                  />
-                </PopoverContent>
-              </Popover>
+                    } else {
+                      setDataBusca(undefined)
+                    }
+                  }}
+                  className="w-full bg-zinc-800 border-amber-500/20 text-gray-300 focus:border-amber-500 focus:ring-amber-500/20 h-9"
+                  placeholder="Selecione uma data"
+                />
+              </div>
+              {/* Campo de Funcionário - Maior */}
+              <div className="flex-1 w-full sm:flex-1 min-w-0">
+                <Label className="text-gray-300 mb-1.5 block">Funcionário</Label>
+                <Select value={funcionarioBusca} onValueChange={setFuncionarioBusca}>
+                  <SelectTrigger className="bg-zinc-800 border-amber-500/20 text-gray-300 h-9 w-full">
+                    <SelectValue placeholder="Selecione o funcionário" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-amber-500/20">
+                    {funcionariosCarregando ? (
+                      <div className="p-2 text-gray-400 text-sm">Carregando funcionários...</div>
+                    ) : funcionarios.length === 0 ? (
+                      <div className="p-2 text-gray-400 text-sm">Nenhum funcionário encontrado</div>
+                    ) : (
+                      funcionarios.map((func) => (
+                        <SelectItem key={func.id} value={func.id} className="text-gray-300">
+                          {func.nome_completo}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Botão Buscar */}
+              <Button
+                onClick={buscarDisponibilidades}
+                disabled={loading || !dataBusca || !funcionarioBusca}
+                className="bg-amber-500 hover:bg-amber-600 text-white w-full sm:w-auto h-9 whitespace-nowrap"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Buscar
+              </Button>
             </div>
-            <div className="flex-1">
-              <Label className="text-gray-300">Funcionário</Label>
-              <Select value={funcionarioBusca} onValueChange={setFuncionarioBusca}>
-                <SelectTrigger className="bg-zinc-800 border-amber-500/20 text-gray-300">
-                  <SelectValue placeholder="Selecione o funcionário" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-amber-500/20">
-                  {funcionariosCarregando ? (
-                    <div className="p-2 text-gray-400 text-sm">Carregando funcionários...</div>
-                  ) : funcionarios.length === 0 ? (
-                    <div className="p-2 text-gray-400 text-sm">Nenhum funcionário encontrado</div>
-                  ) : (
-                    funcionarios.map((func) => (
-                      <SelectItem key={func.id} value={func.id} className="text-gray-300">
-                        {func.nome_completo}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button
-              onClick={buscarDisponibilidades}
-              disabled={loading || !dataBusca || !funcionarioBusca}
-              className="bg-amber-500 hover:bg-amber-600 text-white"
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Buscar
-            </Button>
           </div>
+          {/* Linha 2: Data formatada (apenas quando houver data selecionada) */}
+          {dataBusca && (
+            <div className="mt-2 pt-2 border-t border-zinc-800/50">
+              <p className="text-xs text-gray-400">
+                {format(dataBusca, "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR })}
+              </p>
+            </div>
+          )}
+          {/* Mensagem de status - só exibe se houver tipo E texto */}
+          {mensagemDisponibilidade.tipo && mensagemDisponibilidade.texto && (
+            <div className={`mt-4 p-3 rounded-lg border ${
+              mensagemDisponibilidade.tipo === 'sucesso'
+                ? 'bg-green-500/10 border-green-500/30 text-green-500'
+                : mensagemDisponibilidade.tipo === 'erro'
+                ? 'bg-red-500/10 border-red-500/30 text-red-500'
+                : 'bg-blue-500/10 border-blue-500/30 text-blue-500'
+            }`}>
+              <p className="text-sm">{mensagemDisponibilidade.texto}</p>
+            </div>
+          )}
+
+          {/* Horários Disponíveis como botões clicáveis */}
           {disponibilidades.length > 0 && (
             <div className="mt-4 space-y-2">
-              <Label className="text-gray-300">Horários Disponíveis:</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <Label className="text-gray-300">Horários Disponíveis (clique para agendar):</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {disponibilidades.map((disp, index) => (
-                  <Card key={index} className="bg-zinc-800 border-amber-500/20">
-                    <CardContent className="p-3">
-                      <div className="text-gray-300 text-sm">
-                        Livre das {disp.hora_inicio} às {disp.hora_fim}
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <Button
+                    key={index}
+                    onClick={() => {
+                      // Pré-preencher o formulário e abrir o dialog
+                      // O backend calculará hora_fim e valor_servico automaticamente
+                      setFormData({
+                        cliente_id: '', // Usuário precisa selecionar
+                        funcionario_id: funcionarioBusca,
+                        servico_id: '', // Usuário precisa selecionar
+                        data_agendamento: format(dataBusca!, 'yyyy-MM-dd'),
+                        hora_inicio: disp.hora_inicio,
+                        observacoes: '',
+                      })
+                      setDialogAberto(true)
+                    }}
+                    className="bg-amber-500 hover:bg-amber-600 text-black font-medium h-10 transition-colors"
+                    variant="outline"
+                  >
+                    {disp.hora_inicio}
+                  </Button>
                 ))}
               </div>
             </div>

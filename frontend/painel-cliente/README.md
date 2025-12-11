@@ -1,4 +1,4 @@
-# 💈 BarberShop Premium - Painel de Cliente
+# 💈 Painel de Cliente - Sistema Barbearia Premium
 
 <div align="center">
 
@@ -6,13 +6,10 @@
 ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
 **Sistema completo de gestão para barbearias premium** ✂️
 
-[![Status](https://img.shields.io/badge/status-em_desenvolvimento-yellow?style=flat-square)](https://github.com)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Status](https://img.shields.io/badge/status-em_produção-success?style=flat-square)](https://app.protesecapilarcuiaba.com.br)
 
 </div>
 
@@ -24,7 +21,7 @@ Este é o **Painel do Cliente** do Sistema Barbearia Premium, desenvolvido para 
 
 **Status**: ✅ **Em Produção**  
 **URL**: https://app.protesecapilarcuiaba.com.br  
-**VPS**: 45.132.157.28 (Hostinger - m.br)
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
 O design foi criado no Figma com foco em uma experiência moderna, elegante e intuitiva, refletindo o padrão premium de uma barbearia de alto nível.
 
@@ -40,30 +37,12 @@ O design foi criado no Figma com foco em uma experiência moderna, elegante e in
 
 ## 🛠️ Tecnologias Utilizadas
 
-<div align="center">
-
 ### Front-end
 
-<table>
-<tr>
-<td align="center" width="150">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="48" height="48" alt="Next.js" />
-<br />Next.js 14
-</td>
-<td align="center" width="150">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" height="48" alt="React" />
-<br />React 18
-</td>
-<td align="center" width="150">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
-<br />TypeScript
-</td>
-<td align="center" width="150">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="48" height="48" alt="Tailwind CSS" />
-<br />Tailwind CSS
-</td>
-</tr>
-</table>
+- **Next.js 14** - Framework principal (App Router)
+- **React 18** - Biblioteca UI
+- **TypeScript** - Linguagem de programação
+- **Tailwind CSS** - Framework CSS
 
 ### Bibliotecas & Ferramentas
 
@@ -72,15 +51,6 @@ O design foi criado no Figma com foco em uma experiência moderna, elegante e in
 - **Lucide React** - Ícones modernos e leves
 - **React Hook Form** - Formulários performáticos
 - **Class Variance Authority** - Sistema de variantes de componentes
-
-### Arquitetura Planejada
-
-- **Back-end**: Node.js com Express/Fastify
-- **Banco de Dados**: PostgreSQL
-- **Autenticação**: JWT + Refresh Tokens
-- **APIs**: RESTful com documentação OpenAPI
-
-</div>
 
 ---
 
@@ -147,11 +117,22 @@ src/
 
 ---
 
-## 📸 Preview
+## 🏃 Desenvolvimento
 
-![BarberShop Premium](https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80)
+```bash
+npm install
+npm run dev
+```
 
-*Design elegante e moderno que reflete a qualidade premium de uma barbearia de alto padrão.*
+Acesse: http://localhost:3001
+
+---
+
+## 🏗️ Build para Produção
+
+```bash
+npm run build
+```
 
 ---
 
@@ -163,9 +144,8 @@ Este projeto é privado e desenvolvido exclusivamente para uso comercial.
 
 <div align="center">
 
-**Desenvolvido com ❤️ para barbearias premium**
-
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com)
+**Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
 
 </div>
+
+**Última atualização**: Janeiro 2025

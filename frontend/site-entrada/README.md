@@ -4,6 +4,10 @@
 
 Página de entrada do site principal mostrando que está em desenvolvimento, com links para as áreas do sistema.
 
+**Status**: 🔄 **Em Desenvolvimento**  
+**URL**: https://www.protesecapilarcuiaba.com.br  
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
+
 ---
 
 ## ✨ Funcionalidades
@@ -27,12 +31,11 @@ Acesse: http://localhost:3002
 
 ---
 
-## 🌐 Produção
+## 🏗️ Build
 
-URL: https://www.protesecapilarcuiaba.com.br
-
-**Status**: 🔄 **Em Desenvolvimento**  
-**VPS**: 45.132.157.28 (Hostinger - m.br)
+```bash
+npm run build
+```
 
 ---
 
@@ -46,3 +49,4 @@ URL: https://www.protesecapilarcuiaba.com.br
 
 *Página temporária enquanto o site completo está em desenvolvimento* 🚧
 
+**Última atualização**: Janeiro 2025

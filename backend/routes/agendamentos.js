@@ -97,6 +97,22 @@ router.get('/disponibilidades', async (req, res) => {
       return res.status(400).json({ error: 'Data e funcionario_id são obrigatórios' });
     }
 
+    // Verificar se a data está em um fechamento especial
+    const fechamentoResult = await pool.query(
+      'SELECT * FROM protese.fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
+      [data]
+    );
+
+    if (fechamentoResult.rows.length > 0) {
+      const fechamento = fechamentoResult.rows[0];
+      console.log('🚫 Data está em fechamento especial:', fechamento.descricao);
+      return res.json({
+        disponibilidades: [],
+        motivo_fechamento: fechamento.descricao,
+        fechado: true,
+      });
+    }
+
     // Obter configurações (horário de funcionamento e intervalo)
     const configResult = await pool.query('SELECT * FROM protese.configuracoes ORDER BY created_at DESC LIMIT 1');
     if (configResult.rows.length === 0) {
@@ -104,7 +120,8 @@ router.get('/disponibilidades', async (req, res) => {
     }
 
     const config = configResult.rows[0];
-    const intervalo = Math.max(1, config.intervalo_agendamento || 30); // Mínimo 1 minuto
+    const intervaloAgendamento = Math.max(1, config.intervalo_agendamento || 30); // Intervalo mínimo entre agendamentos
+    const intervaloVisual = 15; // Intervalo visual fixo de 15 minutos para exibição
 
     // Determinar o dia da semana (0 = domingo, 1 = segunda, etc.)
     // A data vem no formato 'yyyy-MM-dd', precisamos parsear corretamente
@@ -121,15 +138,25 @@ router.get('/disponibilidades', async (req, res) => {
 
     const horaAbertura = config[campoAbertura];
     const horaFechamento = config[campoFechamento];
-    const diaAtivo = config[campoAtivo];
+    const diaAtivoRaw = config[campoAtivo];
+    
+    // Tratamento booleano seguro
+    const diaAtivo = diaAtivoRaw === true || diaAtivoRaw === 't' || diaAtivoRaw === 'true';
 
     if (!diaAtivo || !horaAbertura || !horaFechamento) {
-      return res.json({ disponibilidades: [] });
+      return res.json({ 
+        disponibilidades: [],
+        motivo: 'Dia sem funcionamento configurado'
+      });
     }
 
     // Converter horas para minutos desde meia-noite
-    const [horaAberturaH, minutoAberturaM] = horaAbertura.split(':').map(Number);
-    const [horaFechamentoH, minutoFechamentoM] = horaFechamento.split(':').map(Number);
+    // Tratar formato TIME do PostgreSQL (pode vir como '08:00:00')
+    const horaAberturaFormatada = horaAbertura.toString().substring(0, 5); // Pega HH:MM
+    const horaFechamentoFormatada = horaFechamento.toString().substring(0, 5); // Pega HH:MM
+    
+    const [horaAberturaH, minutoAberturaM] = horaAberturaFormatada.split(':').map(Number);
+    const [horaFechamentoH, minutoFechamentoM] = horaFechamentoFormatada.split(':').map(Number);
     const inicioMinutos = horaAberturaH * 60 + minutoAberturaM;
     const fimMinutos = horaFechamentoH * 60 + minutoFechamentoM;
 
@@ -144,75 +171,55 @@ router.get('/disponibilidades', async (req, res) => {
 
     const agendamentos = agendamentosResult.rows;
 
-    // Se não houver agendamentos, retornar todo o horário de funcionamento dividido pelo intervalo
-    if (agendamentos.length === 0) {
-      const disponibilidades = [];
-      let horaAtual = inicioMinutos;
-
-      while (horaAtual + intervalo <= fimMinutos) {
-        const horaInicio = Math.floor(horaAtual / 60);
-        const minutoInicio = horaAtual % 60;
-        const horaFim = Math.floor((horaAtual + intervalo) / 60);
-        const minutoFim = (horaAtual + intervalo) % 60;
-
-        disponibilidades.push({
-          hora_inicio: `${String(horaInicio).padStart(2, '0')}:${String(minutoInicio).padStart(2, '0')}`,
-          hora_fim: `${String(horaFim).padStart(2, '0')}:${String(minutoFim).padStart(2, '0')}`
-        });
-
-        horaAtual += intervalo;
-      }
-
-      return res.json({ disponibilidades });
-    }
-
-    // Calcular horários livres
-    const disponibilidades = [];
-    let horaAtual = inicioMinutos;
-
+    // Criar array de intervalos ocupados (em minutos)
+    const intervalosOcupados = [];
     for (const agendamento of agendamentos) {
       const [horaInicioH, minutoInicioM] = agendamento.hora_inicio.split(':').map(Number);
       const [horaFimH, minutoFimM] = agendamento.hora_fim.split(':').map(Number);
       const inicioAgendamento = horaInicioH * 60 + minutoInicioM;
       const fimAgendamento = horaFimH * 60 + minutoFimM;
-
-      // Se houver espaço antes do agendamento
-      if (horaAtual < inicioAgendamento) {
-        let horaDisponivel = horaAtual;
-        while (horaDisponivel + intervalo <= inicioAgendamento) {
-          const horaInicio = Math.floor(horaDisponivel / 60);
-          const minutoInicio = horaDisponivel % 60;
-          const horaFim = Math.floor((horaDisponivel + intervalo) / 60);
-          const minutoFim = (horaDisponivel + intervalo) % 60;
-
-          disponibilidades.push({
-            hora_inicio: `${String(horaInicio).padStart(2, '0')}:${String(minutoInicio).padStart(2, '0')}`,
-            hora_fim: `${String(horaFim).padStart(2, '0')}:${String(minutoFim).padStart(2, '0')}`
-          });
-
-          horaDisponivel += intervalo;
-        }
-      }
-
-      horaAtual = Math.max(horaAtual, fimAgendamento);
+      
+      intervalosOcupados.push({
+        inicio: inicioAgendamento,
+        fim: fimAgendamento
+      });
     }
 
-    // Adicionar horários disponíveis após o último agendamento
-    while (horaAtual + intervalo <= fimMinutos) {
-      const horaInicio = Math.floor(horaAtual / 60);
-      const minutoInicio = horaAtual % 60;
-      const horaFim = Math.floor((horaAtual + intervalo) / 60);
-      const minutoFim = (horaAtual + intervalo) % 60;
+    // Gerar todos os slots de 15 minutos do horário de funcionamento
+    const disponibilidades = [];
+    let minutoAtual = inicioMinutos;
 
-      disponibilidades.push({
-        hora_inicio: `${String(horaInicio).padStart(2, '0')}:${String(minutoInicio).padStart(2, '0')}`,
-        hora_fim: `${String(horaFim).padStart(2, '0')}:${String(minutoFim).padStart(2, '0')}`
+    while (minutoAtual < fimMinutos) {
+      // Verificar se este slot de 15 minutos está dentro de algum agendamento
+      const estaOcupado = intervalosOcupados.some(ocupado => {
+        // Um slot está ocupado se o agendamento começa antes ou no início deste slot
+        // e termina depois do início deste slot
+        return ocupado.inicio <= minutoAtual && minutoAtual < ocupado.fim;
       });
 
-      horaAtual += intervalo;
+      // Verificar se há espaço suficiente para um agendamento (pelo menos intervaloAgendamento minutos)
+      const temEspacoSuficiente = (fimMinutos - minutoAtual) >= intervaloAgendamento;
+
+      if (!estaOcupado && temEspacoSuficiente) {
+        const horas = Math.floor(minutoAtual / 60);
+        const minutos = minutoAtual % 60;
+        const horaFormatada = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+
+        disponibilidades.push({
+          hora_inicio: horaFormatada,
+          // hora_fim será calculada no frontend baseado no serviço selecionado
+        });
+      }
+
+      minutoAtual += intervaloVisual;
     }
 
-    res.json({ disponibilidades });
+    res.json({ 
+      disponibilidades,
+      hora_abertura: horaAberturaFormatada,
+      hora_fechamento: horaFechamentoFormatada,
+      intervalo_agendamento: intervaloAgendamento
+    });
   } catch (error) {
     console.error('Erro ao calcular disponibilidades:', error);
     res.status(500).json({ error: 'Erro ao calcular disponibilidades' });
@@ -230,6 +237,25 @@ router.get('/horarios-funcionamento', async (req, res) => {
 
     if (!data) {
       return res.status(400).json({ error: 'Data é obrigatória' });
+    }
+
+    // 0. Verificar se a data está em um fechamento especial
+    const fechamentoResult = await pool.query(
+      'SELECT * FROM protese.fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
+      [data]
+    );
+
+    if (fechamentoResult.rows.length > 0) {
+      const fechamento = fechamentoResult.rows[0];
+      console.log('🚫 Data está em fechamento especial:', fechamento.descricao);
+      return res.json({
+        dia_ativo: false,
+        dia_semana: 'fechamento_especial',
+        hora_abertura: null,
+        hora_fechamento: null,
+        horarios: [],
+        motivo_fechamento: fechamento.descricao,
+      });
     }
 
     // 1. Tenta buscar configuração

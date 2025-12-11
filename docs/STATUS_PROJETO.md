@@ -1,6 +1,6 @@
 # 📊 Status do Projeto - Sistema Barbearia Premium
 
-Documento atualizado com o status completo do projeto em **Dezembro 2025**.
+Documento atualizado com o status completo do projeto em **Janeiro 2025**.
 
 ---
 
@@ -8,8 +8,8 @@ Documento atualizado com o status completo do projeto em **Dezembro 2025**.
 
 **Nome do Projeto**: Sistema Barbearia Premium  
 **Status**: ✅ **Em Produção**  
-**Última Atualização**: Dezembro 2025  
-**Versão Atual**: 1.0.0
+**Última Atualização**: Janeiro 2025  
+**Versão Atual**: 1.1.0
 
 ---
 

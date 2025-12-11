@@ -1,6 +1,6 @@
 # ⚙️ Backend - Sistema Barbearia Premium
 
-API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do backend que desenvolvi para gerenciar toda a lógica de negócio e comunicação com o banco de dados.
+API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do backend que gerencia toda a lógica de negócio e comunicação com o banco de dados.
 
 ---
 
@@ -13,9 +13,7 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 
 ---
 
-## 🛠️ Tecnologias que Utilizei
-
-Desenvolvi este backend utilizando as seguintes tecnologias:
+## 🛠️ Tecnologias Utilizadas
 
 - **Node.js 20 LTS** - Runtime JavaScript
 - **Express.js 4.x** - Framework web minimalista e flexível
@@ -26,7 +24,7 @@ Desenvolvi este backend utilizando as seguintes tecnologias:
 
 ---
 
-## 📁 Estrutura Modular que Criei
+## 📁 Estrutura Modular
 
 Organizei o backend em uma estrutura modular para facilitar a manutenção e escalabilidade:
 
@@ -46,7 +44,11 @@ backend/
 │   ├── controle-acessos.js # Controle de acessos/login
 │   ├── logs.js        # Sistema de logs/auditoria
 │   ├── help-desk.js   # Help Desk (tickets)
-│   └── servicos.js    # Gerenciamento de serviços
+│   ├── servicos.js    # Gerenciamento de serviços
+│   ├── configuracoes.js # Configurações do sistema
+│   ├── integracoes.js # Integrações de APIs externas
+│   ├── agendamentos.js # Sistema de agendamentos
+│   └── fechamentos-especiais.js # Fechamentos especiais
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
 └── utils/              # Utilitários
@@ -78,7 +80,7 @@ npm install
 
 ### Variáveis de Ambiente
 
-Criei um arquivo `.env` na raiz do backend com as seguintes variáveis:
+Crie um arquivo `.env` na raiz do backend com as seguintes variáveis:
 
 ```env
 PORT=3001
@@ -109,13 +111,13 @@ node server.js
 ### Produção (PM2)
 
 ```bash
-pm2 start server.js --name api-barbearia-premium
+pm2 start server.js --name api-protese-capilar
 pm2 save
 ```
 
 ---
 
-## 📡 Endpoints que Implementei
+## 📡 Endpoints Implementados
 
 Desenvolvi uma API REST completa com os seguintes endpoints:
 
@@ -170,7 +172,6 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `POST /api/v1/integracoes` - Criar nova integração
 - `PUT /api/v1/integracoes/:tipo` - Atualizar integração
 - `PUT /api/v1/integracoes/:tipo/funcionalidade/:funcionalidade` - Habilitar/desabilitar funcionalidade
-- `GET /api/v1/logs/:id` - Buscar log específico
 
 ### 🎫 Help Desk
 - `GET /api/v1/help-desk/chamados` - Listar chamados
@@ -180,15 +181,21 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `POST /api/v1/help-desk/chamados/:id/respostas` - Adicionar resposta
 - `GET /api/v1/help-desk/funcionarios` - Listar funcionários para responsável
 
-### 🛍️ Serviços
-- `GET /api/v1/servicos` - Listar serviços
-- `POST /api/v1/servicos` - Criar serviço
-- `GET /api/v1/servicos/:id` - Buscar serviço
-- `PUT /api/v1/servicos/:id` - Atualizar serviço
-- `DELETE /api/v1/servicos/:id` - Excluir serviço
-- `POST /api/v1/servicos/:id/imagens` - Upload de imagens
-- `DELETE /api/v1/servicos/:id/imagens/:campo` - Excluir imagem
-- `PUT /api/v1/servicos/:id/imagens/capa` - Definir imagem de capa
+### 📅 Agendamentos
+- `GET /api/v1/agendamentos` - Listar agendamentos (com filtros)
+- `POST /api/v1/agendamentos` - Criar agendamento
+- `GET /api/v1/agendamentos/:id` - Buscar agendamento específico
+- `PUT /api/v1/agendamentos/:id` - Atualizar agendamento
+- `DELETE /api/v1/agendamentos/:id` - Excluir agendamento
+- `GET /api/v1/agendamentos/disponibilidades` - Buscar horários disponíveis
+- `GET /api/v1/agendamentos/horarios-funcionamento` - Buscar horários de funcionamento
+
+### 🗓️ Fechamentos Especiais
+- `GET /api/v1/fechamentos-especiais` - Listar fechamentos especiais
+- `POST /api/v1/fechamentos-especiais` - Criar fechamento especial
+- `GET /api/v1/fechamentos-especiais/verificar/:data` - Verificar se data é fechamento
+- `PUT /api/v1/fechamentos-especiais/:id` - Atualizar fechamento especial
+- `DELETE /api/v1/fechamentos-especiais/:id` - Excluir fechamento especial
 
 ### 🏥 Health Check
 - `GET /health` - Status da API
@@ -198,7 +205,7 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 
 ## 🗄️ Banco de Dados
 
-### Schema: `barbearia`
+### Schema: `protese`
 
 Implementei as seguintes tabelas principais:
 
@@ -212,6 +219,11 @@ Implementei as seguintes tabelas principais:
 - `help_desk_anexos` - Anexos dos chamados/respostas
 - `servicos` - Serviços oferecidos pela barbearia
 - `servicos_imagens` - Imagens dos serviços
+- `configuracoes` - Configurações gerais do sistema
+- `integracoes` - Integrações com APIs externas
+- `integracoes_habilitadas` - Funcionalidades habilitadas por integração
+- `agendamentos` - Agendamentos de serviços
+- `fechamentos_especiais` - Dias de fechamento especiais
 
 ### Scripts SQL
 
@@ -220,6 +232,10 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
 - `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
 - `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql`
+- `COMANDOS_CRIAR_TABELA_CONFIGURACOES.sql`
+- `COMANDOS_CRIAR_TABELA_INTEGRACOES.sql`
+- `COMANDOS_CRIAR_TABELA_AGENDAMENTOS.sql`
+- `DDL_FECHAMENTOS_ESPECIAIS.sql`
 
 ---
 
@@ -298,7 +314,7 @@ curl http://localhost:3001/health
 ### Verificar logs
 ```bash
 # Logs do PM2
-pm2 logs api-barbearia-premium --lines 50
+pm2 logs api-protese-capilar --lines 50
 
 # Logs do servidor
 tail -f /var/log/nodejs/api-protese-capilar.log
@@ -324,7 +340,7 @@ pm2 restart api-protese-capilar
 pm2 status
 
 # Ver logs
-pm2 logs api-barbearia-premium
+pm2 logs api-protese-capilar
 
 # Parar API
 pm2 stop api-protese-capilar
@@ -370,6 +386,6 @@ Melhorias que pretendo implementar no futuro:
 
 ---
 
-**Última atualização**: Dezembro 2025  
-**Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Dezembro 2025)  
+**Última atualização**: Janeiro 2025  
+**Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção

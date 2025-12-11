@@ -61,18 +61,26 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ### 📅 Sistema de Agendamentos
 **Prioridade**: Alta  
-**Status**: Planejado
+**Status**: ✅ **Implementado em Janeiro 2025**
+
+**Funcionalidades implementadas:**
+- ✅ Calendário de agendamentos (dia, semana, mês)
+- ✅ Criação de agendamentos
+- ✅ Edição e cancelamento
+- ✅ Busca de horários disponíveis
+- ✅ Integração com serviços
+- ✅ Disponibilidade de funcionários
+- ✅ Filtro por funcionário
+- ✅ Fechamentos especiais
 
 **Funcionalidades planejadas:**
-- [ ] Calendário de agendamentos
-- [ ] Criação de agendamentos
-- [ ] Edição e cancelamento
-- [ ] Notificações de agendamentos
+- [ ] Notificações de agendamentos (email/SMS)
+- [ ] Lembretes automáticos
 - [ ] Histórico de agendamentos
-- [ ] Integração com serviços
-- [ ] Disponibilidade de funcionários
+- [ ] Agendamentos recorrentes
+- [ ] Integração com calendário externo (Google Calendar)
 
-**Estimativa**: 2-3 semanas
+**Estimativa para melhorias**: 1-2 semanas
 
 ---
 

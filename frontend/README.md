@@ -1,6 +1,6 @@
 # 🎨 Frontend - Sistema Barbearia Premium
 
-Projetos frontend que desenvolvi utilizando Next.js 14 (App Router), TypeScript e Tailwind CSS. Criei três aplicações distintas para atender diferentes necessidades da barbearia.
+Projetos frontend desenvolvidos utilizando Next.js 14 (App Router), TypeScript e Tailwind CSS. Três aplicações distintas para atender diferentes necessidades da barbearia.
 
 ---
 
@@ -15,16 +15,16 @@ frontend/
 
 ---
 
-## 🚀 Projetos que Desenvolvi
+## 🚀 Projetos Desenvolvidos
 
 ### 1. Painel Administrativo (`painel-admin/`)
 
 **Status**: ✅ **Em Produção**  
 **URL**: https://admin.protesecapilarcuiaba.com.br  
 **Porta de desenvolvimento**: `3000`  
-**VPS**: 45.132.157.28 (Hostinger - m.br)
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
-Este é o painel principal que desenvolvi para a gestão completa da barbearia. Aqui os administradores podem gerenciar tudo:
+Este é o painel principal para a gestão completa da barbearia. Aqui os administradores podem gerenciar tudo:
 
 **Funcionalidades implementadas:**
 - ✅ Sistema de login e autenticação
@@ -40,8 +40,10 @@ Este é o painel principal que desenvolvi para a gestão completa da barbearia. 
 - ✅ Configurações do Sistema (dados da empresa, horários, agendamento)
 - ✅ Integrações de APIs Externas (Focus NFe e estrutura escalável)
 - ✅ Habilitar API (controle de funcionalidades das integrações)
+- ✅ **Sistema de Agendamentos** (visualização em dia/semana/mês, busca de disponibilidade)
+- ✅ **Fechamentos Especiais** (gerenciamento de dias de fechamento)
 
-**Tecnologias que utilizei:**
+**Tecnologias utilizadas:**
 - Next.js 14 (App Router)
 - TypeScript
 - Tailwind CSS
@@ -56,9 +58,9 @@ Este é o painel principal que desenvolvi para a gestão completa da barbearia. 
 **Status**: ✅ **Em Produção**  
 **URL**: https://app.protesecapilarcuiaba.com.br  
 **Porta de desenvolvimento**: `3001`  
-**VPS**: 45.132.157.28 (Hostinger - m.br)
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
-Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos e interagir com a barbearia:
+Painel para que os clientes possam acompanhar seus atendimentos e interagir com a barbearia:
 
 **Funcionalidades implementadas:**
 - ✅ Sistema de login e autenticação
@@ -79,9 +81,9 @@ Desenvolvi este painel para que os clientes possam acompanhar seus atendimentos 
 **Status**: 🔄 **Em Desenvolvimento**  
 **URL**: https://www.protesecapilarcuiaba.com.br  
 **Porta de desenvolvimento**: `3002`  
-**VPS**: 45.132.157.28 (Hostinger - m.br)
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
-Este será o site institucional da barbearia:
+Site institucional da barbearia:
 
 **Funcionalidades planejadas:**
 - 🔄 Site institucional
@@ -93,7 +95,7 @@ Este será o site institucional da barbearia:
 
 ## 🛠️ Stack Tecnológica
 
-Desenvolvi todos os projetos frontend utilizando as mesmas tecnologias para manter consistência:
+Todos os projetos frontend utilizam as mesmas tecnologias para manter consistência:
 
 | Tecnologia | Versão | Uso |
 |------------|--------|-----|
@@ -148,7 +150,7 @@ npm run dev
 
 ## 🏗️ Build para Produção
 
-Desenvolvi os projetos para gerar builds estáticos (SSG) otimizados:
+Os projetos são configurados para gerar builds estáticos (SSG) otimizados:
 
 ### Build estático
 
@@ -175,7 +177,7 @@ scp -r out/* root@servidor:/caminho/destino/
 
 ### Componentes Compartilhados
 
-Criei uma estrutura de componentes compartilhados usando shadcn/ui:
+Estrutura de componentes compartilhados usando shadcn/ui:
 
 - `components/ui/` - Componentes base (Button, Input, Card, Dialog, etc.)
 - `components/admin/` - Componentes específicos do admin
@@ -185,7 +187,7 @@ Criei uma estrutura de componentes compartilhados usando shadcn/ui:
 
 ### Hooks Customizados
 
-Desenvolvi hooks personalizados para facilitar o desenvolvimento:
+Hooks personalizados para facilitar o desenvolvimento:
 
 - `hooks/usePermissions.ts` - Hook para verificar permissões do usuário
 
@@ -193,7 +195,7 @@ Desenvolvi hooks personalizados para facilitar o desenvolvimento:
 
 ## 🎨 Design System
 
-Criei um design system consistente em todos os projetos:
+Design system consistente em todos os projetos:
 
 ### Cores
 - **Primária**: Âmbar/Dourado (#F59E0B)
@@ -232,16 +234,16 @@ Criei um design system consistente em todos os projetos:
 
 ## 🌐 Variáveis de Ambiente
 
-Criei arquivos `.env.local` em cada projeto:
+Arquivos `.env.local` em cada projeto:
 
 ```env
 # API Backend
-NEXT_PUBLIC_API_URL=https://api.barbeariapremium.com.br
+NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
 ```
 
 ---
 
-## 📝 Convenções que Segui
+## 📝 Convenções
 
 ### Nomenclatura
 - **Componentes**: PascalCase (`DashboardLayout.tsx`)
@@ -266,14 +268,14 @@ src/app/
 ## 🎯 Funcionalidades Principais
 
 ### Sistema de Permissões
-Desenvolvi um sistema completo de permissões que controla:
+Sistema completo de permissões que controla:
 - Visibilidade de itens no menu
 - Acesso a páginas
 - Botões de ação (editar/excluir)
 - Tipos de usuário: Master, Proprietário, Funcionário
 
 ### Controle de Acessos
-Criei um dashboard completo com:
+Dashboard completo com:
 - Estatísticas de acessos
 - Filtros avançados (data, funcionário)
 - Visualização responsiva
@@ -285,6 +287,14 @@ Sistema completo de tickets com:
 - Respostas e anexos
 - Filtros e busca
 - Status e prioridades
+
+### Sistema de Agendamentos
+Sistema completo de agendamentos com:
+- Visualização em dia, semana e mês
+- Busca de horários disponíveis
+- Filtro por funcionário
+- Integração com configurações
+- Fechamentos especiais
 
 ---
 
@@ -313,6 +323,6 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: Dezembro 2025  
+**Última atualização**: Janeiro 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI

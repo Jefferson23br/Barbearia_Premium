@@ -6,7 +6,7 @@ Painel administrativo completo para gestão da barbearia. Desenvolvido com Next.
 
 **Status**: ✅ **Em Produção**  
 **URL**: https://admin.protesecapilarcuiaba.com.br  
-**VPS**: 45.132.157.28 (Hostinger - m.br)
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
 ---
 
@@ -76,6 +76,14 @@ npm run build
 - **Configurações do Sistema**: Dados da empresa, horários, agendamento
 - **Integrações de APIs**: Sistema escalável de integrações
 - **Habilitar API**: Controle de funcionalidades
+- **Fechamentos Especiais**: Gerenciamento de dias de fechamento
+
+### ✅ Agendamentos
+- **Agenda Completa**: Visualização em dia, semana e mês
+- **Busca de Horários Disponíveis**: Sistema inteligente que calcula horários livres
+- **Filtro por Funcionário**: Visualização individual ou todos os funcionários
+- **Integração com Configurações**: Usa horários de funcionamento configurados
+- **Cálculo Automático**: Calcula duração e valor baseado no serviço
 
 ---
 
@@ -91,7 +99,7 @@ npm run build
 
 ## 🌐 Deploy
 
-URL de produção: https://admin.barbeariapremium.com.br
+URL de produção: https://admin.protesecapilarcuiaba.com.br
 
 ### Processo de Deploy
 
@@ -125,5 +133,5 @@ src/
 
 ---
 
-**Última Atualização**: Dezembro 2025  
-**Versão**: 1.0
+**Última Atualização**: Janeiro 2025  
+**Versão**: 1.1.0
