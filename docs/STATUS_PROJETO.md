@@ -1,6 +1,6 @@
 # 📊 Status do Projeto - Sistema Barbearia Premium
 
-Documento atualizado com o status completo do projeto em **Janeiro 2025**.
+Documento atualizado com o status completo do projeto em **12 de Dezembro de 2025**.
 
 ---
 
@@ -8,8 +8,8 @@ Documento atualizado com o status completo do projeto em **Janeiro 2025**.
 
 **Nome do Projeto**: Sistema Barbearia Premium  
 **Status**: ✅ **Em Produção**  
-**Última Atualização**: Janeiro 2025  
-**Versão Atual**: 1.1.0
+**Última Atualização**: 12 de Dezembro de 2025  
+**Versão Atual**: 1.2.0
 
 ---
 
@@ -165,9 +165,9 @@ Documento atualizado com o status completo do projeto em **Janeiro 2025**.
 ## 📊 Estatísticas do Projeto
 
 ### Backend
-- **Total de Endpoints**: 35+
-- **Módulos**: 10
-- **Linhas de Código**: ~3.000
+- **Total de Endpoints**: 40+
+- **Módulos**: 12
+- **Linhas de Código**: ~4.000
 - **Estrutura**: Modular e escalável
 
 ### Frontend
@@ -184,12 +184,36 @@ Documento atualizado com o status completo do projeto em **Janeiro 2025**.
 
 ---
 
-## 🔄 Módulos em Desenvolvimento
+### 11. 📅 Sistema de Agendamentos
+**Status**: ✅ **100% Completo**
 
-### 📅 Sistema de Agendamentos
-**Status**: 🔄 **Planejado**  
-**Prioridade**: Alta  
-**Início Estimado**: Janeiro 2026
+- Visualização em dia, semana e mês
+- Busca de horários disponíveis
+- Filtro por funcionário (multi-coluna)
+- Criação e edição de agendamentos
+- Marcar almoço e saída
+- Integração com configurações
+- Fechamentos especiais
+- Validação de conflitos
+
+**Endpoints**: 8  
+**Páginas Frontend**: 1
+
+---
+
+### 12. 🗓️ Fechamentos Especiais
+**Status**: ✅ **100% Completo**
+
+- Gerenciamento de dias de fechamento
+- Integração com sistema de agendamentos
+- Validações e permissões
+
+**Endpoints**: 5  
+**Páginas Frontend**: 1 (aba em Configurações)
+
+---
+
+## 🔄 Módulos em Desenvolvimento
 
 ---
 
@@ -280,10 +304,10 @@ Documento atualizado com o status completo do projeto em **Janeiro 2025**.
 
 ## 🎯 Próximos Passos
 
-1. **Sistema de Agendamentos** - Prioridade máxima (usará horários de funcionamento das Configurações)
-2. **Módulos Financeiros** - Vendas e Despesas
-3. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
-4. **Melhorias no Help Desk** - Notificações
+1. **Módulos Financeiros** - Vendas e Despesas
+2. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
+3. **Melhorias no Help Desk** - Notificações
+4. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
 
 ---
 
@@ -293,7 +317,7 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 ---
 
-**Última Atualização**: Dezembro 2025  
+**Última Atualização**: 12 de Dezembro de 2025  
 **Próxima Revisão**: Janeiro 2026
 
 

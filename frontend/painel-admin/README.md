@@ -81,9 +81,11 @@ npm run build
 ### ✅ Agendamentos
 - **Agenda Completa**: Visualização em dia, semana e mês
 - **Busca de Horários Disponíveis**: Sistema inteligente que calcula horários livres
-- **Filtro por Funcionário**: Visualização individual ou todos os funcionários
+- **Filtro por Funcionário**: Visualização individual ou todos os funcionários (multi-coluna)
 - **Integração com Configurações**: Usa horários de funcionamento configurados
 - **Cálculo Automático**: Calcula duração e valor baseado no serviço
+- **Marcar Almoço/Saída**: Sistema para marcar horários de almoço e saída dos funcionários
+- **Edição de Agendamentos**: Clique em agendamento existente para editar
 
 ---
 
@@ -133,5 +135,5 @@ src/
 
 ---
 
-**Última Atualização**: Janeiro 2025  
-**Versão**: 1.1.0
+**Última Atualização**: 12 de Dezembro de 2025  
+**Versão**: 1.2.0

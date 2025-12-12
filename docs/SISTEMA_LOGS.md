@@ -7,7 +7,7 @@ Sistema completo para registrar e monitorar todas as ações importantes do sist
 ## ✅ Status
 
 **Status**: ✅ **Implementado e Funcionando**  
-**Última atualização**: Dezembro 2025
+**Última atualização**: 12 de Dezembro de 2025
 
 ---
 
@@ -244,7 +244,7 @@ ORDER BY created_at DESC;
 
 ---
 
-**Última atualização**: Dezembro 2025
+**Última atualização**: 12 de Dezembro de 2025
 
 
 

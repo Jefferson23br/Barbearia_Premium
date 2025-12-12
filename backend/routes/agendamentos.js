@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const pool = require('../config/database');
 const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 
@@ -440,11 +441,47 @@ router.get('/recursos-especiais', async (req, res) => {
     if (clienteSistema.rows.length === 0) {
       try {
         console.log('📝 [RECURSOS ESPECIAIS] Criando cliente Sistema...');
-        // Criar cliente Sistema - tentar com campos mínimos primeiro
+        // Criar cliente Sistema com todos os campos necessários
+        // Usar valores padrão para campos obrigatórios
+        // Gerar hash de senha válido (bcrypt hash para senha "sistema")
+        const senhaHash = await bcrypt.hash('sistema_interno_2024', 10);
+        
         const novoCliente = await pool.query(
-          `INSERT INTO protese.usuarios_clientes (nome_completo, email, telefone, is_active)
-           VALUES ('Sistema', 'sistema@interno.com', '00000000000', true)
-           RETURNING id, nome_completo`
+          `INSERT INTO protese.usuarios_clientes (
+            nome_completo, 
+            email, 
+            cpf,
+            rg,
+            rua,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            estado,
+            cep,
+            senha_hash,
+            foto_url,
+            funcionario_responsavel_id,
+            is_active
+          ) VALUES (
+            'Sistema', 
+            'sistema@interno.com', 
+            '00000000000',
+            NULL,
+            'N/A',
+            '0',
+            NULL,
+            'N/A',
+            'Cuiabá',
+            'MT',
+            '00000000',
+            $1,
+            NULL,
+            NULL,
+            true
+          )
+          RETURNING id, nome_completo`,
+          [senhaHash]
         );
         clienteSistema = novoCliente;
         console.log('✅ [RECURSOS ESPECIAIS] Cliente Sistema criado:', novoCliente.rows[0].id);
@@ -462,7 +499,7 @@ router.get('/recursos-especiais', async (req, res) => {
           );
         } else {
           // Se for erro de campo obrigatório, retornar erro detalhado
-          throw new Error(`Erro ao criar cliente Sistema: ${insertError.message} (Código: ${insertError.code})`);
+          throw new Error(`Erro ao criar cliente Sistema: ${insertError.message} (Código: ${insertError.code}, Detalhe: ${insertError.detail || 'N/A'})`);
         }
       }
     } else {

@@ -323,6 +323,6 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: Janeiro 2025  
+**Última atualização**: 12 de Dezembro de 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI

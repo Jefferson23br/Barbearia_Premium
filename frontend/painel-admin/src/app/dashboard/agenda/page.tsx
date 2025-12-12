@@ -1273,7 +1273,23 @@ export default function AgendaPage() {
       const recursosResponse = await fetch(`${apiUrl}/api/v1/agendamentos/recursos-especiais`, { headers })
       
       if (!recursosResponse.ok) {
-        throw new Error('Erro ao buscar recursos especiais')
+        let errorMessage = 'Erro ao buscar recursos especiais'
+        try {
+          const errorData = await recursosResponse.json()
+          console.error('❌ [CRIAR ALMOÇO/SAÍDA] Erro da API:', errorData)
+          errorMessage = errorData.message || errorData.error || errorMessage
+          if (errorData.detail) {
+            errorMessage += ` - ${errorData.detail}`
+          }
+          if (errorData.code) {
+            errorMessage += ` (Código: ${errorData.code})`
+          }
+        } catch (parseError) {
+          const errorText = await recursosResponse.text()
+          console.error('❌ [CRIAR ALMOÇO/SAÍDA] Erro ao parsear resposta:', errorText)
+          errorMessage = errorText || errorMessage
+        }
+        throw new Error(errorMessage)
       }
 
       const recursos = await recursosResponse.json()
@@ -2116,6 +2132,7 @@ export default function AgendaPage() {
                         data_agendamento: format(dataBusca!, 'yyyy-MM-dd'),
                         hora_inicio: disp.hora_inicio,
                         observacoes: '',
+                        status: 'agendado',
                       })
                       setDialogAberto(true)
                     }}

@@ -285,3 +285,7 @@ Documento detalhando todas as implementações realizadas em **Janeiro 2025**.
 **Versão**: 1.1.0  
 **Status**: ✅ **Todas as implementações concluídas e em produção**
 
+---
+
+> **Nota**: Para implementações mais recentes, consulte [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md).
+

@@ -57,11 +57,11 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ---
 
-## 🔄 Em Desenvolvimento
+## ✅ Funcionalidades Implementadas Recentemente
 
 ### 📅 Sistema de Agendamentos
 **Prioridade**: Alta  
-**Status**: ✅ **Implementado em Janeiro 2025**
+**Status**: ✅ **100% Completo (Dezembro 2025)**
 
 **Funcionalidades implementadas:**
 - ✅ Calendário de agendamentos (dia, semana, mês)
@@ -70,17 +70,23 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 - ✅ Busca de horários disponíveis
 - ✅ Integração com serviços
 - ✅ Disponibilidade de funcionários
-- ✅ Filtro por funcionário
+- ✅ Filtro por funcionário (visualização multi-coluna)
 - ✅ Fechamentos especiais
+- ✅ **Marcar Almoço/Saída** (Dezembro 2025)
+- ✅ Visualização multi-coluna quando filtro = "todos"
+- ✅ Edição de agendamentos existentes
 
-**Funcionalidades planejadas:**
+**Melhorias planejadas:**
 - [ ] Notificações de agendamentos (email/SMS)
 - [ ] Lembretes automáticos
 - [ ] Histórico de agendamentos
 - [ ] Agendamentos recorrentes
 - [ ] Integração com calendário externo (Google Calendar)
+- [ ] Exportação de agenda (PDF/Excel)
 
-**Estimativa para melhorias**: 1-2 semanas
+---
+
+## 🔄 Em Desenvolvimento
 
 ---
 
@@ -171,10 +177,11 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🎯 Prioridades Atuais
 
-### Q1 2025
-1. **Sistema de Agendamentos** - Funcionalidade crítica
+### Q4 2025 / Q1 2026
+1. ✅ **Sistema de Agendamentos** - ✅ **Concluído em Dezembro 2025**
 2. **Módulos Financeiros** - Vendas e Despesas
 3. **Melhorias no Help Desk** - Notificações e templates
+4. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
 
 ### Q2 2025
 1. **Faturamento** - Geração e envio
@@ -208,9 +215,9 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🔄 Atualizações do Roadmap
 
-Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **Dezembro 2025**
+Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **12 de Dezembro de 2025**
 
 ---
 
 **Status Geral do Projeto**: ✅ **Em Produção e Funcionando**  
-**Próxima Grande Funcionalidade**: Sistema de Agendamentos
+**Próxima Grande Funcionalidade**: Módulos Financeiros (Vendas e Despesas)

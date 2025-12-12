@@ -238,6 +238,6 @@ systemctl status postgresql
 
 ---
 
-**Última Atualização**: Dezembro 2025  
+**Última Atualização**: 12 de Dezembro de 2025  
 **Versão**: 1.0
 

@@ -218,7 +218,7 @@ src/app/
 
 ---
 
-**Última atualização**: Dezembro 2025
+**Última atualização**: 12 de Dezembro de 2025
 
 
 

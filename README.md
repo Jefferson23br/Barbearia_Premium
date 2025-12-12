@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-Janeiro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-12_Dezembro_2025-blue?style=flat-square)
 
 </div>
 
@@ -141,11 +141,14 @@ Barbearia_Premium/
 ### 📅 Sistema de Agendamentos
 - ✅ **Agenda Completa**: Visualização em dia, semana e mês
 - ✅ **Busca de Horários Disponíveis**: Sistema inteligente que calcula horários livres
-- ✅ **Filtro por Funcionário**: Visualização individual ou todos os funcionários
+- ✅ **Filtro por Funcionário**: Visualização individual ou todos os funcionários (multi-coluna)
 - ✅ **Fechamentos Especiais**: Configuração de dias de fechamento (feriados, férias)
 - ✅ **Integração com Configurações**: Usa horários de funcionamento configurados
-- ✅ **Cálculo Automático**: Calcula duração baseada no serviço selecionado
+- ✅ **Cálculo Automático**: Calcula duração e valor baseado no serviço selecionado
 - ✅ **Validação de Conflitos**: Previne sobreposição de agendamentos
+- ✅ **Marcar Almoço/Saída**: Sistema para marcar horários de almoço e saída dos funcionários
+- ✅ **Visualização Multi-Coluna**: Quando filtro = "todos", mostra todos os funcionários lado a lado
+- ✅ **Edição de Agendamentos**: Clique em agendamento existente para editar
 
 ### 🎨 Interface e UX
 - ✅ Design moderno e responsivo (mobile, tablet, desktop)
@@ -234,7 +237,7 @@ npm run dev
 8. **Serviços** - Gerenciamento de serviços da barbearia
 9. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
 10. **Integrações de APIs** - Sistema escalável de integrações (Focus NFe implementado)
-11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade
+11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade, marcação de almoço/saída
 12. **Fechamentos Especiais** - Configuração de dias de fechamento
 
 ### 🔄 Em Desenvolvimento
@@ -280,7 +283,8 @@ npm run dev
 
 ### Documentação Principal
 - **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - Tudo que foi implementado
-- **[Implementações Janeiro 2025](./docs/IMPLEMENTACOES_JANEIRO_2025.md)** - Implementações recentes detalhadas
+- **[Implementações Dezembro 2025](./docs/IMPLEMENTACOES_DEZEMBRO_2025.md)** - Implementações mais recentes
+- **[Implementações Janeiro 2025](./docs/IMPLEMENTACOES_JANEIRO_2025.md)** - Implementações de janeiro
 - **[Status do Projeto](./docs/STATUS_PROJETO.md)** - Status atual completo
 - **[Roadmap](./docs/ROADMAP.md)** - Próximos passos e planejamento
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
@@ -337,11 +341,12 @@ O sistema foi desenvolvido com foco em:
 
 Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap](./docs/ROADMAP.md)**.
 
-**Foco Atual (Q1 2025):**
+**Foco Atual (Q4 2025 / Q1 2026):**
+- ✅ Sistema de Agendamentos completo (concluído em Dezembro 2025)
+- ✅ Marcar Almoço/Saída (concluído em Dezembro 2025)
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
 - 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
 - 🔄 Melhorias no Help Desk
-- 🔄 Melhorias no sistema de agendamentos
 
 **Planejado:**
 - 🔄 Faturamento
@@ -374,5 +379,7 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 **Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
 
 *Sistema em desenvolvimento ativo* 🚀
+
+**Última Atualização**: 12 de Dezembro de 2025
 
 </div>

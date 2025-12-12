@@ -70,7 +70,6 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       path: '/dashboard/agenda',
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'agenda',
-      badge: 'Em breve',
     },
     {
       id: 'servicos',

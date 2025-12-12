@@ -148,4 +148,4 @@ Este projeto é privado e desenvolvido exclusivamente para uso comercial.
 
 </div>
 
-**Última atualização**: Janeiro 2025
+**Última atualização**: 12 de Dezembro de 2025

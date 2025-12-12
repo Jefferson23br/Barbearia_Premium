@@ -189,6 +189,7 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `DELETE /api/v1/agendamentos/:id` - Excluir agendamento
 - `GET /api/v1/agendamentos/disponibilidades` - Buscar horários disponíveis
 - `GET /api/v1/agendamentos/horarios-funcionamento` - Buscar horários de funcionamento
+- `GET /api/v1/agendamentos/recursos-especiais` - Buscar/criar cliente Sistema e serviços especiais
 
 ### 🗓️ Fechamentos Especiais
 - `GET /api/v1/fechamentos-especiais` - Listar fechamentos especiais
@@ -380,12 +381,13 @@ Melhorias que pretendo implementar no futuro:
 
 ## 📚 Documentação Adicional
 
-- [Estrutura Modular](./ESTRUTURA_MODULAR.md) - Documentação da estrutura modular
-- [Guia de Migração VPS](./GUIA_MIGRACAO_VPS.md) - Passo a passo para migração
-- [Resumo da Migração](./RESUMO_MIGRACAO.md) - Resumo rápido
+Para documentação completa do projeto, consulte a pasta `docs/` na raiz do projeto:
+- [Histórico de Implementações](../docs/HISTORICO_IMPLEMENTACOES.md)
+- [Implementações Dezembro 2025](../docs/IMPLEMENTACOES_DEZEMBRO_2025.md)
+- [Status do Projeto](../docs/STATUS_PROJETO.md)
 
 ---
 
-**Última atualização**: Janeiro 2025  
+**Última atualização**: 12 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção

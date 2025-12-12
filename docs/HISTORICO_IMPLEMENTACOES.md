@@ -619,7 +619,43 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
-**Última atualização**: Dezembro 2024  
-**Versão do documento**: 1.0
+---
+
+## 🎉 Implementações de Dezembro 2025
+
+### 🍽️ Sistema de Marcar Almoço e Saída
+
+**Data**: 12 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ Botões "Marcar Almoço" e "Marcar Saída" na página de Agenda
+- ✅ Dialog simplificado para marcar horários especiais
+- ✅ Criação automática de cliente "Sistema" e serviços especiais
+- ✅ Agendamentos com valor R$ 0,00
+- ✅ Horários customizados (início e fim definidos pelo usuário)
+- ✅ Integração completa com sistema de agendamentos existente
+
+**Arquivos Criados/Modificados:**
+- `backend/routes/agendamentos.js` - Novo endpoint `/recursos-especiais` e modificações no POST
+- `frontend/painel-admin/src/app/dashboard/agenda/page.tsx` - Botões e dialog de almoço/saída
+- `frontend/painel-admin/src/components/admin/Sidebar.tsx` - Removido badge "Em breve"
+
+**Endpoints:**
+- `GET /api/v1/agendamentos/recursos-especiais` - Busca/cria recursos necessários
+
+**Detalhes Técnicos:**
+- Cliente "Sistema" criado automaticamente com todos os campos obrigatórios
+- Serviços "Almoço" (60 min) e "Saída" (15 min) criados automaticamente
+- Validação de campos obrigatórios
+- Validação de que hora_fim > hora_inicio
+- Tratamento robusto de erros
+
+---
+
+**Última atualização**: 12 de Dezembro de 2025  
+**Versão do documento**: 1.1
+
+> **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md).
 
 

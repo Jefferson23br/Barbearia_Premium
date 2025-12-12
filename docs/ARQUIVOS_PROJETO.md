@@ -28,11 +28,8 @@ Barbearia_Premium/
 │   ├── utils/                      # ✅ Utilitários
 │   │   ├── logger.js              # ✅ Helper de logs
 │   │   └── logHelper.js           # ⚠️ Helper opcional (não usado atualmente)
-│   ├── server.js                  # ✅ Servidor Express central (98 linhas)
-│   ├── README.md                  # ✅ Documentação do backend
-│   ├── ESTRUTURA_MODULAR.md       # ✅ Documentação da estrutura modular
-│   ├── GUIA_MIGRACAO_VPS.md       # ✅ Guia de migração para VPS
-│   └── RESUMO_MIGRACAO.md         # ✅ Resumo da migração
+│   ├── server.js                  # ✅ Servidor Express central
+│   └── README.md                  # ✅ Documentação do backend
 │
 ├── frontend/                       # 🎨 Projetos Frontend
 │   ├── painel-admin/              # ✅ Painel Administrativo
@@ -70,9 +67,6 @@ Barbearia_Premium/
 - `backend/utils/logger.js` - ✅ Sistema de logs
 - `backend/middlewares/apiLogger.js` - ✅ Middleware de logs automático
 - `backend/README.md` - ✅ Documentação
-- `backend/ESTRUTURA_MODULAR.md` - ✅ Documentação da estrutura modular
-- `backend/GUIA_MIGRACAO_VPS.md` - ✅ Guia de migração
-- `backend/RESUMO_MIGRACAO.md` - ✅ Resumo da migração
 
 ### Frontend
 - Todos os arquivos em `frontend/painel-admin/src/` - ✅ Código fonte
@@ -113,15 +107,13 @@ Barbearia_Premium/
 ### Limpeza Inicial (Anterior)
 Arquivos de troubleshooting e guias consolidados foram removidos anteriormente.
 
-### Limpeza Atual (Dezembro 2024 - Histórico)
+### Limpeza Atual (12 de Dezembro de 2025)
 Arquivos removidos na organização atual:
 
-- ✅ `LIMPEZA_ARQUIVOS_REALIZADA.md` - Removido (arquivo de explicação)
-- ✅ `MIDDLEWARE_API_LOGGER_README.md` - Removido (consolidado em `docs/SISTEMA_LOGS.md`)
-- ✅ `GUIA_INTEGRAR_LOGS_EM_NOVOS_ENDPOINTS.md` - Removido (consolidado)
-- ✅ `PROXIMOS_PASSOS.md` - Removido (consolidado no README principal)
-- ✅ `ROADMAP_DESENVOLVIMENTO.md` - Removido (consolidado no README principal)
-- ✅ `SCHEMA_DATABASE.md` - Removido (consolidado em `docs/ESTRUTURA_PROJETO.md`)
+- ✅ `backend/check-table-structure.js` - Removido (script temporário de verificação)
+- ✅ `backend/RESUMO_MIGRACAO.md` - Removido (migração já concluída)
+- ✅ `backend/ESTRUTURA_MODULAR.md` - Removido (migração já concluída)
+- ✅ `backend/GUIA_MIGRACAO_VPS.md` - Removido (migração já concluída)
 
 ## ✅ Arquivos Removidos Anteriormente
 
@@ -187,29 +179,38 @@ docs/
 ### Arquivos a Manter na Raiz
 
 **Essenciais:**
-- `README.md`
-- `SCHEMA_DATABASE.md`
-- `ROADMAP_DESENVOLVIMENTO.md`
-- `PROXIMOS_PASSOS.md`
-- `.gitignore`
+- `README.md` - Documentação principal do projeto
+- `.gitignore` - Configuração do Git
+
+**Arquivos .txt (NÃO APAGAR):**
+- `NÃO APAGAR - MENSAGEM.txt` - Informações importantes
+- `NÃO APAGAR IMPORTANTE .txt` - Informações importantes
+- `NÃO EXCLUIR - CAMPO DE FUTURAS APIS.txt` - Informações importantes
 
 **Scripts SQL:**
-- Scripts de criação podem ficar na raiz (fácil acesso)
-- Scripts de correção podem ser movidos para `docs/database/`
+- Scripts de criação e correção de tabelas (fácil acesso na raiz)
+- Todos os arquivos `COMANDOS_*.sql` e `DDL_*.sql`
 
 ---
 
-## 🗑️ Arquivos que Podem ser Removidos (Após Confirmar)
+## ✅ Status da Limpeza (12 de Dezembro de 2025)
 
-**⚠️ IMPORTANTE**: Antes de remover, verificar se não são referenciados em outros arquivos!
+**Limpeza Realizada:**
+- ✅ Scripts temporários removidos (`backend/check-table-structure.js`)
+- ✅ Documentação de migração removida (migração já concluída):
+  - `backend/RESUMO_MIGRACAO.md`
+  - `backend/ESTRUTURA_MODULAR.md`
+  - `backend/GUIA_MIGRACAO_VPS.md`
+- ✅ Arquivos desnecessários removidos
+- ✅ Documentação atualizada com informações corretas
 
-1. Arquivos de debug temporários (após problemas resolvidos)
-2. Scripts de verificação pontuais
-3. Documentação duplicada (após consolidar)
-
-**Sugestão**: Criar pasta `docs/archive/` para mover arquivos antigos antes de deletar.
+**Arquivos Mantidos:**
+- ✅ Todos os scripts SQL (importantes para referência)
+- ✅ Todos os arquivos .txt marcados como "NÃO APAGAR"
+- ✅ Documentação completa em `docs/`
+- ✅ Scripts de deploy e configuração em `scripts/`
 
 ---
 
-**Última atualização**: Dezembro 2025
+**Última atualização**: 12 de Dezembro de 2025
 
