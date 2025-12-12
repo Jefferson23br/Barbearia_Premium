@@ -342,9 +342,22 @@ router.put('/:id', async (req, res) => {
       nome_completo,
       email,
       cpf,
+      rg,
       tipo_usuario,
       senha,
       is_active,
+      rua,
+      numero,
+      complemento,
+      bairro,
+      cidade,
+      estado,
+      cep,
+      data_admissao,
+      tipo_contrato,
+      salario,
+      nis,
+      foto_url,
     } = req.body;
 
     // Buscar funcionário atual
@@ -419,6 +432,89 @@ router.put('/:id', async (req, res) => {
     if (cpfLimpo) {
       updates.push(`cpf = $${paramIndex}`);
       params.push(cpfLimpo);
+      paramIndex++;
+    }
+
+    if (rg !== undefined) {
+      updates.push(`rg = $${paramIndex}`);
+      params.push(rg || null);
+      paramIndex++;
+    }
+
+    if (rua !== undefined) {
+      updates.push(`rua = $${paramIndex}`);
+      params.push(rua);
+      paramIndex++;
+    }
+
+    if (numero !== undefined) {
+      updates.push(`numero = $${paramIndex}`);
+      params.push(numero);
+      paramIndex++;
+    }
+
+    if (complemento !== undefined) {
+      updates.push(`complemento = $${paramIndex}`);
+      params.push(complemento || null);
+      paramIndex++;
+    }
+
+    if (bairro !== undefined) {
+      updates.push(`bairro = $${paramIndex}`);
+      params.push(bairro);
+      paramIndex++;
+    }
+
+    if (cidade !== undefined) {
+      updates.push(`cidade = $${paramIndex}`);
+      params.push(cidade);
+      paramIndex++;
+    }
+
+    if (estado !== undefined) {
+      updates.push(`estado = $${paramIndex}`);
+      params.push(estado);
+      paramIndex++;
+    }
+
+    if (cep !== undefined) {
+      updates.push(`cep = $${paramIndex}`);
+      params.push(cep);
+      paramIndex++;
+    }
+
+    if (nis !== undefined) {
+      updates.push(`nis = $${paramIndex}`);
+      params.push(nis || null);
+      paramIndex++;
+    }
+
+    if (data_admissao) {
+      updates.push(`data_admissao = $${paramIndex}`);
+      params.push(data_admissao);
+      paramIndex++;
+    }
+
+    if (tipo_contrato) {
+      if (!['CLT', 'PJ'].includes(tipo_contrato)) {
+        return res.status(400).json({
+          error: 'tipo_contrato deve ser: CLT ou PJ',
+        });
+      }
+      updates.push(`tipo_contrato = $${paramIndex}`);
+      params.push(tipo_contrato);
+      paramIndex++;
+    }
+
+    if (salario !== undefined) {
+      updates.push(`salario = $${paramIndex}`);
+      params.push(salario ? parseFloat(salario) : null);
+      paramIndex++;
+    }
+
+    if (foto_url !== undefined) {
+      updates.push(`foto_url = $${paramIndex}`);
+      params.push(foto_url || null);
       paramIndex++;
     }
 

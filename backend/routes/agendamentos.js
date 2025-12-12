@@ -425,6 +425,144 @@ router.get('/horarios-funcionamento', async (req, res) => {
 });
 
 /**
+ * GET /api/v1/agendamentos/recursos-especiais
+ * Busca ou cria cliente "Sistema" e serviços especiais (Almoço, Saída)
+ */
+router.get('/recursos-especiais', async (req, res) => {
+  try {
+    console.log('🔍 [RECURSOS ESPECIAIS] Iniciando busca/criação de recursos...');
+    
+    // Buscar ou criar cliente "Sistema"
+    let clienteSistema = await pool.query(
+      "SELECT id, nome_completo FROM protese.usuarios_clientes WHERE nome_completo = 'Sistema' OR email = 'sistema@interno.com' LIMIT 1"
+    );
+
+    if (clienteSistema.rows.length === 0) {
+      try {
+        console.log('📝 [RECURSOS ESPECIAIS] Criando cliente Sistema...');
+        // Criar cliente Sistema - tentar com campos mínimos primeiro
+        const novoCliente = await pool.query(
+          `INSERT INTO protese.usuarios_clientes (nome_completo, email, telefone, is_active)
+           VALUES ('Sistema', 'sistema@interno.com', '00000000000', true)
+           RETURNING id, nome_completo`
+        );
+        clienteSistema = novoCliente;
+        console.log('✅ [RECURSOS ESPECIAIS] Cliente Sistema criado:', novoCliente.rows[0].id);
+      } catch (insertError) {
+        console.error('❌ [RECURSOS ESPECIAIS] Erro ao criar cliente Sistema:', insertError.message);
+        console.error('❌ [RECURSOS ESPECIAIS] Código do erro:', insertError.code);
+        console.error('❌ [RECURSOS ESPECIAIS] Detalhes:', insertError.detail);
+        console.error('❌ [RECURSOS ESPECIAIS] Stack:', insertError.stack);
+        
+        // Se der erro (ex: email duplicado), tentar buscar novamente
+        if (insertError.code === '23505') {
+          console.log('⚠️ [RECURSOS ESPECIAIS] Cliente Sistema já existe, buscando novamente...');
+          clienteSistema = await pool.query(
+            "SELECT id, nome_completo FROM protese.usuarios_clientes WHERE nome_completo = 'Sistema' OR email = 'sistema@interno.com' LIMIT 1"
+          );
+        } else {
+          // Se for erro de campo obrigatório, retornar erro detalhado
+          throw new Error(`Erro ao criar cliente Sistema: ${insertError.message} (Código: ${insertError.code})`);
+        }
+      }
+    } else {
+      console.log('✅ [RECURSOS ESPECIAIS] Cliente Sistema encontrado:', clienteSistema.rows[0].id);
+    }
+
+    // Buscar ou criar serviço "Almoço"
+    let servicoAlmoco = await pool.query(
+      "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Almoço' LIMIT 1"
+    );
+
+    if (servicoAlmoco.rows.length === 0) {
+      try {
+        console.log('📝 [RECURSOS ESPECIAIS] Criando serviço Almoço...');
+        const novoServicoAlmoco = await pool.query(
+          `INSERT INTO protese.servicos (nome, descricao, duracao_minutos, preco, is_active)
+           VALUES ('Almoço', 'Horário de almoço', 60, 0.00, true)
+           RETURNING id, nome, duracao_minutos, preco`
+        );
+        servicoAlmoco = novoServicoAlmoco;
+        console.log('✅ [RECURSOS ESPECIAIS] Serviço Almoço criado:', novoServicoAlmoco.rows[0].id);
+      } catch (insertError) {
+        console.error('❌ [RECURSOS ESPECIAIS] Erro ao criar serviço Almoço:', insertError.message);
+        console.error('❌ [RECURSOS ESPECIAIS] Código do erro:', insertError.code);
+        console.error('❌ [RECURSOS ESPECIAIS] Detalhes:', insertError.detail);
+        console.error('❌ [RECURSOS ESPECIAIS] Stack:', insertError.stack);
+        
+        // Se der erro, tentar buscar novamente
+        if (insertError.code === '23505') {
+          console.log('⚠️ [RECURSOS ESPECIAIS] Serviço Almoço já existe, buscando novamente...');
+          servicoAlmoco = await pool.query(
+            "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Almoço' LIMIT 1"
+          );
+        } else {
+          throw new Error(`Erro ao criar serviço Almoço: ${insertError.message} (Código: ${insertError.code})`);
+        }
+      }
+    } else {
+      console.log('✅ [RECURSOS ESPECIAIS] Serviço Almoço encontrado:', servicoAlmoco.rows[0].id);
+    }
+
+    // Buscar ou criar serviço "Saída"
+    let servicoSaida = await pool.query(
+      "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Saída' LIMIT 1"
+    );
+
+    if (servicoSaida.rows.length === 0) {
+      try {
+        console.log('📝 [RECURSOS ESPECIAIS] Criando serviço Saída...');
+        const novoServicoSaida = await pool.query(
+          `INSERT INTO protese.servicos (nome, descricao, duracao_minutos, preco, is_active)
+           VALUES ('Saída', 'Horário de saída', 15, 0.00, true)
+           RETURNING id, nome, duracao_minutos, preco`
+        );
+        servicoSaida = novoServicoSaida;
+        console.log('✅ [RECURSOS ESPECIAIS] Serviço Saída criado:', novoServicoSaida.rows[0].id);
+      } catch (insertError) {
+        console.error('❌ [RECURSOS ESPECIAIS] Erro ao criar serviço Saída:', insertError.message);
+        console.error('❌ [RECURSOS ESPECIAIS] Código do erro:', insertError.code);
+        console.error('❌ [RECURSOS ESPECIAIS] Detalhes:', insertError.detail);
+        console.error('❌ [RECURSOS ESPECIAIS] Stack:', insertError.stack);
+        
+        // Se der erro, tentar buscar novamente
+        if (insertError.code === '23505') {
+          console.log('⚠️ [RECURSOS ESPECIAIS] Serviço Saída já existe, buscando novamente...');
+          servicoSaida = await pool.query(
+            "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Saída' LIMIT 1"
+          );
+        } else {
+          throw new Error(`Erro ao criar serviço Saída: ${insertError.message} (Código: ${insertError.code})`);
+        }
+      }
+    } else {
+      console.log('✅ [RECURSOS ESPECIAIS] Serviço Saída encontrado:', servicoSaida.rows[0].id);
+    }
+
+    if (!clienteSistema.rows[0] || !servicoAlmoco.rows[0] || !servicoSaida.rows[0]) {
+      throw new Error('Não foi possível obter todos os recursos necessários');
+    }
+
+    console.log('✅ [RECURSOS ESPECIAIS] Todos os recursos obtidos com sucesso');
+    res.json({
+      cliente_sistema: clienteSistema.rows[0],
+      servico_almoco: servicoAlmoco.rows[0],
+      servico_saida: servicoSaida.rows[0],
+    });
+  } catch (error) {
+    console.error('❌ [RECURSOS ESPECIAIS] Erro ao buscar/criar recursos especiais:', error);
+    console.error('❌ [RECURSOS ESPECIAIS] Mensagem:', error.message);
+    console.error('❌ [RECURSOS ESPECIAIS] Stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Erro ao buscar/criar recursos especiais', 
+      message: error.message,
+      code: error.code,
+      detail: error.detail
+    });
+  }
+});
+
+/**
  * POST /api/v1/agendamentos
  * Cria um novo agendamento
  */
@@ -469,8 +607,10 @@ router.post('/', async (req, res) => {
       servico_id,
       data_agendamento,
       hora_inicio,
+      hora_fim, // Opcional - se não fornecido, será calculado
       observacoes,
-      status = 'agendado'
+      status = 'agendado',
+      valor_servico // Opcional - se não fornecido, será buscado do serviço
     } = req.body;
 
     // Validações detalhadas
@@ -505,19 +645,34 @@ router.post('/', async (req, res) => {
 
     const servico = servicoResult.rows[0];
     const duracaoMinutos = servico.duracao_minutos || 30;
-    const valorServico = servico.preco || 0;
+    
+    // Se valor_servico foi fornecido no body, usar ele (permite 0 para almoço/saída)
+    // Caso contrário, usar o preço do serviço
+    const valorServico = valor_servico !== undefined ? parseFloat(valor_servico) : (servico.preco || 0);
+    
     console.log('✅ [POST AGENDAMENTO] Serviço encontrado:', {
       duracao_minutos: duracaoMinutos,
-      valor: valorServico
+      valor_do_servico: servico.preco,
+      valor_usado: valorServico,
+      valor_fornecido_no_body: valor_servico !== undefined
     });
 
-    // Calcular hora_fim
-    const [horaH, minutoM] = hora_inicio.split(':').map(Number);
-    const inicioMinutos = horaH * 60 + minutoM;
-    const fimMinutos = inicioMinutos + duracaoMinutos;
-    const horaFimH = Math.floor(fimMinutos / 60);
-    const minutoFimM = fimMinutos % 60;
-    const hora_fim = `${String(horaFimH).padStart(2, '0')}:${String(minutoFimM).padStart(2, '0')}`;
+    // Se hora_fim foi fornecido no body, usar ele (para almoço/saída com horário customizado)
+    // Caso contrário, calcular baseado na duração do serviço
+    let hora_fim_final;
+    if (hora_fim) {
+      hora_fim_final = hora_fim;
+      console.log('✅ [POST AGENDAMENTO] hora_fim fornecido no body:', hora_fim_final);
+    } else {
+      // Calcular hora_fim baseado na duração do serviço
+      const [horaH, minutoM] = hora_inicio.split(':').map(Number);
+      const inicioMinutos = horaH * 60 + minutoM;
+      const fimMinutos = inicioMinutos + duracaoMinutos;
+      const horaFimH = Math.floor(fimMinutos / 60);
+      const minutoFimM = fimMinutos % 60;
+      hora_fim_final = `${String(horaFimH).padStart(2, '0')}:${String(minutoFimM).padStart(2, '0')}`;
+      console.log('✅ [POST AGENDAMENTO] hora_fim calculado:', hora_fim_final);
+    }
 
     // Verificar conflitos de horário
     console.log('🔍 [POST AGENDAMENTO] Verificando conflitos de horário...');
@@ -547,7 +702,7 @@ router.post('/', async (req, res) => {
          (hora_inicio < $4 AND hora_fim > $4) OR
          (hora_inicio >= $3 AND hora_fim <= $4)
        )`,
-      [funcionario_id, data_agendamento, hora_inicio, hora_fim]
+      [funcionario_id, data_agendamento, hora_inicio, hora_fim_final]
     );
 
     if (sobreposicaoResult.rows.length > 0) {
@@ -562,9 +717,9 @@ router.post('/', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO protese.agendamentos 
        (cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, observacoes, valor_servico, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-       RETURNING *`,
-      [cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, observacoes || null, valorServico, usuarioId]
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *`,
+      [cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio, hora_fim_final, status, observacoes || null, valorServico, usuarioId]
     );
 
     console.log('✅ [POST AGENDAMENTO] Agendamento criado com sucesso:', result.rows[0].id);
@@ -791,4 +946,5 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
 

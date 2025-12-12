@@ -108,6 +108,8 @@ export default function AgendaPage() {
   // NOVO STATE: Controle explícito do carregamento da grade
   const [gradeLoading, setGradeLoading] = useState(false) // Inicia como false para não travar
   const [dialogAberto, setDialogAberto] = useState(false)
+  const [dialogAlmocoSaidaAberto, setDialogAlmocoSaidaAberto] = useState(false)
+  const [tipoAlmocoSaida, setTipoAlmocoSaida] = useState<'almoco' | 'saida'>('almoco')
   const [agendamentoEditando, setAgendamentoEditando] = useState<Agendamento | null>(null)
   const [formData, setFormData] = useState({
     cliente_id: '',
@@ -117,6 +119,13 @@ export default function AgendaPage() {
     hora_inicio: '',
     observacoes: '',
     status: 'agendado' as string,
+  })
+  const [formAlmocoSaida, setFormAlmocoSaida] = useState({
+    funcionario_id: '',
+    data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+    hora_inicio: '',
+    hora_fim: '',
+    descricao: '',
   })
   const [dataBusca, setDataBusca] = useState<Date | undefined>(undefined)
   const [funcionarioBusca, setFuncionarioBusca] = useState<string>('')
@@ -1202,6 +1211,125 @@ export default function AgendaPage() {
     }
   }
 
+  const criarAgendamentoAlmocoSaida = async () => {
+    console.log('🚀 [CRIAR ALMOÇO/SAÍDA] Iniciando criação')
+    console.log('📋 [CRIAR ALMOÇO/SAÍDA] Dados:', formAlmocoSaida, 'Tipo:', tipoAlmocoSaida)
+    
+    // Validações
+    if (!formAlmocoSaida.funcionario_id || !formAlmocoSaida.data_agendamento || !formAlmocoSaida.hora_inicio || !formAlmocoSaida.hora_fim) {
+      const camposFaltando = []
+      if (!formAlmocoSaida.funcionario_id) camposFaltando.push('Funcionário')
+      if (!formAlmocoSaida.data_agendamento) camposFaltando.push('Data')
+      if (!formAlmocoSaida.hora_inicio) camposFaltando.push('Hora de Início')
+      if (!formAlmocoSaida.hora_fim) camposFaltando.push('Hora de Fim')
+      
+      alert(`Preencha todos os campos obrigatórios:\n${camposFaltando.join(', ')}`)
+      return
+    }
+
+    // Validar que hora_fim > hora_inicio
+    const [hInicio, mInicio] = formAlmocoSaida.hora_inicio.split(':').map(Number)
+    const [hFim, mFim] = formAlmocoSaida.hora_fim.split(':').map(Number)
+    const inicioMinutos = hInicio * 60 + mInicio
+    const fimMinutos = hFim * 60 + mFim
+    
+    if (fimMinutos <= inicioMinutos) {
+      alert('A hora de fim deve ser maior que a hora de início')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const apiUrl = getApiBaseUrl()
+      const adminData = localStorage.getItem('admin')
+      
+      if (!adminData) {
+        alert('Erro de autenticação. Por favor, faça login novamente.')
+        setLoading(false)
+        return
+      }
+
+      const admin = JSON.parse(adminData)
+
+      // Buscar token (opcional)
+      let token = localStorage.getItem('token') || 
+                  localStorage.getItem('authToken') || 
+                  sessionStorage.getItem('token')
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      
+      if (token && token.length > 10) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
+      headers['x-user-id'] = admin.id
+      headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      headers['x-user-nome'] = admin.nome_completo || 'Sistema'
+
+      // 1. Buscar ou criar recursos especiais (cliente Sistema e serviços)
+      console.log('📡 [CRIAR ALMOÇO/SAÍDA] Buscando recursos especiais...')
+      const recursosResponse = await fetch(`${apiUrl}/api/v1/agendamentos/recursos-especiais`, { headers })
+      
+      if (!recursosResponse.ok) {
+        throw new Error('Erro ao buscar recursos especiais')
+      }
+
+      const recursos = await recursosResponse.json()
+      console.log('✅ [CRIAR ALMOÇO/SAÍDA] Recursos encontrados:', recursos)
+
+      // 2. Criar agendamento
+      const servicoId = tipoAlmocoSaida === 'almoco' ? recursos.servico_almoco.id : recursos.servico_saida.id
+      const servicoNome = tipoAlmocoSaida === 'almoco' ? recursos.servico_almoco.nome : recursos.servico_saida.nome
+
+      const bodyAgendamento = {
+        cliente_id: recursos.cliente_sistema.id,
+        funcionario_id: formAlmocoSaida.funcionario_id,
+        servico_id: servicoId,
+        data_agendamento: formAlmocoSaida.data_agendamento,
+        hora_inicio: formAlmocoSaida.hora_inicio,
+        hora_fim: formAlmocoSaida.hora_fim,
+        observacoes: formAlmocoSaida.descricao || servicoNome,
+        status: 'agendado',
+        valor_servico: 0, // Sempre zero para almoço/saída
+      }
+
+      console.log('📦 [CRIAR ALMOÇO/SAÍDA] Criando agendamento:', bodyAgendamento)
+
+      const response = await fetch(`${apiUrl}/api/v1/agendamentos`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(bodyAgendamento),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log('✅ [CRIAR ALMOÇO/SAÍDA] Agendamento criado com sucesso')
+        
+        setDialogAlmocoSaidaAberto(false)
+        setFormAlmocoSaida({
+          funcionario_id: '',
+          data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+          hora_inicio: '',
+          hora_fim: '',
+          descricao: '',
+        })
+        
+        await carregarAgendamentos()
+        alert(`${tipoAlmocoSaida === 'almoco' ? 'Almoço' : 'Saída'} marcado com sucesso!`)
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao criar agendamento')
+      }
+    } catch (error: any) {
+      console.error('❌ [CRIAR ALMOÇO/SAÍDA] Erro:', error)
+      alert(`Erro ao marcar ${tipoAlmocoSaida === 'almoco' ? 'almoço' : 'saída'}:\n${error.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   const renderizarVistaDia = () => {
     console.log('🎨 Renderizando vista dia - gradeLoading:', gradeLoading, 'horariosFuncionamento:', horariosFuncionamento)
@@ -1824,25 +1952,61 @@ export default function AgendaPage() {
           <p className="text-gray-400 mt-1">Gerencie agendamentos e disponibilidades</p>
         </div>
         {podeEditar('agenda') && (
-          <Button 
-            onClick={() => {
-              setAgendamentoEditando(null)
-              setFormData({
-                cliente_id: '',
-                funcionario_id: '',
-                servico_id: '',
-                data_agendamento: format(new Date(), 'yyyy-MM-dd'),
-                hora_inicio: '',
-                observacoes: '',
-                status: 'agendado',
-              })
-              setDialogAberto(true)
-            }} 
-            className="bg-amber-500 hover:bg-amber-600 text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Agendamento
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button 
+              onClick={() => {
+                setAgendamentoEditando(null)
+                setFormData({
+                  cliente_id: '',
+                  funcionario_id: '',
+                  servico_id: '',
+                  data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+                  hora_inicio: '',
+                  observacoes: '',
+                  status: 'agendado',
+                })
+                setDialogAberto(true)
+              }} 
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Agendamento
+            </Button>
+            <Button 
+              onClick={() => {
+                setTipoAlmocoSaida('almoco')
+                setFormAlmocoSaida({
+                  funcionario_id: funcionarioFiltro !== 'todos' ? funcionarioFiltro : '',
+                  data_agendamento: format(dataSelecionada, 'yyyy-MM-dd'),
+                  hora_inicio: '',
+                  hora_fim: '',
+                  descricao: 'Almoço',
+                })
+                setDialogAlmocoSaidaAberto(true)
+              }} 
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              <Clock className="h-4 w-4 mr-2" />
+              Marcar Almoço
+            </Button>
+            <Button 
+              onClick={() => {
+                setTipoAlmocoSaida('saida')
+                setFormAlmocoSaida({
+                  funcionario_id: funcionarioFiltro !== 'todos' ? funcionarioFiltro : '',
+                  data_agendamento: format(dataSelecionada, 'yyyy-MM-dd'),
+                  hora_inicio: '',
+                  hora_fim: '',
+                  descricao: 'Saída',
+                })
+                setDialogAlmocoSaidaAberto(true)
+              }} 
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              <Clock className="h-4 w-4 mr-2" />
+              Marcar Saída
+            </Button>
+          </div>
         )}
       </div>
 
@@ -2221,6 +2385,102 @@ export default function AgendaPage() {
                 ? (agendamentoEditando ? 'Atualizando...' : 'Criando...') 
                 : (agendamentoEditando ? 'Atualizar Agendamento' : 'Criar Agendamento')
               }
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Almoço/Saída */}
+      <Dialog 
+        open={dialogAlmocoSaidaAberto} 
+        onOpenChange={(open) => {
+          setDialogAlmocoSaidaAberto(open)
+          if (!open) {
+            setFormAlmocoSaida({
+              funcionario_id: '',
+              data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+              hora_inicio: '',
+              hora_fim: '',
+              descricao: '',
+            })
+          }
+        }}
+      >
+        <DialogContent className="bg-zinc-900 border-amber-500/20 text-gray-300 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-gray-300">
+              {tipoAlmocoSaida === 'almoco' ? 'Marcar Almoço' : 'Marcar Saída'}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Marque o horário de {tipoAlmocoSaida === 'almoco' ? 'almoço' : 'saída'} do funcionário
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-300">Funcionário *</Label>
+              <Select 
+                value={formAlmocoSaida.funcionario_id} 
+                onValueChange={(v) => setFormAlmocoSaida({ ...formAlmocoSaida, funcionario_id: v })}
+              >
+                <SelectTrigger className="bg-zinc-800 border-amber-500/20 text-gray-300">
+                  <SelectValue placeholder="Selecione o funcionário" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-amber-500/20">
+                  {funcionarios.map((func) => (
+                    <SelectItem key={func.id} value={func.id} className="text-gray-300">
+                      {func.nome_completo}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-gray-300">Data *</Label>
+              <Input
+                type="date"
+                value={formAlmocoSaida.data_agendamento}
+                onChange={(e) => setFormAlmocoSaida({ ...formAlmocoSaida, data_agendamento: e.target.value })}
+                className="bg-zinc-800 border-amber-500/20 text-gray-300 placeholder:text-gray-500"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-300">Hora de Início *</Label>
+                <Input
+                  type="time"
+                  value={formAlmocoSaida.hora_inicio}
+                  onChange={(e) => setFormAlmocoSaida({ ...formAlmocoSaida, hora_inicio: e.target.value })}
+                  className="bg-zinc-800 border-amber-500/20 text-gray-300 placeholder:text-gray-500"
+                  required
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">Hora de Fim *</Label>
+                <Input
+                  type="time"
+                  value={formAlmocoSaida.hora_fim}
+                  onChange={(e) => setFormAlmocoSaida({ ...formAlmocoSaida, hora_fim: e.target.value })}
+                  className="bg-zinc-800 border-amber-500/20 text-gray-300 placeholder:text-gray-500"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-gray-300">Descrição</Label>
+              <Input
+                value={formAlmocoSaida.descricao}
+                onChange={(e) => setFormAlmocoSaida({ ...formAlmocoSaida, descricao: e.target.value })}
+                placeholder={tipoAlmocoSaida === 'almoco' ? 'Ex: Almoço, Consulta médica...' : 'Ex: Saída, Fim do expediente...'}
+                className="bg-zinc-800 border-amber-500/20 text-gray-300 placeholder:text-gray-500"
+              />
+            </div>
+            <Button 
+              onClick={criarAgendamentoAlmocoSaida} 
+              disabled={loading} 
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              {loading ? 'Salvando...' : `Marcar ${tipoAlmocoSaida === 'almoco' ? 'Almoço' : 'Saída'}`}
             </Button>
           </div>
         </DialogContent>

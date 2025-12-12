@@ -189,6 +189,7 @@ export default function FuncionariosPage() {
     setMostrarModal(false)
     setFuncionarioSelecionado(null)
     setMensagem({ tipo: null, texto: '' })
+    setSearchTerm('') // Limpar campo de pesquisa ao fechar modal
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -310,6 +311,7 @@ export default function FuncionariosPage() {
       }
 
       setMensagem({ tipo: 'sucesso', texto: data.message || 'Funcionário salvo com sucesso!' })
+      setSearchTerm('') // Limpar campo de pesquisa após salvar com sucesso
       await carregarFuncionarios()
       setTimeout(() => {
         fecharModal()
