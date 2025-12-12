@@ -33,9 +33,24 @@ export default function FuncionariosPage() {
     nome_completo: '',
     email: '',
     cpf: '',
+    rg: '',
     tipo_usuario: 'funcionario',
     senha: '',
     is_active: true,
+    // Campos de endereço
+    rua: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    cep: '',
+    // Campos de trabalho
+    data_admissao: '',
+    tipo_contrato: 'CLT',
+    salario: '',
+    nis: '',
+    foto_url: '',
   })
 
   useEffect(() => {
@@ -115,24 +130,55 @@ export default function FuncionariosPage() {
     setModalTipo(tipo)
     setFuncionarioSelecionado(funcionario || null)
     setMostrarSenha(false) // Resetar visualização de senha ao abrir modal
+    setSearchTerm('') // Limpar campo de pesquisa ao abrir modal
     
     if (tipo === 'criar') {
       setFormData({
         nome_completo: '',
         email: '',
         cpf: '',
+        rg: '',
         tipo_usuario: 'funcionario',
         senha: '',
         is_active: true,
+        // Campos de endereço
+        rua: '',
+        numero: '',
+        complemento: '',
+        bairro: '',
+        cidade: '',
+        estado: '',
+        cep: '',
+        // Campos de trabalho
+        data_admissao: new Date().toISOString().split('T')[0], // Data de hoje como padrão
+        tipo_contrato: 'CLT',
+        salario: '',
+        nis: '',
+        foto_url: '',
       })
     } else if (tipo === 'editar' && funcionario) {
       setFormData({
         nome_completo: funcionario.nome_completo || '',
         email: funcionario.email || '',
         cpf: formatarCPF(funcionario.cpf) || '',
+        rg: (funcionario as any).rg || '',
         tipo_usuario: funcionario.tipo_usuario || 'funcionario',
         senha: '',
         is_active: funcionario.is_active,
+        // Campos de endereço
+        rua: (funcionario as any).rua || '',
+        numero: (funcionario as any).numero || '',
+        complemento: (funcionario as any).complemento || '',
+        bairro: (funcionario as any).bairro || '',
+        cidade: (funcionario as any).cidade || '',
+        estado: (funcionario as any).estado || '',
+        cep: (funcionario as any).cep || '',
+        // Campos de trabalho
+        data_admissao: (funcionario as any).data_admissao ? (funcionario as any).data_admissao.split('T')[0] : '',
+        tipo_contrato: (funcionario as any).tipo_contrato || 'CLT',
+        salario: (funcionario as any).salario ? String((funcionario as any).salario) : '',
+        nis: (funcionario as any).nis || '',
+        foto_url: (funcionario as any).foto_url || '',
       })
     }
     
@@ -155,12 +201,18 @@ export default function FuncionariosPage() {
   }
 
   const salvarFuncionario = async () => {
+    console.log('🚀 [FRONTEND] salvarFuncionario chamado')
+    console.log('📋 [FRONTEND] formData:', formData)
+    console.log('📋 [FRONTEND] modalTipo:', modalTipo)
+    
     if (!formData.nome_completo || !formData.email || !formData.tipo_usuario) {
+      console.error('❌ [FRONTEND] Campos obrigatórios faltando')
       setMensagem({ tipo: 'erro', texto: 'Preencha todos os campos obrigatórios' })
       return
     }
 
     if (modalTipo === 'criar' && !formData.senha) {
+      console.error('❌ [FRONTEND] Senha obrigatória para criação')
       setMensagem({ tipo: 'erro', texto: 'A senha é obrigatória para criar um funcionário' })
       return
     }
@@ -175,15 +227,37 @@ export default function FuncionariosPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
       
+      console.log('👤 [FRONTEND] Admin logado:', admin ? { id: admin.id, nome: admin.nome_completo, tipo: admin.tipo_usuario } : 'não encontrado')
+      
       const body = {
-        ...formData,
+        nome_completo: formData.nome_completo,
+        email: formData.email,
+        cpf: formData.cpf || null,
+        rg: formData.rg || null,
+        tipo_usuario: formData.tipo_usuario,
         senha: modalTipo === 'criar' ? formData.senha : (formData.senha || undefined),
+        // Campos de endereço
+        rua: formData.rua || '',
+        numero: formData.numero || '',
+        complemento: formData.complemento || '',
+        bairro: formData.bairro || '',
+        cidade: formData.cidade || '',
+        estado: formData.estado || '',
+        cep: formData.cep || '',
+        // Campos de trabalho
+        data_admissao: formData.data_admissao || new Date().toISOString().split('T')[0],
+        tipo_contrato: formData.tipo_contrato || 'CLT',
+        salario: formData.salario ? parseFloat(formData.salario.replace(',', '.')) : null,
+        nis: formData.nis || null,
+        foto_url: formData.foto_url || null,
       }
 
       // Remover senha vazia na edição
       if (modalTipo === 'editar' && !formData.senha) {
         delete body.senha
       }
+      
+      console.log('📦 [FRONTEND] Body a ser enviado:', { ...body, senha: body.senha ? '*** (oculto)' : 'não definido' })
 
       // Preparar headers
       const headers: HeadersInit = {
@@ -192,27 +266,47 @@ export default function FuncionariosPage() {
       if (admin?.id) {
         headers['x-user-id'] = admin.id
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || 'Sistema'
       }
 
       let response
+      const url = modalTipo === 'criar' 
+        ? `${apiUrl}/api/v1/funcionarios`
+        : `${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado?.id}`
+      
+      console.log('📡 [FRONTEND] Enviando requisição:', {
+        method: modalTipo === 'criar' ? 'POST' : 'PUT',
+        url,
+        headers: { ...headers, 'x-user-id': headers['x-user-id'] ? '***' : 'não definido' },
+        body: { ...body, senha: body.senha ? '*** (oculto)' : 'não definido' }
+      })
+      
       if (modalTipo === 'criar') {
-        response = await fetch(`${apiUrl}/api/v1/funcionarios`, {
+        response = await fetch(url, {
           method: 'POST',
           headers,
           body: JSON.stringify(body),
         })
       } else {
-        response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado?.id}`, {
+        response = await fetch(url, {
           method: 'PUT',
           headers,
           body: JSON.stringify(body),
         })
       }
 
+      console.log('📥 [FRONTEND] Resposta recebida:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      })
+
       const data = await response.json()
+      console.log('📋 [FRONTEND] Dados da resposta:', data)
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erro ao salvar funcionário')
+        console.error('❌ [FRONTEND] Erro na resposta:', data)
+        throw new Error(data.error || data.message || 'Erro ao salvar funcionário')
       }
 
       setMensagem({ tipo: 'sucesso', texto: data.message || 'Funcionário salvo com sucesso!' })
@@ -248,6 +342,7 @@ export default function FuncionariosPage() {
       if (admin?.id) {
         headers['x-user-id'] = admin.id
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || 'Sistema'
       }
       
       const response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado.id}`, {
@@ -718,6 +813,182 @@ export default function FuncionariosPage() {
                         >
                           {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                         </button>
+                      </div>
+                    </div>
+
+                    {/* Endereço */}
+                    <div className="border-t border-zinc-800 pt-4 mt-4">
+                      <h3 className="text-gray-300 font-semibold mb-4">Endereço</h3>
+                      
+                      {/* Rua */}
+                      <div className="mb-4">
+                        <label className="block text-gray-300 mb-2">Rua *</label>
+                        <input
+                          type="text"
+                          name="rua"
+                          value={formData.rua}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          required
+                        />
+                      </div>
+
+                      {/* Número e CEP */}
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-gray-300 mb-2">Número</label>
+                          <input
+                            type="text"
+                            name="numero"
+                            value={formData.numero}
+                            onChange={handleInputChange}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-gray-300 mb-2">CEP</label>
+                          <input
+                            type="text"
+                            name="cep"
+                            value={formData.cep}
+                            onChange={handleInputChange}
+                            placeholder="00000-000"
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Complemento */}
+                      <div className="mb-4">
+                        <label className="block text-gray-300 mb-2">Complemento</label>
+                        <input
+                          type="text"
+                          name="complemento"
+                          value={formData.complemento}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+
+                      {/* Bairro */}
+                      <div className="mb-4">
+                        <label className="block text-gray-300 mb-2">Bairro</label>
+                        <input
+                          type="text"
+                          name="bairro"
+                          value={formData.bairro}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+
+                      {/* Cidade e Estado */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-gray-300 mb-2">Cidade</label>
+                          <input
+                            type="text"
+                            name="cidade"
+                            value={formData.cidade}
+                            onChange={handleInputChange}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-gray-300 mb-2">Estado</label>
+                          <input
+                            type="text"
+                            name="estado"
+                            value={formData.estado}
+                            onChange={handleInputChange}
+                            placeholder="MT"
+                            maxLength={2}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dados de Trabalho */}
+                    <div className="border-t border-zinc-800 pt-4 mt-4">
+                      <h3 className="text-gray-300 font-semibold mb-4">Dados de Trabalho</h3>
+                      
+                      {/* RG */}
+                      <div className="mb-4">
+                        <label className="block text-gray-300 mb-2">RG</label>
+                        <input
+                          type="text"
+                          name="rg"
+                          value={formData.rg}
+                          onChange={handleInputChange}
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+
+                      {/* Data de Admissão e Tipo de Contrato */}
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-gray-300 mb-2">Data de Admissão *</label>
+                          <input
+                            type="date"
+                            name="data_admissao"
+                            value={formData.data_admissao}
+                            onChange={handleInputChange}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-gray-300 mb-2">Tipo de Contrato *</label>
+                          <select
+                            name="tipo_contrato"
+                            value={formData.tipo_contrato}
+                            onChange={handleInputChange}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                            required
+                          >
+                            <option value="CLT">CLT</option>
+                            <option value="PJ">PJ</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Salário e NIS */}
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-gray-300 mb-2">Salário</label>
+                          <input
+                            type="text"
+                            name="salario"
+                            value={formData.salario}
+                            onChange={handleInputChange}
+                            placeholder="0,00"
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-gray-300 mb-2">NIS</label>
+                          <input
+                            type="text"
+                            name="nis"
+                            value={formData.nis}
+                            onChange={handleInputChange}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Foto URL */}
+                      <div className="mb-4">
+                        <label className="block text-gray-300 mb-2">URL da Foto</label>
+                        <input
+                          type="url"
+                          name="foto_url"
+                          value={formData.foto_url}
+                          onChange={handleInputChange}
+                          placeholder="https://..."
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        />
                       </div>
                     </div>
 

@@ -14,14 +14,52 @@ router.post('/', async (req, res) => {
       nome_completo,
       email,
       cpf,
+      rg,
       tipo_usuario,
       senha,
+      rua,
+      numero,
+      complemento,
+      bairro,
+      cidade,
+      estado,
+      cep,
+      data_admissao,
+      tipo_contrato,
+      salario,
+      nis,
+      foto_url,
     } = req.body;
 
     // Validações
     if (!nome_completo || !email || !tipo_usuario || !senha) {
       return res.status(400).json({
         error: 'Campos obrigatórios: nome_completo, email, tipo_usuario, senha',
+      });
+    }
+    
+    // Validar campos obrigatórios
+    if (!rua) {
+      return res.status(400).json({
+        error: 'Campo obrigatório: rua',
+      });
+    }
+    
+    if (!data_admissao) {
+      return res.status(400).json({
+        error: 'Campo obrigatório: data_admissao',
+      });
+    }
+    
+    if (!tipo_contrato) {
+      return res.status(400).json({
+        error: 'Campo obrigatório: tipo_contrato',
+      });
+    }
+    
+    if (!['CLT', 'PJ'].includes(tipo_contrato)) {
+      return res.status(400).json({
+        error: 'tipo_contrato deve ser: CLT ou PJ',
       });
     }
 
@@ -59,55 +97,140 @@ router.post('/', async (req, res) => {
     }
 
     // Hash da senha
+    console.log('🔐 [POST FUNCIONARIO] Gerando hash da senha...');
     const senhaHash = await bcrypt.hash(senha, 10);
+    console.log('✅ [POST FUNCIONARIO] Hash gerado com sucesso');
+
+    // Preparar valores para inserção incluindo endereço e trabalho
+    const valoresInsercao = [
+      nome_completo,
+      email,
+      cpfLimpo,
+      rg || null,
+      rua || '',
+      numero || '',
+      complemento || null,
+      bairro || '',
+      cidade || '',
+      estado || '',
+      cep || '',
+      nis || null,
+      data_admissao,
+      tipo_contrato,
+      salario ? parseFloat(salario) : null,
+      tipo_usuario,
+      senhaHash,
+      true, // is_active padrão
+      foto_url || null,
+    ];
+    
+    console.log('📝 [POST FUNCIONARIO] Valores para inserção:', {
+      nome_completo,
+      email,
+      cpf: cpfLimpo || 'NULL',
+      tipo_usuario,
+      senha_hash: '*** (oculto)',
+      is_active: true,
+      rua: rua || '',
+      numero: numero || '',
+      complemento: complemento || '',
+      bairro: bairro || '',
+      cidade: cidade || '',
+      estado: estado || '',
+      cep: cep || '',
+      rg: rg || null,
+      data_admissao: data_admissao || '',
+      tipo_contrato: tipo_contrato || 'CLT',
+      salario: salario || null,
+      nis: nis || null,
+      foto_url: foto_url || null,
+    });
 
     // Inserir no banco de dados
-    const result = await pool.query(
-      `INSERT INTO protese.usuarios_administrativos (
-        nome_completo, email, cpf, tipo_usuario, senha_hash, is_active
-      ) VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, nome_completo, email, cpf, tipo_usuario, is_active, created_at`,
-      [
-        nome_completo,
-        email,
-        cpfLimpo,
-        tipo_usuario,
-        senhaHash,
-        true, // is_active padrão
-      ]
-    );
+    console.log('💾 [POST FUNCIONARIO] Tentando inserir no banco de dados...');
+    const queryInsert = `INSERT INTO protese.usuarios_administrativos (
+        nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep,
+        nis, data_admissao, tipo_contrato, salario, tipo_usuario, senha_hash, is_active, foto_url
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+      RETURNING id, nome_completo, email, cpf, tipo_usuario, is_active, created_at`;
+    
+    console.log('📋 [POST FUNCIONARIO] Query SQL:', queryInsert);
+    console.log('📋 [POST FUNCIONARIO] Parâmetros:', valoresInsercao.map((v, i) => `$${i+1}: ${v === null ? 'NULL' : (typeof v === 'string' && v.length > 50 ? v.substring(0, 50) + '...' : v)}`));
+    
+    let result;
+    try {
+      result = await pool.query(queryInsert, valoresInsercao);
+      console.log('✅ [POST FUNCIONARIO] Inserção bem-sucedida! ID:', result.rows[0]?.id);
+    } catch (dbError) {
+      console.error('❌ [POST FUNCIONARIO] Erro na inserção no banco:', dbError.message);
+      console.error('❌ [POST FUNCIONARIO] Código do erro:', dbError.code);
+      console.error('❌ [POST FUNCIONARIO] Detalhes do erro:', dbError.detail);
+      console.error('❌ [POST FUNCIONARIO] Stack:', dbError.stack);
+      
+      // Verificar se é erro de constraint ou campo obrigatório
+      if (dbError.code === '23502') {
+        throw new Error(`Campo obrigatório não fornecido: ${dbError.column || 'desconhecido'}`);
+      } else if (dbError.code === '23505') {
+        throw new Error(`Violação de constraint única: ${dbError.detail || 'dados duplicados'}`);
+      } else if (dbError.code === '23503') {
+        throw new Error(`Violação de foreign key: ${dbError.detail || 'referência inválida'}`);
+      }
+      
+      throw dbError;
+    }
 
     const novoFuncionario = result.rows[0];
 
     // Registrar log
     const usuarioId = req.headers['x-user-id'] || null;
     const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioNome = req.headers['x-user-nome'] || null;
+    
+    console.log('📝 [POST FUNCIONARIO] Tentando registrar log:', {
+      usuarioId,
+      usuarioTipo,
+      usuarioNome,
+      entidadeId: novoFuncionario.id
+    });
+    
     if (usuarioId) {
-      await registrarLog({
-        usuarioId,
-        usuarioTipo,
-        acao: 'criar',
-        modulo: 'funcionario',
-        entidadeId: novoFuncionario.id,
-        entidadeTipo: 'funcionario',
-        descricao: `Funcionário ${nome_completo} (${email}) - ${tipo_usuario} criado`,
-        dadosNovos: {
-          nome_completo,
-          email,
-          cpf: cpfLimpo,
-          tipo_usuario,
-        },
-        ipAddress: getClientIp(req),
-        userAgent: getUserAgent(req),
-      });
+      try {
+        await registrarLog({
+          usuarioId,
+          usuarioTipo,
+          usuarioNome,
+          acao: 'criar',
+          modulo: 'funcionario',
+          entidadeId: novoFuncionario.id,
+          entidadeTipo: 'funcionario',
+          descricao: `Funcionário ${nome_completo} (${email}) - ${tipo_usuario} criado`,
+          dadosNovos: {
+            nome_completo,
+            email,
+            cpf: cpfLimpo,
+            tipo_usuario,
+          },
+          ipAddress: getClientIp(req),
+          userAgent: getUserAgent(req),
+        });
+        console.log('✅ [POST FUNCIONARIO] Log registrado com sucesso');
+      } catch (logError) {
+        // Não falhar a requisição se o log falhar
+        console.error('⚠️ [POST FUNCIONARIO] Erro ao registrar log (não crítico):', logError.message);
+      }
+    } else {
+      console.log('⚠️ [POST FUNCIONARIO] usuarioId não fornecido, pulando registro de log');
     }
 
+    console.log('✅ [POST FUNCIONARIO] Funcionário cadastrado com sucesso:', novoFuncionario.id);
+    
     res.status(201).json({
       message: 'Funcionário cadastrado com sucesso!',
       funcionario: novoFuncionario,
     });
   } catch (error) {
-    console.error('Erro ao cadastrar funcionário:', error);
+    console.error('❌ [POST FUNCIONARIO] Erro ao cadastrar funcionário:', error);
+    console.error('❌ [POST FUNCIONARIO] Stack:', error.stack);
     res.status(500).json({
       error: 'Erro ao cadastrar funcionário',
       message: error.message,

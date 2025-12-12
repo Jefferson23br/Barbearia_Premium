@@ -73,7 +73,24 @@ router.get('/', async (req, res) => {
 
     query += ' ORDER BY a.data_agendamento ASC, a.hora_inicio ASC';
 
+    console.log('📅 [GET AGENDAMENTOS] Query SQL:', query);
+    console.log('📅 [GET AGENDAMENTOS] Parâmetros:', params);
+
     const result = await pool.query(query, params);
+
+    console.log('✅ [GET AGENDAMENTOS] Agendamentos encontrados:', result.rows.length);
+    console.log('📋 [GET AGENDAMENTOS] Detalhes dos agendamentos:', result.rows.map(a => ({
+      id: a.id,
+      cliente_nome: a.cliente_nome,
+      funcionario_nome: a.funcionario_nome,
+      funcionario_id: a.funcionario_id,
+      data_agendamento: a.data_agendamento,
+      hora_inicio: a.hora_inicio,
+      hora_fim: a.hora_fim,
+      servico_nome: a.servico_nome,
+      valor_servico: a.valor_servico,
+      status: a.status
+    })));
 
     res.json({
       agendamentos: result.rows,
@@ -413,19 +430,37 @@ router.get('/horarios-funcionamento', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
+    console.log('🚀 [POST AGENDAMENTO] Requisição recebida');
+    console.log('📋 [POST AGENDAMENTO] Headers:', {
+      'x-user-id': req.headers['x-user-id'],
+      'x-user-tipo': req.headers['x-user-tipo'],
+      'x-user-nome': req.headers['x-user-nome'],
+      'authorization': req.headers['authorization'] ? 'Bearer ***' : 'não definido'
+    });
+    console.log('📦 [POST AGENDAMENTO] Body:', req.body);
+
     const usuarioId = req.headers['x-user-id'];
     const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
 
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
+      if (!usuarioId) {
+        console.error('❌ [POST AGENDAMENTO] usuarioId não fornecido');
+        return res.status(401).json({ error: 'Usuário não autenticado. Forneça x-user-id no header.' });
+      }
+
       const permissoesResult = await pool.query(
         'SELECT agenda_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
       if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].agenda_editar) {
+        console.error('❌ [POST AGENDAMENTO] Permissão negada para usuário:', usuarioId);
         return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
       }
+      console.log('✅ [POST AGENDAMENTO] Permissão verificada');
+    } else {
+      console.log('✅ [POST AGENDAMENTO] Usuário master, permissão concedida');
     }
 
     const {
@@ -438,26 +473,43 @@ router.post('/', async (req, res) => {
       status = 'agendado'
     } = req.body;
 
-    // Validações
-    if (!cliente_id || !funcionario_id || !servico_id || !data_agendamento || !hora_inicio) {
+    // Validações detalhadas
+    const camposFaltando = [];
+    if (!cliente_id) camposFaltando.push('cliente_id');
+    if (!funcionario_id) camposFaltando.push('funcionario_id');
+    if (!servico_id) camposFaltando.push('servico_id');
+    if (!data_agendamento) camposFaltando.push('data_agendamento');
+    if (!hora_inicio) camposFaltando.push('hora_inicio');
+
+    if (camposFaltando.length > 0) {
+      console.error('❌ [POST AGENDAMENTO] Campos obrigatórios faltando:', camposFaltando);
       return res.status(400).json({
-        error: 'Campos obrigatórios: cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio'
+        error: `Campos obrigatórios faltando: ${camposFaltando.join(', ')}`,
+        campos_faltando: camposFaltando
       });
     }
 
+    console.log('✅ [POST AGENDAMENTO] Validações básicas passaram');
+
     // Buscar serviço para obter duração e valor
+    console.log('🔍 [POST AGENDAMENTO] Buscando serviço:', servico_id);
     const servicoResult = await pool.query(
       'SELECT duracao_minutos, preco FROM protese.servicos WHERE id = $1',
       [servico_id]
     );
 
     if (servicoResult.rows.length === 0) {
+      console.error('❌ [POST AGENDAMENTO] Serviço não encontrado:', servico_id);
       return res.status(404).json({ error: 'Serviço não encontrado' });
     }
 
     const servico = servicoResult.rows[0];
     const duracaoMinutos = servico.duracao_minutos || 30;
     const valorServico = servico.preco || 0;
+    console.log('✅ [POST AGENDAMENTO] Serviço encontrado:', {
+      duracao_minutos: duracaoMinutos,
+      valor: valorServico
+    });
 
     // Calcular hora_fim
     const [horaH, minutoM] = hora_inicio.split(':').map(Number);
@@ -468,6 +520,7 @@ router.post('/', async (req, res) => {
     const hora_fim = `${String(horaFimH).padStart(2, '0')}:${String(minutoFimM).padStart(2, '0')}`;
 
     // Verificar conflitos de horário
+    console.log('🔍 [POST AGENDAMENTO] Verificando conflitos de horário...');
     const conflitoResult = await pool.query(
       `SELECT id FROM protese.agendamentos 
        WHERE funcionario_id = $1 
@@ -478,10 +531,12 @@ router.post('/', async (req, res) => {
     );
 
     if (conflitoResult.rows.length > 0) {
+      console.error('❌ [POST AGENDAMENTO] Conflito encontrado - horário já ocupado');
       return res.status(409).json({ error: 'Já existe um agendamento neste horário para este funcionário' });
     }
 
     // Verificar sobreposição de horários
+    console.log('🔍 [POST AGENDAMENTO] Verificando sobreposição de horários...');
     const sobreposicaoResult = await pool.query(
       `SELECT id FROM protese.agendamentos 
        WHERE funcionario_id = $1 
@@ -496,10 +551,14 @@ router.post('/', async (req, res) => {
     );
 
     if (sobreposicaoResult.rows.length > 0) {
+      console.error('❌ [POST AGENDAMENTO] Sobreposição encontrada');
       return res.status(409).json({ error: 'Horário conflita com outro agendamento existente' });
     }
 
+    console.log('✅ [POST AGENDAMENTO] Nenhum conflito encontrado');
+
     // Criar agendamento
+    console.log('💾 [POST AGENDAMENTO] Inserindo agendamento no banco...');
     const result = await pool.query(
       `INSERT INTO protese.agendamentos 
        (cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, observacoes, valor_servico, created_by)
@@ -508,25 +567,37 @@ router.post('/', async (req, res) => {
       [cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, observacoes || null, valorServico, usuarioId]
     );
 
+    console.log('✅ [POST AGENDAMENTO] Agendamento criado com sucesso:', result.rows[0].id);
+
     // Registrar log
-    await registrarLog({
-      usuario_id: usuarioId,
-      usuario_tipo: usuarioTipo,
-      usuario_nome: req.headers['x-user-nome'] || 'Sistema',
-      acao: 'criar',
-      modulo: 'agenda',
-      entidade_id: result.rows[0].id,
-      entidade_tipo: 'agendamento',
-      descricao: `Agendamento criado para ${data_agendamento} às ${hora_inicio}`,
-      dados_novos: result.rows[0],
-      ip_address: getClientIp(req),
-      user_agent: getUserAgent(req)
-    });
+    try {
+      await registrarLog({
+        usuario_id: usuarioId,
+        usuario_tipo: usuarioTipo,
+        usuario_nome: req.headers['x-user-nome'] || 'Sistema',
+        acao: 'criar',
+        modulo: 'agenda',
+        entidade_id: result.rows[0].id,
+        entidade_tipo: 'agendamento',
+        descricao: `Agendamento criado para ${data_agendamento} às ${hora_inicio}`,
+        dados_novos: result.rows[0],
+        ip_address: getClientIp(req),
+        user_agent: getUserAgent(req)
+      });
+      console.log('✅ [POST AGENDAMENTO] Log registrado');
+    } catch (logError) {
+      console.error('⚠️ [POST AGENDAMENTO] Erro ao registrar log (não crítico):', logError);
+      // Não falha a requisição se o log der erro
+    }
 
     res.status(201).json({ agendamento: result.rows[0] });
   } catch (error) {
-    console.error('Erro ao criar agendamento:', error);
-    res.status(500).json({ error: 'Erro ao criar agendamento' });
+    console.error('❌ [POST AGENDAMENTO] Erro ao criar agendamento:', error);
+    console.error('❌ [POST AGENDAMENTO] Stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Erro ao criar agendamento',
+      message: error.message || 'Erro interno do servidor'
+    });
   }
 });
 

@@ -108,6 +108,7 @@ export default function AgendaPage() {
   // NOVO STATE: Controle explícito do carregamento da grade
   const [gradeLoading, setGradeLoading] = useState(false) // Inicia como false para não travar
   const [dialogAberto, setDialogAberto] = useState(false)
+  const [agendamentoEditando, setAgendamentoEditando] = useState<Agendamento | null>(null)
   const [formData, setFormData] = useState({
     cliente_id: '',
     funcionario_id: '',
@@ -115,6 +116,7 @@ export default function AgendaPage() {
     data_agendamento: format(new Date(), 'yyyy-MM-dd'),
     hora_inicio: '',
     observacoes: '',
+    status: 'agendado' as string,
   })
   const [dataBusca, setDataBusca] = useState<Date | undefined>(undefined)
   const [funcionarioBusca, setFuncionarioBusca] = useState<string>('')
@@ -311,13 +313,6 @@ export default function AgendaPage() {
     
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        console.warn('⚠️ [AGENDAMENTOS] Token não encontrado')
-        setLoading(false)
-        return
-      }
-
       const apiUrl = getApiBaseUrl()
       let dataInicio = ''
       let dataFim = ''
@@ -364,26 +359,54 @@ export default function AgendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
+      // Buscar token de múltiplas chaves (opcional)
+      let token = localStorage.getItem('token') || 
+                  localStorage.getItem('authToken') || 
+                  localStorage.getItem('accessToken') ||
+                  sessionStorage.getItem('token') ||
+                  sessionStorage.getItem('authToken')
+
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       }
+      
+      if (token && token.length > 10) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
       if (admin?.id) {
         headers['x-user-id'] = admin.id
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || 'Sistema'
       }
 
+      console.log('📡 [AGENDAMENTOS] Fazendo requisição com headers:', {
+        'x-user-id': headers['x-user-id'],
+        'x-user-tipo': headers['x-user-tipo'],
+        'Authorization': headers['Authorization'] ? 'Bearer ***' : 'não definido'
+      })
+
       const response = await fetch(url, { headers })
+
+      console.log('📥 [AGENDAMENTOS] Resposta recebida:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      })
 
       if (response.ok) {
         const data = await response.json()
         console.log('✅ [AGENDAMENTOS] Agendamentos recebidos:', data.agendamentos?.length || 0)
-        console.log('📋 [AGENDAMENTOS] Lista de agendamentos:', data.agendamentos?.map((a: Agendamento) => ({
+        console.log('📋 [AGENDAMENTOS] Lista completa de agendamentos:', JSON.stringify(data.agendamentos || [], null, 2))
+        console.log('📋 [AGENDAMENTOS] Resumo de agendamentos:', data.agendamentos?.map((a: Agendamento) => ({
           id: a.id,
           cliente: a.cliente_nome,
           funcionario: a.funcionario_nome,
+          funcionario_id: a.funcionario_id,
           data: a.data_agendamento,
-          hora: a.hora_inicio
+          hora_inicio: a.hora_inicio,
+          hora_fim: a.hora_fim,
+          status: a.status
         })))
         setAgendamentos(data.agendamentos || [])
         // LOG TEMPORÁRIO: Confirmar que o estado foi atualizado
@@ -888,41 +911,116 @@ export default function AgendaPage() {
   }, [dataSelecionada, funcionarioFiltro, viewMode, permissoesLoading, carregarAgendamentos]) // Incluir carregarAgendamentos nas dependências
 
   const criarAgendamento = async () => {
-    if (!formData.cliente_id || !formData.funcionario_id || !formData.servico_id || !formData.hora_inicio) {
-      alert('Preencha todos os campos obrigatórios')
+    console.log('🚀 [CRIAR AGENDAMENTO] Iniciando criação de agendamento')
+    console.log('📋 [CRIAR AGENDAMENTO] Dados do formulário:', formData)
+    
+    // Validação completa de campos obrigatórios
+    if (!formData.cliente_id || !formData.funcionario_id || !formData.servico_id || !formData.data_agendamento || !formData.hora_inicio) {
+      const camposFaltando = []
+      if (!formData.cliente_id) camposFaltando.push('Cliente')
+      if (!formData.funcionario_id) camposFaltando.push('Funcionário')
+      if (!formData.servico_id) camposFaltando.push('Serviço')
+      if (!formData.data_agendamento) camposFaltando.push('Data')
+      if (!formData.hora_inicio) camposFaltando.push('Hora de Início')
+      
+      alert(`Preencha todos os campos obrigatórios:\n${camposFaltando.join(', ')}`)
       return
     }
 
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
+      const apiUrl = getApiBaseUrl()
+      const adminData = localStorage.getItem('admin')
+      
+      if (!adminData) {
+        console.error('❌ [CRIAR AGENDAMENTO] Admin não encontrado no localStorage')
+        alert('Erro de autenticação. Por favor, faça login novamente.')
         setLoading(false)
         return
       }
 
-      const apiUrl = getApiBaseUrl()
-      const adminData = localStorage.getItem('admin')
-      const admin = adminData ? JSON.parse(adminData) : null
+      const admin = JSON.parse(adminData)
 
+      console.log('👤 [CRIAR AGENDAMENTO] Dados do admin:', {
+        id: admin?.id,
+        tipo: admin?.tipo_usuario,
+        nome: admin?.nome_completo
+      })
+
+      if (!admin?.id) {
+        console.error('❌ [CRIAR AGENDAMENTO] Admin ID não encontrado')
+        alert('Erro de autenticação. Por favor, faça login novamente.')
+        setLoading(false)
+        return
+      }
+
+      // Buscar token de múltiplas chaves (opcional - sistema pode funcionar sem token)
+      let token = localStorage.getItem('token') || 
+                  localStorage.getItem('authToken') || 
+                  localStorage.getItem('accessToken') ||
+                  sessionStorage.getItem('token') ||
+                  sessionStorage.getItem('authToken')
+      
+      // Se ainda não encontrou, tentar outras chaves comuns
+      if (!token) {
+        const possibleTokenKeys = ['token', 'authToken', 'accessToken', 'auth_token', 'jwt', 'bearer']
+        for (const key of possibleTokenKeys) {
+          const value = localStorage.getItem(key) || sessionStorage.getItem(key)
+          if (value && value.length > 10) {
+            token = value
+            console.log(`✅ [CRIAR AGENDAMENTO] Token encontrado na chave: ${key}`)
+            break
+          }
+        }
+      }
+
+      // Montar headers - token é opcional, mas headers de usuário são obrigatórios
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       }
-      if (admin?.id) {
-        headers['x-user-id'] = admin.id
-        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
-        headers['x-user-nome'] = admin.nome_completo || 'Sistema'
+      
+      // Adicionar token se encontrado (opcional)
+      if (token && token.length > 10) {
+        headers['Authorization'] = `Bearer ${token}`
+        console.log('✅ [CRIAR AGENDAMENTO] Token adicionado aos headers')
+      } else {
+        console.log('⚠️ [CRIAR AGENDAMENTO] Token não encontrado, continuando sem token (sistema pode funcionar apenas com headers de usuário)')
       }
+      
+      // Headers de usuário são obrigatórios
+      headers['x-user-id'] = admin.id
+      headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      headers['x-user-nome'] = admin.nome_completo || 'Sistema'
 
-      const response = await fetch(`${apiUrl}/api/v1/agendamentos`, {
+      const url = `${apiUrl}/api/v1/agendamentos`
+      console.log('📡 [CRIAR AGENDAMENTO] Enviando requisição para:', url)
+      console.log('📦 [CRIAR AGENDAMENTO] Payload:', JSON.stringify(formData, null, 2))
+      console.log('🔑 [CRIAR AGENDAMENTO] Headers:', {
+        'Content-Type': headers['Content-Type'],
+        'Authorization': headers['Authorization'] ? 'Bearer ***' : 'não definido',
+        'x-user-id': headers['x-user-id'],
+        'x-user-tipo': headers['x-user-tipo'],
+        'x-user-nome': headers['x-user-nome']
+      })
+
+      const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(formData),
       })
 
+      console.log('📥 [CRIAR AGENDAMENTO] Resposta recebida:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      })
+
       if (response.ok) {
+        const data = await response.json()
+        console.log('✅ [CRIAR AGENDAMENTO] Agendamento criado com sucesso:', data)
+        
         setDialogAberto(false)
+        setAgendamentoEditando(null)
         setFormData({
           cliente_id: '',
           funcionario_id: '',
@@ -930,18 +1028,177 @@ export default function AgendaPage() {
           data_agendamento: format(new Date(), 'yyyy-MM-dd'),
           hora_inicio: '',
           observacoes: '',
+          status: 'agendado',
         })
-        carregarAgendamentos()
+        
+        // Recarregar agendamentos para atualizar a visualização
+        await carregarAgendamentos()
+        
         alert('Agendamento criado com sucesso!')
       } else {
-        const error = await response.json()
-        alert(error.error || 'Erro ao criar agendamento')
+        // Tentar ler a resposta de erro
+        let errorMessage = 'Erro ao criar agendamento'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorData.message || errorMessage
+          console.error('❌ [CRIAR AGENDAMENTO] Erro da API:', errorData)
+        } catch (parseError) {
+          const errorText = await response.text()
+          console.error('❌ [CRIAR AGENDAMENTO] Erro ao parsear resposta:', errorText)
+          errorMessage = errorText || errorMessage
+        }
+        
+        alert(`Erro ao criar agendamento:\n${errorMessage}`)
       }
-    } catch (error) {
-      console.error('Erro ao criar agendamento:', error)
-      alert('Erro ao criar agendamento')
+    } catch (error: any) {
+      console.error('❌ [CRIAR AGENDAMENTO] Erro na requisição:', error)
+      console.error('❌ [CRIAR AGENDAMENTO] Stack:', error.stack)
+      
+      const errorMessage = error.message || 'Erro ao criar agendamento. Verifique sua conexão e tente novamente.'
+      alert(`Erro ao criar agendamento:\n${errorMessage}`)
     } finally {
       setLoading(false)
+      console.log('🏁 [CRIAR AGENDAMENTO] Processo finalizado')
+    }
+  }
+
+  const atualizarAgendamento = async () => {
+    if (!agendamentoEditando) return
+
+    console.log('🔄 [ATUALIZAR AGENDAMENTO] Iniciando atualização de agendamento')
+    console.log('📋 [ATUALIZAR AGENDAMENTO] Dados do formulário:', formData)
+    console.log('🆔 [ATUALIZAR AGENDAMENTO] ID do agendamento:', agendamentoEditando.id)
+    
+    // Validação completa de campos obrigatórios
+    if (!formData.cliente_id || !formData.funcionario_id || !formData.servico_id || !formData.data_agendamento || !formData.hora_inicio) {
+      const camposFaltando = []
+      if (!formData.cliente_id) camposFaltando.push('Cliente')
+      if (!formData.funcionario_id) camposFaltando.push('Funcionário')
+      if (!formData.servico_id) camposFaltando.push('Serviço')
+      if (!formData.data_agendamento) camposFaltando.push('Data')
+      if (!formData.hora_inicio) camposFaltando.push('Hora de Início')
+      
+      alert(`Preencha todos os campos obrigatórios:\n${camposFaltando.join(', ')}`)
+      return
+    }
+
+    setLoading(true)
+    try {
+      const apiUrl = getApiBaseUrl()
+      const adminData = localStorage.getItem('admin')
+      
+      if (!adminData) {
+        console.error('❌ [ATUALIZAR AGENDAMENTO] Admin não encontrado no localStorage')
+        alert('Erro de autenticação. Por favor, faça login novamente.')
+        setLoading(false)
+        return
+      }
+
+      const admin = JSON.parse(adminData)
+
+      if (!admin?.id) {
+        console.error('❌ [ATUALIZAR AGENDAMENTO] Admin ID não encontrado')
+        alert('Erro de autenticação. Por favor, faça login novamente.')
+        setLoading(false)
+        return
+      }
+
+      // Buscar token de múltiplas chaves (opcional)
+      let token = localStorage.getItem('token') || 
+                  localStorage.getItem('authToken') || 
+                  localStorage.getItem('accessToken') ||
+                  sessionStorage.getItem('token') ||
+                  sessionStorage.getItem('authToken')
+      
+      if (!token) {
+        const possibleTokenKeys = ['token', 'authToken', 'accessToken', 'auth_token', 'jwt', 'bearer']
+        for (const key of possibleTokenKeys) {
+          const value = localStorage.getItem(key) || sessionStorage.getItem(key)
+          if (value && value.length > 10) {
+            token = value
+            break
+          }
+        }
+      }
+
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      
+      if (token && token.length > 10) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
+      headers['x-user-id'] = admin.id
+      headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+      headers['x-user-nome'] = admin.nome_completo || 'Sistema'
+
+      const url = `${apiUrl}/api/v1/agendamentos/${agendamentoEditando.id}`
+      console.log('📡 [ATUALIZAR AGENDAMENTO] Enviando requisição para:', url)
+
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(formData),
+      })
+
+      console.log('📥 [ATUALIZAR AGENDAMENTO] Resposta recebida:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log('✅ [ATUALIZAR AGENDAMENTO] Agendamento atualizado com sucesso:', data)
+        
+        setDialogAberto(false)
+        setAgendamentoEditando(null)
+        setFormData({
+          cliente_id: '',
+          funcionario_id: '',
+          servico_id: '',
+          data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+          hora_inicio: '',
+          observacoes: '',
+          status: 'agendado',
+        })
+        
+        // Recarregar agendamentos para atualizar a visualização
+        await carregarAgendamentos()
+        
+        alert('Agendamento atualizado com sucesso!')
+      } else {
+        let errorMessage = 'Erro ao atualizar agendamento'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorData.message || errorMessage
+          console.error('❌ [ATUALIZAR AGENDAMENTO] Erro da API:', errorData)
+        } catch (parseError) {
+          const errorText = await response.text()
+          console.error('❌ [ATUALIZAR AGENDAMENTO] Erro ao parsear resposta:', errorText)
+          errorMessage = errorText || errorMessage
+        }
+        
+        alert(`Erro ao atualizar agendamento:\n${errorMessage}`)
+      }
+    } catch (error: any) {
+      console.error('❌ [ATUALIZAR AGENDAMENTO] Erro na requisição:', error)
+      console.error('❌ [ATUALIZAR AGENDAMENTO] Stack:', error.stack)
+      
+      const errorMessage = error.message || 'Erro ao atualizar agendamento. Verifique sua conexão e tente novamente.'
+      alert(`Erro ao atualizar agendamento:\n${errorMessage}`)
+    } finally {
+      setLoading(false)
+      console.log('🏁 [ATUALIZAR AGENDAMENTO] Processo finalizado')
+    }
+  }
+
+  const handleSalvarAgendamento = () => {
+    if (agendamentoEditando) {
+      atualizarAgendamento()
+    } else {
+      criarAgendamento()
     }
   }
 
@@ -1009,25 +1266,130 @@ export default function AgendaPage() {
     }
 
     console.log('✅ Renderizando grade com', horariosFuncionamento.horarios.length, 'horários')
+    console.log('📊 [RENDERIZAÇÃO] Agendamentos recebidos:', agendamentos.length)
+    console.log('📊 [RENDERIZAÇÃO] Filtro atual:', funcionarioFiltro)
+    console.log('📊 [RENDERIZAÇÃO] Funcionários disponíveis:', funcionarios.length)
 
     const horarios = horariosFuncionamento.horarios
     const ALTURA_SLOT = 60 // 60px de altura para cada 15 min (visual mais espaçado)
     
     // Filtrar agendamentos do dia
-    const agendamentosDoDia = agendamentos.filter((a) => isSameDay(new Date(a.data_agendamento), dataSelecionada))
+    const dataSelecionadaFormatada = format(dataSelecionada, 'yyyy-MM-dd')
+    console.log('📅 [RENDERIZAÇÃO] Data selecionada formatada:', dataSelecionadaFormatada)
+    
+    const agendamentosDoDia = agendamentos.filter((a) => {
+      // Verificar se data_agendamento existe
+      if (!a.data_agendamento) {
+        console.warn('⚠️ [RENDERIZAÇÃO] Agendamento sem data_agendamento:', a.id)
+        return false
+      }
+      
+      // Extrair apenas a parte da data (yyyy-MM-dd) da string ISO
+      let dataAgendamentoStr = String(a.data_agendamento)
+      
+      // Se for uma string ISO completa, extrair apenas a data
+      if (dataAgendamentoStr.includes('T')) {
+        dataAgendamentoStr = dataAgendamentoStr.split('T')[0]
+      }
+      
+      // Se for uma string de data simples, usar diretamente
+      // Comparar strings no formato yyyy-MM-dd
+      const mesmoDia = dataAgendamentoStr === dataSelecionadaFormatada
+      
+      console.log('🔍 [RENDERIZAÇÃO] Verificando agendamento:', {
+        id: a.id,
+        data_agendamento_original: a.data_agendamento,
+        data_agendamento_processada: dataAgendamentoStr,
+        dataSelecionada: dataSelecionadaFormatada,
+        mesmoDia,
+        funcionario: a.funcionario_nome
+      })
+      
+      return mesmoDia
+    })
+
+    console.log('📊 [RENDERIZAÇÃO] Agendamentos do dia:', agendamentosDoDia.length)
+    console.log('📋 [RENDERIZAÇÃO] Detalhes dos agendamentos do dia:', agendamentosDoDia.map(a => ({
+      id: a.id,
+      cliente: a.cliente_nome,
+      funcionario: a.funcionario_nome,
+      funcionario_id: a.funcionario_id,
+      hora_inicio: a.hora_inicio,
+      hora_fim: a.hora_fim
+    })))
+
+    // Determinar se deve mostrar múltiplas colunas (quando filtro = "todos")
+    const mostrarTodosFuncionarios = funcionarioFiltro === 'todos' || !funcionarioFiltro || funcionarioFiltro.trim() === ''
+    
+    // Se mostrar todos, agrupar por funcionário
+    let funcionariosParaMostrar: Funcionario[] = []
+    if (mostrarTodosFuncionarios) {
+      // SEMPRE mostrar todos os funcionários disponíveis quando filtro = "todos"
+      funcionariosParaMostrar = funcionarios
+      console.log('👥 [RENDERIZAÇÃO] Mostrando todos os funcionários:', funcionariosParaMostrar.length)
+      console.log('📋 [RENDERIZAÇÃO] Lista de funcionários:', funcionariosParaMostrar.map(f => ({
+        id: f.id,
+        nome: f.nome_completo
+      })))
+      console.log('📊 [RENDERIZAÇÃO] Agendamentos por funcionário:', funcionariosParaMostrar.map(f => {
+        const agendamentosFunc = agendamentosDoDia.filter(a => a.funcionario_id === f.id)
+        return {
+          funcionario: f.nome_completo,
+          agendamentos: agendamentosFunc.length,
+          detalhes: agendamentosFunc.map(a => ({
+            cliente: a.cliente_nome,
+            hora: a.hora_inicio
+          }))
+        }
+      }))
+    } else {
+      // Filtrar apenas o funcionário selecionado
+      const funcionarioSelecionado = funcionarios.find(f => f.id === funcionarioFiltro)
+      if (funcionarioSelecionado) {
+        funcionariosParaMostrar = [funcionarioSelecionado]
+        console.log('👤 [RENDERIZAÇÃO] Mostrando apenas:', funcionarioSelecionado.nome_completo)
+        const agendamentosFunc = agendamentosDoDia.filter(a => a.funcionario_id === funcionarioSelecionado.id)
+        console.log('📊 [RENDERIZAÇÃO] Agendamentos deste funcionário:', agendamentosFunc.length)
+      }
+    }
+
+    // Cores diferentes para cada funcionário
+    const coresFuncionarios = [
+      '#f59e0b', // Amber
+      '#3b82f6', // Blue
+      '#10b981', // Emerald
+      '#8b5cf6', // Violet
+      '#ec4899', // Pink
+      '#f97316', // Orange
+      '#06b6d4', // Cyan
+      '#84cc16', // Lime
+    ]
 
     return (
       <div className="relative border-t border-zinc-800 bg-zinc-950 rounded-b-lg overflow-hidden">
+        {/* Cabeçalho com nomes dos funcionários (quando mostrar todos) */}
+        {mostrarTodosFuncionarios && funcionariosParaMostrar.length > 0 && (
+          <div className="flex border-b border-zinc-800 bg-zinc-900/50">
+            <div className="w-16 flex-shrink-0 border-r border-zinc-800"></div>
+            {funcionariosParaMostrar.map((func, index) => (
+              <div 
+                key={func.id}
+                className="flex-1 border-r border-zinc-800 last:border-r-0 px-3 py-2"
+                style={{ 
+                  borderLeftColor: coresFuncionarios[index % coresFuncionarios.length],
+                  borderLeftWidth: '4px'
+                }}
+              >
+                <span className="text-sm font-semibold text-gray-200">{func.nome_completo}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {horarios.map((horario, index) => {
           const [hora, minuto] = horario.split(':').map(Number)
           const horarioMinutos = hora * 60 + minuto
           const isHoraCheia = minuto === 0
-
-          // Verificar se algum agendamento COMEÇA exatamente neste slot
-          const agendamentosInicio = agendamentosDoDia.filter((a) => {
-            const [h, m] = a.hora_inicio.split(':').map(Number)
-            return (h * 60 + m) === horarioMinutos
-          })
 
           return (
             <div 
@@ -1042,68 +1404,254 @@ export default function AgendaPage() {
                 </span>
               </div>
 
-              {/* Área do Conteúdo (Linhas) */}
-              <div className="flex-1 relative">
-                {/* Linha guia visual ao passar o mouse */}
-                <div className="absolute inset-0 hover:bg-zinc-800/30 transition-colors" />
-
-                {/* Renderizar Agendamentos (Absolute) */}
-                {agendamentosInicio.map((agendamento) => {
-                  const [inicioH, inicioM] = agendamento.hora_inicio.split(':').map(Number)
-                  const [fimH, fimM] = agendamento.hora_fim.split(':').map(Number)
-                  
-                  const inicioTotal = inicioH * 60 + inicioM
-                  const fimTotal = fimH * 60 + fimM
-                  const duracao = fimTotal - inicioTotal
-                  
-                  // Calcular altura baseada na proporção do slot
-                  // Se 15 min = ALTURA_SLOT, então X min = (X / 15) * ALTURA_SLOT
-                  const alturaCard = (duracao / 15) * ALTURA_SLOT
+              {/* Área do Conteúdo - Múltiplas colunas se mostrar todos */}
+              {mostrarTodosFuncionarios && funcionariosParaMostrar.length > 0 ? (
+                // Múltiplas colunas (um funcionário por coluna)
+                funcionariosParaMostrar.map((func, funcIndex) => {
+                  const agendamentosFuncionario = agendamentosDoDia.filter(a => a.funcionario_id === func.id)
+                  const agendamentosInicio = agendamentosFuncionario.filter((a) => {
+                    // Normalizar hora_inicio (pode vir como "08:00:00" ou "08:00")
+                    const horaInicioNormalizada = a.hora_inicio ? a.hora_inicio.split(':').slice(0, 2).join(':') : ''
+                    if (!horaInicioNormalizada) return false
+                    const [h, m] = horaInicioNormalizada.split(':').map(Number)
+                    return (h * 60 + m) === horarioMinutos
+                  })
 
                   return (
-                    <Card
-                      key={agendamento.id}
-                      className="absolute left-1 right-2 z-10 overflow-hidden shadow-lg hover:brightness-110 hover:scale-[1.01] transition-all cursor-pointer border-l-4"
+                    <div 
+                      key={`${horario}-${func.id}`}
+                      className="flex-1 relative border-r border-zinc-800 last:border-r-0"
                       style={{
-                        top: '1px', // Pequeno ajuste para não cobrir a linha de cima
-                        height: `${alturaCard - 2}px`, // -2px para ver a linha de baixo
-                        backgroundColor: '#18181b', // Zinc-950
-                        borderLeftColor:
-                          agendamento.status === 'concluido' ? '#10b981' : // Emerald
-                          agendamento.status === 'cancelado' ? '#ef4444' : // Red
-                          agendamento.status === 'em_andamento' ? '#3b82f6' : // Blue
-                          '#f59e0b', // Amber (Agendado)
+                        borderLeftColor: coresFuncionarios[funcIndex % coresFuncionarios.length],
+                        borderLeftWidth: '2px'
                       }}
-                      onClick={() => alert(`Cliente: ${agendamento.cliente_nome}\nServiço: ${agendamento.servico_nome}`)}
                     >
-                      <div className="p-2 h-full flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-bold text-gray-100 bg-zinc-800 px-1.5 py-0.5 rounded">
-                            {agendamento.hora_inicio}
-                          </span>
-                          <span className="font-semibold text-sm text-gray-200 truncate">
-                            {agendamento.cliente_nome}
-                          </span>
-                        </div>
+                      {/* Linha guia visual ao passar o mouse */}
+                      <div className="absolute inset-0 hover:bg-zinc-800/30 transition-colors" />
+
+                      {/* Renderizar Agendamentos (Absolute) */}
+                      {agendamentosInicio.map((agendamento) => {
+                        // Normalizar horas (podem vir como "08:00:00" ou "08:00")
+                        const horaInicioNormalizada = agendamento.hora_inicio ? agendamento.hora_inicio.split(':').slice(0, 2).join(':') : '00:00'
+                        const horaFimNormalizada = agendamento.hora_fim ? agendamento.hora_fim.split(':').slice(0, 2).join(':') : '00:00'
+                        const [inicioH, inicioM] = horaInicioNormalizada.split(':').map(Number)
+                        const [fimH, fimM] = horaFimNormalizada.split(':').map(Number)
                         
-                        {/* Mostrar detalhes apenas se o card for alto o suficiente (> 45px) */}
-                        {alturaCard > 45 && (
-                          <div className="flex flex-col gap-0.5 text-xs text-gray-400 pl-1">
-                            <div className="flex items-center gap-1">
-                              <Scissors className="h-3 w-3 text-amber-500" />
-                              <span className="truncate">{agendamento.servico_nome}</span>
+                        const inicioTotal = inicioH * 60 + inicioM
+                        const fimTotal = fimH * 60 + fimM
+                        const duracao = fimTotal - inicioTotal
+                        
+                        // Calcular altura baseada na proporção do slot
+                        // Se 15 min = ALTURA_SLOT, então X min = (X / 15) * ALTURA_SLOT
+                        const alturaCard = (duracao / 15) * ALTURA_SLOT
+
+                        console.log('🎨 [RENDERIZAÇÃO] Renderizando agendamento:', {
+                          id: agendamento.id,
+                          cliente: agendamento.cliente_nome,
+                          funcionario: agendamento.funcionario_nome,
+                          hora_inicio: agendamento.hora_inicio,
+                          hora_fim: agendamento.hora_fim,
+                          duracao,
+                          alturaCard
+                        })
+
+                        return (
+                          <Card
+                            key={agendamento.id}
+                            className="absolute left-1 right-1 z-10 overflow-hidden shadow-lg hover:brightness-110 hover:scale-[1.01] transition-all cursor-pointer border-l-4"
+                            style={{
+                              top: '1px', // Pequeno ajuste para não cobrir a linha de cima
+                              height: `${alturaCard - 2}px`, // -2px para ver a linha de baixo
+                              backgroundColor: '#18181b', // Zinc-950
+                              borderLeftColor:
+                                agendamento.status === 'concluido' ? '#10b981' : // Emerald
+                                agendamento.status === 'cancelado' ? '#ef4444' : // Red
+                                agendamento.status === 'em_andamento' ? '#3b82f6' : // Blue
+                                coresFuncionarios[funcIndex % coresFuncionarios.length], // Cor do funcionário (Agendado)
+                            }}
+                            onClick={() => {
+                              // Abrir dialog de edição
+                              setAgendamentoEditando(agendamento)
+                              setFormData({
+                                cliente_id: agendamento.cliente_id,
+                                funcionario_id: agendamento.funcionario_id,
+                                servico_id: agendamento.servico_id,
+                                data_agendamento: agendamento.data_agendamento,
+                                hora_inicio: agendamento.hora_inicio,
+                                observacoes: agendamento.observacoes || '',
+                                status: agendamento.status,
+                              })
+                              setDialogAberto(true)
+                            }}
+                          >
+                            <div className="p-2 h-full flex flex-col justify-center">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-bold text-gray-100 bg-zinc-800 px-1.5 py-0.5 rounded">
+                                  {horaInicioNormalizada} - {horaFimNormalizada}
+                                </span>
+                                <span className="font-semibold text-sm text-gray-200 truncate">
+                                  {agendamento.cliente_nome}
+                                </span>
+                              </div>
+                              
+                              {/* Mostrar detalhes apenas se o card for alto o suficiente (> 45px) */}
+                              {alturaCard > 45 && (
+                                <div className="flex flex-col gap-0.5 text-xs text-gray-400 pl-1">
+                                  <div className="flex items-center gap-1">
+                                    <Scissors className="h-3 w-3 text-amber-500" />
+                                    <span className="truncate">{agendamento.servico_nome}</span>
+                                  </div>
+                                  {(() => {
+                                    const valor = parseFloat(String(agendamento.valor_servico || 0))
+                                    return valor > 0 && (
+                                      <div className="flex items-center gap-1 mt-0.5">
+                                        <span className="text-amber-500 font-semibold">
+                                          R$ {valor.toFixed(2).replace('.', ',')}
+                                        </span>
+                                      </div>
+                                    )
+                                  })()}
+                                </div>
+                              )}
+                              {/* Se o card for pequeno, mostrar apenas serviço e valor em linha */}
+                              {alturaCard <= 45 && (
+                                <div className="flex items-center gap-1 text-xs text-gray-400">
+                                  <Scissors className="h-3 w-3 text-amber-500" />
+                                  <span className="truncate">{agendamento.servico_nome}</span>
+                                  {(() => {
+                                    const valor = parseFloat(String(agendamento.valor_servico || 0))
+                                    return valor > 0 && (
+                                      <>
+                                        <span className="text-zinc-600">•</span>
+                                        <span className="text-amber-500 font-semibold">
+                                          R$ {valor.toFixed(2).replace('.', ',')}
+                                        </span>
+                                      </>
+                                    )
+                                  })()}
+                                </div>
+                              )}
                             </div>
-                            <div className="flex items-center gap-1">
-                              <User className="h-3 w-3 text-blue-500" />
-                              <span className="truncate">{agendamento.funcionario_nome.split(' ')[0]}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </Card>
+                          </Card>
+                        )
+                      })}
+                    </div>
                   )
-                })}
-              </div>
+                })
+              ) : (
+                // Coluna única (quando filtro por funcionário específico)
+                <div className="flex-1 relative">
+                  {/* Linha guia visual ao passar o mouse */}
+                  <div className="absolute inset-0 hover:bg-zinc-800/30 transition-colors" />
+
+                  {/* Verificar se algum agendamento COMEÇA exatamente neste slot e renderizar */}
+                  {(() => {
+                    const agendamentosInicio = agendamentosDoDia.filter((a) => {
+                      // Normalizar hora_inicio (pode vir como "08:00:00" ou "08:00")
+                      const horaInicioNormalizada = a.hora_inicio ? a.hora_inicio.split(':').slice(0, 2).join(':') : ''
+                      if (!horaInicioNormalizada) return false
+                      const [h, m] = horaInicioNormalizada.split(':').map(Number)
+                      return (h * 60 + m) === horarioMinutos
+                    })
+
+                    return agendamentosInicio.map((agendamento) => {
+                      // Normalizar horas (podem vir como "08:00:00" ou "08:00")
+                      const horaInicioNormalizada = agendamento.hora_inicio ? agendamento.hora_inicio.split(':').slice(0, 2).join(':') : '00:00'
+                      const horaFimNormalizada = agendamento.hora_fim ? agendamento.hora_fim.split(':').slice(0, 2).join(':') : '00:00'
+                      const [inicioH, inicioM] = horaInicioNormalizada.split(':').map(Number)
+                      const [fimH, fimM] = horaFimNormalizada.split(':').map(Number)
+                    
+                    const inicioTotal = inicioH * 60 + inicioM
+                    const fimTotal = fimH * 60 + fimM
+                    const duracao = fimTotal - inicioTotal
+                    
+                    // Calcular altura baseada na proporção do slot
+                    // Se 15 min = ALTURA_SLOT, então X min = (X / 15) * ALTURA_SLOT
+                    const alturaCard = (duracao / 15) * ALTURA_SLOT
+
+                    return (
+                      <Card
+                        key={agendamento.id}
+                        className="absolute left-1 right-2 z-10 overflow-hidden shadow-lg hover:brightness-110 hover:scale-[1.01] transition-all cursor-pointer border-l-4"
+                        style={{
+                          top: '1px', // Pequeno ajuste para não cobrir a linha de cima
+                          height: `${alturaCard - 2}px`, // -2px para ver a linha de baixo
+                          backgroundColor: '#18181b', // Zinc-950
+                          borderLeftColor:
+                            agendamento.status === 'concluido' ? '#10b981' : // Emerald
+                            agendamento.status === 'cancelado' ? '#ef4444' : // Red
+                            agendamento.status === 'em_andamento' ? '#3b82f6' : // Blue
+                            '#f59e0b', // Amber (Agendado)
+                        }}
+                        onClick={() => {
+                          // Abrir dialog de edição
+                          setAgendamentoEditando(agendamento)
+                          setFormData({
+                            cliente_id: agendamento.cliente_id,
+                            funcionario_id: agendamento.funcionario_id,
+                            servico_id: agendamento.servico_id,
+                            data_agendamento: agendamento.data_agendamento,
+                            hora_inicio: agendamento.hora_inicio,
+                            observacoes: agendamento.observacoes || '',
+                            status: agendamento.status,
+                          })
+                          setDialogAberto(true)
+                        }}
+                      >
+                        <div className="p-2 h-full flex flex-col justify-center">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold text-gray-100 bg-zinc-800 px-1.5 py-0.5 rounded">
+                              {horaInicioNormalizada} - {horaFimNormalizada}
+                            </span>
+                            <span className="font-semibold text-sm text-gray-200 truncate">
+                              {agendamento.cliente_nome}
+                            </span>
+                          </div>
+                          
+                          {/* Mostrar detalhes apenas se o card for alto o suficiente (> 45px) */}
+                            {alturaCard > 45 && (
+                              <div className="flex flex-col gap-0.5 text-xs text-gray-400 pl-1">
+                                <div className="flex items-center gap-1">
+                                  <Scissors className="h-3 w-3 text-amber-500" />
+                                  <span className="truncate">{agendamento.servico_nome}</span>
+                                </div>
+                                {(() => {
+                                  const valor = parseFloat(String(agendamento.valor_servico || 0))
+                                  return valor > 0 && (
+                                    <div className="flex items-center gap-1 mt-0.5">
+                                      <span className="text-amber-500 font-semibold">
+                                        R$ {valor.toFixed(2).replace('.', ',')}
+                                      </span>
+                                    </div>
+                                  )
+                                })()}
+                              </div>
+                            )}
+                            {/* Se o card for pequeno, mostrar apenas serviço e valor em linha */}
+                            {alturaCard <= 45 && (
+                              <div className="flex items-center gap-1 text-xs text-gray-400">
+                                <Scissors className="h-3 w-3 text-amber-500" />
+                                <span className="truncate">{agendamento.servico_nome}</span>
+                                {(() => {
+                                  const valor = parseFloat(String(agendamento.valor_servico || 0))
+                                  return valor > 0 && (
+                                    <>
+                                      <span className="text-zinc-600">•</span>
+                                      <span className="text-amber-500 font-semibold">
+                                        R$ {valor.toFixed(2).replace('.', ',')}
+                                      </span>
+                                    </>
+                                  )
+                                })()}
+                              </div>
+                            )}
+                        </div>
+                      </Card>
+                    )
+                  })
+                  })()}
+                </div>
+              )}
             </div>
           )
         })}
@@ -1276,7 +1824,22 @@ export default function AgendaPage() {
           <p className="text-gray-400 mt-1">Gerencie agendamentos e disponibilidades</p>
         </div>
         {podeEditar('agenda') && (
-          <Button onClick={() => setDialogAberto(true)} className="bg-amber-500 hover:bg-amber-600 text-white">
+          <Button 
+            onClick={() => {
+              setAgendamentoEditando(null)
+              setFormData({
+                cliente_id: '',
+                funcionario_id: '',
+                servico_id: '',
+                data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+                hora_inicio: '',
+                observacoes: '',
+                status: 'agendado',
+              })
+              setDialogAberto(true)
+            }} 
+            className="bg-amber-500 hover:bg-amber-600 text-white"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Novo Agendamento
           </Button>
@@ -1523,11 +2086,33 @@ export default function AgendaPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
+      <Dialog 
+        open={dialogAberto} 
+        onOpenChange={(open) => {
+          setDialogAberto(open)
+          if (!open) {
+            // Limpar dados quando fechar
+            setAgendamentoEditando(null)
+            setFormData({
+              cliente_id: '',
+              funcionario_id: '',
+              servico_id: '',
+              data_agendamento: format(new Date(), 'yyyy-MM-dd'),
+              hora_inicio: '',
+              observacoes: '',
+              status: 'agendado',
+            })
+          }
+        }}
+      >
         <DialogContent className="bg-zinc-900 border-amber-500/20 text-gray-300 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-gray-300">Novo Agendamento</DialogTitle>
-            <DialogDescription className="text-gray-400">Preencha os dados do agendamento</DialogDescription>
+            <DialogTitle className="text-gray-300">
+              {agendamentoEditando ? 'Editar Agendamento' : 'Novo Agendamento'}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              {agendamentoEditando ? 'Edite os dados do agendamento' : 'Preencha os dados do agendamento'}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -1607,8 +2192,35 @@ export default function AgendaPage() {
                 className="bg-zinc-800 border-amber-500/20 text-gray-300 placeholder:text-gray-500"
               />
             </div>
-            <Button onClick={criarAgendamento} disabled={loading} className="w-full bg-amber-500 hover:bg-amber-600 text-white">
-              {loading ? 'Criando...' : 'Criar Agendamento'}
+            {agendamentoEditando && (
+              <div>
+                <Label className="text-gray-300">Status</Label>
+                <Select 
+                  value={formData.status} 
+                  onValueChange={(v) => setFormData({ ...formData, status: v })}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-amber-500/20 text-gray-300">
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-amber-500/20">
+                    <SelectItem value="agendado" className="text-gray-300">Agendado</SelectItem>
+                    <SelectItem value="em_andamento" className="text-gray-300">Em Andamento</SelectItem>
+                    <SelectItem value="concluido" className="text-gray-300">Concluído</SelectItem>
+                    <SelectItem value="cancelado" className="text-gray-300">Cancelado</SelectItem>
+                    <SelectItem value="nao_compareceu" className="text-gray-300">Não Compareceu</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <Button 
+              onClick={handleSalvarAgendamento} 
+              disabled={loading} 
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              {loading 
+                ? (agendamentoEditando ? 'Atualizando...' : 'Criando...') 
+                : (agendamentoEditando ? 'Atualizar Agendamento' : 'Criar Agendamento')
+              }
             </Button>
           </div>
         </DialogContent>

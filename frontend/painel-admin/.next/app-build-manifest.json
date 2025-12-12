@@ -26,30 +26,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/agenda/page.js"
     ],
-    "/dashboard/integracoes-apis/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/integracoes-apis/page.js"
-    ],
     "/dashboard/funcionarios/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/funcionarios/page.js"
-    ],
-    "/dashboard/usuarios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/usuarios/page.js"
-    ],
-    "/dashboard/servicos/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/servicos/page.js"
-    ],
-    "/dashboard/configuracoes/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/configuracoes/page.js"
     ]
   }
 }
