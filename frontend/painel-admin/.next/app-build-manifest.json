@@ -21,20 +21,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
-    "/dashboard/agenda/page": [
+    "/dashboard/estoque/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/agenda/page.js"
+      "static/chunks/app/dashboard/estoque/page.js"
     ],
-    "/dashboard/funcionarios/page": [
+    "/dashboard/produtos/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/funcionarios/page.js"
-    ],
-    "/dashboard/usuarios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/usuarios/page.js"
+      "static/chunks/app/dashboard/produtos/page.js"
     ]
   }
 }

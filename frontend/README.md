@@ -42,6 +42,8 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ Habilitar API (controle de funcionalidades das integrações)
 - ✅ **Sistema de Agendamentos** (visualização em dia/semana/mês, busca de disponibilidade)
 - ✅ **Fechamentos Especiais** (gerenciamento de dias de fechamento)
+- ✅ **Módulo de Produtos** (CRUD completo com histórico de preços de custo)
+- ✅ **Estrutura de Estoque** (página básica criada)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)

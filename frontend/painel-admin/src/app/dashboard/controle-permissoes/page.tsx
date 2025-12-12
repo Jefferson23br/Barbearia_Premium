@@ -100,6 +100,16 @@ interface Permissoes {
   configuracoes_ver: boolean
   configuracoes_editar: boolean
   configuracoes_excluir: boolean
+
+  // Produtos
+  produtos_ver: boolean
+  produtos_editar: boolean
+  produtos_excluir: boolean
+
+  // Estoque
+  estoque_ver: boolean
+  estoque_editar: boolean
+  estoque_excluir: boolean
 }
 
 const permissoesPadrao: Permissoes = {
@@ -154,6 +164,12 @@ const permissoesPadrao: Permissoes = {
     configuracoes_ver: false,
     configuracoes_editar: false,
     configuracoes_excluir: false,
+    produtos_ver: false,
+    produtos_editar: false,
+    produtos_excluir: false,
+    estoque_ver: false,
+    estoque_editar: false,
+    estoque_excluir: false,
   }
 
 interface ModuloPermissao {
@@ -383,6 +399,16 @@ export default function ControlePermissoesPage() {
       },
     },
     {
+      id: 'estoque',
+      nome: 'Estoque',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.estoque_ver,
+        editar: permissoes.estoque_editar,
+        excluir: permissoes.estoque_excluir,
+      },
+    },
+    {
       id: 'controle_acessos',
       nome: 'Controle de Acessos',
       apenasVer: true,
@@ -416,6 +442,16 @@ export default function ControlePermissoesPage() {
         ver: permissoes.servicos_ver,
         editar: permissoes.servicos_editar,
         excluir: permissoes.servicos_excluir,
+      },
+    },
+    {
+      id: 'produtos',
+      nome: 'Produtos',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.produtos_ver,
+        editar: permissoes.produtos_editar,
+        excluir: permissoes.produtos_excluir,
       },
     },
     {

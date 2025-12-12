@@ -653,8 +653,96 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
+### 📦 Módulo de Produtos Completo
+
+**Data**: 12 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ CRUD completo de produtos
+- ✅ Código único por produto
+- ✅ Gerenciamento de fornecedores
+- ✅ Sistema de preços de custo com histórico
+- ✅ Último preço de custo exibido automaticamente
+- ✅ Busca avançada (código, descrição, fornecedor, preço)
+- ✅ Estatísticas (total, ativos, fornecedores)
+- ✅ Interface completa e responsiva
+
+**Arquivos Criados/Modificados:**
+- `COMANDOS_CRIAR_TABELA_PRODUTOS.sql` - DDL completo
+- `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql` - Permissões
+- `backend/routes/produtos.js` - Rotas completas (7 endpoints)
+- `backend/routes/index.js` - Registro das rotas
+- `frontend/painel-admin/src/app/dashboard/produtos/page.tsx` - Página completa
+- `frontend/painel-admin/src/components/admin/Sidebar.tsx` - Menu reorganizado
+- `frontend/painel-admin/src/hooks/usePermissions.ts` - Novas permissões
+- `frontend/painel-admin/src/app/dashboard/controle-permissoes/page.tsx` - Permissões atualizadas
+
+**Endpoints:**
+- `GET /api/v1/produtos` - Lista produtos
+- `GET /api/v1/produtos/:id` - Busca produto específico
+- `POST /api/v1/produtos` - Cria produto
+- `PUT /api/v1/produtos/:id` - Atualiza produto
+- `DELETE /api/v1/produtos/:id` - Exclui produto
+- `POST /api/v1/produtos/:id/preco-custo` - Lança preço de custo
+- `GET /api/v1/produtos/:id/precos-custo` - Histórico de preços
+
+**Tabelas Criadas:**
+- `protese.produtos` - Tabela principal
+- `protese.produtos_precos_custo` - Histórico de preços
+
+**Detalhes Técnicos:**
+- Trigger automático para atualizar último preço de custo
+- Validação de código único
+- Integração completa com sistema de permissões
+- Logs de auditoria para todas as ações
+- Interface moderna com Framer Motion
+
+---
+
+### 🗂️ Reorganização do Menu
+
+**Data**: 12 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ Menu reorganizado conforme especificação
+- ✅ Adicionado módulo "Produtos" no menu
+- ✅ Adicionado módulo "Estoque" no menu (estrutura básica)
+- ✅ Permissões configuradas para novos módulos
+- ✅ Ícones apropriados (Package, Warehouse)
+
+**Nova Ordem do Menu:**
+1. Dashboard
+2. Agenda
+3. Lançamento de Venda
+4. Lançamento de Despesas
+5. Emissão de Nota Fiscal
+6. Serviços
+7. **Produtos** (NOVO)
+8. Receitas
+9. Despesas
+10. Faturamento
+11. Emissão de Relatórios
+12. Gerenciamento de Usuários
+13. Gerenciamento de Funcionários
+14. **Estoque** (NOVO - estrutura básica)
+15. Controle de Acessos
+16. Controle de Logs
+17. Controle de Permissão
+18. Help Desk
+19. Integração de APIs
+20. Habilitar API
+21. Configurações
+
+**Permissões Adicionadas:**
+- `produtos_ver`, `produtos_editar`, `produtos_excluir`
+- `estoque_ver`, `estoque_editar`, `estoque_excluir`
+
+---
+
 **Última atualização**: 12 de Dezembro de 2025  
-**Versão do documento**: 1.1
+**Versão do documento**: 1.2
 
 > **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md).
 

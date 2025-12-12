@@ -91,6 +91,16 @@ export interface PermissoesUsuario {
   configuracoes_ver: boolean
   configuracoes_editar: boolean
   configuracoes_excluir: boolean
+
+  // Produtos
+  produtos_ver: boolean
+  produtos_editar: boolean
+  produtos_excluir: boolean
+
+  // Estoque
+  estoque_ver: boolean
+  estoque_editar: boolean
+  estoque_excluir: boolean
 }
 
 export function usePermissions() {
@@ -253,6 +263,12 @@ function criarPermissoesMaster(): PermissoesUsuario {
     configuracoes_ver: true,
     configuracoes_editar: true,
     configuracoes_excluir: true,
+    produtos_ver: true,
+    produtos_editar: true,
+    produtos_excluir: true,
+    estoque_ver: true,
+    estoque_editar: true,
+    estoque_excluir: true,
   }
 }
 
@@ -310,6 +326,12 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     configuracoes_ver: false,
     configuracoes_editar: false,
     configuracoes_excluir: false,
+    produtos_ver: false,
+    produtos_editar: false,
+    produtos_excluir: false,
+    estoque_ver: false,
+    estoque_editar: false,
+    estoque_excluir: false,
   }
 
   // Proprietário tem acesso padrão a mais coisas
@@ -362,6 +384,12 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.configuracoes_ver = true
     padrao.configuracoes_editar = true
     padrao.configuracoes_excluir = true
+    padrao.produtos_ver = true
+    padrao.produtos_editar = true
+    padrao.produtos_excluir = true
+    padrao.estoque_ver = true
+    padrao.estoque_editar = true
+    padrao.estoque_excluir = true
   }
 
   // Funcionário tem acesso limitado

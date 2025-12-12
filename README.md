@@ -214,12 +214,12 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 40+ endpoints implementados
-- **Módulos Backend**: 12 módulos modulares
-- **Páginas Frontend**: 20+ páginas principais
-- **Tabelas no Banco**: 15+ tabelas principais
+- **Endpoints API**: 47+ endpoints implementados
+- **Módulos Backend**: 13 módulos modulares
+- **Páginas Frontend**: 22+ páginas principais
+- **Tabelas no Banco**: 17+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 12 módulos completos
+- **Módulos Implementados**: 13 módulos completos
 - **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
 
 ---
@@ -239,6 +239,8 @@ npm run dev
 10. **Integrações de APIs** - Sistema escalável de integrações (Focus NFe implementado)
 11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade, marcação de almoço/saída
 12. **Fechamentos Especiais** - Configuração de dias de fechamento
+13. **Produtos** - Gerenciamento completo de produtos com histórico de preços de custo
+14. **Estoque** - Estrutura básica criada (em desenvolvimento)
 
 ### 🔄 Em Desenvolvimento
 - Módulos financeiros (vendas, despesas, receitas)
@@ -266,6 +268,8 @@ npm run dev
 - `integracoes_habilitadas` - Funcionalidades habilitadas por integração
 - `agendamentos` - Agendamentos de serviços
 - `fechamentos_especiais` - Dias de fechamento especiais
+- `produtos` - Produtos da barbearia
+- `produtos_precos_custo` - Histórico de preços de custo dos produtos
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -276,6 +280,8 @@ npm run dev
 - `COMANDOS_CRIAR_TABELA_INTEGRACOES.sql`
 - `COMANDOS_CRIAR_TABELA_AGENDAMENTOS.sql`
 - `DDL_FECHAMENTOS_ESPECIAIS.sql`
+- `COMANDOS_CRIAR_TABELA_PRODUTOS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
 
 ---
 
@@ -344,6 +350,9 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 **Foco Atual (Q4 2025 / Q1 2026):**
 - ✅ Sistema de Agendamentos completo (concluído em Dezembro 2025)
 - ✅ Marcar Almoço/Saída (concluído em Dezembro 2025)
+- ✅ Módulo de Produtos completo (concluído em Dezembro 2025)
+- ✅ Reorganização do Menu (concluído em Dezembro 2025)
+- 🔄 Módulo de Estoque (estrutura básica criada)
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
 - 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
 - 🔄 Melhorias no Help Desk

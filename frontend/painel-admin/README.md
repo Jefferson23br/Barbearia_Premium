@@ -65,6 +65,7 @@ npm run build
 - **Funcionários**: CRUD completo com upload de foto
 - **Clientes**: CRUD completo com funcionário responsável
 - **Serviços**: CRUD completo com múltiplas imagens
+- **Produtos**: CRUD completo com histórico de preços de custo
 - **Permissões**: Sistema granular de permissões (RBAC)
 
 ### ✅ Controle e Monitoramento
@@ -86,6 +87,15 @@ npm run build
 - **Cálculo Automático**: Calcula duração e valor baseado no serviço
 - **Marcar Almoço/Saída**: Sistema para marcar horários de almoço e saída dos funcionários
 - **Edição de Agendamentos**: Clique em agendamento existente para editar
+
+### ✅ Produtos
+- **Gerenciamento Completo**: CRUD completo de produtos
+- **Código Único**: Sistema de código único por produto
+- **Fornecedores**: Gerenciamento de fornecedores
+- **Preços de Custo**: Sistema de histórico de preços de custo
+- **Último Preço de Custo**: Exibição automática do último preço lançado
+- **Busca Avançada**: Busca por código, descrição, fornecedor ou preço
+- **Estatísticas**: Total de produtos, ativos e fornecedores
 
 ---
 
@@ -136,4 +146,4 @@ src/
 ---
 
 **Última Atualização**: 12 de Dezembro de 2025  
-**Versão**: 1.2.0
+**Versão**: 1.3.0

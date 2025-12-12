@@ -27,6 +27,8 @@ import {
   Plug,
   Key,
   Cog,
+  Package,
+  Warehouse,
 } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
@@ -72,14 +74,6 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       permissionKey: 'agenda',
     },
     {
-      id: 'servicos',
-      label: 'Serviços',
-      icon: Scissors,
-      path: '/dashboard/servicos',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'servicos',
-    },
-    {
       id: 'lancamento-venda',
       label: 'Lançamento de Venda',
       icon: ShoppingCart,
@@ -89,7 +83,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     },
     {
       id: 'lancamento-despesa',
-      label: 'Lançamento de Despesa',
+      label: 'Lançamento de Despesas',
       icon: TrendingDown,
       path: '/dashboard/lancamento-despesa',
       levels: ['master', 'proprietario', 'funcionario'],
@@ -97,11 +91,27 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     },
     {
       id: 'emissao-nfe',
-      label: 'Emissão de NFe',
+      label: 'Emissão de Nota Fiscal',
       icon: FileCheck,
       path: '/dashboard/emissao-nfe',
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'emissao_nfe',
+    },
+    {
+      id: 'servicos',
+      label: 'Serviços',
+      icon: Scissors,
+      path: '/dashboard/servicos',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'servicos',
+    },
+    {
+      id: 'produtos',
+      label: 'Produtos',
+      icon: Package,
+      path: '/dashboard/produtos',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'produtos',
     },
     {
       id: 'receitas',
@@ -152,6 +162,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       permissionKey: 'funcionarios',
     },
     {
+      id: 'estoque',
+      label: 'Estoque',
+      icon: Warehouse,
+      path: '/dashboard/estoque',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'estoque',
+    },
+    {
       id: 'acessos',
       label: 'Controle de Acessos',
       icon: Shield,
@@ -185,7 +203,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     },
     {
       id: 'integracao-apis',
-      label: 'Integração de APIs Externas',
+      label: 'Integração de APIs',
       icon: Plug,
       path: '/dashboard/integracoes-apis',
       levels: ['master', 'proprietario'],

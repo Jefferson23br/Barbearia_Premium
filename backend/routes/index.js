@@ -14,6 +14,7 @@ const configuracoesRoutes = require('./configuracoes');
 const integracoesRoutes = require('./integracoes');
 const agendamentosRoutes = require('./agendamentos');
 const fechamentosEspeciaisRoutes = require('./fechamentos-especiais');
+const produtosRoutes = require('./produtos');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -28,6 +29,7 @@ router.use('/configuracoes', configuracoesRoutes);
 router.use('/integracoes', integracoesRoutes);
 router.use('/agendamentos', agendamentosRoutes);
 router.use('/fechamentos-especiais', fechamentosEspeciaisRoutes);
+router.use('/produtos', produtosRoutes);
 
 module.exports = router;
 

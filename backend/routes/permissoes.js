@@ -73,6 +73,12 @@ router.get('/:usuarioId', async (req, res) => {
           configuracoes_ver: false,
           configuracoes_editar: false,
           configuracoes_excluir: false,
+          produtos_ver: false,
+          produtos_editar: false,
+          produtos_excluir: false,
+          estoque_ver: false,
+          estoque_editar: false,
+          estoque_excluir: false,
         },
       });
     }
@@ -165,9 +171,15 @@ router.put('/:usuarioId', async (req, res) => {
       habilitar_api_ver: permissoesBody.habilitar_api_ver || false,
       habilitar_api_editar: permissoesBody.habilitar_api_editar || false,
       habilitar_api_excluir: permissoesBody.habilitar_api_excluir || false,
-      configuracoes_ver: permissoesBody.configuracoes_ver || false,
-      configuracoes_editar: permissoesBody.configuracoes_editar || false,
-      configuracoes_excluir: permissoesBody.configuracoes_excluir || false,
+          configuracoes_ver: permissoesBody.configuracoes_ver || false,
+          configuracoes_editar: permissoesBody.configuracoes_editar || false,
+          configuracoes_excluir: permissoesBody.configuracoes_excluir || false,
+          produtos_ver: permissoesBody.produtos_ver || false,
+          produtos_editar: permissoesBody.produtos_editar || false,
+          produtos_excluir: permissoesBody.produtos_excluir || false,
+          estoque_ver: permissoesBody.estoque_ver || false,
+          estoque_editar: permissoesBody.estoque_editar || false,
+          estoque_excluir: permissoesBody.estoque_excluir || false,
     };
 
     // Verificar se já existe registro de permissões
@@ -203,6 +215,8 @@ router.put('/:usuarioId', async (req, res) => {
           integracao_apis_ver = $44, integracao_apis_editar = $45, integracao_apis_excluir = $46,
           habilitar_api_ver = $47, habilitar_api_editar = $48, habilitar_api_excluir = $49,
           configuracoes_ver = $50, configuracoes_editar = $51, configuracoes_excluir = $52,
+          produtos_ver = $53, produtos_editar = $54, produtos_excluir = $55,
+          estoque_ver = $56, estoque_editar = $57, estoque_excluir = $58,
           updated_at = NOW()
         WHERE usuario_id = $1`,
         [
@@ -258,6 +272,12 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.configuracoes_ver,
           valoresPermissoes.configuracoes_editar,
           valoresPermissoes.configuracoes_excluir,
+          valoresPermissoes.produtos_ver,
+          valoresPermissoes.produtos_editar,
+          valoresPermissoes.produtos_excluir,
+          valoresPermissoes.estoque_ver,
+          valoresPermissoes.estoque_editar,
+          valoresPermissoes.estoque_excluir,
         ]
       );
     } else {
@@ -283,9 +303,11 @@ router.put('/:usuarioId', async (req, res) => {
           emissao_relatorios_ver, emissao_relatorios_editar, emissao_relatorios_excluir,
           integracao_apis_ver, integracao_apis_editar, integracao_apis_excluir,
           habilitar_api_ver, habilitar_api_editar, habilitar_api_excluir,
-          configuracoes_ver, configuracoes_editar, configuracoes_excluir
+          configuracoes_ver, configuracoes_editar, configuracoes_excluir,
+          produtos_ver, produtos_editar, produtos_excluir,
+          estoque_ver, estoque_editar, estoque_excluir
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58
         )`,
         [
           usuarioId,
@@ -340,6 +362,12 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.configuracoes_ver,
           valoresPermissoes.configuracoes_editar,
           valoresPermissoes.configuracoes_excluir,
+          valoresPermissoes.produtos_ver,
+          valoresPermissoes.produtos_editar,
+          valoresPermissoes.produtos_excluir,
+          valoresPermissoes.estoque_ver,
+          valoresPermissoes.estoque_editar,
+          valoresPermissoes.estoque_excluir,
         ]
       );
     }

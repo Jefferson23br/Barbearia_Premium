@@ -45,6 +45,7 @@ backend/
 │   ├── logs.js        # Sistema de logs/auditoria
 │   ├── help-desk.js   # Help Desk (tickets)
 │   ├── servicos.js    # Gerenciamento de serviços
+│   ├── produtos.js    # Gerenciamento de produtos
 │   ├── configuracoes.js # Configurações do sistema
 │   ├── integracoes.js # Integrações de APIs externas
 │   ├── agendamentos.js # Sistema de agendamentos
@@ -158,6 +159,15 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `GET /api/v1/servicos/:id` - Buscar serviço específico
 - `PUT /api/v1/servicos/:id` - Atualizar serviço
 - `DELETE /api/v1/servicos/:id` - Excluir serviço
+
+### 📦 Produtos
+- `GET /api/v1/produtos` - Listar produtos (com busca e filtros)
+- `POST /api/v1/produtos` - Criar produto
+- `GET /api/v1/produtos/:id` - Buscar produto específico
+- `PUT /api/v1/produtos/:id` - Atualizar produto
+- `DELETE /api/v1/produtos/:id` - Excluir produto
+- `POST /api/v1/produtos/:id/preco-custo` - Lançar preço de custo
+- `GET /api/v1/produtos/:id/precos-custo` - Histórico de preços de custo
 - `POST /api/v1/servicos/:id/imagens` - Upload de imagens
 - `PUT /api/v1/servicos/:id/imagens/reordenar` - Reordenar imagens
 - `DELETE /api/v1/servicos/:id/imagens/:campo` - Excluir imagem específica
@@ -220,6 +230,8 @@ Implementei as seguintes tabelas principais:
 - `help_desk_anexos` - Anexos dos chamados/respostas
 - `servicos` - Serviços oferecidos pela barbearia
 - `servicos_imagens` - Imagens dos serviços
+- `produtos` - Produtos da barbearia
+- `produtos_precos_custo` - Histórico de preços de custo dos produtos
 - `configuracoes` - Configurações gerais do sistema
 - `integracoes` - Integrações com APIs externas
 - `integracoes_habilitadas` - Funcionalidades habilitadas por integração
@@ -237,6 +249,8 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_CRIAR_TABELA_INTEGRACOES.sql`
 - `COMANDOS_CRIAR_TABELA_AGENDAMENTOS.sql`
 - `DDL_FECHAMENTOS_ESPECIAIS.sql`
+- `COMANDOS_CRIAR_TABELA_PRODUTOS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
 
 ---
 

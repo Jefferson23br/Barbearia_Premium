@@ -59,6 +59,29 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## ✅ Funcionalidades Implementadas Recentemente
 
+### 📦 Módulo de Produtos
+**Prioridade**: Alta  
+**Status**: ✅ **100% Completo (Dezembro 2025)**
+
+**Funcionalidades implementadas:**
+- ✅ CRUD completo de produtos
+- ✅ Código único por produto
+- ✅ Gerenciamento de fornecedores
+- ✅ Sistema de preços de custo
+- ✅ Histórico completo de preços de custo
+- ✅ Último preço de custo exibido automaticamente
+- ✅ Busca avançada
+- ✅ Estatísticas
+
+**Melhorias planejadas:**
+- [ ] Interface para lançar preços de custo (atualmente via API)
+- [ ] Relatórios de produtos
+- [ ] Integração com estoque
+- [ ] Alertas de estoque baixo
+- [ ] Categorização de produtos
+
+---
+
 ### 📅 Sistema de Agendamentos
 **Prioridade**: Alta  
 **Status**: ✅ **100% Completo (Dezembro 2025)**
@@ -87,6 +110,26 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 ---
 
 ## 🔄 Em Desenvolvimento
+
+---
+
+### 📊 Módulo de Estoque
+**Prioridade**: Alta  
+**Status**: 🔄 **Estrutura Básica Criada (Dezembro 2025)**
+
+**Estrutura criada:**
+- ✅ Página básica criada
+- ✅ Permissões configuradas
+- ✅ Menu configurado
+
+**Funcionalidades planejadas:**
+- [ ] Controle de entrada e saída de produtos
+- [ ] Integração com módulo de produtos
+- [ ] Alertas de estoque baixo
+- [ ] Relatórios de movimentação
+- [ ] Histórico de movimentações
+- [ ] Contagem de estoque
+- [ ] Ajustes de estoque
 
 ---
 
