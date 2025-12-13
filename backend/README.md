@@ -50,7 +50,12 @@ backend/
 │   ├── configuracoes.js # Configurações do sistema
 │   ├── integracoes.js # Integrações de APIs externas
 │   ├── agendamentos.js # Sistema de agendamentos
-│   └── fechamentos-especiais.js # Fechamentos especiais
+│   ├── fechamentos-especiais.js # Fechamentos especiais
+│   ├── produtos.js # Gerenciamento de produtos
+│   ├── estoque.js # Gerenciamento de estoque
+│   ├── caixas.js # Gerenciamento de contas e movimentações
+│   ├── vendas.js # Lançamento de vendas
+│   └── receitas.js # Gerenciamento de receitas
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
 └── utils/              # Utilitários
@@ -177,6 +182,32 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `POST /api/v1/estoque/entrada` - Lançar entrada de estoque
 - `DELETE /api/v1/estoque/movimentacoes/:id` - Excluir movimentação
 
+### 💰 Caixas
+- `GET /api/v1/caixas/contas` - Listar todas as contas
+- `GET /api/v1/caixas/contas/:id` - Buscar conta específica
+- `POST /api/v1/caixas/contas` - Criar nova conta
+- `PUT /api/v1/caixas/contas/:id` - Atualizar conta
+- `DELETE /api/v1/caixas/contas/:id` - Excluir conta
+- `GET /api/v1/caixas/movimentacoes` - Listar movimentações
+- `POST /api/v1/caixas/movimentacoes/entrada` - Criar entrada manual
+- `POST /api/v1/caixas/movimentacoes/saida` - Criar saída manual
+- `POST /api/v1/caixas/movimentacoes/transferencia` - Criar transferência entre contas
+- `DELETE /api/v1/caixas/movimentacoes/:id` - Excluir movimentação
+
+### 🛒 Vendas
+- `GET /api/v1/vendas/agendamentos` - Buscar agendamentos do dia (apenas status "agendado")
+- `GET /api/v1/vendas` - Listar todas as vendas
+- `GET /api/v1/vendas/:id` - Buscar venda específica
+- `POST /api/v1/vendas` - Criar nova venda (gera receitas e movimentações automaticamente)
+- `DELETE /api/v1/vendas/:id` - Excluir venda (reverte receitas e movimentações)
+
+### 💵 Receitas
+- `GET /api/v1/receitas` - Listar receitas (com filtros avançados)
+- `GET /api/v1/receitas/:id` - Buscar receita específica
+- `POST /api/v1/receitas/efetivar-pagamento` - Efetivar pagamento (individual ou em lote)
+- `PUT /api/v1/receitas/:id` - Atualizar receita
+- `DELETE /api/v1/receitas/:id` - Excluir receita (apenas se não paga)
+
 ### ⚙️ Configurações
 - `GET /api/v1/configuracoes` - Buscar configurações do sistema
 - `PUT /api/v1/configuracoes` - Atualizar configurações
@@ -245,6 +276,13 @@ Implementei as seguintes tabelas principais:
 - `produtos` - Produtos da barbearia
 - `produtos_precos_custo` - Histórico de preços de custo dos produtos
 - `estoque_movimentacoes` - Movimentações de entrada de estoque
+- `contas` - Contas/Caixas do sistema
+- `movimentacoes_caixa` - Movimentações financeiras (entradas, saídas, transferências)
+- `vendas` - Vendas realizadas
+- `vendas_servicos` - Serviços vinculados às vendas
+- `vendas_produtos` - Produtos vinculados às vendas
+- `vendas_parcelas` - Parcelas das vendas
+- `receitas` - Receitas do sistema (vinculadas ou não a vendas)
 
 ### Scripts SQL
 
@@ -260,6 +298,13 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_CRIAR_TABELA_PRODUTOS.sql`
 - `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
 - `COMANDOS_CRIAR_TABELA_ESTOQUE.sql`
+- `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
+- `COMANDOS_CRIAR_TABELA_CAIXAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_CAIXAS.sql`
+- `COMANDOS_CRIAR_TABELA_VENDAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql`
+- `COMANDOS_CRIAR_TABELA_RECEITAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_RECEITAS.sql`
 - `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
 
 ---
