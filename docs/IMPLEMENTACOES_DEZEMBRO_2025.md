@@ -10,9 +10,9 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 **Período**: Dezembro 2025  
 **Status**: ✅ **Todas as implementações concluídas e em produção**  
-**Módulos Adicionados**: 3 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque)  
-**Endpoints Criados**: 12 novos endpoints  
-**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque
+**Módulos Adicionados**: 6 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque, Caixas, Lançamento de Venda, Receitas)  
+**Endpoints Criados**: 29 novos endpoints  
+**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque, sistema financeiro completo
 
 ---
 
@@ -420,7 +420,217 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 ---
 
-**Data**: 12 de Dezembro de 2025  
-**Versão**: 1.4.0  
+---
+
+### 5. 💰 Módulo de Caixas Completo
+
+**Data de Implementação**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rotas completas `/api/v1/caixas/contas` (GET, POST, PUT, DELETE)
+- ✅ Rotas completas `/api/v1/caixas/movimentacoes` (GET, POST/entrada, POST/saida, POST/transferencia, DELETE)
+- ✅ Arquivo: `backend/routes/caixas.js`
+- ✅ Integração com sistema de logs
+- ✅ Verificação de permissões em todos os endpoints
+- ✅ Atualização automática de saldo via triggers
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/caixas/page.tsx`
+- ✅ Interface completa de gerenciamento com:
+  - Listagem de contas com busca
+  - Criação de contas (caixa, corrente, poupança, investimento, outro)
+  - Edição de contas
+  - Exclusão de contas (com validações)
+  - Lançamento de entradas manuais
+  - Lançamento de saídas manuais
+  - Transferências entre contas
+  - Histórico de movimentações
+  - Estatísticas (total de contas, contas ativas, saldo total)
+
+**Banco de Dados:**
+- ✅ Tabela `protese.contas` criada
+- ✅ Tabela `protese.movimentacoes_caixa` criada
+- ✅ Script: `COMANDOS_CRIAR_TABELA_CAIXAS.sql`
+- ✅ Script: `COMANDOS_ADICIONAR_PERMISSOES_CAIXAS.sql`
+- ✅ Triggers para atualização automática de saldo
+- ✅ Triggers para reversão de saldo ao excluir movimentação
+
+#### Funcionalidades:
+
+1. **Gerenciamento de Contas**
+   - Criar conta (nome, tipo, banco, agência, conta, saldo inicial)
+   - Editar conta existente
+   - Excluir conta (apenas se não houver movimentações)
+   - Ativar/Desativar contas
+   - Visualizar saldo atual (atualizado automaticamente)
+
+2. **Movimentações**
+   - Entrada manual (aumenta saldo)
+   - Saída manual (diminui saldo)
+   - Transferência entre contas (diminui origem, aumenta destino)
+   - Histórico completo de movimentações
+   - Filtros e busca avançada
+
+3. **Integração**
+   - Base para conciliação bancária futura
+   - Integração com módulo de Receitas
+   - Integração com módulo de Vendas
+
+#### Características Técnicas:
+
+- ✅ Saldo atualizado automaticamente via triggers
+- ✅ Validação de saldo suficiente para transferências
+- ✅ Prevenção de exclusão de contas com movimentações
+- ✅ Interface intuitiva e responsiva
+- ✅ Integração completa com sistema de permissões
+- ✅ Logs de auditoria para todas as ações
+
+---
+
+### 6. 🛒 Módulo de Lançamento de Venda Completo
+
+**Data de Implementação**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rota `/api/v1/vendas/agendamentos` - Buscar agendamentos do dia (apenas status "agendado")
+- ✅ Rota `/api/v1/vendas` (GET, POST, DELETE)
+- ✅ Rota `/api/v1/vendas/:id` - Buscar venda específica
+- ✅ Arquivo: `backend/routes/vendas.js`
+- ✅ Função para gerar tickets únicos
+- ✅ Cálculo automático de parcelas e datas de vencimento
+- ✅ Integração automática com módulo de Receitas
+- ✅ Integração automática com módulo de Caixas (pagamentos à vista)
+- ✅ Atualização automática de status de agendamentos
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/lancamento-venda/page.tsx`
+- ✅ Interface completa de lançamento com:
+  - Seleção de funcionário e data
+  - Listagem de agendamentos do dia
+  - Seleção de serviços (vinculados a agendamentos)
+  - Adição de produtos adicionais
+  - Cálculo automático de totais
+  - Aplicação de descontos (percentual ou valor fixo)
+  - Seleção de forma de pagamento
+  - Seleção de caixa (para pagamentos à vista)
+  - Visualização de parcelas e datas de vencimento
+
+**Banco de Dados:**
+- ✅ Tabela `protese.vendas` criada
+- ✅ Tabela `protese.vendas_servicos` criada
+- ✅ Tabela `protese.vendas_produtos` criada
+- ✅ Tabela `protese.vendas_parcelas` criada
+- ✅ Script: `COMANDOS_CRIAR_TABELA_VENDAS.sql`
+- ✅ Script: `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql`
+- ✅ Função PostgreSQL para gerar tickets únicos
+
+#### Funcionalidades:
+
+1. **Lançamento de Venda**
+   - Selecionar funcionário e data
+   - Visualizar agendamentos do dia (apenas "agendado")
+   - Selecionar serviços (vinculados a agendamentos)
+   - Adicionar produtos adicionais
+   - Aplicar descontos (percentual ou valor fixo)
+   - Selecionar forma de pagamento
+   - Visualizar totais e parcelas
+
+2. **Formas de Pagamento**
+   - **Dinheiro, Pix, TED**: Pagamento à vista, gera receita paga automaticamente
+   - **Cartão (1x-10x)**: Primeira parcela vence 30+1 dias, demais a cada 30 dias
+   - **Boleto (1x-10x)**: Usuário define primeiro vencimento, demais a cada 30 dias
+
+3. **Geração Automática**
+   - Tickets únicos (ex: "0001", "0001/01", "0001/02")
+   - Receitas geradas automaticamente
+   - Movimentações de caixa (pagamentos à vista)
+   - Atualização de status de agendamentos para "concluido"
+
+#### Características Técnicas:
+
+- ✅ Geração automática de tickets únicos
+- ✅ Cálculo automático de parcelas e datas
+- ✅ Integração completa com Receitas
+- ✅ Integração completa com Caixas
+- ✅ Atualização automática de agendamentos
+- ✅ Interface intuitiva e responsiva
+- ✅ Validações robustas
+
+---
+
+### 7. 💵 Módulo de Receitas Completo
+
+**Data de Implementação**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rota `/api/v1/receitas` (GET com filtros, POST para efetivar pagamento)
+- ✅ Rota `/api/v1/receitas/:id` (GET, PUT, DELETE)
+- ✅ Arquivo: `backend/routes/receitas.js`
+- ✅ Filtros avançados (status, data de vencimento, forma de pagamento, busca)
+- ✅ Efetivação de pagamento individual e em lote
+- ✅ Integração automática com módulo de Caixas
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/receitas/page.tsx`
+- ✅ Interface completa de gerenciamento com:
+  - Listagem de receitas com filtros
+  - Busca por ticket ou cliente
+  - Filtros por status, data de vencimento, forma de pagamento
+  - Efetivação de pagamento individual
+  - Efetivação de pagamento em lote
+  - Alteração manual de valores
+  - Estatísticas (total, pendentes/vencidas, total pago)
+  - Visualização detalhada de cada receita
+
+**Banco de Dados:**
+- ✅ Tabela `protese.receitas` criada
+- ✅ Script: `COMANDOS_CRIAR_TABELA_RECEITAS.sql`
+- ✅ Script: `COMANDOS_ADICIONAR_PERMISSOES_RECEITAS.sql`
+- ✅ Triggers para atualização automática de status
+- ✅ Relacionamento com vendas e parcelas
+
+#### Funcionalidades:
+
+1. **Gerenciamento de Receitas**
+   - Listagem completa de receitas
+   - Filtros avançados (status, data, forma de pagamento)
+   - Busca por ticket ou cliente
+   - Visualização de detalhes (valor vencimento, valor pago, datas)
+
+2. **Efetivação de Pagamento**
+   - Efetivação individual (selecionar receita e efetivar)
+   - Efetivação em lote (filtrar por data de vencimento e efetivar todas)
+   - Alteração manual de valores
+   - Seleção de caixa para recebimento
+   - Atualização automática de saldo do caixa
+
+3. **Integração Automática**
+   - Receitas geradas automaticamente a partir de vendas
+   - Receitas à vista (dinheiro, pix, ted) geradas como pagas
+   - Receitas futuras (cartão, boleto) geradas como pendentes
+   - Atualização automática de status (pendente, paga, vencida, parcial)
+
+#### Características Técnicas:
+
+- ✅ Status atualizado automaticamente via triggers
+- ✅ Integração completa com módulo de Caixas
+- ✅ Integração completa com módulo de Vendas
+- ✅ Interface intuitiva e responsiva
+- ✅ Filtros e busca avançada
+- ✅ Logs de auditoria para todas as ações
+
+---
+
+**Data**: 13 de Dezembro de 2025  
+**Versão**: 1.5.0  
 **Status**: ✅ **Todas as implementações concluídas e em produção**
 
