@@ -1,0 +1,746 @@
+const express = require('express');
+const router = express.Router();
+const pool = require('../config/database');
+const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
+
+/**
+ * Função auxiliar para calcular data de vencimento das parcelas
+ */
+function calcularDataVencimento(dataVenda, formaPagamento, numeroParcela, primeiroVencimentoBoleto = null) {
+  const data = new Date(dataVenda);
+  
+  // Dinheiro, Pix, TED: mesma data
+  if (['dinheiro', 'pix', 'ted'].includes(formaPagamento)) {
+    return data;
+  }
+  
+  // Boleto: primeiro vencimento é a data informada, depois +30 dias
+  if (formaPagamento.startsWith('boleto_')) {
+    if (numeroParcela === 1) {
+      if (primeiroVencimentoBoleto) {
+        return new Date(primeiroVencimentoBoleto);
+      }
+      return data; // Fallback
+    } else {
+      // Para parcelas seguintes, usar a data da primeira parcela + (parcela - 1) * 30 dias
+      const primeiraParcela = primeiroVencimentoBoleto ? new Date(primeiroVencimentoBoleto) : new Date(dataVenda);
+      const novaData = new Date(primeiraParcela);
+      const diasAdicionais = (numeroParcela - 1) * 30;
+      novaData.setDate(novaData.getDate() + diasAdicionais);
+      return novaData;
+    }
+  }
+  
+  // Cartão: primeira parcela = data_venda + 31 dias, depois +30 dias
+  if (formaPagamento.startsWith('cartao_')) {
+    const primeiraParcela = new Date(dataVenda);
+    primeiraParcela.setDate(primeiraParcela.getDate() + 31); // 30 + 1
+    
+    if (numeroParcela === 1) {
+      return primeiraParcela;
+    } else {
+      // Parcelas seguintes: primeira + (parcela - 1) * 30
+      const novaData = new Date(primeiraParcela);
+      const diasAdicionais = (numeroParcela - 1) * 30;
+      novaData.setDate(novaData.getDate() + diasAdicionais);
+      return novaData;
+    }
+  }
+  
+  return data;
+}
+
+/**
+ * Função auxiliar para gerar ticket de parcela
+ */
+function gerarTicketParcela(ticketBase, numeroParcela, totalParcelas) {
+  if (totalParcelas === 1) {
+    return ticketBase;
+  }
+  return `${ticketBase}/${numeroParcela.toString().padStart(2, '0')}`;
+}
+
+/**
+ * GET /api/v1/vendas/agendamentos
+ * Busca agendamentos por data e funcionário
+ */
+router.get('/agendamentos', async (req, res) => {
+  try {
+    const usuarioId = req.headers['x-user-id'];
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioNome = req.headers['x-user-nome'] || null;
+
+    // Verificar permissão
+    if (usuarioTipo !== 'master') {
+      const permissoesResult = await pool.query(
+        'SELECT vendas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        [usuarioId]
+      );
+
+      if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].vendas_ver) {
+        return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+      }
+    }
+
+    const { data, funcionario_id } = req.query;
+
+    if (!data || !funcionario_id) {
+      return res.status(400).json({ error: 'Data e funcionário são obrigatórios' });
+    }
+
+    const query = `
+      SELECT 
+        a.*,
+        c.nome_completo as cliente_nome,
+        s.nome as servico_nome,
+        s.duracao_minutos,
+        s.preco as servico_preco
+      FROM protese.agendamentos a
+      INNER JOIN protese.usuarios_clientes c ON a.cliente_id = c.id
+      INNER JOIN protese.servicos s ON a.servico_id = s.id
+      WHERE a.data_agendamento = $1 
+        AND a.funcionario_id = $2
+        AND a.status = 'agendado'
+      ORDER BY a.hora_inicio ASC
+    `;
+
+    const result = await pool.query(query, [data, funcionario_id]);
+
+    res.json({ agendamentos: result.rows });
+  } catch (error) {
+    console.error('Erro ao buscar agendamentos:', error);
+    res.status(500).json({ error: 'Erro ao buscar agendamentos' });
+  }
+});
+
+/**
+ * GET /api/v1/vendas
+ * Lista todas as vendas
+ */
+router.get('/', async (req, res) => {
+  try {
+    const usuarioId = req.headers['x-user-id'];
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioNome = req.headers['x-user-nome'] || null;
+
+    // Verificar permissão
+    if (usuarioTipo !== 'master') {
+      const permissoesResult = await pool.query(
+        'SELECT vendas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        [usuarioId]
+      );
+
+      if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].vendas_ver) {
+        return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+      }
+    }
+
+    const { data_inicio, data_fim, funcionario_id, cliente_id, status } = req.query;
+    let query = `
+      SELECT 
+        v.*,
+        f.nome_completo as funcionario_nome,
+        c.nome_completo as cliente_nome,
+        ca.nome as caixa_nome
+      FROM protese.vendas v
+      LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+      LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
+      LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    if (data_inicio) {
+      query += ` AND v.data_venda >= $${paramIndex}`;
+      params.push(data_inicio);
+      paramIndex++;
+    }
+
+    if (data_fim) {
+      query += ` AND v.data_venda <= $${paramIndex}`;
+      params.push(data_fim);
+      paramIndex++;
+    }
+
+    if (funcionario_id) {
+      query += ` AND v.funcionario_id = $${paramIndex}`;
+      params.push(funcionario_id);
+      paramIndex++;
+    }
+
+    if (cliente_id) {
+      query += ` AND v.cliente_id = $${paramIndex}`;
+      params.push(cliente_id);
+      paramIndex++;
+    }
+
+    if (status) {
+      query += ` AND v.status = $${paramIndex}`;
+      params.push(status);
+      paramIndex++;
+    }
+
+    query += ' ORDER BY v.data_venda DESC, v.created_at DESC';
+
+    const result = await pool.query(query, params);
+
+    // Buscar serviços e produtos de cada venda
+    const vendasComDetalhes = await Promise.all(result.rows.map(async (venda) => {
+      const servicosResult = await pool.query(
+        `SELECT 
+          vs.*,
+          s.nome as servico_nome
+         FROM protese.vendas_servicos vs
+         INNER JOIN protese.servicos s ON vs.servico_id = s.id
+         WHERE vs.venda_id = $1`,
+        [venda.id]
+      );
+
+      const produtosResult = await pool.query(
+        `SELECT 
+          vp.*,
+          p.descricao as produto_descricao,
+          p.codigo as produto_codigo
+         FROM protese.vendas_produtos vp
+         INNER JOIN protese.produtos p ON vp.produto_id = p.id
+         WHERE vp.venda_id = $1`,
+        [venda.id]
+      );
+
+      const parcelasResult = await pool.query(
+        `SELECT * FROM protese.vendas_parcelas WHERE venda_id = $1 ORDER BY numero_parcela ASC`,
+        [venda.id]
+      );
+
+      return {
+        ...venda,
+        servicos: servicosResult.rows,
+        produtos: produtosResult.rows,
+        parcelas: parcelasResult.rows
+      };
+    }));
+
+    await registrarLog({
+      usuario_id: usuarioId,
+      usuario_tipo: usuarioTipo,
+      usuario_nome: usuarioNome,
+      acao: 'visualizar',
+      modulo: 'vendas',
+      descricao: 'Listou vendas',
+      ip: getClientIp(req),
+      user_agent: getUserAgent(req)
+    });
+
+    res.json({ vendas: vendasComDetalhes });
+  } catch (error) {
+    console.error('Erro ao listar vendas:', error);
+    res.status(500).json({ error: 'Erro ao listar vendas' });
+  }
+});
+
+/**
+ * GET /api/v1/vendas/:id
+ * Busca uma venda específica
+ */
+router.get('/:id', async (req, res) => {
+  try {
+    const usuarioId = req.headers['x-user-id'];
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioNome = req.headers['x-user-nome'] || null;
+
+    // Verificar permissão
+    if (usuarioTipo !== 'master') {
+      const permissoesResult = await pool.query(
+        'SELECT vendas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        [usuarioId]
+      );
+
+      if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].vendas_ver) {
+        return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+      }
+    }
+
+    const vendaResult = await pool.query(
+      `SELECT 
+        v.*,
+        f.nome_completo as funcionario_nome,
+        c.nome_completo as cliente_nome,
+        ca.nome as caixa_nome
+       FROM protese.vendas v
+       LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+       LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
+       LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+       WHERE v.id = $1`,
+      [req.params.id]
+    );
+
+    if (vendaResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Venda não encontrada' });
+    }
+
+    const venda = vendaResult.rows[0];
+
+    // Buscar serviços, produtos e parcelas
+    const servicosResult = await pool.query(
+      `SELECT 
+        vs.*,
+        s.nome as servico_nome
+       FROM protese.vendas_servicos vs
+       INNER JOIN protese.servicos s ON vs.servico_id = s.id
+       WHERE vs.venda_id = $1`,
+      [venda.id]
+    );
+
+    const produtosResult = await pool.query(
+      `SELECT 
+        vp.*,
+        p.descricao as produto_descricao,
+        p.codigo as produto_codigo
+       FROM protese.vendas_produtos vp
+       INNER JOIN protese.produtos p ON vp.produto_id = p.id
+       WHERE vp.venda_id = $1`,
+      [venda.id]
+    );
+
+    const parcelasResult = await pool.query(
+      `SELECT * FROM protese.vendas_parcelas WHERE venda_id = $1 ORDER BY numero_parcela ASC`,
+      [venda.id]
+    );
+
+    res.json({
+      venda: {
+        ...venda,
+        servicos: servicosResult.rows,
+        produtos: produtosResult.rows,
+        parcelas: parcelasResult.rows
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao buscar venda:', error);
+    res.status(500).json({ error: 'Erro ao buscar venda' });
+  }
+});
+
+/**
+ * POST /api/v1/vendas
+ * Cria uma nova venda
+ */
+router.post('/', async (req, res) => {
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+
+    const usuarioId = req.headers['x-user-id'];
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioNome = req.headers['x-user-nome'] || null;
+
+    // Verificar permissão
+    if (usuarioTipo !== 'master') {
+      const permissoesResult = await client.query(
+        'SELECT vendas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        [usuarioId]
+      );
+
+      if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].vendas_editar) {
+        await client.query('ROLLBACK');
+        return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+      }
+    }
+
+    const {
+      funcionario_id,
+      cliente_id,
+      data_venda,
+      servicos,
+      produtos,
+      desconto_percentual,
+      desconto_valor,
+      forma_pagamento,
+      caixa_id,
+      observacoes,
+      primeiro_vencimento_boleto
+    } = req.body;
+
+    // Validações
+    if (!funcionario_id || !data_venda || !forma_pagamento || !caixa_id) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'Funcionário, data, forma de pagamento e caixa são obrigatórios' });
+    }
+
+    if ((!servicos || servicos.length === 0) && (!produtos || produtos.length === 0)) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'É necessário pelo menos um serviço ou produto' });
+    }
+
+    // Calcular valor total
+    let valorTotal = 0;
+
+    if (servicos && servicos.length > 0) {
+      for (const servico of servicos) {
+        if (!servico.servico_id || !servico.valor) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: 'Serviços devem ter ID e valor' });
+        }
+        valorTotal += parseFloat(servico.valor);
+      }
+    }
+
+    if (produtos && produtos.length > 0) {
+      for (const produto of produtos) {
+        if (!produto.produto_id || !produto.quantidade || !produto.valor_unitario) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: 'Produtos devem ter ID, quantidade e valor unitário' });
+        }
+        const valorProduto = parseFloat(produto.quantidade) * parseFloat(produto.valor_unitario);
+        valorTotal += valorProduto;
+      }
+    }
+
+    // Calcular descontos
+    const descontoPercentualValue = parseFloat(desconto_percentual) || 0;
+    const descontoValorValue = parseFloat(desconto_valor) || 0;
+    
+    const descontoPorPercentual = valorTotal * (descontoPercentualValue / 100);
+    const valorLiquido = valorTotal - descontoPorPercentual - descontoValorValue;
+
+    if (valorLiquido < 0) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'Valor líquido não pode ser negativo' });
+    }
+
+    // Extrair número de parcelas da forma de pagamento
+    let numeroParcelas = 1;
+    if (forma_pagamento.startsWith('cartao_') || forma_pagamento.startsWith('boleto_')) {
+      const match = forma_pagamento.match(/(\d+)x/);
+      if (match) {
+        numeroParcelas = parseInt(match[1]);
+      }
+    }
+
+    // Gerar ticket
+    const ticketResult = await client.query('SELECT protese.gerar_proximo_ticket_venda() as ticket');
+    const ticketBase = ticketResult.rows[0].ticket;
+
+    // Inserir venda
+    const vendaResult = await client.query(
+      `INSERT INTO protese.vendas 
+       (ticket, funcionario_id, cliente_id, data_venda, valor_total, desconto_percentual, 
+        desconto_valor, valor_liquido, forma_pagamento, numero_parcelas, caixa_id, observacoes, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       RETURNING *`,
+      [
+        ticketBase,
+        funcionario_id,
+        cliente_id || null,
+        data_venda,
+        valorTotal,
+        descontoPercentualValue,
+        descontoValorValue,
+        valorLiquido,
+        forma_pagamento,
+        numeroParcelas,
+        caixa_id,
+        observacoes || null,
+        usuarioId
+      ]
+    );
+
+    const venda = vendaResult.rows[0];
+
+    // Inserir serviços e atualizar status dos agendamentos para 'concluido'
+    if (servicos && servicos.length > 0) {
+      for (const servico of servicos) {
+        await client.query(
+          `INSERT INTO protese.vendas_servicos (venda_id, servico_id, agendamento_id, valor)
+           VALUES ($1, $2, $3, $4)`,
+          [venda.id, servico.servico_id, servico.agendamento_id || null, servico.valor]
+        );
+        
+        // Se o serviço está vinculado a um agendamento, atualizar status para 'concluido'
+        if (servico.agendamento_id) {
+          await client.query(
+            `UPDATE protese.agendamentos 
+             SET status = 'concluido', updated_at = CURRENT_TIMESTAMP
+             WHERE id = $1`,
+            [servico.agendamento_id]
+          );
+        }
+      }
+    }
+
+    // Inserir produtos
+    if (produtos && produtos.length > 0) {
+      for (const produto of produtos) {
+        const valorTotalProduto = parseFloat(produto.quantidade) * parseFloat(produto.valor_unitario);
+        await client.query(
+          `INSERT INTO protese.vendas_produtos (venda_id, produto_id, quantidade, valor_unitario, valor_total)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [
+            venda.id,
+            produto.produto_id,
+            produto.quantidade,
+            produto.valor_unitario,
+            valorTotalProduto
+          ]
+        );
+      }
+    }
+
+    // Calcular valor por parcela
+    const valorPorParcela = valorLiquido / numeroParcelas;
+
+    // Criar parcelas
+    const parcelas = [];
+    for (let i = 1; i <= numeroParcelas; i++) {
+      const dataVencimento = calcularDataVencimento(
+        data_venda,
+        forma_pagamento,
+        i,
+        primeiro_vencimento_boleto
+      );
+      
+      const ticketParcela = gerarTicketParcela(ticketBase, i, numeroParcelas);
+      
+      // Ajustar última parcela para compensar diferenças de arredondamento
+      let valorParcela = valorPorParcela;
+      if (i === numeroParcelas) {
+        // Última parcela recebe o restante para garantir que a soma seja exata
+        const valorJaDistribuido = valorPorParcela * (numeroParcelas - 1);
+        valorParcela = valorLiquido - valorJaDistribuido;
+      }
+
+      const parcelaResult = await client.query(
+        `INSERT INTO protese.vendas_parcelas 
+         (venda_id, numero_parcela, ticket_parcela, valor, data_vencimento, forma_pagamento, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING *`,
+        [
+          venda.id,
+          i,
+          ticketParcela,
+          valorParcela,
+          dataVencimento.toISOString().split('T')[0],
+          forma_pagamento,
+          usuarioId
+        ]
+      );
+
+      parcelas.push(parcelaResult.rows[0]);
+    }
+
+    // Criar receitas para cada parcela
+    const receitasCriadas = [];
+    for (let i = 0; i < parcelas.length; i++) {
+      const parcela = parcelas[i];
+      const isPagamentoVista = ['dinheiro', 'pix', 'ted'].includes(forma_pagamento);
+      
+      // Para pagamentos à vista, criar receita já quitada
+      // Para cartão/boleto, criar receita pendente
+      const receitaResult = await client.query(
+        `INSERT INTO protese.receitas 
+         (ticket_venda, parcela_id, venda_id, cliente_id, forma_pagamento, caixa_id, 
+          data_emissao, data_vencimento, data_pagamento, valor_vencimento, valor_pago, 
+          status, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+         RETURNING *`,
+        [
+          parcela.ticket_parcela,
+          parcela.id,
+          venda.id,
+          cliente_id || null,
+          forma_pagamento,
+          isPagamentoVista ? caixa_id : null, // Caixa só preenchido para pagamentos à vista
+          data_venda,
+          parcela.data_vencimento,
+          isPagamentoVista ? data_venda : null, // Data de pagamento só para à vista
+          parcela.valor,
+          isPagamentoVista ? parcela.valor : 0, // Valor pago só para à vista
+          isPagamentoVista ? 'paga' : 'pendente', // Status
+          usuarioId
+        ]
+      );
+
+      const receita = receitaResult.rows[0];
+      receitasCriadas.push(receita);
+
+      // Se for pagamento à vista, criar movimentação no caixa e vincular à receita
+      if (isPagamentoVista) {
+        const movimentacaoResult = await client.query(
+          `INSERT INTO protese.movimentacoes_caixa 
+           (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
+           VALUES ($1, 'entrada', $2, $3, $4, $5, 'receita', $6)
+           RETURNING id`,
+          [
+            caixa_id,
+            parcela.valor,
+            `Receita ${parcela.ticket_parcela} - Venda ${ticketBase} - ${forma_pagamento}`,
+            data_venda,
+            receita.id,
+            usuarioId
+          ]
+        );
+
+        // Atualizar receita com o ID da movimentação
+        await client.query(
+          `UPDATE protese.receitas 
+           SET movimentacao_caixa_id = $1 
+           WHERE id = $2`,
+          [movimentacaoResult.rows[0].id, receita.id]
+        );
+      }
+    }
+
+    await client.query('COMMIT');
+
+    await registrarLog({
+      usuario_id: usuarioId,
+      usuario_tipo: usuarioTipo,
+      usuario_nome: usuarioNome,
+      acao: 'criar',
+      modulo: 'vendas',
+      descricao: `Criou venda ${ticketBase}`,
+      ip: getClientIp(req),
+      user_agent: getUserAgent(req)
+    });
+
+    // Buscar venda completa para retornar
+    const vendaCompletaResult = await pool.query(
+      `SELECT 
+        v.*,
+        f.nome_completo as funcionario_nome,
+        c.nome_completo as cliente_nome,
+        ca.nome as caixa_nome
+       FROM protese.vendas v
+       LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+       LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
+       LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+       WHERE v.id = $1`,
+      [venda.id]
+    );
+
+    const servicosResult = await pool.query(
+      `SELECT 
+        vs.*,
+        s.nome as servico_nome
+       FROM protese.vendas_servicos vs
+       INNER JOIN protese.servicos s ON vs.servico_id = s.id
+       WHERE vs.venda_id = $1`,
+      [venda.id]
+    );
+
+    const produtosResult = await pool.query(
+      `SELECT 
+        vp.*,
+        p.descricao as produto_descricao,
+        p.codigo as produto_codigo
+       FROM protese.vendas_produtos vp
+       INNER JOIN protese.produtos p ON vp.produto_id = p.id
+       WHERE vp.venda_id = $1`,
+      [venda.id]
+    );
+
+    res.status(201).json({
+      venda: {
+        ...vendaCompletaResult.rows[0],
+        servicos: servicosResult.rows,
+        produtos: produtosResult.rows,
+        parcelas: parcelas
+      }
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Erro ao criar venda:', error);
+    res.status(500).json({ error: 'Erro ao criar venda', details: error.message });
+  } finally {
+    client.release();
+  }
+});
+
+/**
+ * DELETE /api/v1/vendas/:id
+ * Exclui uma venda (e todas suas parcelas, serviços e produtos)
+ */
+router.delete('/:id', async (req, res) => {
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+
+    const usuarioId = req.headers['x-user-id'];
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioNome = req.headers['x-user-nome'] || null;
+
+    // Verificar permissão
+    if (usuarioTipo !== 'master') {
+      const permissoesResult = await client.query(
+        'SELECT vendas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        [usuarioId]
+      );
+
+      if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].vendas_excluir) {
+        await client.query('ROLLBACK');
+        return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+      }
+    }
+
+    // Buscar venda antes de excluir
+    const vendaResult = await client.query(
+      'SELECT ticket FROM protese.vendas WHERE id = $1',
+      [req.params.id]
+    );
+
+    if (vendaResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Venda não encontrada' });
+    }
+
+    const ticket = vendaResult.rows[0].ticket;
+
+    // Excluir parcelas (cascade vai excluir automaticamente, mas vamos fazer explicitamente)
+    await client.query('DELETE FROM protese.vendas_parcelas WHERE venda_id = $1', [req.params.id]);
+    
+    // Excluir serviços e produtos (cascade)
+    await client.query('DELETE FROM protese.vendas_servicos WHERE venda_id = $1', [req.params.id]);
+    await client.query('DELETE FROM protese.vendas_produtos WHERE venda_id = $1', [req.params.id]);
+    
+    // Excluir receitas relacionadas (cascade vai excluir automaticamente)
+    await client.query('DELETE FROM protese.receitas WHERE venda_id = $1', [req.params.id]);
+    
+    // Excluir movimentações de caixa relacionadas (receitas e vendas)
+    await client.query(
+      `DELETE FROM protese.movimentacoes_caixa 
+       WHERE (referencia_id = $1 AND referencia_tipo = 'venda') 
+          OR (referencia_id IN (SELECT id FROM protese.receitas WHERE venda_id = $1) AND referencia_tipo = 'receita')`,
+      [req.params.id]
+    );
+    
+    // Excluir venda
+    await client.query('DELETE FROM protese.vendas WHERE id = $1', [req.params.id]);
+
+    await client.query('COMMIT');
+
+    await registrarLog({
+      usuario_id: usuarioId,
+      usuario_tipo: usuarioTipo,
+      usuario_nome: usuarioNome,
+      acao: 'excluir',
+      modulo: 'vendas',
+      descricao: `Excluiu venda ${ticket}`,
+      ip: getClientIp(req),
+      user_agent: getUserAgent(req)
+    });
+
+    res.json({ message: 'Venda excluída com sucesso' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Erro ao excluir venda:', error);
+    res.status(500).json({ error: 'Erro ao excluir venda' });
+  } finally {
+    client.release();
+  }
+});
+
+module.exports = router;
+
