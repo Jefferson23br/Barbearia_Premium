@@ -10,9 +10,9 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 **Período**: Dezembro 2025  
 **Status**: ✅ **Todas as implementações concluídas e em produção**  
-**Módulos Adicionados**: 2 novos módulos completos (Marcar Almoço/Saída, Produtos)  
-**Endpoints Criados**: 7 novos endpoints  
-**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu
+**Módulos Adicionados**: 3 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque)  
+**Endpoints Criados**: 12 novos endpoints  
+**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque
 
 ---
 
@@ -344,7 +344,83 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 ---
 
+### 3. 📊 Módulo de Estoque Completo
+
+**Data de Implementação**: 12 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rotas completas `/api/v1/estoque` (GET, POST, DELETE)
+- ✅ Endpoint `/api/v1/estoque/produtos` - Lista produtos com estoque atual
+- ✅ Endpoint `/api/v1/estoque/movimentacoes` - Lista movimentações de estoque
+- ✅ Endpoint `/api/v1/estoque/entrada` - Lança entrada de estoque
+- ✅ Arquivo: `backend/routes/estoque.js`
+- ✅ Integração com sistema de logs
+- ✅ Verificação de permissões em todos os endpoints
+- ✅ Busca automática do último preço de compra
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/estoque/page.tsx`
+- ✅ Interface completa de gerenciamento com:
+  - Listagem de produtos com quantidade em estoque
+  - Exibição do último preço de compra (da última aquisição)
+  - Indicadores visuais (sem estoque, estoque baixo)
+  - Formulário para lançar entrada de estoque
+  - Preenchimento automático de fornecedor e preço ao selecionar produto
+  - Estatísticas (total de produtos, total em estoque, produtos com/sem estoque)
+  - Busca por código, descrição ou fornecedor
+
+**Banco de Dados:**
+- ✅ Tabela `protese.estoque_movimentacoes` criada
+- ✅ Campo `quantidade_estoque` adicionado na tabela `produtos`
+- ✅ Script: `COMANDOS_CRIAR_TABELA_ESTOQUE.sql`
+- ✅ Triggers para atualizar automaticamente:
+  - Quantidade em estoque quando há entrada
+  - Último preço de custo quando há entrada
+  - **Fornecedor do produto quando há entrada** (novo)
+  - Reversão de quantidade quando movimentação é excluída
+- ✅ Índices otimizados para consultas
+
+#### Funcionalidades:
+
+1. **Gerenciamento de Estoque**
+   - Visualizar todos os produtos com quantidade em estoque
+   - Ver último preço de compra (sempre da última aquisição)
+   - Indicadores visuais de estoque (sem estoque, estoque baixo)
+   - Busca avançada por código, descrição ou fornecedor
+   - Estatísticas em tempo real
+
+2. **Lançamento de Entrada de Estoque**
+   - Seleção de produto (preenche automaticamente fornecedor e preço)
+   - Fornecedor (preenchido automaticamente do produto)
+   - Quantidade comprada
+   - Valor unitário de compra (preenchido automaticamente com último preço)
+   - Data da movimentação
+   - Observações opcionais
+   - Cálculo automático do valor total
+
+3. **Atualização Automática**
+   - Quantidade em estoque atualizada automaticamente
+   - Último preço de custo atualizado automaticamente
+   - **Fornecedor do produto atualizado automaticamente** (novo)
+   - Histórico de preços de custo registrado automaticamente
+   - Reversão automática ao excluir movimentação
+
+#### Características Técnicas:
+
+- ✅ Triggers automáticos para todas as atualizações
+- ✅ Integração completa com módulo de Produtos
+- ✅ Último preço de compra sempre da última aquisição
+- ✅ Interface intuitiva e responsiva
+- ✅ Preenchimento automático de campos ao selecionar produto
+- ✅ Validações robustas
+- ✅ Logs de auditoria para todas as ações
+
+---
+
 **Data**: 12 de Dezembro de 2025  
-**Versão**: 1.3.0  
+**Versão**: 1.4.0  
 **Status**: ✅ **Todas as implementações concluídas e em produção**
 

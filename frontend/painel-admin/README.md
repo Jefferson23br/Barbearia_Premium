@@ -97,6 +97,17 @@ npm run build
 - **Busca Avançada**: Busca por código, descrição, fornecedor ou preço
 - **Estatísticas**: Total de produtos, ativos e fornecedores
 
+### ✅ Estoque
+- **Gerenciamento Completo**: CRUD completo de movimentações de estoque
+- **Lançamento de Entrada**: Sistema completo para lançar entradas de estoque
+- **Integração com Produtos**: Integração completa com módulo de Produtos
+- **Atualização Automática**: Quantidade, preço e fornecedor atualizados automaticamente
+- **Último Preço de Compra**: Exibição automática do último preço de compra (da última aquisição)
+- **Indicadores Visuais**: Alertas de estoque baixo e sem estoque
+- **Preenchimento Automático**: Fornecedor e preço preenchidos automaticamente ao selecionar produto
+- **Estatísticas**: Total de produtos, total em estoque, produtos com/sem estoque
+- **Busca Avançada**: Busca por código, descrição ou fornecedor
+
 ---
 
 ## 🎨 Interface
@@ -146,4 +157,4 @@ src/
 ---
 
 **Última Atualização**: 12 de Dezembro de 2025  
-**Versão**: 1.3.0
+**Versão**: 1.4.0

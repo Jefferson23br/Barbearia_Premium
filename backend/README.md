@@ -46,6 +46,7 @@ backend/
 │   ├── help-desk.js   # Help Desk (tickets)
 │   ├── servicos.js    # Gerenciamento de serviços
 │   ├── produtos.js    # Gerenciamento de produtos
+│   ├── estoque.js     # Gerenciamento de estoque
 │   ├── configuracoes.js # Configurações do sistema
 │   ├── integracoes.js # Integrações de APIs externas
 │   ├── agendamentos.js # Sistema de agendamentos
@@ -168,9 +169,13 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `DELETE /api/v1/produtos/:id` - Excluir produto
 - `POST /api/v1/produtos/:id/preco-custo` - Lançar preço de custo
 - `GET /api/v1/produtos/:id/precos-custo` - Histórico de preços de custo
-- `POST /api/v1/servicos/:id/imagens` - Upload de imagens
-- `PUT /api/v1/servicos/:id/imagens/reordenar` - Reordenar imagens
-- `DELETE /api/v1/servicos/:id/imagens/:campo` - Excluir imagem específica
+
+### 📊 Estoque
+- `GET /api/v1/estoque/produtos` - Listar produtos com estoque atual
+- `GET /api/v1/estoque/movimentacoes` - Listar movimentações de estoque
+- `GET /api/v1/estoque/movimentacoes/:id` - Buscar movimentação específica
+- `POST /api/v1/estoque/entrada` - Lançar entrada de estoque
+- `DELETE /api/v1/estoque/movimentacoes/:id` - Excluir movimentação
 
 ### ⚙️ Configurações
 - `GET /api/v1/configuracoes` - Buscar configurações do sistema
@@ -237,6 +242,9 @@ Implementei as seguintes tabelas principais:
 - `integracoes_habilitadas` - Funcionalidades habilitadas por integração
 - `agendamentos` - Agendamentos de serviços
 - `fechamentos_especiais` - Dias de fechamento especiais
+- `produtos` - Produtos da barbearia
+- `produtos_precos_custo` - Histórico de preços de custo dos produtos
+- `estoque_movimentacoes` - Movimentações de entrada de estoque
 
 ### Scripts SQL
 
@@ -251,6 +259,8 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `DDL_FECHAMENTOS_ESPECIAIS.sql`
 - `COMANDOS_CRIAR_TABELA_PRODUTOS.sql`
 - `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
+- `COMANDOS_CRIAR_TABELA_ESTOQUE.sql`
+- `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
 
 ---
 

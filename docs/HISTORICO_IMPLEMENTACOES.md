@@ -741,8 +741,52 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
+### 📊 Módulo de Estoque Completo
+
+**Data**: 12 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ CRUD completo de movimentações de estoque
+- ✅ Lançamento de entrada de estoque
+- ✅ Integração completa com módulo de Produtos
+- ✅ Atualização automática de quantidade, preço e fornecedor
+- ✅ Último preço de compra exibido automaticamente (sempre da última aquisição)
+- ✅ Indicadores visuais de estoque (sem estoque, estoque baixo)
+- ✅ Busca avançada (código, descrição, fornecedor)
+- ✅ Estatísticas em tempo real
+- ✅ Preenchimento automático de fornecedor e preço ao selecionar produto
+
+**Arquivos Criados/Modificados:**
+- `COMANDOS_CRIAR_TABELA_ESTOQUE.sql` - DDL completo com triggers
+- `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql` - Atualização de trigger
+- `backend/routes/estoque.js` - Rotas completas (5 endpoints)
+- `backend/routes/index.js` - Registro das rotas
+- `frontend/painel-admin/src/app/dashboard/estoque/page.tsx` - Página completa
+
+**Endpoints:**
+- `GET /api/v1/estoque/produtos` - Lista produtos com estoque atual
+- `GET /api/v1/estoque/movimentacoes` - Lista movimentações
+- `GET /api/v1/estoque/movimentacoes/:id` - Busca movimentação específica
+- `POST /api/v1/estoque/entrada` - Lança entrada de estoque
+- `DELETE /api/v1/estoque/movimentacoes/:id` - Exclui movimentação
+
+**Tabelas Criadas:**
+- `protese.estoque_movimentacoes` - Movimentações de estoque
+- Campo `quantidade_estoque` adicionado em `protese.produtos`
+
+**Detalhes Técnicos:**
+- Triggers automáticos para atualizar quantidade, preço e fornecedor
+- Trigger para reverter quantidade ao excluir movimentação
+- Integração completa com sistema de permissões
+- Logs de auditoria para todas as ações
+- Interface moderna com preenchimento automático de campos
+- Último preço de compra sempre da última aquisição
+
+---
+
 **Última atualização**: 12 de Dezembro de 2025  
-**Versão do documento**: 1.2
+**Versão do documento**: 1.3
 
 > **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md).
 

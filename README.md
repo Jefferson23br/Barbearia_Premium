@@ -214,12 +214,12 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 47+ endpoints implementados
-- **Módulos Backend**: 13 módulos modulares
-- **Páginas Frontend**: 22+ páginas principais
-- **Tabelas no Banco**: 17+ tabelas principais
+- **Endpoints API**: 52+ endpoints implementados
+- **Módulos Backend**: 14 módulos modulares
+- **Páginas Frontend**: 23+ páginas principais
+- **Tabelas no Banco**: 18+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 13 módulos completos
+- **Módulos Implementados**: 14 módulos completos
 - **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
 
 ---
@@ -240,7 +240,7 @@ npm run dev
 11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade, marcação de almoço/saída
 12. **Fechamentos Especiais** - Configuração de dias de fechamento
 13. **Produtos** - Gerenciamento completo de produtos com histórico de preços de custo
-14. **Estoque** - Estrutura básica criada (em desenvolvimento)
+14. **Estoque** - Gerenciamento completo de estoque com lançamento de entradas e atualização automática
 
 ### 🔄 Em Desenvolvimento
 - Módulos financeiros (vendas, despesas, receitas)
@@ -270,6 +270,7 @@ npm run dev
 - `fechamentos_especiais` - Dias de fechamento especiais
 - `produtos` - Produtos da barbearia
 - `produtos_precos_custo` - Histórico de preços de custo dos produtos
+- `estoque_movimentacoes` - Movimentações de entrada de estoque
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -282,6 +283,8 @@ npm run dev
 - `DDL_FECHAMENTOS_ESPECIAIS.sql`
 - `COMANDOS_CRIAR_TABELA_PRODUTOS.sql`
 - `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
+- `COMANDOS_CRIAR_TABELA_ESTOQUE.sql`
+- `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
 
 ---
 
@@ -352,10 +355,11 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Marcar Almoço/Saída (concluído em Dezembro 2025)
 - ✅ Módulo de Produtos completo (concluído em Dezembro 2025)
 - ✅ Reorganização do Menu (concluído em Dezembro 2025)
-- 🔄 Módulo de Estoque (estrutura básica criada)
+- ✅ Módulo de Estoque completo (concluído em Dezembro 2025)
 - 🔄 Módulos financeiros (vendas, despesas, receitas)
 - 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
 - 🔄 Melhorias no Help Desk
+- 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 
 **Planejado:**
 - 🔄 Faturamento
