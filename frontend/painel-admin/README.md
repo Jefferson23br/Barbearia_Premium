@@ -97,6 +97,39 @@ npm run build
 - **Busca Avançada**: Busca por código, descrição, fornecedor ou preço
 - **Estatísticas**: Total de produtos, ativos e fornecedores
 
+### ✅ Caixas
+- **Gerenciamento Completo**: CRUD completo de contas e movimentações
+- **Contas**: Criação, edição, desativação de contas (caixa, corrente, poupança, investimento, etc.)
+- **Movimentações**: Lançamento de entradas, saídas e transferências manuais
+- **Saldos**: Saldo inicial e saldo atual (atualizado automaticamente)
+- **Conciliação**: Base para futura conciliação bancária
+- **Estatísticas**: Total de contas, contas ativas, saldo total
+- **Busca Avançada**: Busca por nome, banco ou conta
+- **Permissões**: Controle de acesso detalhado para ver, editar e excluir
+
+### ✅ Lançamento de Venda
+- **Sistema Completo**: Lançamento de vendas com serviços e produtos
+- **Agendamentos**: Seleção de agendamentos do dia (apenas status "agendado")
+- **Serviços**: Seleção de serviços vinculados a agendamentos
+- **Produtos**: Adição de produtos adicionais à venda
+- **Descontos**: Aplicação de descontos percentuais ou em valor fixo
+- **Formas de Pagamento**: Dinheiro, Pix, TED, Cartão (1x-10x), Boleto (1x-10x)
+- **Parcelamento**: Cálculo automático de parcelas e datas de vencimento
+- **Tickets**: Geração automática de tickets únicos
+- **Integração**: Geração automática de receitas e movimentações de caixa
+- **Status**: Atualização automática de status de agendamentos para "concluido"
+
+### ✅ Receitas
+- **Gerenciamento Completo**: Listagem e controle de receitas
+- **Filtros Avançados**: Status, data de vencimento, forma de pagamento, busca
+- **Efetivação**: Efetivação de pagamento individual e em lote
+- **Valores**: Campos de Valor Vencimento e Valor Pago
+- **Alteração Manual**: Possibilidade de alterar valores manualmente
+- **Integração**: Integração automática com módulo de Caixas
+- **Status Automático**: Status atualizado automaticamente (pendente, paga, vencida, parcial)
+- **Estatísticas**: Total de receitas, pendentes/vencidas, total pago
+- **Permissões**: Controle de acesso detalhado
+
 ### ✅ Estoque
 - **Gerenciamento Completo**: CRUD completo de movimentações de estoque
 - **Lançamento de Entrada**: Sistema completo para lançar entradas de estoque
@@ -156,5 +189,5 @@ src/
 
 ---
 
-**Última Atualização**: 12 de Dezembro de 2025  
-**Versão**: 1.4.0
+**Última Atualização**: 13 de Dezembro de 2025  
+**Versão**: 1.5.0

@@ -101,6 +101,16 @@ export interface PermissoesUsuario {
   estoque_ver: boolean
   estoque_editar: boolean
   estoque_excluir: boolean
+
+  // Caixas
+  caixas_ver: boolean
+  caixas_editar: boolean
+  caixas_excluir: boolean
+
+  // Vendas (usado pelo backend, mapeado de lancamento_venda no frontend)
+  vendas_ver: boolean
+  vendas_editar: boolean
+  vendas_excluir: boolean
 }
 
 export function usePermissions() {
@@ -187,14 +197,26 @@ export function usePermissions() {
   }
 
   const podeAcessar = (modulo: string): boolean => {
+    // Mapear lancamento_venda para vendas no backend
+    if (modulo === 'lancamento_venda') {
+      return temPermissao('vendas', 'ver') || temPermissao('lancamento_venda', 'ver')
+    }
     return temPermissao(modulo, 'ver')
   }
 
   const podeEditar = (modulo: string): boolean => {
+    // Mapear lancamento_venda para vendas no backend
+    if (modulo === 'lancamento_venda') {
+      return temPermissao('vendas', 'editar') || temPermissao('lancamento_venda', 'editar')
+    }
     return temPermissao(modulo, 'editar')
   }
 
   const podeExcluir = (modulo: string): boolean => {
+    // Mapear lancamento_venda para vendas no backend
+    if (modulo === 'lancamento_venda') {
+      return temPermissao('vendas', 'excluir') || temPermissao('lancamento_venda', 'excluir')
+    }
     return temPermissao(modulo, 'excluir')
   }
 
@@ -269,6 +291,12 @@ function criarPermissoesMaster(): PermissoesUsuario {
     estoque_ver: true,
     estoque_editar: true,
     estoque_excluir: true,
+    caixas_ver: true,
+    caixas_editar: true,
+    caixas_excluir: true,
+    vendas_ver: true,
+    vendas_editar: true,
+    vendas_excluir: true,
   }
 }
 
@@ -332,6 +360,12 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     estoque_ver: false,
     estoque_editar: false,
     estoque_excluir: false,
+    caixas_ver: false,
+    caixas_editar: false,
+    caixas_excluir: false,
+    vendas_ver: false,
+    vendas_editar: false,
+    vendas_excluir: false,
   }
 
   // Proprietário tem acesso padrão a mais coisas
@@ -390,6 +424,12 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.estoque_ver = true
     padrao.estoque_editar = true
     padrao.estoque_excluir = true
+    padrao.caixas_ver = true
+    padrao.caixas_editar = true
+    padrao.caixas_excluir = true
+    padrao.vendas_ver = true
+    padrao.vendas_editar = true
+    padrao.vendas_excluir = true
   }
 
   // Funcionário tem acesso limitado

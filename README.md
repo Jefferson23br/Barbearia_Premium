@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-12_Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-13_Dezembro_2025-blue?style=flat-square)
 
 </div>
 
@@ -214,12 +214,12 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 52+ endpoints implementados
-- **Módulos Backend**: 14 módulos modulares
-- **Páginas Frontend**: 23+ páginas principais
-- **Tabelas no Banco**: 18+ tabelas principais
+- **Endpoints API**: 60+ endpoints implementados
+- **Módulos Backend**: 17 módulos modulares
+- **Páginas Frontend**: 26+ páginas principais
+- **Tabelas no Banco**: 22+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 14 módulos completos
+- **Módulos Implementados**: 17 módulos completos
 - **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
 
 ---
@@ -241,11 +241,15 @@ npm run dev
 12. **Fechamentos Especiais** - Configuração de dias de fechamento
 13. **Produtos** - Gerenciamento completo de produtos com histórico de preços de custo
 14. **Estoque** - Gerenciamento completo de estoque com lançamento de entradas e atualização automática
+15. **Caixas** - Gerenciamento completo de contas e movimentações financeiras (entradas, saídas, transferências)
+16. **Lançamento de Venda** - Sistema completo de lançamento de vendas com serviços, produtos, descontos e parcelamento
+17. **Receitas** - Gerenciamento completo de receitas com efetivação de pagamentos individuais e em lote
 
 ### 🔄 Em Desenvolvimento
-- Módulos financeiros (vendas, despesas, receitas)
+- Módulo de Despesas
 - Faturamento
 - Melhorias no Help Desk
+- Relatórios financeiros
 
 ---
 
@@ -271,6 +275,13 @@ npm run dev
 - `produtos` - Produtos da barbearia
 - `produtos_precos_custo` - Histórico de preços de custo dos produtos
 - `estoque_movimentacoes` - Movimentações de entrada de estoque
+- `contas` - Contas/Caixas do sistema
+- `movimentacoes_caixa` - Movimentações financeiras (entradas, saídas, transferências)
+- `vendas` - Vendas realizadas
+- `vendas_servicos` - Serviços vinculados às vendas
+- `vendas_produtos` - Produtos vinculados às vendas
+- `vendas_parcelas` - Parcelas das vendas
+- `receitas` - Receitas do sistema (vinculadas ou não a vendas)
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -285,6 +296,12 @@ npm run dev
 - `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
 - `COMANDOS_CRIAR_TABELA_ESTOQUE.sql`
 - `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
+- `COMANDOS_CRIAR_TABELA_CAIXAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_CAIXAS.sql`
+- `COMANDOS_CRIAR_TABELA_VENDAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql`
+- `COMANDOS_CRIAR_TABELA_RECEITAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_RECEITAS.sql`
 
 ---
 
@@ -356,10 +373,14 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Módulo de Produtos completo (concluído em Dezembro 2025)
 - ✅ Reorganização do Menu (concluído em Dezembro 2025)
 - ✅ Módulo de Estoque completo (concluído em Dezembro 2025)
-- 🔄 Módulos financeiros (vendas, despesas, receitas)
+- ✅ Módulo de Caixas completo (concluído em Dezembro 2025)
+- ✅ Lançamento de Venda completo (concluído em Dezembro 2025)
+- ✅ Módulo de Receitas completo (concluído em Dezembro 2025)
+- 🔄 Módulo de Despesas
 - 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
+- 🔄 Relatórios financeiros
 
 **Planejado:**
 - 🔄 Faturamento
@@ -393,6 +414,6 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 12 de Dezembro de 2025
+**Última Atualização**: 13 de Dezembro de 2025
 
 </div>

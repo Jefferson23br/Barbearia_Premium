@@ -44,6 +44,9 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Fechamentos Especiais** (gerenciamento de dias de fechamento)
 - ✅ **Módulo de Produtos** (CRUD completo com histórico de preços de custo)
 - ✅ **Módulo de Estoque** (CRUD completo com lançamento de entradas e atualização automática)
+- ✅ **Módulo de Caixas** (gerenciamento de contas e movimentações financeiras)
+- ✅ **Lançamento de Venda** (sistema completo de lançamento de vendas com serviços, produtos, descontos e parcelamento)
+- ✅ **Módulo de Receitas** (gerenciamento completo de receitas com efetivação de pagamentos)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)

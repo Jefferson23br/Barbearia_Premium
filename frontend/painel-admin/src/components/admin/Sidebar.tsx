@@ -29,6 +29,7 @@ import {
   Cog,
   Package,
   Warehouse,
+  Wallet,
 } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
@@ -168,6 +169,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       path: '/dashboard/estoque',
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'estoque',
+    },
+    {
+      id: 'caixas',
+      label: 'Caixas',
+      icon: Wallet,
+      path: '/dashboard/caixas',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'caixas',
     },
     {
       id: 'acessos',
