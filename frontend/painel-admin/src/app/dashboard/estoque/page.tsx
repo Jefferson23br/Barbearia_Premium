@@ -28,10 +28,10 @@ interface ProdutoEstoque {
   codigo: string
   descricao: string
   fornecedor?: string | null
-  preco_venda: number
+  preco_venda: number | string
   quantidade_estoque: number
-  ultimo_preco_compra?: number | null
-  ultimo_preco_custo?: number | null
+  ultimo_preco_compra?: number | string | null
+  ultimo_preco_custo?: number | string | null
   is_active: boolean
 }
 
@@ -162,11 +162,14 @@ export default function EstoquePage() {
     setProdutosFiltrados(filtrados)
   }
 
-  const formatarPreco = (preco: number) => {
+  const formatarPreco = (preco: number | string | null | undefined) => {
+    if (!preco) return 'R$ 0,00'
+    const valor = typeof preco === 'string' ? parseFloat(preco) : preco
+    if (isNaN(valor)) return 'R$ 0,00'
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    }).format(preco)
+    }).format(valor)
   }
 
   const abrirModal = () => {
@@ -197,14 +200,22 @@ export default function EstoquePage() {
     if (name === 'produto_id' && value) {
       const produto = produtosParaSelect.find(p => p.id === value)
       if (produto) {
+        // Converter para número antes de usar toFixed
+        const precoCompra = produto.ultimo_preco_compra 
+          ? Number(produto.ultimo_preco_compra) 
+          : null
+        const precoCusto = produto.ultimo_preco_custo 
+          ? Number(produto.ultimo_preco_custo) 
+          : null
+        
         setFormData(prev => ({
           ...prev,
           produto_id: value,
           fornecedor: produto.fornecedor || '',
-          valor_unitario: produto.ultimo_preco_compra 
-            ? produto.ultimo_preco_compra.toFixed(2) 
-            : (produto.ultimo_preco_custo 
-              ? produto.ultimo_preco_custo.toFixed(2) 
+          valor_unitario: precoCompra && !isNaN(precoCompra)
+            ? precoCompra.toFixed(2) 
+            : (precoCusto && !isNaN(precoCusto)
+              ? precoCusto.toFixed(2) 
               : prev.valor_unitario),
         }))
         return

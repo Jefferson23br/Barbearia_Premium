@@ -1,8 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/produtos/page": "app/dashboard/produtos/page.js",
+  "/dashboard/integracoes-apis/page": "app/dashboard/integracoes-apis/page.js",
+  "/dashboard/habilitar-api/page": "app/dashboard/habilitar-api/page.js",
+  "/dashboard/configuracoes/page": "app/dashboard/configuracoes/page.js",
   "/dashboard/estoque/page": "app/dashboard/estoque/page.js",
-  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js",
-  "/dashboard/agenda/page": "app/dashboard/agenda/page.js"
+  "/dashboard/produtos/page": "app/dashboard/produtos/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }

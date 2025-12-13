@@ -53,3 +53,4 @@ COMMENT ON COLUMN protese.servicos.imagem_3_url IS 'URL da terceira imagem do se
 
 
 
+

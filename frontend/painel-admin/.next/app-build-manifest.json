@@ -21,30 +21,70 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
+    "/dashboard/agenda/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/agenda/page.js"
+    ],
+    "/dashboard/servicos/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/servicos/page.js"
+    ],
     "/dashboard/produtos/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/produtos/page.js"
+    ],
+    "/dashboard/usuarios/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/usuarios/page.js"
+    ],
+    "/dashboard/funcionarios/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/funcionarios/page.js"
     ],
     "/dashboard/estoque/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/estoque/page.js"
     ],
+    "/dashboard/controle-acessos/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/controle-acessos/page.js"
+    ],
+    "/dashboard/controle-logs/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/controle-logs/page.js"
+    ],
     "/dashboard/controle-permissoes/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/controle-permissoes/page.js"
     ],
-    "/dashboard/agenda/page": [
+    "/dashboard/help-desk/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/agenda/page.js"
+      "static/chunks/app/dashboard/help-desk/page.js"
     ],
-    "/_not-found/page": [
+    "/dashboard/integracoes-apis/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/dashboard/integracoes-apis/page.js"
+    ],
+    "/dashboard/habilitar-api/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/habilitar-api/page.js"
+    ],
+    "/dashboard/configuracoes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/configuracoes/page.js"
     ]
   }
 }
