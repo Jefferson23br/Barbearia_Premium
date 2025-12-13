@@ -785,8 +785,160 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
-**Última atualização**: 12 de Dezembro de 2025  
-**Versão do documento**: 1.3
+---
+
+### 💰 Módulo de Caixas Completo
+
+**Data**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ CRUD completo de contas (caixa, corrente, poupança, investimento, outro)
+- ✅ Saldo inicial e saldo atual (atualizado automaticamente)
+- ✅ Lançamento de entradas manuais
+- ✅ Lançamento de saídas manuais
+- ✅ Transferências entre contas
+- ✅ Integração com módulo de Receitas
+- ✅ Busca avançada
+- ✅ Estatísticas (total de contas, contas ativas, saldo total)
+- ✅ Base para conciliação bancária futura
+
+**Arquivos Criados/Modificados:**
+- `COMANDOS_CRIAR_TABELA_CAIXAS.sql` - DDL completo com triggers
+- `COMANDOS_ADICIONAR_PERMISSOES_CAIXAS.sql` - Permissões
+- `backend/routes/caixas.js` - Rotas completas (10 endpoints)
+- `backend/routes/index.js` - Registro das rotas
+- `frontend/painel-admin/src/app/dashboard/caixas/page.tsx` - Página completa
+- `frontend/painel-admin/src/components/admin/Sidebar.tsx` - Item de menu
+- `frontend/painel-admin/src/hooks/usePermissions.ts` - Permissões
+
+**Endpoints:**
+- `GET /api/v1/caixas/contas` - Lista todas as contas
+- `GET /api/v1/caixas/contas/:id` - Busca conta específica
+- `POST /api/v1/caixas/contas` - Cria nova conta
+- `PUT /api/v1/caixas/contas/:id` - Atualiza conta
+- `DELETE /api/v1/caixas/contas/:id` - Exclui conta
+- `GET /api/v1/caixas/movimentacoes` - Lista movimentações
+- `POST /api/v1/caixas/movimentacoes/entrada` - Cria entrada manual
+- `POST /api/v1/caixas/movimentacoes/saida` - Cria saída manual
+- `POST /api/v1/caixas/movimentacoes/transferencia` - Cria transferência
+- `DELETE /api/v1/caixas/movimentacoes/:id` - Exclui movimentação
+
+**Tabelas Criadas:**
+- `protese.contas` - Contas/Caixas do sistema
+- `protese.movimentacoes_caixa` - Movimentações financeiras
+
+**Detalhes Técnicos:**
+- Triggers automáticos para atualização de saldo
+- Triggers para reversão de saldo ao excluir movimentação
+- Validação de saldo suficiente para transferências
+- Prevenção de exclusão de contas com movimentações
+- Integração completa com sistema de permissões
+- Logs de auditoria para todas as ações
+
+---
+
+### 🛒 Módulo de Lançamento de Venda Completo
+
+**Data**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ Seleção de funcionário e data
+- ✅ Listagem de agendamentos do dia (apenas status "agendado")
+- ✅ Seleção de serviços (vinculados a agendamentos)
+- ✅ Adição de produtos adicionais
+- ✅ Cálculo automático de totais
+- ✅ Aplicação de descontos (percentual ou valor fixo)
+- ✅ Múltiplas formas de pagamento (dinheiro, pix, ted, cartão, boleto)
+- ✅ Parcelamento automático (1x a 10x)
+- ✅ Cálculo automático de datas de vencimento
+- ✅ Geração automática de tickets únicos
+- ✅ Atualização automática de status de agendamentos para "concluido"
+- ✅ Integração automática com módulo de Receitas
+- ✅ Integração automática com módulo de Caixas (pagamentos à vista)
+
+**Arquivos Criados/Modificados:**
+- `COMANDOS_CRIAR_TABELA_VENDAS.sql` - DDL completo com função de geração de tickets
+- `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql` - Permissões
+- `backend/routes/vendas.js` - Rotas completas (4 endpoints)
+- `backend/routes/index.js` - Registro das rotas
+- `frontend/painel-admin/src/app/dashboard/lancamento-venda/page.tsx` - Página completa
+- `frontend/painel-admin/src/components/admin/Sidebar.tsx` - Item de menu
+- `frontend/painel-admin/src/hooks/usePermissions.ts` - Permissões
+
+**Endpoints:**
+- `GET /api/v1/vendas/agendamentos` - Busca agendamentos do dia
+- `GET /api/v1/vendas` - Lista todas as vendas
+- `GET /api/v1/vendas/:id` - Busca venda específica
+- `POST /api/v1/vendas` - Cria nova venda (gera receitas e movimentações)
+- `DELETE /api/v1/vendas/:id` - Exclui venda (reverte receitas e movimentações)
+
+**Tabelas Criadas:**
+- `protese.vendas` - Vendas realizadas
+- `protese.vendas_servicos` - Serviços vinculados às vendas
+- `protese.vendas_produtos` - Produtos vinculados às vendas
+- `protese.vendas_parcelas` - Parcelas das vendas
+
+**Detalhes Técnicos:**
+- Função PostgreSQL para gerar tickets únicos
+- Cálculo automático de parcelas e datas de vencimento
+- Integração completa com Receitas (gera receitas automaticamente)
+- Integração completa com Caixas (gera movimentações para pagamentos à vista)
+- Atualização automática de status de agendamentos
+- Validações robustas de dados
+
+---
+
+### 💵 Módulo de Receitas Completo
+
+**Data**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades:**
+- ✅ Listagem completa de receitas (vinculadas ou não a vendas)
+- ✅ Filtros avançados (status, data de vencimento, forma de pagamento, busca)
+- ✅ Campos: Valor Vencimento e Valor Pago
+- ✅ Efetivação de pagamento individual
+- ✅ Efetivação de pagamento em lote (filtrado por data de vencimento)
+- ✅ Alteração manual de valores
+- ✅ Integração automática com módulo de Caixas (atualização de saldo)
+- ✅ Geração automática de receitas a partir de vendas
+- ✅ Status automático (pendente, paga, vencida, parcial, cancelada)
+- ✅ Receitas à vista (dinheiro, pix, ted) geradas como pagas automaticamente
+- ✅ Receitas futuras (cartão, boleto) geradas como pendentes
+
+**Arquivos Criados/Modificados:**
+- `COMANDOS_CRIAR_TABELA_RECEITAS.sql` - DDL completo com triggers
+- `COMANDOS_ADICIONAR_PERMISSOES_RECEITAS.sql` - Permissões
+- `backend/routes/receitas.js` - Rotas completas (5 endpoints)
+- `backend/routes/index.js` - Registro das rotas
+- `frontend/painel-admin/src/app/dashboard/receitas/page.tsx` - Página completa
+- `frontend/painel-admin/src/components/admin/Sidebar.tsx` - Item de menu
+- `frontend/painel-admin/src/hooks/usePermissions.ts` - Permissões
+
+**Endpoints:**
+- `GET /api/v1/receitas` - Lista receitas (com filtros avançados)
+- `GET /api/v1/receitas/:id` - Busca receita específica
+- `POST /api/v1/receitas/efetivar-pagamento` - Efetiva pagamento (individual ou em lote)
+- `PUT /api/v1/receitas/:id` - Atualiza receita
+- `DELETE /api/v1/receitas/:id` - Exclui receita (apenas se não paga)
+
+**Tabelas Criadas:**
+- `protese.receitas` - Receitas do sistema
+
+**Detalhes Técnicos:**
+- Triggers automáticos para atualização de status
+- Integração completa com módulo de Caixas
+- Integração completa com módulo de Vendas
+- Filtros e busca avançada
+- Efetivação individual e em lote
+- Logs de auditoria para todas as ações
+
+---
+
+**Última atualização**: 13 de Dezembro de 2025  
+**Versão do documento**: 1.4
 
 > **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md).
 
