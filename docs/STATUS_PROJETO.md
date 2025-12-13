@@ -8,8 +8,8 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 
 **Nome do Projeto**: Sistema Barbearia Premium  
 **Status**: ✅ **Em Produção**  
-**Última Atualização**: 12 de Dezembro de 2025  
-**Versão Atual**: 1.4.0
+**Última Atualização**: 13 de Dezembro de 2025  
+**Versão Atual**: 1.5.0
 
 ---
 
@@ -165,19 +165,19 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 ## 📊 Estatísticas do Projeto
 
 ### Backend
-- **Total de Endpoints**: 52+
-- **Módulos**: 14
-- **Linhas de Código**: ~5.200
+- **Total de Endpoints**: 60+
+- **Módulos**: 17
+- **Linhas de Código**: ~7.500
 - **Estrutura**: Modular e escalável
 
 ### Frontend
-- **Páginas Principais**: 18+
+- **Páginas Principais**: 26+
 - **Componentes UI**: 48+
 - **Projetos**: 3 (Admin, Cliente, Site)
 - **Design**: Responsivo e moderno
 
 ### Banco de Dados
-- **Tabelas**: 12+
+- **Tabelas**: 22+
 - **Schema**: `protese` (em uso)
 - **Índices**: Otimizados
 - **Relacionamentos**: Bem definidos
@@ -248,14 +248,74 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 
 ---
 
+### 15. 💰 Caixas
+**Status**: ✅ **100% Completo**
+
+- CRUD completo de contas (caixa, corrente, poupança, investimento, outro)
+- Saldo inicial e saldo atual (atualizado automaticamente)
+- Lançamento de entradas manuais
+- Lançamento de saídas manuais
+- Transferências entre contas
+- Integração com módulo de Receitas
+- Busca avançada
+- Estatísticas (total de contas, contas ativas, saldo total)
+- Base para conciliação bancária futura
+
+**Endpoints**: 10  
+**Páginas Frontend**: 1
+
+---
+
+### 16. 🛒 Lançamento de Venda
+**Status**: ✅ **100% Completo**
+
+- Seleção de funcionário e data
+- Listagem de agendamentos do dia (apenas status "agendado")
+- Seleção de serviços (vinculados a agendamentos)
+- Adição de produtos adicionais
+- Cálculo automático de totais
+- Aplicação de descontos (percentual ou valor fixo)
+- Múltiplas formas de pagamento (dinheiro, pix, ted, cartão, boleto)
+- Parcelamento automático (1x a 10x)
+- Cálculo automático de datas de vencimento
+- Geração automática de tickets únicos
+- Atualização automática de status de agendamentos para "concluido"
+- Integração automática com módulo de Receitas
+- Integração automática com módulo de Caixas (pagamentos à vista)
+
+**Endpoints**: 4  
+**Páginas Frontend**: 1
+
+---
+
+### 17. 💵 Receitas
+**Status**: ✅ **100% Completo**
+
+- Listagem completa de receitas (vinculadas ou não a vendas)
+- Filtros avançados (status, data de vencimento, forma de pagamento, busca)
+- Campos: Valor Vencimento e Valor Pago
+- Efetivação de pagamento individual
+- Efetivação de pagamento em lote (filtrado por data de vencimento)
+- Alteração manual de valores
+- Integração automática com módulo de Caixas (atualização de saldo)
+- Geração automática de receitas a partir de vendas
+- Status automático (pendente, paga, vencida, parcial, cancelada)
+- Receitas à vista (dinheiro, pix, ted) geradas como pagas automaticamente
+- Receitas futuras (cartão, boleto) geradas como pendentes
+
+**Endpoints**: 5  
+**Páginas Frontend**: 1
+
+---
+
 ## 🔄 Módulos em Desenvolvimento
 
 ---
 
-### 💰 Módulos Financeiros
+### 💸 Módulo de Despesas
 **Status**: 🔄 **Planejado**  
 **Prioridade**: Alta  
-**Início Estimado**: Fevereiro 2026
+**Início Estimado**: Janeiro 2026
 
 ---
 
@@ -339,12 +399,14 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 
 ## 🎯 Próximos Passos
 
-1. **Módulos Financeiros** - Vendas e Despesas
+1. **Módulo de Despesas** - Lançamento e controle de despesas
 2. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
 3. **Melhorias no Help Desk** - Notificações
 4. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
 5. **Melhorias no Módulo de Estoque** - Saída de estoque, ajustes, relatórios de movimentação
 6. **Melhorias no Módulo de Produtos** - Lançamento de preços de custo via interface
+7. **Relatórios Financeiros** - Relatórios de vendas, receitas, despesas e fluxo de caixa
+8. **Conciliação Bancária** - Integração com extratos bancários
 
 ---
 
@@ -354,7 +416,7 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 ---
 
-**Última Atualização**: 12 de Dezembro de 2025  
+**Última Atualização**: 13 de Dezembro de 2025  
 **Próxima Revisão**: Janeiro 2026
 
 
