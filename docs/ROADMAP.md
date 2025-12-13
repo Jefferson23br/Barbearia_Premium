@@ -113,6 +113,64 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ---
 
+### 💰 Módulo de Caixas
+**Prioridade**: Alta  
+**Status**: ✅ **100% Completo (Dezembro 2025)**
+
+**Funcionalidades implementadas:**
+- ✅ CRUD completo de contas
+- ✅ Lançamento de entradas e saídas manuais
+- ✅ Transferências entre contas
+- ✅ Saldo atualizado automaticamente
+- ✅ Integração com módulo de Receitas
+- ✅ Base para conciliação bancária
+
+**Melhorias planejadas:**
+- [ ] Conciliação bancária automática
+- [ ] Relatórios de movimentações
+- [ ] Exportação de extratos
+
+---
+
+### 🛒 Lançamento de Venda
+**Prioridade**: Alta  
+**Status**: ✅ **100% Completo (Dezembro 2025)**
+
+**Funcionalidades implementadas:**
+- ✅ Seleção de agendamentos do dia
+- ✅ Lançamento de serviços e produtos
+- ✅ Aplicação de descontos
+- ✅ Múltiplas formas de pagamento
+- ✅ Parcelamento automático
+- ✅ Geração automática de receitas
+- ✅ Integração com Caixas
+
+**Melhorias planejadas:**
+- [ ] Relatórios de vendas
+- [ ] Histórico de vendas por cliente
+- [ ] Exportação de vendas
+
+---
+
+### 💵 Módulo de Receitas
+**Prioridade**: Alta  
+**Status**: ✅ **100% Completo (Dezembro 2025)**
+
+**Funcionalidades implementadas:**
+- ✅ Listagem completa de receitas
+- ✅ Filtros avançados
+- ✅ Efetivação de pagamento individual e em lote
+- ✅ Integração com Caixas
+- ✅ Status automático
+- ✅ Geração automática a partir de vendas
+
+**Melhorias planejadas:**
+- [ ] Relatórios de receitas
+- [ ] Previsão de recebimentos
+- [ ] Exportação de receitas
+
+---
+
 ### 📊 Módulo de Estoque
 **Prioridade**: Alta  
 **Status**: ✅ **100% Completo (Dezembro 2025)**
@@ -137,30 +195,20 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ---
 
-### 💰 Módulos Financeiros
+### 💸 Módulo de Despesas
 **Prioridade**: Alta  
-**Status**: Planejado
+**Status**: 🔄 **Planejado**
 
-#### Vendas
-- [ ] Lançamento de vendas
-- [ ] Histórico de vendas
-- [ ] Relatórios de vendas
-- [ ] Filtros avançados
-- [ ] Exportação de dados
-
-#### Despesas
+**Funcionalidades planejadas:**
 - [ ] Lançamento de despesas
 - [ ] Categorização de despesas
 - [ ] Histórico de despesas
 - [ ] Relatórios de despesas
+- [ ] Integração com módulo de Caixas
+- [ ] Filtros avançados
+- [ ] Exportação de dados
 
-#### Receitas
-- [ ] Dashboard de receitas
-- [ ] Relatórios financeiros
-- [ ] Gráficos e estatísticas
-- [ ] Comparativos mensais/anuais
-
-**Estimativa**: 3-4 semanas
+**Estimativa**: 2-3 semanas
 
 ---
 
@@ -226,9 +274,13 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ### Q4 2025 / Q1 2026
 1. ✅ **Sistema de Agendamentos** - ✅ **Concluído em Dezembro 2025**
-2. **Módulos Financeiros** - Vendas e Despesas
-3. **Melhorias no Help Desk** - Notificações e templates
-4. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
+2. ✅ **Módulo de Caixas** - ✅ **Concluído em Dezembro 2025**
+3. ✅ **Lançamento de Venda** - ✅ **Concluído em Dezembro 2025**
+4. ✅ **Módulo de Receitas** - ✅ **Concluído em Dezembro 2025**
+5. **Módulo de Despesas** - Em planejamento
+6. **Melhorias no Help Desk** - Notificações e templates
+7. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
+8. **Relatórios Financeiros** - Relatórios de vendas, receitas, despesas e fluxo de caixa
 
 ### Q2 2025
 1. **Faturamento** - Geração e envio
