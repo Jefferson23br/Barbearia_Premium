@@ -470,20 +470,54 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Inserir produtos
+    // Inserir produtos e abater estoque
     if (produtos && produtos.length > 0) {
       for (const produto of produtos) {
-        const valorTotalProduto = parseFloat(produto.quantidade) * parseFloat(produto.valor_unitario);
+        const quantidadeVendida = parseFloat(produto.quantidade);
+        const produtoId = produto.produto_id;
+        
+        // Verificar se há estoque suficiente
+        const produtoCheck = await client.query(
+          'SELECT id, descricao, codigo, quantidade_estoque FROM protese.produtos WHERE id = $1',
+          [produtoId]
+        );
+        
+        if (produtoCheck.rows.length === 0) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: `Produto não encontrado` });
+        }
+        
+        const estoqueAtual = parseFloat(produtoCheck.rows[0].quantidade_estoque) || 0;
+        
+        if (estoqueAtual < quantidadeVendida) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ 
+            error: `Estoque insuficiente para o produto ${produtoCheck.rows[0].codigo} - ${produtoCheck.rows[0].descricao}. Estoque disponível: ${estoqueAtual}, quantidade solicitada: ${quantidadeVendida}` 
+          });
+        }
+        
+        const valorTotalProduto = quantidadeVendida * parseFloat(produto.valor_unitario);
+        
+        // Inserir produto na venda
         await client.query(
           `INSERT INTO protese.vendas_produtos (venda_id, produto_id, quantidade, valor_unitario, valor_total)
            VALUES ($1, $2, $3, $4, $5)`,
           [
             venda.id,
-            produto.produto_id,
-            produto.quantidade,
+            produtoId,
+            quantidadeVendida,
             produto.valor_unitario,
             valorTotalProduto
           ]
+        );
+        
+        // Abater estoque do produto
+        await client.query(
+          `UPDATE protese.produtos 
+           SET quantidade_estoque = quantidade_estoque - $1,
+               updated_at = CURRENT_TIMESTAMP
+           WHERE id = $2`,
+          [quantidadeVendida, produtoId]
         );
       }
     }
@@ -698,6 +732,23 @@ router.delete('/:id', async (req, res) => {
 
     const ticket = vendaResult.rows[0].ticket;
 
+    // Buscar produtos da venda antes de excluir para restaurar estoque
+    const produtosVenda = await client.query(
+      'SELECT produto_id, quantidade FROM protese.vendas_produtos WHERE venda_id = $1',
+      [req.params.id]
+    );
+    
+    // Restaurar estoque dos produtos
+    for (const produtoVenda of produtosVenda.rows) {
+      await client.query(
+        `UPDATE protese.produtos 
+         SET quantidade_estoque = quantidade_estoque + $1,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $2`,
+        [produtoVenda.quantidade, produtoVenda.produto_id]
+      );
+    }
+    
     // Excluir parcelas (cascade vai excluir automaticamente, mas vamos fazer explicitamente)
     await client.query('DELETE FROM protese.vendas_parcelas WHERE venda_id = $1', [req.params.id]);
     
