@@ -168,11 +168,15 @@ router.post('/categorias', async (req, res) => {
       nivel,
       categoria_pai_id,
       codigo_hierarquico,
-      tipo
+      tipo,
+      tipo_categoria_pai_id: typeof categoria_pai_id,
+      tipo_nivel: typeof nivel
     });
     
     // Normalizar categoria_pai_id (string vazia vira null)
     const categoriaPaiIdNormalizada = categoria_pai_id && String(categoria_pai_id).trim() !== '' ? String(categoria_pai_id).trim() : null;
+    
+    console.log('Categoria pai normalizada:', categoriaPaiIdNormalizada);
 
     if (!nome || !nome.trim()) {
       await client.query('ROLLBACK');
@@ -180,24 +184,23 @@ router.post('/categorias', async (req, res) => {
     }
 
     // Validar nível
-    const nivelFinal = nivel ? parseInt(nivel) : 1;
+    let nivelFinal = nivel ? parseInt(String(nivel)) : 1;
+    if (isNaN(nivelFinal)) {
+      nivelFinal = 1;
+    }
+    
     if (![1, 2, 3].includes(nivelFinal)) {
       await client.query('ROLLBACK');
       return res.status(400).json({ error: 'Nível deve ser 1, 2 ou 3' });
     }
 
     // Validar categoria pai
-    if (nivelFinal > 1 && !categoriaPaiIdNormalizada) {
-      await client.query('ROLLBACK');
-      return res.status(400).json({ error: 'Categoria pai é obrigatória para níveis 2 e 3' });
-    }
-
     if (nivelFinal === 1 && categoriaPaiIdNormalizada) {
       await client.query('ROLLBACK');
       return res.status(400).json({ error: 'Categoria de nível 1 não pode ter categoria pai' });
     }
 
-    // Verificar se categoria pai existe e validar nível
+    // Verificar se categoria pai existe e validar/ajustar nível
     if (categoriaPaiIdNormalizada) {
       const paiResult = await client.query(
         'SELECT nivel FROM protese.categorias_custo WHERE id = $1',
@@ -209,11 +212,24 @@ router.post('/categorias', async (req, res) => {
         return res.status(400).json({ error: 'Categoria pai não encontrada' });
       }
 
-      const nivelPai = paiResult.rows[0].nivel;
-      if (nivelFinal !== nivelPai + 1) {
-        await client.query('ROLLBACK');
-        return res.status(400).json({ error: `Nível deve ser ${nivelPai + 1} (pai é nível ${nivelPai})` });
+      const nivelPai = parseInt(paiResult.rows[0].nivel) || 1;
+      const nivelEsperado = nivelPai + 1;
+      
+      // Se o nível não foi fornecido ou está incorreto, ajustar automaticamente
+      if (nivelFinal !== nivelEsperado) {
+        console.log(`Ajustando nível de ${nivelFinal} para ${nivelEsperado} (pai é nível ${nivelPai})`);
+        // Validar se o nível ajustado é válido
+        if (nivelEsperado > 3) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: `Não é possível criar subcategoria: categoria pai já está no nível máximo (${nivelPai})` });
+        }
+        // Ajustar o nível final
+        nivelFinal = nivelEsperado;
       }
+    } else if (nivelFinal > 1) {
+      // Se não há categoria pai mas o nível é > 1, isso é um erro
+      await client.query('ROLLBACK');
+      return res.status(400).json({ error: 'Categoria pai é obrigatória para níveis 2 e 3' });
     }
 
     // Verificar se já existe categoria com mesmo nome no mesmo nível/pai
@@ -230,10 +246,10 @@ router.post('/categorias', async (req, res) => {
     }
 
     // Verificar se código hierárquico já existe (se fornecido)
-    if (codigo_hierarquico && codigo_hierarquico.trim() !== '') {
+    if (codigo_hierarquico && String(codigo_hierarquico).trim() !== '') {
       const codigoExisteResult = await client.query(
         'SELECT id FROM protese.categorias_custo WHERE codigo_hierarquico = $1',
-        [codigo_hierarquico.trim()]
+        [String(codigo_hierarquico).trim()]
       );
 
       if (codigoExisteResult.rows.length > 0) {
@@ -242,56 +258,48 @@ router.post('/categorias', async (req, res) => {
       }
     }
 
-    // Verificar se a tabela tem as colunas de hierarquia
-    try {
-      const tableCheck = await client.query(`
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_schema = 'protese' 
-        AND table_name = 'categorias_custo' 
-        AND column_name IN ('categoria_pai_id', 'nivel', 'codigo_hierarquico')
-      `);
-      
-      if (tableCheck.rows.length < 3) {
-        await client.query('ROLLBACK');
-        console.error('Tabela categorias_custo não tem todas as colunas de hierarquia. Execute o script SQL primeiro.');
-        return res.status(500).json({ 
-          error: 'Estrutura da tabela incompleta. Execute o script COMANDOS_ADICIONAR_HIERARQUIA_CATEGORIAS.sql primeiro.' 
-        });
-      }
-    } catch (checkError) {
-      await client.query('ROLLBACK');
-      console.error('Erro ao verificar estrutura da tabela:', checkError);
-      return res.status(500).json({ error: 'Erro ao verificar estrutura da tabela', details: checkError.message });
-    }
+    console.log('Tentando inserir categoria com dados:', {
+      nome: nome.trim(),
+      nivel: nivelFinal,
+      categoria_pai_id: categoriaPaiIdNormalizada,
+      codigo_hierarquico: codigo_hierarquico ? String(codigo_hierarquico).trim() : null,
+      tipo: tipo || 'despesa',
+      usuarioId
+    });
 
-    try {
-      console.log('Tentando inserir categoria com dados:', {
-        nome: nome.trim(),
-        nivel: nivelFinal,
-        categoria_pai_id: categoriaPaiIdNormalizada,
-        codigo_hierarquico: codigo_hierarquico ? codigo_hierarquico.trim() : null
-      });
+    const insertParams = [
+      nome.trim(), 
+      descricao ? String(descricao).trim() : null, 
+      codigo ? String(codigo).trim() : null, 
+      tipo || 'despesa',
+      categoriaPaiIdNormalizada,
+      nivelFinal,
+      codigo_hierarquico ? String(codigo_hierarquico).trim() : null,
+      usuarioId
+    ];
 
-      const result = await client.query(
+    console.log('Parâmetros do INSERT:', insertParams);
+    console.log('Tipos dos parâmetros:', insertParams.map(p => typeof p));
+
+    let result;
+    try {
+      result = await client.query(
         `INSERT INTO protese.categorias_custo 
          (nome, descricao, codigo, tipo, categoria_pai_id, nivel, codigo_hierarquico, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
-        [
-          nome.trim(), 
-          descricao ? descricao.trim() : null, 
-          codigo ? codigo.trim() : null, 
-          tipo || 'despesa',
-          categoriaPaiIdNormalizada,
-          nivelFinal,
-          codigo_hierarquico ? codigo_hierarquico.trim() : null,
-          usuarioId
-        ]
+        insertParams
       );
+    } catch (insertError) {
+      await client.query('ROLLBACK');
+      console.error('Erro no INSERT:', insertError);
+      console.error('Código do erro PostgreSQL:', insertError.code);
+      console.error('Detalhes do erro:', insertError.detail);
+      throw insertError; // Re-throw para ser capturado pelo catch externo
+    }
 
-      await client.query('COMMIT');
-      console.log('Categoria criada com sucesso:', result.rows[0].id);
+    await client.query('COMMIT');
+    console.log('Categoria criada com sucesso:', result.rows[0].id);
 
     await registrarLog({
       usuario_id: usuarioId,
@@ -308,7 +316,22 @@ router.post('/categorias', async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Erro ao criar categoria:', error);
-    res.status(500).json({ error: 'Erro ao criar categoria', details: error.message });
+    console.error('Stack trace:', error.stack);
+    console.error('Código do erro PostgreSQL:', error.code);
+    console.error('Detalhes do erro:', error.detail);
+    console.error('Dados que causaram o erro:', {
+      nome,
+      nivel,
+      categoria_pai_id,
+      codigo_hierarquico,
+      tipo
+    });
+    res.status(500).json({ 
+      error: 'Erro ao criar categoria', 
+      details: error.message || error.detail || 'Erro desconhecido',
+      code: error.code,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   } finally {
     client.release();
   }
@@ -626,18 +649,40 @@ router.get('/relatorio', async (req, res) => {
     const despesasPorCategoriaQuery = `
       SELECT 
         d.descricao as despesa_descricao,
+        d.id as despesa_id,
         COALESCE(c.nome, 'Sem categoria') as categoria_nome,
         c.id as categoria_id,
         COALESCE(c.codigo_hierarquico, c.codigo, c.nome) as categoria_codigo,
         c.nivel as categoria_nivel,
         c.categoria_pai_id,
+        -- Informações da categoria pai (nível 2 ou 1)
+        c_pai.id as categoria_pai_id_full,
+        COALESCE(c_pai.codigo_hierarquico, c_pai.codigo, c_pai.nome) as categoria_pai_codigo,
+        c_pai.nome as categoria_pai_nome,
+        c_pai.nivel as categoria_pai_nivel,
+        c_pai.categoria_pai_id as categoria_avo_id,
+        -- Informações da categoria avô (nível 1)
+        c_avo.id as categoria_avo_id_full,
+        COALESCE(c_avo.codigo_hierarquico, c_avo.codigo, c_avo.nome) as categoria_avo_codigo,
+        c_avo.nome as categoria_avo_nome,
+        c_avo.nivel as categoria_avo_nivel,
         DATE_TRUNC('month', d.data_emissao)::date as mes,
         SUM(d.valor_liquido) as valor_total
       FROM protese.despesas d
       LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
+      LEFT JOIN protese.categorias_custo c_pai ON c.categoria_pai_id = c_pai.id
+      LEFT JOIN protese.categorias_custo c_avo ON c_pai.categoria_pai_id = c_avo.id
       WHERE d.data_emissao >= $1 AND d.data_emissao <= $2
-      GROUP BY d.descricao, c.nome, c.id, c.codigo_hierarquico, c.codigo, c.nivel, c.categoria_pai_id, DATE_TRUNC('month', d.data_emissao)
-      ORDER BY COALESCE(c.codigo_hierarquico, c.codigo, c.nome) ASC, d.descricao ASC, mes ASC
+      GROUP BY d.descricao, d.id, c.nome, c.id, c.codigo_hierarquico, c.codigo, c.nivel, c.categoria_pai_id,
+               c_pai.id, c_pai.codigo_hierarquico, c_pai.codigo, c_pai.nome, c_pai.nivel, c_pai.categoria_pai_id,
+               c_avo.id, c_avo.codigo_hierarquico, c_avo.codigo, c_avo.nome, c_avo.nivel,
+               DATE_TRUNC('month', d.data_emissao)
+      ORDER BY 
+        COALESCE(c_avo.codigo_hierarquico, c_avo.codigo, c_avo.nome, '') ASC,
+        COALESCE(c_pai.codigo_hierarquico, c_pai.codigo, c_pai.nome, '') ASC,
+        COALESCE(c.codigo_hierarquico, c.codigo, c.nome) ASC,
+        d.descricao ASC,
+        mes ASC
     `;
 
     const despesasPorCategoriaResult = await pool.query(despesasPorCategoriaQuery, [data_inicio, data_fim]);
@@ -695,49 +740,289 @@ router.get('/relatorio', async (req, res) => {
       despesasTotal[mesKey] = parseFloat(row.valor_total);
     });
 
-    // Organizar despesas por categoria hierárquica
-    const despesasPorCategoria = {};
+    // Organizar despesas por categoria hierárquica completa
+    // Estrutura: categoria_avo (nível 1) -> categoria_pai (nível 2) -> categoria (nível 3) -> despesas
+    const estruturaHierarquica = {};
+    
     despesasPorCategoriaResult.rows.forEach(row => {
-      const categoriaId = row.categoria_id || 'sem_categoria';
-      const categoriaNome = row.categoria_nome || 'Sem categoria';
-      const categoriaCodigo = row.categoria_codigo || categoriaNome;
-      const categoriaNivel = row.categoria_nivel || 1;
       const mesKey = row.mes.toISOString().split('T')[0];
       
-      if (!despesasPorCategoria[categoriaId]) {
-        despesasPorCategoria[categoriaId] = {
-          categoria_id: categoriaId,
-          categoria_nome: categoriaNome,
-          categoria_codigo: categoriaCodigo,
-          categoria_nivel: categoriaNivel,
-          categoria_pai_id: row.categoria_pai_id,
-          despesas: [],
-          totais_por_mes: {}
+      // Determinar a categoria raiz (nível 1)
+      let categoriaRaizId, categoriaRaizCodigo, categoriaRaizNome, categoriaRaizNivel;
+      let categoriaInterId, categoriaInterCodigo, categoriaInterNome, categoriaInterNivel;
+      let categoriaFinalId, categoriaFinalCodigo, categoriaFinalNome, categoriaFinalNivel;
+      
+      if (row.categoria_avo_id_full) {
+        // Tem avô (nível 1), pai (nível 2) e categoria (nível 3)
+        categoriaRaizId = row.categoria_avo_id_full;
+        categoriaRaizCodigo = row.categoria_avo_codigo;
+        categoriaRaizNome = row.categoria_avo_nome;
+        categoriaRaizNivel = row.categoria_avo_nivel || 1;
+        
+        categoriaInterId = row.categoria_pai_id_full;
+        categoriaInterCodigo = row.categoria_pai_codigo;
+        categoriaInterNome = row.categoria_pai_nome;
+        categoriaInterNivel = row.categoria_pai_nivel || 2;
+        
+        categoriaFinalId = row.categoria_id;
+        categoriaFinalCodigo = row.categoria_codigo;
+        categoriaFinalNome = row.categoria_nome;
+        categoriaFinalNivel = row.categoria_nivel || 3;
+      } else if (row.categoria_pai_id_full) {
+        // Tem pai (nível 1) e categoria (nível 2)
+        categoriaRaizId = row.categoria_pai_id_full;
+        categoriaRaizCodigo = row.categoria_pai_codigo;
+        categoriaRaizNome = row.categoria_pai_nome;
+        categoriaRaizNivel = row.categoria_pai_nivel || 1;
+        
+        categoriaInterId = null;
+        categoriaInterCodigo = null;
+        categoriaInterNome = null;
+        categoriaInterNivel = null;
+        
+        categoriaFinalId = row.categoria_id;
+        categoriaFinalCodigo = row.categoria_codigo;
+        categoriaFinalNome = row.categoria_nome;
+        categoriaFinalNivel = row.categoria_nivel || 2;
+      } else if (row.categoria_id) {
+        // Só tem categoria (nível 1)
+        categoriaRaizId = row.categoria_id;
+        categoriaRaizCodigo = row.categoria_codigo;
+        categoriaRaizNome = row.categoria_nome;
+        categoriaRaizNivel = row.categoria_nivel || 1;
+        
+        categoriaInterId = null;
+        categoriaInterCodigo = null;
+        categoriaInterNome = null;
+        categoriaInterNivel = null;
+        
+        categoriaFinalId = row.categoria_id;
+        categoriaFinalCodigo = row.categoria_codigo;
+        categoriaFinalNome = row.categoria_nome;
+        categoriaFinalNivel = row.categoria_nivel || 1;
+      } else {
+        // Sem categoria
+        categoriaRaizId = 'sem_categoria';
+        categoriaRaizCodigo = 'Sem categoria';
+        categoriaRaizNome = 'Sem categoria';
+        categoriaRaizNivel = 1;
+        
+        categoriaInterId = null;
+        categoriaInterCodigo = null;
+        categoriaInterNome = null;
+        categoriaInterNivel = null;
+        
+        categoriaFinalId = 'sem_categoria';
+        categoriaFinalCodigo = 'Sem categoria';
+        categoriaFinalNome = 'Sem categoria';
+        categoriaFinalNivel = 1;
+      }
+      
+      // Criar estrutura hierárquica
+      if (!estruturaHierarquica[categoriaRaizId]) {
+        estruturaHierarquica[categoriaRaizId] = {
+          categoria_id: categoriaRaizId,
+          categoria_codigo: categoriaRaizCodigo,
+          categoria_nome: categoriaRaizNome,
+          categoria_nivel: categoriaRaizNivel,
+          filhos: {}
         };
       }
-
-      // Adicionar despesa individual se ainda não existir
-      const despesaExistente = despesasPorCategoria[categoriaId].despesas.find(
-        d => d.descricao === row.despesa_descricao
-      );
-      if (!despesaExistente) {
-        despesasPorCategoria[categoriaId].despesas.push({
-          descricao: row.despesa_descricao
+      
+      // Se tem categoria intermediária (nível 2)
+      if (categoriaInterId) {
+        if (!estruturaHierarquica[categoriaRaizId].filhos[categoriaInterId]) {
+          estruturaHierarquica[categoriaRaizId].filhos[categoriaInterId] = {
+            categoria_id: categoriaInterId,
+            categoria_codigo: categoriaInterCodigo,
+            categoria_nome: categoriaInterNome,
+            categoria_nivel: categoriaInterNivel,
+            filhos: {}
+          };
+        }
+        
+        // Adicionar categoria final (nível 3) dentro da intermediária
+        if (!estruturaHierarquica[categoriaRaizId].filhos[categoriaInterId].filhos[categoriaFinalId]) {
+          estruturaHierarquica[categoriaRaizId].filhos[categoriaInterId].filhos[categoriaFinalId] = {
+            categoria_id: categoriaFinalId,
+            categoria_codigo: categoriaFinalCodigo,
+            categoria_nome: categoriaFinalNome,
+            categoria_nivel: categoriaFinalNivel,
+            despesas: [],
+            totais_por_mes: {}
+          };
+        }
+        
+        const categoriaFinal = estruturaHierarquica[categoriaRaizId].filhos[categoriaInterId].filhos[categoriaFinalId];
+        
+        // Adicionar despesa individual
+        const despesaExistente = categoriaFinal.despesas.find(d => d.descricao === row.despesa_descricao);
+        if (!despesaExistente) {
+          categoriaFinal.despesas.push({
+            descricao: row.despesa_descricao,
+            despesa_id: row.despesa_id
+          });
+        }
+        
+        // Adicionar valor ao mês
+        if (!categoriaFinal.totais_por_mes[mesKey]) {
+          categoriaFinal.totais_por_mes[mesKey] = 0;
+        }
+        categoriaFinal.totais_por_mes[mesKey] += parseFloat(row.valor_total);
+      } else {
+        // Não tem categoria intermediária, adicionar diretamente na raiz
+        if (!estruturaHierarquica[categoriaRaizId].filhos[categoriaFinalId]) {
+          estruturaHierarquica[categoriaRaizId].filhos[categoriaFinalId] = {
+            categoria_id: categoriaFinalId,
+            categoria_codigo: categoriaFinalCodigo,
+            categoria_nome: categoriaFinalNome,
+            categoria_nivel: categoriaFinalNivel,
+            despesas: [],
+            totais_por_mes: {}
+          };
+        }
+        
+        const categoriaFinal = estruturaHierarquica[categoriaRaizId].filhos[categoriaFinalId];
+        
+        // Adicionar despesa individual
+        const despesaExistente = categoriaFinal.despesas.find(d => d.descricao === row.despesa_descricao);
+        if (!despesaExistente) {
+          categoriaFinal.despesas.push({
+            descricao: row.despesa_descricao,
+            despesa_id: row.despesa_id
+          });
+        }
+        
+        // Adicionar valor ao mês
+        if (!categoriaFinal.totais_por_mes[mesKey]) {
+          categoriaFinal.totais_por_mes[mesKey] = 0;
+        }
+        categoriaFinal.totais_por_mes[mesKey] += parseFloat(row.valor_total);
+      }
+    });
+    
+    // Função auxiliar para calcular totais de uma categoria somando os filhos
+    const calcularTotaisCategoria = (categoria) => {
+      const totais = {};
+      meses.forEach(mes => {
+        totais[mes.primeiro_dia] = 0;
+      });
+      
+      if (categoria.filhos) {
+        Object.values(categoria.filhos).forEach(filho => {
+          if (filho.filhos) {
+            // Tem netos, somar netos
+            Object.values(filho.filhos).forEach(neto => {
+              Object.keys(neto.totais_por_mes || {}).forEach(mesKey => {
+                totais[mesKey] = (totais[mesKey] || 0) + (neto.totais_por_mes[mesKey] || 0);
+              });
+            });
+          } else {
+            // Não tem netos, somar diretamente
+            Object.keys(filho.totais_por_mes || {}).forEach(mesKey => {
+              totais[mesKey] = (totais[mesKey] || 0) + (filho.totais_por_mes[mesKey] || 0);
+            });
+          }
         });
       }
-
-      // Adicionar valor ao mês
-      if (!despesasPorCategoria[categoriaId].totais_por_mes[mesKey]) {
-        despesasPorCategoria[categoriaId].totais_por_mes[mesKey] = 0;
+      
+      return totais;
+    };
+    
+    // Função auxiliar para calcular totais de categoria intermediária
+    const calcularTotaisCategoriaInter = (categoriaInter) => {
+      const totais = {};
+      meses.forEach(mes => {
+        totais[mes.primeiro_dia] = 0;
+      });
+      
+      if (categoriaInter.filhos) {
+        Object.values(categoriaInter.filhos).forEach(filho => {
+          Object.keys(filho.totais_por_mes || {}).forEach(mesKey => {
+            totais[mesKey] = (totais[mesKey] || 0) + (filho.totais_por_mes[mesKey] || 0);
+          });
+        });
       }
-      despesasPorCategoria[categoriaId].totais_por_mes[mesKey] += parseFloat(row.valor_total);
-    });
-
-    // Converter para array e ordenar por código hierárquico
-    const despesasArray = Object.values(despesasPorCategoria).sort((a, b) => {
+      
+      return totais;
+    };
+    
+    // Converter estrutura hierárquica em array plano para o frontend
+    const despesasArray = [];
+    
+    Object.values(estruturaHierarquica).sort((a, b) => {
       const codigoA = a.categoria_codigo || a.categoria_nome;
       const codigoB = b.categoria_codigo || b.categoria_nome;
       return codigoA.localeCompare(codigoB, undefined, { numeric: true, sensitivity: 'base' });
+    }).forEach(categoriaRaiz => {
+      // Calcular totais da categoria raiz
+      const totaisRaiz = calcularTotaisCategoria(categoriaRaiz);
+      
+      // Adicionar categoria raiz (nível 1)
+      despesasArray.push({
+        categoria_id: categoriaRaiz.categoria_id,
+        categoria_codigo: categoriaRaiz.categoria_codigo,
+        categoria_nome: categoriaRaiz.categoria_nome,
+        categoria_nivel: categoriaRaiz.categoria_nivel,
+        despesas: [],
+        totais_por_mes: totaisRaiz,
+        is_header: true
+      });
+      
+      // Processar filhos (nível 2 ou 3)
+      Object.values(categoriaRaiz.filhos).sort((a, b) => {
+        const codigoA = a.categoria_codigo || a.categoria_nome;
+        const codigoB = b.categoria_codigo || b.categoria_nome;
+        return codigoA.localeCompare(codigoB, undefined, { numeric: true, sensitivity: 'base' });
+      }).forEach(categoriaInter => {
+        // Se tem filhos (nível 3), adicionar categoria intermediária como header
+        if (Object.keys(categoriaInter.filhos || {}).length > 0) {
+          // Calcular totais da categoria intermediária
+          const totaisInter = calcularTotaisCategoriaInter(categoriaInter);
+          
+          despesasArray.push({
+            categoria_id: categoriaInter.categoria_id,
+            categoria_codigo: categoriaInter.categoria_codigo,
+            categoria_nome: categoriaInter.categoria_nome,
+            categoria_nivel: categoriaInter.categoria_nivel,
+            categoria_pai_id: categoriaRaiz.categoria_id,
+            despesas: [],
+            totais_por_mes: totaisInter,
+            is_header: true
+          });
+          
+          // Processar netos (nível 3)
+          Object.values(categoriaInter.filhos).sort((a, b) => {
+            const codigoA = a.categoria_codigo || a.categoria_nome;
+            const codigoB = b.categoria_codigo || b.categoria_nome;
+            return codigoA.localeCompare(codigoB, undefined, { numeric: true, sensitivity: 'base' });
+          }).forEach(categoriaFinal => {
+            despesasArray.push({
+              categoria_id: categoriaFinal.categoria_id,
+              categoria_codigo: categoriaFinal.categoria_codigo,
+              categoria_nome: categoriaFinal.categoria_nome,
+              categoria_nivel: categoriaFinal.categoria_nivel,
+              categoria_pai_id: categoriaInter.categoria_id,
+              categoria_avo_id: categoriaRaiz.categoria_id,
+              despesas: categoriaFinal.despesas,
+              totais_por_mes: categoriaFinal.totais_por_mes,
+              is_header: false
+            });
+          });
+        } else {
+          // Não tem filhos, adicionar diretamente (nível 2)
+          despesasArray.push({
+            categoria_id: categoriaInter.categoria_id,
+            categoria_codigo: categoriaInter.categoria_codigo,
+            categoria_nome: categoriaInter.categoria_nome,
+            categoria_nivel: categoriaInter.categoria_nivel,
+            categoria_pai_id: categoriaRaiz.categoria_id,
+            despesas: categoriaInter.despesas,
+            totais_por_mes: categoriaInter.totais_por_mes,
+            is_header: false
+          });
+        }
+      });
     });
 
     // Calcular comparativo Receitas x Despesas por mês
