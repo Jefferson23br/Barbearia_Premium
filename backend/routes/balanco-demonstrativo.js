@@ -163,6 +163,14 @@ router.post('/categorias', async (req, res) => {
 
     const { nome, descricao, codigo, tipo, categoria_pai_id, nivel, codigo_hierarquico } = req.body;
     
+    console.log('Dados recebidos para criar categoria:', {
+      nome,
+      nivel,
+      categoria_pai_id,
+      codigo_hierarquico,
+      tipo
+    });
+    
     // Normalizar categoria_pai_id (string vazia vira null)
     const categoriaPaiIdNormalizada = categoria_pai_id && String(categoria_pai_id).trim() !== '' ? String(categoria_pai_id).trim() : null;
 
@@ -234,7 +242,37 @@ router.post('/categorias', async (req, res) => {
       }
     }
 
+    // Verificar se a tabela tem as colunas de hierarquia
     try {
+      const tableCheck = await client.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_schema = 'protese' 
+        AND table_name = 'categorias_custo' 
+        AND column_name IN ('categoria_pai_id', 'nivel', 'codigo_hierarquico')
+      `);
+      
+      if (tableCheck.rows.length < 3) {
+        await client.query('ROLLBACK');
+        console.error('Tabela categorias_custo não tem todas as colunas de hierarquia. Execute o script SQL primeiro.');
+        return res.status(500).json({ 
+          error: 'Estrutura da tabela incompleta. Execute o script COMANDOS_ADICIONAR_HIERARQUIA_CATEGORIAS.sql primeiro.' 
+        });
+      }
+    } catch (checkError) {
+      await client.query('ROLLBACK');
+      console.error('Erro ao verificar estrutura da tabela:', checkError);
+      return res.status(500).json({ error: 'Erro ao verificar estrutura da tabela', details: checkError.message });
+    }
+
+    try {
+      console.log('Tentando inserir categoria com dados:', {
+        nome: nome.trim(),
+        nivel: nivelFinal,
+        categoria_pai_id: categoriaPaiIdNormalizada,
+        codigo_hierarquico: codigo_hierarquico ? codigo_hierarquico.trim() : null
+      });
+
       const result = await client.query(
         `INSERT INTO protese.categorias_custo 
          (nome, descricao, codigo, tipo, categoria_pai_id, nivel, codigo_hierarquico, created_by)
@@ -253,6 +291,7 @@ router.post('/categorias', async (req, res) => {
       );
 
       await client.query('COMMIT');
+      console.log('Categoria criada com sucesso:', result.rows[0].id);
 
     await registrarLog({
       usuario_id: usuarioId,

@@ -98,9 +98,10 @@ router.get('/', async (req, res) => {
       SELECT 
         d.*,
         ca.nome as caixa_nome,
-        NULL::text as categoria_custo_nome
+        c.nome as categoria_custo_nome
       FROM protese.despesas d
       LEFT JOIN protese.contas ca ON d.caixa_id = ca.id
+      LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
       WHERE 1=1
     `;
     const params = [];
@@ -220,9 +221,10 @@ router.get('/:id', async (req, res) => {
       `SELECT 
         d.*,
         ca.nome as caixa_nome,
-        NULL::text as categoria_custo_nome
+        c.nome as categoria_custo_nome
        FROM protese.despesas d
        LEFT JOIN protese.contas ca ON d.caixa_id = ca.id
+       LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
        WHERE d.id = $1`,
       [req.params.id]
     );

@@ -1,8 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/lancamento-despesa/page": "app/dashboard/lancamento-despesa/page.js",
-  "/dashboard/despesas/page": "app/dashboard/despesas/page.js",
-  "/dashboard/caixas/page": "app/dashboard/caixas/page.js",
+  "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js",
   "/dashboard/faturamento/page": "app/dashboard/faturamento/page.js",
-  "/dashboard/configuracoes/page": "app/dashboard/configuracoes/page.js"
+  "/dashboard/balanco-demonstrativo/page": "app/dashboard/balanco-demonstrativo/page.js",
+  "/dashboard/despesas/page": "app/dashboard/despesas/page.js",
+  "/dashboard/lancamento-despesa/page": "app/dashboard/lancamento-despesa/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
