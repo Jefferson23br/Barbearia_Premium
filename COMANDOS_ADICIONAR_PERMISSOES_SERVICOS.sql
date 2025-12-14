@@ -57,3 +57,4 @@ COMMENT ON COLUMN protese.permissoes_usuarios.servicos_excluir IS 'Permissão pa
 
 
 
+
