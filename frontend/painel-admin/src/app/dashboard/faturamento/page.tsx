@@ -66,6 +66,13 @@ interface Conta {
   nome: string
 }
 
+interface CategoriaCusto {
+  id: string
+  nome: string
+  codigo_hierarquico?: string | null
+  nivel: number
+}
+
 interface Produto {
   id: string
   codigo: string
@@ -80,6 +87,7 @@ export default function FaturamentoPage() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
   const [contas, setContas] = useState<Conta[]>([])
   const [produtos, setProdutos] = useState<Produto[]>([])
+  const [categorias, setCategorias] = useState<CategoriaCusto[]>([])
   const [configuracoes, setConfiguracoes] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [salvando, setSalvando] = useState(false)
@@ -134,6 +142,7 @@ export default function FaturamentoPage() {
       await carregarFuncionarios()
       await carregarContas()
       await carregarProdutos()
+      await carregarCategorias()
       await carregarConfiguracoes()
     }
 
@@ -318,6 +327,37 @@ export default function FaturamentoPage() {
     }
   }, [])
 
+  const carregarCategorias = useCallback(async () => {
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/balanco-demonstrativo/categorias`, { headers })
+      if (response.ok) {
+        const data = await response.json()
+        // Usar categorias_flat que já vem ordenadas por código hierárquico
+        const categoriasOrdenadas = (data.categorias_flat || []).sort((a: CategoriaCusto, b: CategoriaCusto) => {
+          const codigoA = a.codigo_hierarquico || a.nome
+          const codigoB = b.codigo_hierarquico || b.nome
+          return codigoA.localeCompare(codigoB, undefined, { numeric: true, sensitivity: 'base' })
+        })
+        setCategorias(categoriasOrdenadas)
+      }
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error)
+    }
+  }, [])
+
   const carregarProdutos = useCallback(async () => {
     try {
       const adminData = localStorage.getItem('admin')
@@ -432,6 +472,24 @@ export default function FaturamentoPage() {
     }
   }
 
+  // Função para formatar data para input type="date" (YYYY-MM-DD)
+  const formatarDataParaInput = (data: string | null | undefined): string => {
+    if (!data) return ''
+    // Se já está no formato YYYY-MM-DD, retorna direto
+    if (/^\d{4}-\d{2}-\d{2}$/.test(data)) return data
+    // Se está em formato ISO ou outro formato, converte
+    try {
+      const date = new Date(data)
+      if (isNaN(date.getTime())) return ''
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    } catch {
+      return ''
+    }
+  }
+
   const abrirModalEditar = async (movimentacao: Movimentacao) => {
     setMovimentacaoEditando(movimentacao)
     
@@ -450,19 +508,56 @@ export default function FaturamentoPage() {
         headers['x-user-nome'] = admin.nome_completo || null
       }
 
-      let response
+      let dadosFormatados: any = {}
+      
       if (movimentacao.tipo_movimentacao === 'venda') {
-        response = await fetch(`${apiUrl}/api/v1/faturamento/venda/${movimentacao.id}`, { headers })
+        const response = await fetch(`${apiUrl}/api/v1/faturamento/venda/${movimentacao.id}`, { headers })
         const data = await response.json()
-        setFormDataEdicao(data.venda)
+        dadosFormatados = {
+          ...data.venda,
+          data_venda: formatarDataParaInput(data.venda.data_venda),
+          cliente_id: data.venda.cliente_id || 'none',
+          funcionario_id: data.venda.funcionario_id || '',
+          caixa_id: data.venda.caixa_id || '',
+          valor_total: data.venda.valor_total ?? '',
+          desconto_percentual: data.venda.desconto_percentual ?? '',
+          valor_liquido: data.venda.valor_liquido ?? '',
+          forma_pagamento: data.venda.forma_pagamento || '',
+          observacoes: data.venda.observacoes || ''
+        }
+        setFormDataEdicao(dadosFormatados)
       } else if (movimentacao.tipo_movimentacao === 'despesa') {
-        response = await fetch(`${apiUrl}/api/v1/faturamento/despesa/${movimentacao.id}`, { headers })
+        const response = await fetch(`${apiUrl}/api/v1/faturamento/despesa/${movimentacao.id}`, { headers })
         const data = await response.json()
-        setFormDataEdicao(data.despesa)
+        dadosFormatados = {
+          ...data.despesa,
+          data_emissao: formatarDataParaInput(data.despesa.data_emissao),
+          data_vencimento: formatarDataParaInput(data.despesa.data_vencimento),
+          data_pagamento: formatarDataParaInput(data.despesa.data_pagamento),
+          valor_bruto: data.despesa.valor_bruto ?? '',
+          valor_liquido: data.despesa.valor_liquido ?? '',
+          fornecedor: data.despesa.fornecedor || '',
+          descricao: data.despesa.descricao || '',
+          forma_pagamento: data.despesa.forma_pagamento || '',
+          caixa_id: data.despesa.caixa_id || 'none',
+          categoria_custo_id: data.despesa.categoria_custo_id || 'none',
+          observacoes: data.despesa.observacoes || '',
+          status: data.despesa.status || 'pendente'
+        }
+        setFormDataEdicao(dadosFormatados)
       } else if (movimentacao.tipo_movimentacao === 'estoque') {
-        response = await fetch(`${apiUrl}/api/v1/faturamento/estoque/${movimentacao.id}`, { headers })
+        const response = await fetch(`${apiUrl}/api/v1/faturamento/estoque/${movimentacao.id}`, { headers })
         const data = await response.json()
-        setFormDataEdicao(data.movimentacao)
+        dadosFormatados = {
+          ...data.movimentacao,
+          data_movimentacao: formatarDataParaInput(data.movimentacao.data_movimentacao),
+          produto_id: data.movimentacao.produto_id || '',
+          quantidade: data.movimentacao.quantidade ?? '',
+          valor_unitario: data.movimentacao.valor_unitario ?? '',
+          fornecedor: data.movimentacao.fornecedor || '',
+          observacoes: data.movimentacao.observacoes || ''
+        }
+        setFormDataEdicao(dadosFormatados)
       }
 
       setMostrarModalEditar(true)
@@ -1394,6 +1489,29 @@ export default function FaturamentoPage() {
                             {conta.nome}
                           </SelectItem>
                         ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Categoria de Custo (Centro de Custo)</Label>
+                    <Select
+                      value={formDataEdicao.categoria_custo_id || 'none'}
+                      onValueChange={(value) => setFormDataEdicao({ ...formDataEdicao, categoria_custo_id: value === 'none' ? null : value })}
+                    >
+                      <SelectTrigger className="bg-zinc-800 border-amber-500/20 text-gray-300">
+                        <SelectValue placeholder="Selecione a categoria (opcional)" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-900 border-amber-500/20">
+                        <SelectItem value="none" className="text-gray-300">Sem categoria</SelectItem>
+                        {categorias.map((categoria) => {
+                          const codigo = categoria.codigo_hierarquico || categoria.nome
+                          const indentacao = '  '.repeat((categoria.nivel || 1) - 1)
+                          return (
+                            <SelectItem key={categoria.id} value={categoria.id} className="text-gray-300">
+                              {indentacao}{codigo} - {categoria.nome}
+                            </SelectItem>
+                          )
+                        })}
                       </SelectContent>
                     </Select>
                   </div>

@@ -377,7 +377,9 @@ export default function BalancoDemonstrativoPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erro ao salvar categoria')
+        const errorMsg = data.error || data.details || 'Erro ao salvar categoria'
+        console.error('Erro do servidor:', data)
+        throw new Error(errorMsg)
       }
 
       setMensagem({ tipo: 'sucesso', texto: categoriaEditando ? 'Categoria atualizada com sucesso!' : 'Categoria criada com sucesso!' })
@@ -892,7 +894,6 @@ export default function BalancoDemonstrativoPage() {
                           <thead>
                             <tr className="bg-zinc-800">
                               <th className="border border-zinc-700 p-2 text-left text-gray-300">Código / Categoria</th>
-                              <th className="border border-zinc-700 p-2 text-left text-gray-300">Despesas</th>
                               {relatorioData.periodo.meses.map((mes) => (
                                 <th key={mes.label} className="border border-zinc-700 p-2 text-right text-gray-300">
                                   {mes.label}
@@ -903,45 +904,39 @@ export default function BalancoDemonstrativoPage() {
                           <tbody>
                             {relatorioData.despesas.por_categoria.length === 0 ? (
                               <tr>
-                                <td colSpan={relatorioData.periodo.meses.length + 2} className="border border-zinc-700 p-4 text-center text-gray-400">
+                                <td colSpan={relatorioData.periodo.meses.length + 1} className="border border-zinc-700 p-4 text-center text-gray-400">
                                   Nenhuma despesa encontrada no período
                                 </td>
                               </tr>
                             ) : (
-                              relatorioData.despesas.por_categoria.map((categoria, idx) => (
-                                <React.Fragment key={idx}>
-                                  <tr className={`bg-zinc-900/50 hover:bg-zinc-800/50 ${categoria.categoria_nivel === 2 ? 'bg-zinc-800/30' : categoria.categoria_nivel === 3 ? 'bg-zinc-800/20' : ''}`}>
-                                    <td className={`border border-zinc-700 p-2 text-white font-medium ${categoria.categoria_nivel === 2 ? 'pl-6' : categoria.categoria_nivel === 3 ? 'pl-12' : ''}`}>
+                              relatorioData.despesas.por_categoria.map((categoria, idx) => {
+                                const isHeader = categoria.is_header === true
+                                const nivel = categoria.categoria_nivel || 1
+                                const indentacao = nivel === 1 ? '' : nivel === 2 ? 'pl-6' : 'pl-12'
+                                const bgColor = nivel === 1 ? 'bg-zinc-800/50' : nivel === 2 ? 'bg-zinc-800/30' : 'bg-zinc-900/50'
+                                
+                                return (
+                                  <tr key={idx} className={`${bgColor} hover:bg-zinc-800/50 ${isHeader ? 'font-bold' : ''}`}>
+                                    <td className={`border border-zinc-700 p-2 text-white font-medium ${indentacao}`}>
                                       <div className="flex items-center gap-2">
                                         <span className="font-mono text-amber-500 font-bold text-sm">
                                           {categoria.categoria_codigo}
                                         </span>
-                                        <span>{categoria.categoria_nome}</span>
+                                        <span className={isHeader ? 'text-lg' : ''}>{categoria.categoria_nome}</span>
                                       </div>
-                                    </td>
-                                    <td className="border border-zinc-700 p-2 text-gray-300 text-sm">
-                                      {categoria.despesas.length > 0 ? (
-                                        <div className="space-y-1">
-                                          {categoria.despesas.map((d, i) => (
-                                            <div key={i} className="text-xs">{d.descricao}</div>
-                                          ))}
-                                        </div>
-                                      ) : (
-                                        '-'
-                                      )}
                                     </td>
                                     {relatorioData.periodo.meses.map((mes) => {
                                       const mesKey = mes.primeiro_dia
-                                      const valor = categoria.totais_por_mes[mesKey] || 0
+                                      const valor = categoria.totais_por_mes && categoria.totais_por_mes[mesKey] ? categoria.totais_por_mes[mesKey] : 0
                                       return (
-                                        <td key={mes.label} className="border border-zinc-700 p-2 text-right text-white">
+                                        <td key={mes.label} className={`border border-zinc-700 p-2 text-right ${isHeader ? 'text-amber-400 font-bold' : 'text-white'}`}>
                                           {valor > 0 ? formatarPreco(valor) : '-'}
                                         </td>
                                       )
                                     })}
                                   </tr>
-                                </React.Fragment>
-                              ))
+                                )
+                              })
                             )}
                           </tbody>
                         </table>

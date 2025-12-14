@@ -23,8 +23,16 @@ interface Conta {
   saldo_atual: number | string
 }
 
+interface CategoriaCusto {
+  id: string
+  nome: string
+  codigo_hierarquico?: string | null
+  nivel: number
+}
+
 export default function LancamentoDespesaPage() {
   const [contas, setContas] = useState<Conta[]>([])
+  const [categorias, setCategorias] = useState<CategoriaCusto[]>([])
   const [loading, setLoading] = useState(false)
   const [salvando, setSalvando] = useState(false)
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
@@ -51,6 +59,7 @@ export default function LancamentoDespesaPage() {
   useEffect(() => {
     if (podeAcessar('lancamento_despesa')) {
       carregarContas()
+      carregarCategorias()
     }
   }, [podeAcessar])
 
@@ -76,6 +85,37 @@ export default function LancamentoDespesaPage() {
       }
     } catch (error) {
       console.error('Erro ao carregar contas:', error)
+    }
+  }, [])
+
+  const carregarCategorias = useCallback(async () => {
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/balanco-demonstrativo/categorias`, { headers })
+      if (response.ok) {
+        const data = await response.json()
+        // Usar categorias_flat que já vem ordenadas por código hierárquico
+        const categoriasOrdenadas = (data.categorias_flat || []).sort((a: CategoriaCusto, b: CategoriaCusto) => {
+          const codigoA = a.codigo_hierarquico || a.nome
+          const codigoB = b.codigo_hierarquico || b.nome
+          return codigoA.localeCompare(codigoB, undefined, { numeric: true, sensitivity: 'base' })
+        })
+        setCategorias(categoriasOrdenadas)
+      }
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error)
     }
   }, [])
 
@@ -387,11 +427,19 @@ export default function LancamentoDespesaPage() {
                     <SelectItem value="none" className="text-gray-300">
                       Sem categoria
                     </SelectItem>
-                    {/* TODO: Carregar categorias do módulo de Balanço Demonstrativo quando estiver disponível */}
+                    {categorias.map((categoria) => {
+                      const codigo = categoria.codigo_hierarquico || categoria.nome
+                      const indentacao = '  '.repeat((categoria.nivel || 1) - 1)
+                      return (
+                        <SelectItem key={categoria.id} value={categoria.id} className="text-gray-300">
+                          {indentacao}{codigo} - {categoria.nome}
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-gray-500 mt-1">
-                  As categorias de custo serão criadas no módulo de Balanço Demonstrativo
+                  As categorias de custo são criadas no módulo de Balanço Demonstrativo
                 </p>
               </div>
 

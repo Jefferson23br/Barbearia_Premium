@@ -1,5 +1,4 @@
 {
-  "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js",
   "/dashboard/faturamento/page": "app/dashboard/faturamento/page.js",
   "/dashboard/balanco-demonstrativo/page": "app/dashboard/balanco-demonstrativo/page.js",
   "/dashboard/despesas/page": "app/dashboard/despesas/page.js",
