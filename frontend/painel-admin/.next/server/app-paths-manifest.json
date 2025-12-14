@@ -1,8 +1,8 @@
 {
+  "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js",
-  "/dashboard/lancamento-despesa/page": "app/dashboard/lancamento-despesa/page.js",
-  "/dashboard/lancamento-venda/page": "app/dashboard/lancamento-venda/page.js",
   "/dashboard/usuarios/page": "app/dashboard/usuarios/page.js",
-  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js"
+  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js",
+  "/dashboard/agenda/page": "app/dashboard/agenda/page.js"
 }
