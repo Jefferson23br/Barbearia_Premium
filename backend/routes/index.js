@@ -21,6 +21,7 @@ const vendasRoutes = require('./vendas');
 const receitasRoutes = require('./receitas');
 const despesasRoutes = require('./despesas');
 const faturamentoRoutes = require('./faturamento');
+const balancoDemonstrativoRoutes = require('./balanco-demonstrativo');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -42,6 +43,7 @@ router.use('/vendas', vendasRoutes);
 router.use('/receitas', receitasRoutes);
 router.use('/despesas', despesasRoutes);
 router.use('/faturamento', faturamentoRoutes);
+router.use('/balanco-demonstrativo', balancoDemonstrativoRoutes);
 
 module.exports = router;
 
