@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-13_Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-14_Dezembro_2025-blue?style=flat-square)
 
 </div>
 
@@ -82,8 +82,8 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 | ![Let's Encrypt](https://img.shields.io/badge/SSL-Let's_Encrypt-green?logo=lets-encrypt) | Certificados SSL |
 
 **Infraestrutura:**
-- **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger)
-- **Frontend**: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
+- **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger) - API, Backend e Banco de dados PostgreSQL
+- **Frontend**: VPS 45.132.157.28 (Hostinger - conta com domínio liberado) - Aplicações frontend
 
 </div>
 
@@ -214,12 +214,12 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 70+ endpoints implementados
-- **Módulos Backend**: 19 módulos modulares
-- **Páginas Frontend**: 28+ páginas principais
+- **Endpoints API**: 85+ endpoints implementados
+- **Módulos Backend**: 22 módulos modulares
+- **Páginas Frontend**: 30+ páginas principais
 - **Tabelas no Banco**: 25+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 17 módulos completos
+- **Módulos Implementados**: 22 módulos completos
 - **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
 
 ---
@@ -247,12 +247,15 @@ npm run dev
 18. **Lançamento de Despesa** - Sistema completo de lançamento de despesas com parcelamento e integração com caixas
 19. **Despesas** - Gerenciamento completo de despesas com quitação individual e em lote, monitoramento de contas a pagar
 20. **Faturamento** - Visualização unificada de movimentações, edição linha por linha e criação de romaneios
+21. **Emissão de Nota Fiscal** - Sistema completo de emissão de NFes com integração Focus NFe e romaneios
+22. **Emissão de Relatórios** - 11 relatórios completos (vendas, despesas, produtos, clientes) com exportação Excel/PDF
+23. **Dashboard Personalizado** - Dashboard com filtros por tipo de usuário (Proprietário vê tudo, Funcionário vê apenas seus dados)
 
 ### 🔄 Em Desenvolvimento
 - Melhorias no Help Desk
-- Relatórios financeiros
 - Balanço Demonstrativo
 - CRM
+- Melhorias nos Relatórios (gráficos, mais métricas)
 
 ---
 
@@ -289,6 +292,8 @@ npm run dev
 - `despesas_parcelas` - Parcelas das despesas
 - `romaneios` - Romaneios de faturamento
 - `romaneios_itens` - Itens vinculados aos romaneios
+- `notas_fiscais` - Notas fiscais emitidas
+- `categorias_custo` - Categorias de custo (hierárquicas)
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -393,10 +398,13 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Módulo de Despesas completo (concluído em Dezembro 2025)
 - ✅ Módulo de Faturamento completo (concluído em Dezembro 2025)
 - ✅ Sistema de Romaneios completo (concluído em Dezembro 2025)
-- 🔄 Emissão de Nota Fiscal (integração Focus NFe - estrutura pronta)
+- ✅ Emissão de Nota Fiscal (integração Focus NFe - concluído em Dezembro 2025)
+- ✅ Emissão de Relatórios (11 relatórios completos - concluído em Dezembro 2025)
+- ✅ Dashboard Personalizado por Tipo de Usuário (concluído em Dezembro 2025)
+- ✅ Correção de Abatimento de Estoque em Vendas (concluído em Dezembro 2025)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
-- 🔄 Relatórios financeiros
+- 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
 
 **Planejado:**
 - 🔄 Balanço Demonstrativo
@@ -431,7 +439,7 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 13 de Dezembro de 2025  
-**Versão**: 1.6.0
+**Última Atualização**: 14 de Dezembro de 2025  
+**Versão**: 1.7.0
 
 </div>

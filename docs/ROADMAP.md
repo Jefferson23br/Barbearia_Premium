@@ -299,9 +299,13 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 4. ✅ **Módulo de Receitas** - ✅ **Concluído em Dezembro 2025**
 5. **Módulo de Despesas** - ✅ Concluído (Dezembro 2025)
 6. **Módulo de Faturamento** - ✅ Concluído (Dezembro 2025)
-7. **Melhorias no Help Desk** - Notificações e templates
-8. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
-8. **Relatórios Financeiros** - Relatórios de vendas, receitas, despesas e fluxo de caixa
+7. **Emissão de Nota Fiscal** - ✅ Concluído (Dezembro 2025)
+8. **Emissão de Relatórios** - ✅ Concluído (Dezembro 2025)
+9. **Dashboard Personalizado** - ✅ Concluído (Dezembro 2025)
+10. **Correção de Abatimento de Estoque** - ✅ Concluído (Dezembro 2025)
+11. **Melhorias no Help Desk** - Notificações e templates
+12. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
+13. **Melhorias nos Relatórios** - Gráficos, mais métricas
 
 ### Q2 2025
 1. **Balanço Demonstrativo** - Estrutura criada, desenvolvimento em andamento
@@ -336,7 +340,7 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🔄 Atualizações do Roadmap
 
-Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **12 de Dezembro de 2025**
+Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **14 de Dezembro de 2025**
 
 ---
 

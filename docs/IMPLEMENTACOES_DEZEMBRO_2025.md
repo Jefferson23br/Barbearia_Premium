@@ -10,9 +10,9 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 **Período**: Dezembro 2025  
 **Status**: ✅ **Todas as implementações concluídas e em produção**  
-**Módulos Adicionados**: 6 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque, Caixas, Lançamento de Venda, Receitas)  
-**Endpoints Criados**: 29 novos endpoints  
-**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque, sistema financeiro completo
+**Módulos Adicionados**: 10 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque, Caixas, Lançamento de Venda, Receitas, Despesas, Faturamento, Emissão de NFe, Emissão de Relatórios, Dashboard Personalizado)  
+**Endpoints Criados**: 50+ novos endpoints  
+**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque, sistema financeiro completo, correção de abatimento de estoque
 
 ---
 
@@ -837,7 +837,109 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 ---
 
-**Data**: 13 de Dezembro de 2025  
-**Versão**: 1.6.0  
+---
+
+## 🎉 Implementações de 14 de Dezembro de 2025
+
+### 📊 Módulo de Emissão de Relatórios
+
+**Status**: ✅ **100% Completo**
+
+Implementado sistema completo de relatórios com 11 tipos diferentes:
+
+1. **Vendas Totais por Período** - Resumo e detalhamento diário
+2. **Vendas por Serviço** - Agrupamento por serviço
+3. **Vendas por Produto** - Agrupamento por produto
+4. **Vendas por Funcionário Totais** - Total por funcionário
+5. **Vendas por Funcionário (Serviços e Produtos Separados)** - Detalhamento completo
+6. **Vendas por Funcionário por Tipo** - Filtro por tipo de item
+7. **Despesas Totais por Período** - Resumo e detalhamento diário
+8. **Despesas por Tipo (Categoria)** - Agrupamento por categoria
+9. **Produtos em Estoque** - Todos os produtos cadastrados (ativos e inativos)
+10. **Produtos Vendidos por Período** - Produtos vendidos no período
+11. **Histórico de Clientes** - Compras por período
+
+**Funcionalidades:**
+- Exportação para Excel (CSV compatível)
+- Exportação para PDF (estrutura pronta)
+- Filtros globais: data início, data fim, funcionário, categoria, tipo
+- Interface moderna e responsiva
+
+**Endpoints**: 12 novos endpoints
+
+---
+
+### 🧾 Módulo de Emissão de Nota Fiscal
+
+**Status**: ✅ **100% Completo e Funcionando**
+
+Implementado sistema completo de emissão de NFes:
+
+**Funcionalidades:**
+- Carregamento de dados do emitente (empresa) do módulo Configurações
+- Listagem de romaneios fechados com vendas pendentes de NFe
+- Seleção de romaneio para emissão
+- Carregamento automático de dados do cliente (destinatário)
+- Integração com API externa de NFe (Focus NFe)
+- Descrição padrão: "Prestação do Serviços Prestados descritos na CNAE da empresa e CBO"
+- Criação local de NFe em caso de erro na API externa
+- Salvamento de NFe no banco de dados
+- Listagem de todas as notas fiscais emitidas
+- Filtros por data, status, cliente
+
+**Endpoints**: 4 novos endpoints
+
+**Correções realizadas:**
+- Query de romaneios corrigida para buscar apenas vendas sem NFe
+- Campos do banco de dados alinhados com DDL
+- Prevenção de múltiplas chamadas simultâneas
+- Correção de loop infinito no useEffect
+- Tratamento de permissões melhorado
+
+---
+
+### 📊 Dashboard Personalizado por Tipo de Usuário
+
+**Status**: ✅ **100% Completo**
+
+Implementado dashboard com filtros por tipo de usuário:
+
+**Para Proprietário:**
+- Receitas totais do mês (todas as receitas)
+- Despesas totais do mês (todas as despesas)
+- Total de clientes cadastrados
+- Todos os agendamentos do dia
+- Últimas 5 vendas (todas)
+- Próximos 5 agendamentos (todos)
+
+**Para Funcionário:**
+- Receitas do mês (apenas das vendas que ele fez)
+- Despesas do mês (apenas as que ele criou)
+- Agendamentos do dia (apenas os seus)
+- Últimas 5 vendas (apenas as suas)
+- Próximos 5 agendamentos (apenas os seus)
+
+**Endpoints**: 1 novo endpoint
+
+---
+
+### 🐛 Correção Crítica: Abatimento de Estoque em Vendas
+
+**Status**: ✅ **Corrigido**
+
+**Problema:**
+- Vendas de produtos não estavam abatendo o estoque automaticamente
+
+**Solução:**
+- Verificação de estoque suficiente antes de processar a venda
+- Validação de estoque disponível vs quantidade solicitada
+- Abatimento automático do estoque ao inserir produtos na venda
+- Restauração automática do estoque ao excluir a venda
+- Mensagens de erro claras quando estoque insuficiente
+
+---
+
+**Data**: 14 de Dezembro de 2025  
+**Versão**: 1.7.0  
 **Status**: ✅ **Todas as implementações concluídas e em produção**
 

@@ -57,7 +57,10 @@ backend/
 │   ├── vendas.js # Lançamento de vendas
 │   ├── receitas.js # Gerenciamento de receitas
 │   ├── despesas.js # Gerenciamento de despesas
-│   └── faturamento.js # Faturamento e romaneios
+│   ├── faturamento.js # Faturamento e romaneios
+│   ├── emissao-nfe.js # Emissão de notas fiscais
+│   ├── relatorios.js # Geração de relatórios
+│   └── dashboard.js # Dashboard personalizado
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
 └── utils/              # Utilitários
@@ -313,6 +316,8 @@ Implementei as seguintes tabelas principais:
 - `despesas_parcelas` - Parcelas das despesas
 - `romaneios` - Romaneios de faturamento
 - `romaneios_itens` - Itens vinculados aos romaneios
+- `notas_fiscais` - Notas fiscais emitidas
+- `categorias_custo` - Categorias de custo (hierárquicas)
 
 ### Scripts SQL
 
@@ -492,7 +497,7 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 
 ---
 
-**Última atualização**: 13 de Dezembro de 2025  
+**Última atualização**: 14 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
-**Versão**: 1.6.0
+**Versão**: 1.7.0

@@ -50,6 +50,9 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Lançamento de Despesa** (sistema completo de lançamento de despesas com parcelamento)
 - ✅ **Módulo de Despesas** (gerenciamento completo de despesas com quitação e monitoramento)
 - ✅ **Módulo de Faturamento** (visualização unificada, edição e criação de romaneios)
+- ✅ **Emissão de Nota Fiscal** (sistema completo com integração Focus NFe)
+- ✅ **Emissão de Relatórios** (11 relatórios completos com exportação)
+- ✅ **Dashboard Personalizado** (filtros por tipo de usuário)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)
@@ -331,7 +334,7 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: 13 de Dezembro de 2025  
+**Última atualização**: 14 de Dezembro de 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI  
-**Versão**: 1.6.0
+**Versão**: 1.7.0

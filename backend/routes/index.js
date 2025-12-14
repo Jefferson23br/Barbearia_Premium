@@ -22,6 +22,9 @@ const receitasRoutes = require('./receitas');
 const despesasRoutes = require('./despesas');
 const faturamentoRoutes = require('./faturamento');
 const balancoDemonstrativoRoutes = require('./balanco-demonstrativo');
+const emissaoNfeRoutes = require('./emissao-nfe');
+const relatoriosRoutes = require('./relatorios');
+const dashboardRoutes = require('./dashboard');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -44,6 +47,9 @@ router.use('/receitas', receitasRoutes);
 router.use('/despesas', despesasRoutes);
 router.use('/faturamento', faturamentoRoutes);
 router.use('/balanco-demonstrativo', balancoDemonstrativoRoutes);
+router.use('/emissao-nfe', emissaoNfeRoutes);
+router.use('/relatorios', relatoriosRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 module.exports = router;
 

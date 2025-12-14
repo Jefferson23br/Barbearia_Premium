@@ -45,6 +45,41 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/lancamento-despesa/page.js"
+    ],
+    "/dashboard/emissao-nfe/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/emissao-nfe/page.js"
+    ],
+    "/dashboard/emissao-relatorios/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/emissao-relatorios/page.js"
+    ],
+    "/dashboard/estoque/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/estoque/page.js"
+    ],
+    "/dashboard/lancamento-venda/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/lancamento-venda/page.js"
+    ],
+    "/dashboard/agenda/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/agenda/page.js"
+    ],
+    "/dashboard/usuarios/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/usuarios/page.js"
+    ],
+    "/dashboard/controle-permissoes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/controle-permissoes/page.js"
     ]
   }
 }

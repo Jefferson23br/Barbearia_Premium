@@ -70,3 +70,4 @@ COMMENT ON COLUMN protese.servicos_imagens.ordem IS 'Ordem de exibição das ima
 
 
 
+

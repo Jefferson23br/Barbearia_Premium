@@ -140,6 +140,28 @@ npm run build
 - **Preenchimento Automático**: Fornecedor e preço preenchidos automaticamente ao selecionar produto
 - **Estatísticas**: Total de produtos, total em estoque, produtos com/sem estoque
 - **Busca Avançada**: Busca por código, descrição ou fornecedor
+- **Abatimento Automático**: Estoque abatido automaticamente em vendas
+
+### ✅ Emissão de Nota Fiscal
+- **Emissão de NFes**: Sistema completo com integração Focus NFe
+- **Romaneios Fechados**: Listagem de romaneios com vendas pendentes
+- **Dados do Emitente**: Carregamento automático dos dados da empresa
+- **Dados do Cliente**: Carregamento automático dos dados do cliente
+- **Histórico de NFes**: Listagem de todas as notas fiscais emitidas
+- **Filtros**: Por data, status, cliente
+
+### ✅ Emissão de Relatórios
+- **11 Relatórios Completos**: Vendas, despesas, produtos, clientes
+- **Exportação Excel**: Exportação para CSV compatível com Excel
+- **Exportação PDF**: Estrutura pronta para PDF
+- **Filtros Avançados**: Data, funcionário, categoria, tipo
+- **Interface Moderna**: Cards e tabelas formatadas
+
+### ✅ Dashboard Personalizado
+- **Filtros por Tipo de Usuário**: Proprietário vê tudo, Funcionário vê apenas seus dados
+- **Dados Reais**: Integração completa com API
+- **Cards Informativos**: Receitas, despesas, agendamentos, clientes
+- **Listas Dinâmicas**: Últimas vendas e próximos agendamentos
 
 ---
 
@@ -189,5 +211,5 @@ src/
 
 ---
 
-**Última Atualização**: 13 de Dezembro de 2025  
-**Versão**: 1.5.0
+**Última Atualização**: 14 de Dezembro de 2025  
+**Versão**: 1.7.0
