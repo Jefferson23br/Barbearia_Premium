@@ -55,7 +55,9 @@ backend/
 │   ├── estoque.js # Gerenciamento de estoque
 │   ├── caixas.js # Gerenciamento de contas e movimentações
 │   ├── vendas.js # Lançamento de vendas
-│   └── receitas.js # Gerenciamento de receitas
+│   ├── receitas.js # Gerenciamento de receitas
+│   ├── despesas.js # Gerenciamento de despesas
+│   └── faturamento.js # Faturamento e romaneios
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
 └── utils/              # Utilitários
@@ -208,6 +210,30 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `PUT /api/v1/receitas/:id` - Atualizar receita
 - `DELETE /api/v1/receitas/:id` - Excluir receita (apenas se não paga)
 
+### 💸 Despesas
+- `GET /api/v1/despesas` - Listar despesas (com filtros avançados)
+- `GET /api/v1/despesas/:id` - Buscar despesa específica
+- `POST /api/v1/despesas` - Criar nova despesa
+- `PUT /api/v1/despesas/:id` - Atualizar despesa
+- `DELETE /api/v1/despesas/:id` - Excluir despesa
+- `POST /api/v1/despesas/efetivar-pagamento` - Efetivar pagamento (individual ou em lote)
+- `PUT /api/v1/despesas/modificar-pagamento/:parcela_id` - Modificar pagamento já efetivado
+
+### 📊 Faturamento
+- `GET /api/v1/faturamento/movimentacoes` - Listar todas as movimentações (vendas, despesas, estoque)
+- `GET /api/v1/faturamento/venda/:id` - Buscar venda específica para edição
+- `PUT /api/v1/faturamento/venda/:id` - Editar venda
+- `DELETE /api/v1/faturamento/venda/:id` - Excluir venda
+- `GET /api/v1/faturamento/despesa/:id` - Buscar despesa específica para edição
+- `PUT /api/v1/faturamento/despesa/:id` - Editar despesa
+- `DELETE /api/v1/faturamento/despesa/:id` - Excluir despesa
+- `GET /api/v1/faturamento/estoque/:id` - Buscar movimentação de estoque específica para edição
+- `PUT /api/v1/faturamento/estoque/:id` - Editar movimentação de estoque
+- `DELETE /api/v1/faturamento/estoque/:id` - Excluir movimentação de estoque
+- `POST /api/v1/faturamento/romaneios` - Criar novo romaneio
+- `GET /api/v1/faturamento/romaneios` - Listar todos os romaneios
+- `GET /api/v1/faturamento/romaneios/:id` - Buscar romaneio específico com detalhes
+
 ### ⚙️ Configurações
 - `GET /api/v1/configuracoes` - Buscar configurações do sistema
 - `PUT /api/v1/configuracoes` - Atualizar configurações
@@ -283,6 +309,10 @@ Implementei as seguintes tabelas principais:
 - `vendas_produtos` - Produtos vinculados às vendas
 - `vendas_parcelas` - Parcelas das vendas
 - `receitas` - Receitas do sistema (vinculadas ou não a vendas)
+- `despesas` - Despesas do sistema
+- `despesas_parcelas` - Parcelas das despesas
+- `romaneios` - Romaneios de faturamento
+- `romaneios_itens` - Itens vinculados aos romaneios
 
 ### Scripts SQL
 
@@ -305,7 +335,12 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql`
 - `COMANDOS_CRIAR_TABELA_RECEITAS.sql`
 - `COMANDOS_ADICIONAR_PERMISSOES_RECEITAS.sql`
-- `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
+- `COMANDOS_CRIAR_TABELA_DESPESAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_DESPESAS.sql`
+- `COMANDOS_ADICIONAR_MOVIMENTACAO_CAIXA_ID_DESPESAS.sql`
+- `COMANDOS_CRIAR_TABELA_ROMANEIOS.sql`
+- `COMANDOS_CORRIGIR_FUNCAO_ROMANEIOS.sql`
+- `COMANDOS_ATUALIZAR_STATUS_ROMANEIOS.sql`
 
 ---
 
@@ -457,6 +492,7 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 
 ---
 
-**Última atualização**: 12 de Dezembro de 2025  
+**Última atualização**: 13 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
-**Status**: ✅ Em Produção
+**Status**: ✅ Em Produção  
+**Versão**: 1.6.0

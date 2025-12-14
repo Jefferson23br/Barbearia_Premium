@@ -19,6 +19,8 @@ const estoqueRoutes = require('./estoque');
 const caixasRoutes = require('./caixas');
 const vendasRoutes = require('./vendas');
 const receitasRoutes = require('./receitas');
+const despesasRoutes = require('./despesas');
+const faturamentoRoutes = require('./faturamento');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -38,6 +40,8 @@ router.use('/estoque', estoqueRoutes);
 router.use('/caixas', caixasRoutes);
 router.use('/vendas', vendasRoutes);
 router.use('/receitas', receitasRoutes);
+router.use('/despesas', despesasRoutes);
+router.use('/faturamento', faturamentoRoutes);
 
 module.exports = router;
 

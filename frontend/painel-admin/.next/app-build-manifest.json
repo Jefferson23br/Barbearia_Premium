@@ -21,10 +21,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
-    "/dashboard/caixas/page": [
+    "/dashboard/receitas/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/caixas/page.js"
+      "static/chunks/app/dashboard/receitas/page.js"
     ],
     "/dashboard/controle-permissoes/page": [
       "static/chunks/webpack.js",
@@ -36,15 +36,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/lancamento-venda/page.js"
     ],
-    "/dashboard/agenda/page": [
+    "/dashboard/lancamento-despesa/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/agenda/page.js"
+      "static/chunks/app/dashboard/lancamento-despesa/page.js"
     ],
-    "/dashboard/receitas/page": [
+    "/dashboard/despesas/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/receitas/page.js"
+      "static/chunks/app/dashboard/despesas/page.js"
+    ],
+    "/dashboard/caixas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/caixas/page.js"
+    ],
+    "/dashboard/faturamento/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/faturamento/page.js"
+    ],
+    "/dashboard/configuracoes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/configuracoes/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",

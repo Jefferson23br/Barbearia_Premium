@@ -111,6 +111,16 @@ export interface PermissoesUsuario {
   vendas_ver: boolean
   vendas_editar: boolean
   vendas_excluir: boolean
+
+  // Balanço Demonstrativo
+  balanco_demonstrativo_ver: boolean
+  balanco_demonstrativo_editar: boolean
+  balanco_demonstrativo_excluir: boolean
+
+  // CRM
+  crm_ver: boolean
+  crm_editar: boolean
+  crm_excluir: boolean
 }
 
 export function usePermissions() {
@@ -297,6 +307,12 @@ function criarPermissoesMaster(): PermissoesUsuario {
     vendas_ver: true,
     vendas_editar: true,
     vendas_excluir: true,
+    balanco_demonstrativo_ver: true,
+    balanco_demonstrativo_editar: true,
+    balanco_demonstrativo_excluir: true,
+    crm_ver: true,
+    crm_editar: true,
+    crm_excluir: true,
   }
 }
 
@@ -366,6 +382,12 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     vendas_ver: false,
     vendas_editar: false,
     vendas_excluir: false,
+    balanco_demonstrativo_ver: false,
+    balanco_demonstrativo_editar: false,
+    balanco_demonstrativo_excluir: false,
+    crm_ver: false,
+    crm_editar: false,
+    crm_excluir: false,
   }
 
   // Proprietário tem acesso padrão a mais coisas
@@ -430,6 +452,12 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.vendas_ver = true
     padrao.vendas_editar = true
     padrao.vendas_excluir = true
+    padrao.balanco_demonstrativo_ver = true
+    padrao.balanco_demonstrativo_editar = true
+    padrao.balanco_demonstrativo_excluir = true
+    padrao.crm_ver = true
+    padrao.crm_editar = true
+    padrao.crm_excluir = true
   }
 
   // Funcionário tem acesso limitado
@@ -445,6 +473,8 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.servicos_ver = true
     padrao.emissao_nfe_ver = true
     padrao.emissao_relatorios_ver = true
+    padrao.balanco_demonstrativo_ver = true
+    padrao.crm_ver = true
   }
 
   return padrao

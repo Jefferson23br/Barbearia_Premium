@@ -30,6 +30,8 @@ import {
   Package,
   Warehouse,
   Wallet,
+  FileBarChart,
+  UsersRound,
 } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
@@ -145,6 +147,22 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       path: '/dashboard/emissao-relatorios',
       levels: ['master', 'proprietario', 'funcionario'],
       permissionKey: 'emissao_relatorios',
+    },
+    {
+      id: 'balanco-demonstrativo',
+      label: 'Balanço Demonstrativo',
+      icon: FileBarChart,
+      path: '/dashboard/balanco-demonstrativo',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'balanco_demonstrativo',
+    },
+    {
+      id: 'crm',
+      label: 'CRM',
+      icon: UsersRound,
+      path: '/dashboard/crm',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'crm',
     },
     {
       id: 'usuarios',

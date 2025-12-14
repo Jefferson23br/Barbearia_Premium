@@ -197,14 +197,22 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ### 💸 Módulo de Despesas
 **Prioridade**: Alta  
-**Status**: 🔄 **Planejado**
+**Status**: ✅ **100% Completo (Dezembro 2025)**
 
-**Funcionalidades planejadas:**
-- [ ] Lançamento de despesas
-- [ ] Categorização de despesas
-- [ ] Histórico de despesas
+**Funcionalidades implementadas:**
+- ✅ Lançamento de despesas completo
+- ✅ CRUD completo de despesas
+- ✅ Efetivação de pagamento individual e em lote
+- ✅ Modificação de pagamentos já efetivados
+- ✅ Monitoramento de contas a pagar
+- ✅ Integração completa com módulo de Caixas
+- ✅ Categoria de custo
+- ✅ Parcelamento automático
+
+**Melhorias planejadas:**
 - [ ] Relatórios de despesas
-- [ ] Integração com módulo de Caixas
+- [ ] Categorização avançada
+- [ ] Alertas de vencimento
 - [ ] Filtros avançados
 - [ ] Exportação de dados
 
@@ -214,10 +222,22 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ### 🧾 Faturamento
 **Prioridade**: Média  
-**Status**: Planejado
+**Status**: ✅ **100% Completo (Dezembro 2025)**
 
-**Funcionalidades planejadas:**
-- [ ] Geração de faturas
+**Funcionalidades implementadas:**
+- ✅ Visualização unificada de todas as movimentações (Vendas, Despesas, Estoque)
+- ✅ Filtros avançados por tipo, data, status, busca
+- ✅ Edição linha por linha de vendas, despesas e movimentações de estoque
+- ✅ Exclusão de movimentações com validações
+- ✅ Criação de romaneios (faturamento, estoque, despesa, misto)
+- ✅ Visualização detalhada de romaneios com cabeçalho da empresa
+- ✅ Impressão/Download de romaneios em formato profissional
+- ✅ Estatísticas de movimentações
+
+**Melhorias planejadas:**
+- [ ] Templates personalizados de romaneios
+- [ ] Envio automático de romaneios por email
+- [ ] Assinatura digital
 - [ ] Envio de faturas por email
 - [ ] Controle de pagamentos
 - [ ] Histórico de faturas
@@ -277,15 +297,17 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 2. ✅ **Módulo de Caixas** - ✅ **Concluído em Dezembro 2025**
 3. ✅ **Lançamento de Venda** - ✅ **Concluído em Dezembro 2025**
 4. ✅ **Módulo de Receitas** - ✅ **Concluído em Dezembro 2025**
-5. **Módulo de Despesas** - Em planejamento
-6. **Melhorias no Help Desk** - Notificações e templates
-7. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
+5. **Módulo de Despesas** - ✅ Concluído (Dezembro 2025)
+6. **Módulo de Faturamento** - ✅ Concluído (Dezembro 2025)
+7. **Melhorias no Help Desk** - Notificações e templates
+8. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
 8. **Relatórios Financeiros** - Relatórios de vendas, receitas, despesas e fluxo de caixa
 
 ### Q2 2025
-1. **Faturamento** - Geração e envio
-2. **Analytics** - Dashboard executivo
-3. **Sistema de Notificações** - Email e SMS
+1. **Balanço Demonstrativo** - Estrutura criada, desenvolvimento em andamento
+2. **CRM** - Estrutura criada, desenvolvimento em andamento
+3. **Analytics** - Dashboard executivo
+4. **Sistema de Notificações** - Email e SMS
 
 ### Q3 2025
 1. **Aplicativo Mobile** - App para clientes
@@ -319,4 +341,4 @@ Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Últ
 ---
 
 **Status Geral do Projeto**: ✅ **Em Produção e Funcionando**  
-**Próxima Grande Funcionalidade**: Módulos Financeiros (Vendas e Despesas)
+**Próxima Grande Funcionalidade**: Balanço Demonstrativo e CRM

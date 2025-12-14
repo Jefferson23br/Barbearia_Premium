@@ -630,7 +630,214 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 ---
 
+---
+
+### 8. 💸 Módulo de Lançamento de Despesa Completo
+
+**Data de Implementação**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rota `/api/v1/despesas` (POST) - Criar nova despesa
+- ✅ Arquivo: `backend/routes/despesas.js`
+- ✅ Integração com sistema de logs
+- ✅ Verificação de permissões
+- ✅ Geração automática de tickets únicos
+- ✅ Cálculo automático de parcelas e datas de vencimento
+- ✅ Integração automática com módulo de Caixas (dedução de saldo quando pago)
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/lancamento-despesa/page.tsx`
+- ✅ Interface completa de lançamento com:
+  - Campos: Emissão, Vencimento, Pagamento, Forma de Pagamento, Caixa, Fornecedor, Descrição, Categoria de Custo, Valor Bruto, Valor Líquido
+  - Suporte a pagamento à vista e parcelado
+  - Múltiplas formas de pagamento (dinheiro, pix, ted, cartão, boleto)
+  - Parcelamento automático (1x a 10x)
+  - Cálculo automático de totais
+
+**Banco de Dados:**
+- ✅ Tabela `protese.despesas` criada
+- ✅ Tabela `protese.despesas_parcelas` criada
+- ✅ Script: `COMANDOS_CRIAR_TABELA_DESPESAS.sql`
+- ✅ Script: `COMANDOS_ADICIONAR_PERMISSOES_DESPESAS.sql`
+- ✅ Função PostgreSQL para gerar tickets únicos
+- ✅ Triggers para atualização automática de status
+
+#### Funcionalidades:
+
+1. **Lançamento de Despesa**
+   - Preenchimento de todos os campos necessários
+   - Seleção de forma de pagamento
+   - Seleção de caixa (para pagamentos à vista)
+   - Seleção de categoria de custo
+   - Aplicação de parcelamento
+   - Cálculo automático de valores
+
+2. **Formas de Pagamento**
+   - **Dinheiro, Pix, TED**: Pagamento à vista, deduz do caixa automaticamente
+   - **Cartão (1x-10x)**: Primeira parcela vence 30+1 dias, demais a cada 30 dias
+   - **Boleto (1x-10x)**: Usuário define primeiro vencimento, demais a cada 30 dias
+
+3. **Geração Automática**
+   - Tickets únicos (ex: "DESP-0001", "DESP-0001/01", "DESP-0001/02")
+   - Parcelas geradas automaticamente
+   - Movimentações de caixa (pagamentos à vista)
+   - Status automático (pendente, paga, vencida)
+
+#### Características Técnicas:
+
+- ✅ Geração automática de tickets únicos
+- ✅ Cálculo automático de parcelas e datas
+- ✅ Integração completa com Caixas
+- ✅ Interface intuitiva e responsiva
+- ✅ Validações robustas
+
+---
+
+### 9. 📋 Módulo de Despesas Completo
+
+**Data de Implementação**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rota `/api/v1/despesas` (GET com filtros, POST para efetivar pagamento)
+- ✅ Rota `/api/v1/despesas/:id` (GET, PUT, DELETE)
+- ✅ Arquivo: `backend/routes/despesas.js`
+- ✅ Filtros avançados (status, data de vencimento, forma de pagamento, busca)
+- ✅ Efetivação de pagamento individual e em lote
+- ✅ Modificação de pagamentos já efetivados
+- ✅ Integração automática com módulo de Caixas
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/despesas/page.tsx`
+- ✅ Interface completa de gerenciamento com:
+  - Listagem de despesas com filtros
+  - Busca por ticket, fornecedor ou descrição
+  - Filtros por status, data de vencimento, forma de pagamento
+  - Efetivação de pagamento individual
+  - Efetivação de pagamento em lote
+  - Modificação de pagamentos já efetivados
+  - Estatísticas (total, pendentes/vencidas, total pago)
+  - Visualização detalhada de cada despesa e suas parcelas
+
+**Banco de Dados:**
+- ✅ Tabela `protese.despesas` (já criada)
+- ✅ Tabela `protese.despesas_parcelas` (já criada)
+- ✅ Script: `COMANDOS_ADICIONAR_MOVIMENTACAO_CAIXA_ID_DESPESAS.sql`
+- ✅ Triggers para atualização automática de status
+- ✅ Relacionamento com movimentações de caixa
+
+#### Funcionalidades:
+
+1. **Gerenciamento de Despesas**
+   - Listagem completa de despesas
+   - Filtros avançados (status, data, forma de pagamento)
+   - Busca por ticket, fornecedor ou descrição
+   - Visualização de detalhes (valor vencimento, valor pago, datas)
+   - Visualização de parcelas
+
+2. **Efetivação de Pagamento**
+   - Efetivação individual (selecionar despesa e efetivar)
+   - Efetivação em lote (filtrar por data de vencimento e efetivar todas)
+   - Modificação de pagamentos já efetivados
+   - Seleção de caixa para pagamento
+   - Atualização automática de saldo do caixa
+
+3. **Monitoramento**
+   - Contas a pagar
+   - Despesas pendentes
+   - Despesas vencidas
+   - Total pago
+
+#### Características Técnicas:
+
+- ✅ Status atualizado automaticamente via triggers
+- ✅ Integração completa com módulo de Caixas
+- ✅ Interface intuitiva e responsiva
+- ✅ Filtros e busca avançada
+- ✅ Logs de auditoria para todas as ações
+
+---
+
+### 10. 📊 Módulo de Faturamento Completo
+
+**Data de Implementação**: 13 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Rota `/api/v1/faturamento/movimentacoes` - Listar todas as movimentações (vendas, despesas, estoque)
+- ✅ Rotas para edição de vendas, despesas e estoque
+- ✅ Rotas para exclusão de vendas, despesas e estoque
+- ✅ Rotas para criação e gerenciamento de romaneios
+- ✅ Arquivo: `backend/routes/faturamento.js`
+- ✅ Integração com sistema de logs
+- ✅ Verificação de permissões em todos os endpoints
+- ✅ Busca detalhada de informações para romaneios
+
+**Frontend:**
+- ✅ Página completa: `frontend/painel-admin/src/app/dashboard/faturamento/page.tsx`
+- ✅ Interface completa de gerenciamento com:
+  - Visualização unificada de todas as movimentações
+  - Filtros por tipo, data, status, busca
+  - Edição linha por linha de vendas, despesas e estoque
+  - Exclusão de movimentações com confirmação
+  - Criação de romaneios (seleção múltipla)
+  - Visualização detalhada de romaneios
+  - Impressão/Download de romaneios
+  - Estatísticas de movimentações
+
+**Banco de Dados:**
+- ✅ Tabela `protese.romaneios` criada
+- ✅ Tabela `protese.romaneios_itens` criada
+- ✅ Script: `COMANDOS_CRIAR_TABELA_ROMANEIOS.sql`
+- ✅ Script: `COMANDOS_CORRIGIR_FUNCAO_ROMANEIOS.sql`
+- ✅ Script: `COMANDOS_ATUALIZAR_STATUS_ROMANEIOS.sql`
+- ✅ Função PostgreSQL para gerar números únicos de romaneio
+- ✅ Triggers para atualização automática
+
+#### Funcionalidades:
+
+1. **Visualização Unificada**
+   - Todas as movimentações em uma única tela
+   - Filtros por tipo (venda, despesa, estoque)
+   - Filtros por data, status, busca
+   - Estatísticas em tempo real
+
+2. **Edição e Exclusão**
+   - Edição linha por linha de cada movimentação
+   - Formulários específicos para cada tipo
+   - Validações e reversões automáticas
+   - Exclusão com confirmação
+
+3. **Sistema de Romaneios**
+   - Criação de romaneios agrupando múltiplas movimentações
+   - Tipos: Faturamento, Estoque, Despesa, Misto
+   - Numeração automática única (ROM-YYYY-000001)
+   - Visualização detalhada com:
+     - Cabeçalho com dados da empresa (do módulo Configurações)
+     - Detalhes completos de vendas (serviços realizados e produtos adquiridos)
+     - Detalhes completos de despesas
+     - Detalhes completos de movimentações de estoque
+   - Impressão/Download em formato profissional
+
+#### Características Técnicas:
+
+- ✅ Visualização unificada de múltiplos tipos de movimentações
+- ✅ Edição e exclusão com validações
+- ✅ Sistema completo de romaneios
+- ✅ Integração com módulo de Configurações (dados da empresa)
+- ✅ Interface intuitiva e responsiva
+- ✅ Logs de auditoria para todas as ações
+
+---
+
 **Data**: 13 de Dezembro de 2025  
-**Versão**: 1.5.0  
+**Versão**: 1.6.0  
 **Status**: ✅ **Todas as implementações concluídas e em produção**
 

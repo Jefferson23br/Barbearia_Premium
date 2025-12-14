@@ -47,6 +47,9 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Módulo de Caixas** (gerenciamento de contas e movimentações financeiras)
 - ✅ **Lançamento de Venda** (sistema completo de lançamento de vendas com serviços, produtos, descontos e parcelamento)
 - ✅ **Módulo de Receitas** (gerenciamento completo de receitas com efetivação de pagamentos)
+- ✅ **Lançamento de Despesa** (sistema completo de lançamento de despesas com parcelamento)
+- ✅ **Módulo de Despesas** (gerenciamento completo de despesas com quitação e monitoramento)
+- ✅ **Módulo de Faturamento** (visualização unificada, edição e criação de romaneios)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)
@@ -328,6 +331,7 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: 12 de Dezembro de 2025  
+**Última atualização**: 13 de Dezembro de 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
-**Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI
+**Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI  
+**Versão**: 1.6.0

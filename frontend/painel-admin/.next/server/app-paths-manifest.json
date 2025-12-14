@@ -1,9 +1,8 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/page": "app/page.js",
-  "/dashboard/lancamento-venda/page": "app/dashboard/lancamento-venda/page.js",
-  "/dashboard/agenda/page": "app/dashboard/agenda/page.js",
-  "/dashboard/receitas/page": "app/dashboard/receitas/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/caixas/page": "app/dashboard/caixas/page.js"
+  "/dashboard/lancamento-despesa/page": "app/dashboard/lancamento-despesa/page.js",
+  "/dashboard/despesas/page": "app/dashboard/despesas/page.js",
+  "/dashboard/caixas/page": "app/dashboard/caixas/page.js",
+  "/dashboard/faturamento/page": "app/dashboard/faturamento/page.js",
+  "/dashboard/configuracoes/page": "app/dashboard/configuracoes/page.js"
 }

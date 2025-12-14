@@ -110,6 +110,26 @@ interface Permissoes {
   estoque_ver: boolean
   estoque_editar: boolean
   estoque_excluir: boolean
+
+  // Caixas
+  caixas_ver: boolean
+  caixas_editar: boolean
+  caixas_excluir: boolean
+
+  // Vendas
+  vendas_ver: boolean
+  vendas_editar: boolean
+  vendas_excluir: boolean
+
+  // Balanço Demonstrativo
+  balanco_demonstrativo_ver: boolean
+  balanco_demonstrativo_editar: boolean
+  balanco_demonstrativo_excluir: boolean
+
+  // CRM
+  crm_ver: boolean
+  crm_editar: boolean
+  crm_excluir: boolean
 }
 
 const permissoesPadrao: Permissoes = {
@@ -170,6 +190,18 @@ const permissoesPadrao: Permissoes = {
     estoque_ver: false,
     estoque_editar: false,
     estoque_excluir: false,
+    caixas_ver: false,
+    caixas_editar: false,
+    caixas_excluir: false,
+    vendas_ver: false,
+    vendas_editar: false,
+    vendas_excluir: false,
+    balanco_demonstrativo_ver: false,
+    balanco_demonstrativo_editar: false,
+    balanco_demonstrativo_excluir: false,
+    crm_ver: false,
+    crm_editar: false,
+    crm_excluir: false,
   }
 
 interface ModuloPermissao {
@@ -409,6 +441,16 @@ export default function ControlePermissoesPage() {
       },
     },
     {
+      id: 'caixas',
+      nome: 'Caixas',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.caixas_ver,
+        editar: permissoes.caixas_editar,
+        excluir: permissoes.caixas_excluir,
+      },
+    },
+    {
       id: 'controle_acessos',
       nome: 'Controle de Acessos',
       apenasVer: true,
@@ -472,6 +514,26 @@ export default function ControlePermissoesPage() {
         ver: permissoes.emissao_relatorios_ver,
         editar: permissoes.emissao_relatorios_editar,
         excluir: permissoes.emissao_relatorios_excluir,
+      },
+    },
+    {
+      id: 'balanco_demonstrativo',
+      nome: 'Balanço Demonstrativo',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.balanco_demonstrativo_ver,
+        editar: permissoes.balanco_demonstrativo_editar,
+        excluir: permissoes.balanco_demonstrativo_excluir,
+      },
+    },
+    {
+      id: 'crm',
+      nome: 'CRM',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.crm_ver,
+        editar: permissoes.crm_editar,
+        excluir: permissoes.crm_excluir,
       },
     },
     {

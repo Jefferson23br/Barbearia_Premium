@@ -1,6 +1,6 @@
 # 📊 Status do Projeto - Sistema Barbearia Premium
 
-Documento atualizado com o status completo do projeto em **12 de Dezembro de 2025**.
+Documento atualizado com o status completo do projeto em **13 de Dezembro de 2025**.
 
 ---
 
@@ -9,7 +9,7 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 **Nome do Projeto**: Sistema Barbearia Premium  
 **Status**: ✅ **Em Produção**  
 **Última Atualização**: 13 de Dezembro de 2025  
-**Versão Atual**: 1.5.0
+**Versão Atual**: 1.6.0
 
 ---
 
@@ -165,7 +165,7 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 ## 📊 Estatísticas do Projeto
 
 ### Backend
-- **Total de Endpoints**: 60+
+- **Total de Endpoints**: 70+
 - **Módulos**: 17
 - **Linhas de Código**: ~7.500
 - **Estrutura**: Modular e escalável
@@ -308,14 +308,63 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 
 ---
 
-## 🔄 Módulos em Desenvolvimento
+### 18. 💸 Lançamento de Despesa
+**Status**: ✅ **100% Completo**
+
+- Formulário completo para lançamento de despesas
+- Campos: Emissão, Vencimento, Pagamento, Forma de Pagamento, Caixa, Fornecedor, Descrição, Categoria de Custo, Valor Bruto, Valor Líquido
+- Suporte a pagamento à vista e parcelado
+- Múltiplas formas de pagamento (dinheiro, pix, ted, cartão, boleto)
+- Parcelamento automático (1x a 10x)
+- Integração automática com módulo de Caixas (dedução de saldo quando pago)
+- Geração automática de tickets únicos
+
+**Endpoints**: 1  
+**Páginas Frontend**: 1
 
 ---
 
-### 💸 Módulo de Despesas
-**Status**: 🔄 **Planejado**  
-**Prioridade**: Alta  
-**Início Estimado**: Janeiro 2026
+### 19. 📋 Despesas
+**Status**: ✅ **100% Completo**
+
+- Listagem completa de despesas com filtros avançados
+- Filtros por status, data de vencimento, forma de pagamento, busca
+- Efetivação de pagamento individual e em lote
+- Modificação de pagamentos já efetivados
+- Quitação de despesas (deduz do saldo do caixa)
+- Monitoramento de contas a pagar
+- Visualização de parcelas
+- Estatísticas (total, pendentes/vencidas, total pago)
+
+**Endpoints**: 7  
+**Páginas Frontend**: 1
+
+---
+
+### 20. 📊 Faturamento
+**Status**: ✅ **100% Completo**
+
+- Visualização unificada de todas as movimentações (Vendas, Despesas, Estoque)
+- Filtros avançados por tipo, data, status, busca
+- Edição linha por linha de vendas, despesas e movimentações de estoque
+- Exclusão de movimentações com validações
+- Criação de romaneios (faturamento, estoque, despesa, misto)
+- Visualização detalhada de romaneios com:
+  - Cabeçalho com dados da empresa (do módulo Configurações)
+  - Detalhes completos de vendas (serviços realizados e produtos adquiridos)
+  - Detalhes completos de despesas
+  - Detalhes completos de movimentações de estoque
+- Impressão/Download de romaneios em formato profissional
+- Estatísticas de movimentações
+
+**Endpoints**: 12  
+**Páginas Frontend**: 1
+
+---
+
+## 🔄 Módulos em Desenvolvimento
+
+---
 
 ---
 
@@ -399,14 +448,15 @@ Documento atualizado com o status completo do projeto em **12 de Dezembro de 202
 
 ## 🎯 Próximos Passos
 
-1. **Módulo de Despesas** - Lançamento e controle de despesas
-2. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
-3. **Melhorias no Help Desk** - Notificações
-4. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
-5. **Melhorias no Módulo de Estoque** - Saída de estoque, ajustes, relatórios de movimentação
-6. **Melhorias no Módulo de Produtos** - Lançamento de preços de custo via interface
-7. **Relatórios Financeiros** - Relatórios de vendas, receitas, despesas e fluxo de caixa
-8. **Conciliação Bancária** - Integração com extratos bancários
+1. **Balanço Demonstrativo** - Estrutura criada, desenvolvimento em andamento
+2. **CRM** - Estrutura criada, desenvolvimento em andamento
+3. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
+4. **Melhorias no Help Desk** - Notificações
+5. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
+6. **Melhorias no Módulo de Estoque** - Saída de estoque, ajustes, relatórios de movimentação
+7. **Melhorias no Módulo de Produtos** - Lançamento de preços de custo via interface
+8. **Relatórios Financeiros** - Relatórios de vendas, receitas, despesas e fluxo de caixa
+9. **Conciliação Bancária** - Integração com extratos bancários
 
 ---
 
