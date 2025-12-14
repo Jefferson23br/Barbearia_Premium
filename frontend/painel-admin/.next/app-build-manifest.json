@@ -21,45 +21,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
-    "/dashboard/receitas/page": [
+    "/dashboard/funcionarios/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/receitas/page.js"
-    ],
-    "/dashboard/controle-permissoes/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-permissoes/page.js"
-    ],
-    "/dashboard/lancamento-venda/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/lancamento-venda/page.js"
-    ],
-    "/dashboard/lancamento-despesa/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/lancamento-despesa/page.js"
-    ],
-    "/dashboard/despesas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/despesas/page.js"
-    ],
-    "/dashboard/caixas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/caixas/page.js"
+      "static/chunks/app/dashboard/funcionarios/page.js"
     ],
     "/dashboard/faturamento/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/faturamento/page.js"
     ],
-    "/dashboard/configuracoes/page": [
+    "/dashboard/balanco-demonstrativo/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/configuracoes/page.js"
+      "static/chunks/app/dashboard/balanco-demonstrativo/page.js"
+    ],
+    "/dashboard/despesas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/despesas/page.js"
+    ],
+    "/dashboard/lancamento-despesa/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/lancamento-despesa/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
