@@ -21,65 +21,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
-    "/dashboard/funcionarios/page": [
+    "/dashboard/controle-permissoes/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/funcionarios/page.js"
-    ],
-    "/dashboard/faturamento/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/faturamento/page.js"
-    ],
-    "/dashboard/balanco-demonstrativo/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/balanco-demonstrativo/page.js"
-    ],
-    "/dashboard/despesas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/despesas/page.js"
-    ],
-    "/dashboard/lancamento-despesa/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/lancamento-despesa/page.js"
-    ],
-    "/dashboard/emissao-nfe/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/emissao-nfe/page.js"
-    ],
-    "/dashboard/emissao-relatorios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/emissao-relatorios/page.js"
-    ],
-    "/dashboard/estoque/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/estoque/page.js"
+      "static/chunks/app/dashboard/controle-permissoes/page.js"
     ],
     "/dashboard/lancamento-venda/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/lancamento-venda/page.js"
     ],
-    "/dashboard/agenda/page": [
+    "/dashboard/cupons-fidelidades/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/agenda/page.js"
+      "static/chunks/app/dashboard/cupons-fidelidades/page.js"
     ],
-    "/dashboard/usuarios/page": [
+    "/dashboard/integracoes-apis/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/usuarios/page.js"
-    ],
-    "/dashboard/controle-permissoes/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-permissoes/page.js"
+      "static/chunks/app/dashboard/integracoes-apis/page.js"
     ]
   }
 }

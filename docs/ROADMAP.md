@@ -43,10 +43,19 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ### 🔌 Integrações de APIs Externas
 - ✅ Estrutura escalável para múltiplas integrações
-- ✅ Integração Focus NFe (Nota Fiscal)
+- ✅ 8 Integrações implementadas:
+  - Focus NFe (Emissão de NF-e)
+  - PLUG NFe (Emissão de NF-e)
+  - Asaas (Pagamentos)
+  - Mercado Pago (Pagamentos)
+  - PagSeguro/PagBank (Pagamentos)
+  - Twilio (Comunicações)
+  - WhatsApp Business API (Mensagens)
+  - SendGrid (Emails)
 - ✅ Sistema de habilitação de funcionalidades
 - ✅ Interface de gerenciamento completa
 - ✅ Suporte a múltiplos ambientes
+- ✅ Documentação completa de cada integração
 
 ### 🎨 Interface
 - ✅ Design responsivo (mobile, tablet, desktop)
@@ -220,6 +229,28 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ---
 
+### 🎫 Cupons e Fidelidades
+**Prioridade**: Alta  
+**Status**: ✅ **100% Completo (14 de Dezembro de 2025)**
+
+**Funcionalidades implementadas:**
+- ✅ CRUD completo de cupons
+- ✅ Configuração de cupons (tipo de desconto, aplicação, regras de uso)
+- ✅ Sistema de fidelidade automático
+- ✅ Integração com Lançamento de Venda
+- ✅ Validação e aplicação de cupons
+- ✅ Controle de progresso de fidelidade por cliente
+- ✅ Visualização de fidelidades
+
+**Melhorias planejadas:**
+- [ ] Dashboard de métricas de cupons
+- [ ] Relatórios de uso de cupons
+- [ ] Notificações de cupons liberados
+- [ ] Gráficos de progresso de fidelidade
+- [ ] Campanhas promocionais
+
+---
+
 ### 🧾 Faturamento
 **Prioridade**: Média  
 **Status**: ✅ **100% Completo (Dezembro 2025)**
@@ -271,16 +302,18 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 - [ ] Métricas de performance
 
 ### 🔔 Sistema de Notificações
-- [ ] Notificações por email
-- [ ] Notificações por SMS
+- ✅ Estrutura de integrações implementada (Twilio, WhatsApp Business API, SendGrid)
+- [ ] Implementação completa de notificações por email
+- [ ] Implementação completa de notificações por SMS/WhatsApp
 - [ ] Notificações push
 - [ ] Central de notificações
 
 ### 💳 Integração de Pagamentos
-- [ ] Gateway de pagamento
-- [ ] Pagamentos online
+- ✅ Estrutura de integrações implementada (Asaas, Mercado Pago, PagSeguro)
+- [ ] Implementação completa de pagamentos online
 - [ ] Controle de transações
 - [ ] Relatórios financeiros
+- [ ] Webhooks de pagamento
 
 ### 📦 Estoque
 - [ ] Controle de produtos

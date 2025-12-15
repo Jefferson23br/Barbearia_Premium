@@ -4,6 +4,204 @@ const pool = require('../config/database');
 const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 
 /**
+ * Função auxiliar para validar e aplicar cupom
+ */
+async function validarEAplicarCupom(client, cupomCodigo, clienteId, valorServicos, valorProdutos, valorTotal) {
+  if (!cupomCodigo) {
+    return { cupomId: null, descontoCupom: 0, cupom: null };
+  }
+
+  // Buscar cupom
+  const cupomResult = await client.query(
+    'SELECT * FROM protese.cupons WHERE codigo = $1 AND is_active = true',
+    [cupomCodigo.toUpperCase()]
+  );
+
+  if (cupomResult.rows.length === 0) {
+    throw new Error('Cupom não encontrado ou inativo');
+  }
+
+  const cupom = cupomResult.rows[0];
+
+  // Verificar validade
+  const hoje = new Date();
+  if (cupom.validade_inicio && new Date(cupom.validade_inicio) > hoje) {
+    throw new Error('Cupom ainda não está válido');
+  }
+
+  if (cupom.validade_fim && new Date(cupom.validade_fim) < hoje) {
+    throw new Error('Cupom expirado');
+  }
+
+  // Verificar regra de uso
+  if (cupom.regra_uso === 'unico') {
+    const usoCheck = await client.query(
+      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+      [cupom.id]
+    );
+
+    if (parseInt(usoCheck.rows[0].total) > 0) {
+      throw new Error('Cupom já foi usado (uso único)');
+    }
+  }
+
+  if (cupom.regra_uso === 'limitado') {
+    const usoCheck = await client.query(
+      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+      [cupom.id]
+    );
+
+    if (parseInt(usoCheck.rows[0].total) >= cupom.limite_usos) {
+      throw new Error('Cupom atingiu o limite de usos');
+    }
+  }
+
+  if (cupom.regra_uso === 'fidelidade') {
+    if (!clienteId) {
+      throw new Error('Cliente é obrigatório para cupons de fidelidade');
+    }
+
+    const fidelidadeCheck = await client.query(
+      'SELECT * FROM protese.fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
+      [clienteId, cupom.id]
+    );
+
+    if (fidelidadeCheck.rows.length === 0) {
+      throw new Error('Cliente não possui fidelidade para este cupom');
+    }
+
+    const fidelidade = fidelidadeCheck.rows[0];
+
+    if (!fidelidade.cupom_liberado) {
+      throw new Error(`Cupom ainda não foi liberado. Progresso: ${fidelidade.quantidade_atual}/${fidelidade.quantidade_necessaria}`);
+    }
+
+    if (fidelidade.cupom_usado) {
+      throw new Error('Cupom de fidelidade já foi usado');
+    }
+  }
+
+  // Calcular desconto do cupom
+  let valorBaseDesconto = 0;
+
+  if (cupom.aplicar_em === 'total') {
+    valorBaseDesconto = valorTotal;
+  } else if (cupom.aplicar_em === 'apenas_servicos') {
+    valorBaseDesconto = valorServicos;
+  } else if (cupom.aplicar_em === 'apenas_produtos') {
+    valorBaseDesconto = valorProdutos;
+  }
+
+  let descontoCupom = 0;
+  if (cupom.tipo_desconto === 'percentual') {
+    descontoCupom = valorBaseDesconto * (parseFloat(cupom.valor_desconto) / 100);
+  } else if (cupom.tipo_desconto === 'valor_fixo') {
+    descontoCupom = Math.min(parseFloat(cupom.valor_desconto), valorBaseDesconto);
+  }
+
+  return { cupomId: cupom.id, descontoCupom, cupom };
+}
+
+/**
+ * Função auxiliar para validar e aplicar cupom
+ */
+async function validarEAplicarCupom(client, cupomCodigo, clienteId, valorServicos, valorProdutos, valorTotal) {
+  if (!cupomCodigo) {
+    return { cupomId: null, descontoCupom: 0, cupom: null };
+  }
+
+  // Buscar cupom
+  const cupomResult = await client.query(
+    'SELECT * FROM protese.cupons WHERE codigo = $1 AND is_active = true',
+    [cupomCodigo.toUpperCase()]
+  );
+
+  if (cupomResult.rows.length === 0) {
+    throw new Error('Cupom não encontrado ou inativo');
+  }
+
+  const cupom = cupomResult.rows[0];
+
+  // Verificar validade
+  const hoje = new Date();
+  if (cupom.validade_inicio && new Date(cupom.validade_inicio) > hoje) {
+    throw new Error('Cupom ainda não está válido');
+  }
+
+  if (cupom.validade_fim && new Date(cupom.validade_fim) < hoje) {
+    throw new Error('Cupom expirado');
+  }
+
+  // Verificar regra de uso
+  if (cupom.regra_uso === 'unico') {
+    const usoCheck = await client.query(
+      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+      [cupom.id]
+    );
+
+    if (parseInt(usoCheck.rows[0].total) > 0) {
+      throw new Error('Cupom já foi usado (uso único)');
+    }
+  }
+
+  if (cupom.regra_uso === 'limitado') {
+    const usoCheck = await client.query(
+      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+      [cupom.id]
+    );
+
+    if (parseInt(usoCheck.rows[0].total) >= cupom.limite_usos) {
+      throw new Error('Cupom atingiu o limite de usos');
+    }
+  }
+
+  if (cupom.regra_uso === 'fidelidade') {
+    if (!clienteId) {
+      throw new Error('Cliente é obrigatório para cupons de fidelidade');
+    }
+
+    const fidelidadeCheck = await client.query(
+      'SELECT * FROM protese.fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
+      [clienteId, cupom.id]
+    );
+
+    if (fidelidadeCheck.rows.length === 0) {
+      throw new Error('Cliente não possui fidelidade para este cupom');
+    }
+
+    const fidelidade = fidelidadeCheck.rows[0];
+
+    if (!fidelidade.cupom_liberado) {
+      throw new Error(`Cupom ainda não foi liberado. Progresso: ${fidelidade.quantidade_atual}/${fidelidade.quantidade_necessaria}`);
+    }
+
+    if (fidelidade.cupom_usado) {
+      throw new Error('Cupom de fidelidade já foi usado');
+    }
+  }
+
+  // Calcular desconto do cupom
+  let valorBaseDesconto = 0;
+
+  if (cupom.aplicar_em === 'total') {
+    valorBaseDesconto = valorTotal;
+  } else if (cupom.aplicar_em === 'apenas_servicos') {
+    valorBaseDesconto = valorServicos;
+  } else if (cupom.aplicar_em === 'apenas_produtos') {
+    valorBaseDesconto = valorProdutos;
+  }
+
+  let descontoCupom = 0;
+  if (cupom.tipo_desconto === 'percentual') {
+    descontoCupom = valorBaseDesconto * (parseFloat(cupom.valor_desconto) / 100);
+  } else if (cupom.tipo_desconto === 'valor_fixo') {
+    descontoCupom = Math.min(parseFloat(cupom.valor_desconto), valorBaseDesconto);
+  }
+
+  return { cupomId: cupom.id, descontoCupom, cupom };
+}
+
+/**
  * Função auxiliar para calcular data de vencimento das parcelas
  */
 function calcularDataVencimento(dataVenda, formaPagamento, numeroParcela, primeiroVencimentoBoleto = null) {
@@ -357,6 +555,7 @@ router.post('/', async (req, res) => {
       produtos,
       desconto_percentual,
       desconto_valor,
+      cupom_codigo,
       forma_pagamento,
       caixa_id,
       observacoes,
@@ -427,8 +626,8 @@ router.post('/', async (req, res) => {
     const vendaResult = await client.query(
       `INSERT INTO protese.vendas 
        (ticket, funcionario_id, cliente_id, data_venda, valor_total, desconto_percentual, 
-        desconto_valor, valor_liquido, forma_pagamento, numero_parcelas, caixa_id, observacoes, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        desconto_valor, valor_liquido, forma_pagamento, numero_parcelas, caixa_id, cupom_id, observacoes, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
        RETURNING *`,
       [
         ticketBase,
@@ -442,6 +641,7 @@ router.post('/', async (req, res) => {
         forma_pagamento,
         numeroParcelas,
         caixa_id,
+        cupomId,
         observacoes || null,
         usuarioId
       ]
@@ -623,6 +823,143 @@ router.post('/', async (req, res) => {
            WHERE id = $2`,
           [movimentacaoResult.rows[0].id, receita.id]
         );
+      }
+    }
+
+    // Registrar uso do cupom se aplicado
+    if (cupomId) {
+      await client.query(
+        `INSERT INTO protese.cupons_usados 
+         (cupom_id, cliente_id, venda_id, valor_desconto_aplicado, created_by)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [
+          cupomId,
+          cliente_id || null,
+          venda.id,
+          descontoCupom,
+          usuarioId
+        ]
+      );
+
+      // Se for cupom de fidelidade, marcar como usado e resetar contagem
+      if (cupomAplicado && cupomAplicado.regra_uso === 'fidelidade' && cliente_id) {
+        await client.query(
+          `UPDATE protese.fidelidades 
+           SET cupom_usado = true,
+               data_uso = CURRENT_DATE,
+               quantidade_atual = 0,
+               cupom_liberado = false,
+               updated_at = CURRENT_TIMESTAMP
+           WHERE cliente_id = $1 AND cupom_id = $2`,
+          [cliente_id, cupomId]
+        );
+      }
+    }
+
+    // Atualizar fidelidades (contar compras para liberar novos cupons)
+    if (cliente_id) {
+      const temServicos = servicos && servicos.length > 0;
+      const temProdutos = produtos && produtos.length > 0;
+      const isPagamentoOnline = ['pix', 'ted', 'cartao_1x'].includes(forma_pagamento);
+
+      // Buscar cupons de fidelidade ativos
+      const cuponsFidelidade = await client.query(
+        `SELECT * FROM protese.cupons 
+         WHERE regra_uso = 'fidelidade' 
+         AND is_active = true
+         AND (validade_inicio IS NULL OR validade_inicio <= CURRENT_DATE)
+         AND (validade_fim IS NULL OR validade_fim >= CURRENT_DATE)`
+      );
+
+      // Processar cada cupom de fidelidade
+      for (const cupomFid of cuponsFidelidade.rows) {
+        // Não atualizar o cupom que acabou de ser usado
+        if (cupomId && cupomFid.id === cupomId) {
+          continue;
+        }
+
+        let deveContar = false;
+
+        // Verificar se deve contar baseado na regra de fidelidade
+        switch (cupomFid.regra_fidelidade) {
+          case 'compras_servicos':
+            deveContar = temServicos;
+            break;
+          case 'compras_produtos':
+            deveContar = temProdutos;
+            break;
+          case 'compras_total':
+            deveContar = temServicos || temProdutos;
+            break;
+          case 'pagamento_online':
+            deveContar = isPagamentoOnline;
+            break;
+          case 'agendamento_pago':
+            // Verificar se há agendamento vinculado e se foi pago
+            const agendamentoCheck = await client.query(
+              `SELECT a.id FROM protese.vendas_servicos vs
+               INNER JOIN protese.agendamentos a ON vs.agendamento_id = a.id
+               WHERE vs.venda_id = $1 AND a.id IS NOT NULL`,
+              [venda.id]
+            );
+            deveContar = agendamentoCheck.rows.length > 0 && isPagamentoOnline;
+            break;
+        }
+
+        if (!deveContar) continue;
+
+        // Buscar ou criar registro de fidelidade
+        let fidelidadeResult = await client.query(
+          'SELECT * FROM protese.fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
+          [cliente_id, cupomFid.id]
+        );
+
+        if (fidelidadeResult.rows.length === 0) {
+          // Criar novo registro
+          await client.query(
+            `INSERT INTO protese.fidelidades 
+             (cliente_id, cupom_id, tipo_contagem, quantidade_atual, quantidade_necessaria)
+             VALUES ($1, $2, $3, 1, $4)`,
+            [cliente_id, cupomFid.id, cupomFid.regra_fidelidade, cupomFid.quantidade_fidelidade]
+          );
+        } else {
+          const fidelidade = fidelidadeResult.rows[0];
+
+          // Se já usou o cupom, não incrementa até usar novamente
+          if (fidelidade.cupom_usado) {
+            // Resetar e começar a contar novamente
+            await client.query(
+              `UPDATE protese.fidelidades 
+               SET quantidade_atual = 1,
+                   cupom_liberado = false,
+                   cupom_usado = false,
+                   data_liberacao = NULL,
+                   data_uso = NULL,
+                   updated_at = CURRENT_TIMESTAMP
+               WHERE cliente_id = $1 AND cupom_id = $2`,
+              [cliente_id, cupomFid.id]
+            );
+          } else {
+            // Incrementar contagem
+            const novaQuantidade = fidelidade.quantidade_atual + 1;
+            const quantidadeNecessaria = cupomFid.quantidade_fidelidade;
+
+            let cupomLiberado = false;
+            if (novaQuantidade >= quantidadeNecessaria) {
+              cupomLiberado = true;
+            }
+
+            await client.query(
+              `UPDATE protese.fidelidades 
+               SET quantidade_atual = $1,
+                   cupom_liberado = $2,
+                   data_liberacao = CASE WHEN $2 = true AND data_liberacao IS NULL THEN CURRENT_DATE ELSE data_liberacao END,
+                   updated_at = CURRENT_TIMESTAMP
+               WHERE cliente_id = $3 AND cupom_id = $4`,
+              [novaQuantidade, cupomLiberado, cliente_id, cupomFid.id]
+            );
+          }
+        }
       }
     }
 

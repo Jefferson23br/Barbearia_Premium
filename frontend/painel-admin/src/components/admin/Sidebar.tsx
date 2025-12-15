@@ -165,6 +165,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       permissionKey: 'crm',
     },
     {
+      id: 'cupons-fidelidades',
+      label: 'Cupons e Fidelidades',
+      icon: FileCheck,
+      path: '/dashboard/cupons-fidelidades',
+      levels: ['master', 'proprietario', 'funcionario'],
+      permissionKey: 'cupons_fidelidades',
+    },
+    {
       id: 'usuarios',
       label: 'Gerenciamento de Usuários',
       icon: Users,

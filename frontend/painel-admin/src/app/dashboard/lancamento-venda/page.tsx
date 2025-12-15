@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ShoppingCart, User, Calendar, Scissors, Package, DollarSign, Percent, Minus, Plus, X, Save, Loader2, AlertCircle, CheckCircle2, Trash2 } from 'lucide-react'
+import { ShoppingCart, User, Calendar, Scissors, Package, DollarSign, Percent, Minus, Plus, X, Save, Loader2, AlertCircle, CheckCircle2, Trash2, Ticket } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -99,11 +99,22 @@ export default function LancamentoVendaPage() {
     cliente_id: '',
     desconto_percentual: '',
     desconto_valor: '',
+    cupom_codigo: '',
     forma_pagamento: '',
     caixa_id: '',
     primeiro_vencimento_boleto: '',
     observacoes: '',
   })
+
+  // Estado do cupom validado
+  const [cupomValidado, setCupomValidado] = useState<{
+    codigo: string
+    nome: string
+    tipo_desconto: string
+    valor_desconto: number
+    aplicar_em: string
+  } | null>(null)
+  const [validandoCupom, setValidandoCupom] = useState(false)
 
   // Serviços e produtos da venda
   const [servicosVenda, setServicosVenda] = useState<ServicoVenda[]>([])
@@ -414,7 +425,85 @@ export default function LancamentoVendaPage() {
     }
   }
 
+  // Validar cupom
+  const validarCupom = async (codigo: string) => {
+    if (!codigo.trim()) {
+      setCupomValidado(null)
+      return
+    }
+
+    setValidandoCupom(true)
+    setMensagem({ tipo: null, texto: '' })
+    
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const clienteId = formData.cliente_id ? `?cliente_id=${formData.cliente_id}` : ''
+      const response = await fetch(`${apiUrl}/api/v1/cupons-fidelidades/cupons/validar/${encodeURIComponent(codigo.trim().toUpperCase())}${clienteId}`, {
+        headers,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Cupom não encontrado' }))
+        setMensagem({ tipo: 'erro', texto: errorData.error || 'Cupom inválido ou não encontrado' })
+        setCupomValidado(null)
+        return
+      }
+
+      const data = await response.json()
+      if (data.cupom && data.valido) {
+        setCupomValidado(data.cupom)
+        setMensagem({ tipo: 'sucesso', texto: `Cupom "${data.cupom.nome}" aplicado com sucesso!` })
+        setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
+      } else {
+        setMensagem({ tipo: 'erro', texto: 'Cupom inválido' })
+        setCupomValidado(null)
+      }
+    } catch (error: any) {
+      console.error('Erro ao validar cupom:', error)
+      setMensagem({ tipo: 'erro', texto: 'Erro ao validar cupom. Verifique sua conexão.' })
+      setCupomValidado(null)
+    } finally {
+      setValidandoCupom(false)
+    }
+  }
+
+  // Calcular desconto do cupom
+  const calcularDescontoCupom = () => {
+    if (!cupomValidado) return 0
+
+    const { valorTotal } = calcularTotais()
+    let valorBaseDesconto = 0
+
+    if (cupomValidado.aplicar_em === 'total') {
+      valorBaseDesconto = valorTotal
+    } else if (cupomValidado.aplicar_em === 'apenas_servicos') {
+      valorBaseDesconto = servicosVenda.reduce((sum, s) => sum + parseFloat(s.valor.toString()), 0)
+    } else if (cupomValidado.aplicar_em === 'apenas_produtos') {
+      valorBaseDesconto = produtosVenda.reduce((sum, p) => sum + parseFloat(p.valor_total.toString()), 0)
+    }
+
+    if (cupomValidado.tipo_desconto === 'percentual') {
+      return valorBaseDesconto * (cupomValidado.valor_desconto / 100)
+    } else {
+      return Math.min(cupomValidado.valor_desconto, valorBaseDesconto)
+    }
+  }
+
   const totais = calcularTotais()
+  const descontoCupom = calcularDescontoCupom()
+  const valorLiquidoComCupom = Math.max(0, totais.valorLiquido - descontoCupom)
 
   // Formatação
   const formatarPreco = (valor: number | string | null | undefined) => {
@@ -439,7 +528,7 @@ export default function LancamentoVendaPage() {
       return
     }
 
-    if (totais.valorLiquido <= 0) {
+    if (valorLiquidoComCupom <= 0) {
       setMensagem({ tipo: 'erro', texto: 'Valor líquido deve ser maior que zero' })
       return
     }
@@ -512,6 +601,7 @@ export default function LancamentoVendaPage() {
         cliente_id: '',
         desconto_percentual: '',
         desconto_valor: '',
+        cupom_codigo: '',
         forma_pagamento: '',
         caixa_id: '',
         primeiro_vencimento_boleto: '',
@@ -867,10 +957,90 @@ export default function LancamentoVendaPage() {
                 />
               </div>
 
+              <div>
+                <Label htmlFor="cupom_codigo" className="text-gray-300">Cupom</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    id="cupom_codigo"
+                    type="text"
+                    value={formData.cupom_codigo}
+                    onChange={(e) => {
+                      const codigo = e.target.value.toUpperCase()
+                      setFormData({ ...formData, cupom_codigo: codigo })
+                      // Limpar cupom validado se o código mudar
+                      if (cupomValidado && cupomValidado.codigo !== codigo) {
+                        setCupomValidado(null)
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      // Validar ao pressionar Enter
+                      if (e.key === 'Enter' && formData.cupom_codigo.trim()) {
+                        e.preventDefault()
+                        validarCupom(formData.cupom_codigo)
+                      }
+                    }}
+                    className="bg-zinc-800 border-amber-500/20 text-gray-300 flex-1"
+                    placeholder="Digite o código do cupom e pressione Enter ou clique em Aplicar"
+                    disabled={validandoCupom}
+                  />
+                  {!cupomValidado && formData.cupom_codigo.trim() && (
+                    <Button
+                      type="button"
+                      onClick={() => validarCupom(formData.cupom_codigo)}
+                      disabled={validandoCupom || !formData.cupom_codigo.trim()}
+                      className="bg-amber-500 hover:bg-amber-600 text-white"
+                    >
+                      {validandoCupom ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Ticket className="h-4 w-4 mr-1" />
+                          Aplicar
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  {cupomValidado && (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setFormData({ ...formData, cupom_codigo: '' })
+                        setCupomValidado(null)
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="border-red-500/20 text-red-500 hover:bg-red-500/10"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                {cupomValidado && (
+                  <div className="mt-2 p-2 bg-green-500/10 border border-green-500/20 rounded text-sm">
+                    <p className="text-green-500 font-semibold">{cupomValidado.nome}</p>
+                    <p className="text-gray-400 text-xs">
+                      Desconto: {cupomValidado.tipo_desconto === 'percentual' 
+                        ? `${cupomValidado.valor_desconto}%` 
+                        : formatarPreco(cupomValidado.valor_desconto)}
+                    </p>
+                    <p className="text-gray-400 text-xs">
+                      Aplicar em: {cupomValidado.aplicar_em === 'total' ? 'Total' : 
+                        cupomValidado.aplicar_em === 'apenas_servicos' ? 'Apenas Serviços' : 'Apenas Produtos'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <div className="pt-3 border-t border-zinc-800">
                 <div className="flex justify-between items-center">
+                  {descontoCupom > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-400">Desconto Cupom:</span>
+                      <span className="text-green-500 font-semibold">- {formatarPreco(descontoCupom)}</span>
+                    </div>
+                  )}
                   <span className="text-lg font-semibold text-gray-300">Valor Líquido:</span>
-                  <span className="text-2xl font-bold text-amber-500">{formatarPreco(totais.valorLiquido)}</span>
+                  <span className="text-2xl font-bold text-amber-500">{formatarPreco(valorLiquidoComCupom)}</span>
                 </div>
               </div>
             </div>

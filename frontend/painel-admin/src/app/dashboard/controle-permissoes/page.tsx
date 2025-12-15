@@ -130,6 +130,11 @@ interface Permissoes {
   crm_ver: boolean
   crm_editar: boolean
   crm_excluir: boolean
+
+  // Cupons e Fidelidades
+  cupons_fidelidades_ver: boolean
+  cupons_fidelidades_editar: boolean
+  cupons_fidelidades_excluir: boolean
 }
 
 const permissoesPadrao: Permissoes = {
@@ -202,6 +207,9 @@ const permissoesPadrao: Permissoes = {
     crm_ver: false,
     crm_editar: false,
     crm_excluir: false,
+    cupons_fidelidades_ver: false,
+    cupons_fidelidades_editar: false,
+    cupons_fidelidades_excluir: false,
   }
 
 interface ModuloPermissao {
@@ -534,6 +542,16 @@ export default function ControlePermissoesPage() {
         ver: permissoes.crm_ver,
         editar: permissoes.crm_editar,
         excluir: permissoes.crm_excluir,
+      },
+    },
+    {
+      id: 'cupons_fidelidades',
+      nome: 'Cupons e Fidelidades',
+      apenasVer: false,
+      permissoes: {
+        ver: permissoes.cupons_fidelidades_ver,
+        editar: permissoes.cupons_fidelidades_editar,
+        excluir: permissoes.cupons_fidelidades_excluir,
       },
     },
     {

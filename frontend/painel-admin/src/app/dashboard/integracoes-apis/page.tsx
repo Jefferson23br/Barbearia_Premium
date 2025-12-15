@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Plug, Save, FileText, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { Plug, Save, FileText, CheckCircle, XCircle, AlertCircle, Loader2, Plus } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface Integracao {
@@ -14,6 +14,7 @@ interface Integracao {
   token_producao?: string
   token_homologacao?: string
   certificado_digital_path?: string
+  senha_certificado?: string
   cnpj?: string
   configuracao_json?: any
   funcionalidades?: Array<{
@@ -23,9 +24,337 @@ interface Integracao {
   }>
 }
 
+interface TipoIntegracao {
+  tipo: string
+  nome: string
+  descricao: string
+  icone: string
+  campos: Array<{
+    nome: string
+    chave: string
+    tipo: 'text' | 'password' | 'select'
+    placeholder?: string
+    opcoes?: Array<{ valor: string; label: string }>
+    descricao?: string
+  }>
+}
+
+const tiposIntegracao: TipoIntegracao[] = [
+  {
+    tipo: 'focus_nfe',
+    nome: 'Focus NFe',
+    descricao: 'Configure a integração com Focus NFe para emitir notas fiscais',
+    icone: '📄',
+    campos: [
+      {
+        nome: 'CNPJ',
+        chave: 'cnpj',
+        tipo: 'text',
+        placeholder: '00.000.000/0000-00',
+        descricao: 'CNPJ da empresa'
+      },
+      {
+        nome: 'Token de Homologação',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Token de homologação',
+        descricao: 'Token fornecido pela Focus NFe para ambiente de homologação'
+      },
+      {
+        nome: 'Token de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Token de produção',
+        descricao: 'Token fornecido pela Focus NFe para ambiente de produção'
+      },
+      {
+        nome: 'Caminho do Certificado Digital',
+        chave: 'certificado_digital_path',
+        tipo: 'text',
+        placeholder: '/caminho/do/certificado.pfx',
+        descricao: 'Caminho completo do arquivo do certificado digital A1 (.pfx)'
+      }
+    ]
+  },
+  {
+    tipo: 'plug_nfe',
+    nome: 'PLUG NFe',
+    descricao: 'Configure a integração com PLUG NFe para emitir notas fiscais',
+    icone: '🔌',
+    campos: [
+      {
+        nome: 'CNPJ',
+        chave: 'cnpj',
+        tipo: 'text',
+        placeholder: '00.000.000/0000-00',
+        descricao: 'CNPJ da empresa'
+      },
+      {
+        nome: 'API Key (Token)',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Sua API Key do PLUG NFe',
+        descricao: 'API Key fornecida pelo PLUG NFe. Usada tanto para homologação quanto produção'
+      },
+      {
+        nome: 'Caminho do Certificado Digital',
+        chave: 'certificado_digital_path',
+        tipo: 'text',
+        placeholder: '/caminho/do/certificado.pfx',
+        descricao: 'Caminho completo do arquivo do certificado digital A1 (.pfx)'
+      },
+      {
+        nome: 'Senha do Certificado',
+        chave: 'senha_certificado',
+        tipo: 'password',
+        placeholder: 'Senha do certificado',
+        descricao: 'Senha do certificado digital (se aplicável)'
+      }
+    ]
+  },
+  {
+    tipo: 'asaas',
+    nome: 'Asaas',
+    descricao: 'Configure a integração com Asaas para processar pagamentos (PIX, boleto, cartão de crédito)',
+    icone: '💳',
+    campos: [
+      {
+        nome: 'API Key de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Sua API Key do Asaas (Produção)',
+        descricao: 'Chave de API fornecida pelo Asaas para ambiente de produção. Acesse: Minha Conta > Integração > Gerar nova Chave de API'
+      },
+      {
+        nome: 'API Key de Sandbox (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Sua API Key do Asaas (Sandbox)',
+        descricao: 'Chave de API fornecida pelo Asaas para ambiente de sandbox/testes'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/asaas',
+        descricao: 'URL para receber notificações de eventos do Asaas (pagamentos, cobranças, etc). Configure também no painel do Asaas'
+      }
+    ]
+  },
+  {
+    tipo: 'mercado_pago',
+    nome: 'Mercado Pago',
+    descricao: 'Configure a integração com Mercado Pago para processar pagamentos (PIX, boleto, cartão de crédito)',
+    icone: '🛒',
+    campos: [
+      {
+        nome: 'Access Token de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Seu Access Token do Mercado Pago (Produção)',
+        descricao: 'Access Token fornecido pelo Mercado Pago para ambiente de produção. Acesse: Credenciais > Token de Produção'
+      },
+      {
+        nome: 'Access Token de Testes (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Seu Access Token do Mercado Pago (Testes)',
+        descricao: 'Access Token fornecido pelo Mercado Pago para ambiente de testes/sandbox. Acesse: Credenciais > Token de Testes'
+      },
+      {
+        nome: 'Public Key (Opcional)',
+        chave: 'public_key',
+        tipo: 'password',
+        placeholder: 'Sua Public Key do Mercado Pago',
+        descricao: 'Public Key fornecida pelo Mercado Pago. Usada para integrações no frontend (Checkout Transparente). Acesse: Credenciais > Chave Pública'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/mercadopago',
+        descricao: 'URL para receber notificações de eventos do Mercado Pago (pagamentos, reembolsos, etc). Configure também no painel do Mercado Pago'
+      }
+    ]
+  },
+  {
+    tipo: 'pagseguro',
+    nome: 'PagSeguro (PagBank)',
+    descricao: 'Configure a integração com PagSeguro/PagBank para processar pagamentos (PIX, boleto, cartão de crédito)',
+    icone: '🏦',
+    campos: [
+      {
+        nome: 'Token de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Seu Token do PagSeguro (Produção)',
+        descricao: 'Token fornecido pelo PagSeguro para ambiente de produção. Acesse: Minha Conta > Integrações > Tokens'
+      },
+      {
+        nome: 'Token de Sandbox (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Seu Token do PagSeguro (Sandbox)',
+        descricao: 'Token fornecido pelo PagSeguro para ambiente de sandbox/testes'
+      },
+      {
+        nome: 'Email (Opcional)',
+        chave: 'email',
+        tipo: 'text',
+        placeholder: 'seu-email@exemplo.com.br',
+        descricao: 'Email da conta PagSeguro (usado em algumas integrações legadas)'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/pagseguro',
+        descricao: 'URL para receber notificações de eventos do PagSeguro (pagamentos, status, etc). Configure também no painel do PagSeguro'
+      }
+    ]
+  },
+  {
+    tipo: 'twilio',
+    nome: 'Twilio',
+    descricao: 'Configure a integração com Twilio para envio de SMS, WhatsApp, voz e outras comunicações',
+    icone: '📱',
+    campos: [
+      {
+        nome: 'Account SID',
+        chave: 'account_sid',
+        tipo: 'text',
+        placeholder: 'Seu Account SID da Twilio',
+        descricao: 'Account SID fornecido pela Twilio. Encontre em: Console > Account Info > Account SID'
+      },
+      {
+        nome: 'Auth Token de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Seu Auth Token da Twilio (Produção)',
+        descricao: 'Auth Token fornecido pela Twilio para ambiente de produção. Encontre em: Console > Account Info > Auth Token'
+      },
+      {
+        nome: 'Auth Token de Testes (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Seu Auth Token da Twilio (Testes)',
+        descricao: 'Auth Token fornecido pela Twilio para ambiente de testes/sandbox'
+      },
+      {
+        nome: 'Número de Telefone Twilio (Opcional)',
+        chave: 'numero_telefone',
+        tipo: 'text',
+        placeholder: '+5511999999999',
+        descricao: 'Número de telefone Twilio configurado na sua conta (formato: +5511999999999)'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/twilio',
+        descricao: 'URL para receber notificações de eventos da Twilio (status de mensagens, chamadas, etc). Configure também no painel da Twilio'
+      }
+    ]
+  },
+  {
+    tipo: 'whatsapp_business',
+    nome: 'WhatsApp Business API',
+    descricao: 'Configure a integração com WhatsApp Business API para envio de mensagens, notificações e atendimento',
+    icone: '💬',
+    campos: [
+      {
+        nome: 'Phone Number ID',
+        chave: 'phone_number_id',
+        tipo: 'text',
+        placeholder: 'Seu Phone Number ID do WhatsApp Business',
+        descricao: 'Phone Number ID fornecido pelo WhatsApp Business. Encontre em: Configurações > Configurações da API > Phone Number ID'
+      },
+      {
+        nome: 'Access Token de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Seu Access Token do WhatsApp Business (Produção)',
+        descricao: 'Access Token fornecido pelo WhatsApp Business para ambiente de produção. Encontre em: Configurações > Tokens de acesso'
+      },
+      {
+        nome: 'Access Token de Testes (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Seu Access Token do WhatsApp Business (Testes)',
+        descricao: 'Access Token fornecido pelo WhatsApp Business para ambiente de testes/sandbox'
+      },
+      {
+        nome: 'Verify Token (Opcional)',
+        chave: 'verify_token',
+        tipo: 'password',
+        placeholder: 'Seu Verify Token do WhatsApp Business',
+        descricao: 'Token de verificação para webhooks. Configure o mesmo valor no painel do WhatsApp Business'
+      },
+      {
+        nome: 'App Secret (Opcional)',
+        chave: 'app_secret',
+        tipo: 'password',
+        placeholder: 'Seu App Secret do WhatsApp Business',
+        descricao: 'App Secret fornecido pelo WhatsApp Business para validação de webhooks'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/whatsapp',
+        descricao: 'URL para receber notificações de eventos do WhatsApp Business (mensagens recebidas, status, etc). Configure também no painel do WhatsApp Business'
+      }
+    ]
+  },
+  {
+    tipo: 'sendgrid',
+    nome: 'SendGrid',
+    descricao: 'Configure a integração com SendGrid para envio de emails transacionais e de marketing',
+    icone: '📧',
+    campos: [
+      {
+        nome: 'API Key de Produção',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Sua API Key do SendGrid (Produção)',
+        descricao: 'API Key fornecido pelo SendGrid para ambiente de produção. Encontre em: Settings > API Keys > Create API Key'
+      },
+      {
+        nome: 'API Key de Testes (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Sua API Key do SendGrid (Testes)',
+        descricao: 'API Key fornecido pelo SendGrid para ambiente de testes/sandbox'
+      },
+      {
+        nome: 'Email Remetente Padrão (Opcional)',
+        chave: 'email_remetente',
+        tipo: 'text',
+        placeholder: 'noreply@seu-dominio.com.br',
+        descricao: 'Email remetente padrão para envio de emails. Deve ser verificado no SendGrid'
+      },
+      {
+        nome: 'Nome do Remetente (Opcional)',
+        chave: 'nome_remetente',
+        tipo: 'text',
+        placeholder: 'Nome da Empresa',
+        descricao: 'Nome que aparecerá como remetente nos emails enviados'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/sendgrid',
+        descricao: 'URL para receber notificações de eventos do SendGrid (delivery, opens, clicks, etc). Configure também no painel do SendGrid'
+      }
+    ]
+  }
+]
+
 export default function IntegracoesApisPage() {
   const [integracoes, setIntegracoes] = useState<Integracao[]>([])
   const [integracaoAtiva, setIntegracaoAtiva] = useState<Integracao | null>(null)
+  const [tipoIntegracaoSelecionado, setTipoIntegracaoSelecionado] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [salvando, setSalvando] = useState(false)
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
@@ -47,11 +376,6 @@ export default function IntegracoesApisPage() {
 
       const data = await response.json()
       setIntegracoes(data.integracoes || [])
-
-      const focusNFe = data.integracoes?.find((i: Integracao) => i.tipo_integracao === 'focus_nfe')
-      if (focusNFe) {
-        setIntegracaoAtiva(focusNFe)
-      }
     } catch (error: any) {
       console.error('Erro ao carregar integrações:', error)
       setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar integrações' })
@@ -60,9 +384,45 @@ export default function IntegracoesApisPage() {
     }
   }
 
+  const selecionarIntegracao = (tipo: string) => {
+    const integracaoExistente = integracoes.find(i => i.tipo_integracao === tipo)
+    if (integracaoExistente) {
+      setIntegracaoAtiva(integracaoExistente)
+      setTipoIntegracaoSelecionado(tipo)
+    } else {
+      const tipoInfo = tiposIntegracao.find(t => t.tipo === tipo)
+      if (tipoInfo) {
+        const novaIntegracao: Integracao = {
+          tipo_integracao: tipo,
+          nome: tipoInfo.nome,
+          ativo: false,
+          ambiente: 'homologacao',
+          token_producao: '',
+          token_homologacao: '',
+          certificado_digital_path: '',
+          senha_certificado: '',
+          cnpj: '',
+          configuracao_json: {},
+        }
+        setIntegracaoAtiva(novaIntegracao)
+        setTipoIntegracaoSelecionado(tipo)
+      }
+    }
+  }
+
   const atualizarCampo = (campo: keyof Integracao, valor: any) => {
     if (integracaoAtiva) {
       setIntegracaoAtiva({ ...integracaoAtiva, [campo]: valor })
+    }
+  }
+
+  const atualizarCampoConfiguracao = (chave: string, valor: any) => {
+    if (integracaoAtiva) {
+      const config = integracaoAtiva.configuracao_json || {}
+      setIntegracaoAtiva({
+        ...integracaoAtiva,
+        configuracao_json: { ...config, [chave]: valor }
+      })
     }
   }
 
@@ -111,6 +471,9 @@ export default function IntegracoesApisPage() {
       setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
       
       await carregarIntegracoes()
+      if (integracaoAtiva.tipo_integracao) {
+        selecionarIntegracao(integracaoAtiva.tipo_integracao)
+      }
     } catch (error: any) {
       console.error('Erro ao salvar integração:', error)
       setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar integração' })
@@ -119,19 +482,14 @@ export default function IntegracoesApisPage() {
     }
   }
 
-  const criarIntegracaoFocusNFe = () => {
-    const novaIntegracao: Integracao = {
-      tipo_integracao: 'focus_nfe',
-      nome: 'Focus NFe',
-      ativo: false,
-      ambiente: 'homologacao',
-      token_producao: '',
-      token_homologacao: '',
-      certificado_digital_path: '',
-      cnpj: '',
-    }
-    setIntegracaoAtiva(novaIntegracao)
+  const fecharIntegracao = () => {
+    setIntegracaoAtiva(null)
+    setTipoIntegracaoSelecionado(null)
   }
+
+  const tipoIntegracaoAtivo = tipoIntegracaoSelecionado 
+    ? tiposIntegracao.find(t => t.tipo === tipoIntegracaoSelecionado)
+    : null
 
   if (loading) {
     return (
@@ -176,27 +534,81 @@ export default function IntegracoesApisPage() {
       )}
 
       {!integracaoAtiva ? (
+        <div className="space-y-4">
         <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6">
-          <div className="text-center">
-            <FileText className="h-16 w-16 text-amber-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">Nota Fiscal Focus NFe</h2>
-            <p className="text-gray-400 mb-6">Configure a integração com Focus NFe para emitir notas fiscais</p>
+            <h2 className="text-xl font-bold text-white mb-4">Integrações Disponíveis</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tiposIntegracao.map((tipo) => {
+                const integracaoExistente = integracoes.find(i => i.tipo_integracao === tipo.tipo)
+                const estaAtiva = integracaoExistente?.ativo || false
+                
+                return (
+                  <motion.div
+                    key={tipo.tipo}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-zinc-800 border border-amber-500/20 rounded-lg p-6 hover:border-amber-500/40 transition-colors cursor-pointer"
+                    onClick={() => selecionarIntegracao(tipo.tipo)}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{tipo.icone}</span>
+                        <div>
+                          <h3 className="text-lg font-bold text-white">{tipo.nome}</h3>
+                          {integracaoExistente && (
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              estaAtiva 
+                                ? 'bg-green-500/20 text-green-500' 
+                                : 'bg-gray-500/20 text-gray-400'
+                            }`}>
+                              {estaAtiva ? 'Ativa' : 'Inativa'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-4">{tipo.descricao}</p>
             <button
-              onClick={criarIntegracaoFocusNFe}
-              className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors font-medium"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        selecionarIntegracao(tipo.tipo)
+                      }}
+                      className="w-full px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
             >
-              Configurar Focus NFe
+                      {integracaoExistente ? (
+                        <>
+                          <FileText className="h-4 w-4" />
+                          {estaAtiva ? 'Editar Configuração' : 'Configurar'}
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4" />
+                          Configurar
+                        </>
+                      )}
             </button>
+                  </motion.div>
+                )
+              })}
+            </div>
           </div>
         </div>
       ) : (
         <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-4 md:p-6">
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
             <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-              <FileText className="h-5 w-5 text-amber-500" />
-              Nota Fiscal Focus NFe
+                <span className="text-2xl">{tipoIntegracaoAtivo?.icone}</span>
+                {integracaoAtiva.nome}
             </h2>
-            <p className="text-gray-400 text-sm">Configure os dados necessários para integração com Focus NFe</p>
+              <p className="text-gray-400 text-sm">{tipoIntegracaoAtivo?.descricao}</p>
+            </div>
+            <button
+              onClick={fecharIntegracao}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <XCircle className="h-5 w-5" />
+            </button>
           </div>
 
           <div className="space-y-4">
@@ -223,8 +635,11 @@ export default function IntegracoesApisPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-gray-300 text-sm mb-1">CNPJ</label>
+              {tipoIntegracaoAtivo?.campos.map((campo) => {
+                if (campo.chave === 'cnpj') {
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
                 <input
                   type="text"
                   value={integracaoAtiva.cnpj || ''}
@@ -235,45 +650,185 @@ export default function IntegracoesApisPage() {
                   }}
                   maxLength={18}
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                  placeholder="00.000.000/0000-00"
+                        placeholder={campo.placeholder}
                 />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
               </div>
+                  )
+                }
 
-              <div>
-                <label className="block text-gray-300 text-sm mb-1">Token de Homologação</label>
+                if (campo.chave === 'token_producao' || campo.chave === 'token_homologacao') {
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
                 <input
                   type="password"
-                  value={integracaoAtiva.token_homologacao || ''}
-                  onChange={(e) => atualizarCampo('token_homologacao', e.target.value)}
+                        value={integracaoAtiva[campo.chave as keyof Integracao] as string || ''}
+                        onChange={(e) => atualizarCampo(campo.chave as keyof Integracao, e.target.value)}
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                  placeholder="Token de homologação"
+                        placeholder={campo.placeholder}
                 />
-                <p className="text-gray-500 text-xs mt-1">Token fornecido pela Focus NFe para ambiente de homologação</p>
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
               </div>
+                  )
+                }
 
-              <div>
-                <label className="block text-gray-300 text-sm mb-1">Token de Produção</label>
-                <input
-                  type="password"
-                  value={integracaoAtiva.token_producao || ''}
-                  onChange={(e) => atualizarCampo('token_producao', e.target.value)}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                  placeholder="Token de produção"
-                />
-                <p className="text-gray-500 text-xs mt-1">Token fornecido pela Focus NFe para ambiente de produção</p>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-gray-300 text-sm mb-1">Caminho do Certificado Digital</label>
+                if (campo.chave === 'certificado_digital_path') {
+                  return (
+                    <div key={campo.chave} className="md:col-span-2">
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
                 <input
                   type="text"
                   value={integracaoAtiva.certificado_digital_path || ''}
                   onChange={(e) => atualizarCampo('certificado_digital_path', e.target.value)}
                   className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                  placeholder="/caminho/do/certificado.pfx"
-                />
-                <p className="text-gray-500 text-xs mt-1">Caminho completo do arquivo do certificado digital A1 (.pfx)</p>
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                if (campo.chave === 'senha_certificado') {
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type="password"
+                        value={integracaoAtiva.senha_certificado || ''}
+                        onChange={(e) => atualizarCampo('senha_certificado', e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
               </div>
+                  )
+                }
+
+                if (campo.chave === 'webhook_url') {
+                  const config = integracaoAtiva.configuracao_json || {}
+                  return (
+                    <div key={campo.chave} className="md:col-span-2">
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type="text"
+                        value={config.webhook_url || ''}
+                        onChange={(e) => atualizarCampoConfiguracao('webhook_url', e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                if (campo.chave === 'public_key') {
+                  const config = integracaoAtiva.configuracao_json || {}
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type="password"
+                        value={config.public_key || ''}
+                        onChange={(e) => atualizarCampoConfiguracao('public_key', e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                if (campo.chave === 'email') {
+                  const config = integracaoAtiva.configuracao_json || {}
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type="email"
+                        value={config.email || ''}
+                        onChange={(e) => atualizarCampoConfiguracao('email', e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                if (campo.chave === 'account_sid' || campo.chave === 'numero_telefone' || campo.chave === 'phone_number_id') {
+                  const config = integracaoAtiva.configuracao_json || {}
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type="text"
+                        value={config[campo.chave] || ''}
+                        onChange={(e) => atualizarCampoConfiguracao(campo.chave, e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                if (campo.chave === 'verify_token' || campo.chave === 'app_secret') {
+                  const config = integracaoAtiva.configuracao_json || {}
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type="password"
+                        value={config[campo.chave] || ''}
+                        onChange={(e) => atualizarCampoConfiguracao(campo.chave, e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                if (campo.chave === 'email_remetente' || campo.chave === 'nome_remetente') {
+                  const config = integracaoAtiva.configuracao_json || {}
+                  return (
+                    <div key={campo.chave}>
+                      <label className="block text-gray-300 text-sm mb-1">{campo.nome}</label>
+                      <input
+                        type={campo.chave === 'email_remetente' ? 'email' : 'text'}
+                        value={config[campo.chave] || ''}
+                        onChange={(e) => atualizarCampoConfiguracao(campo.chave, e.target.value)}
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
+                        placeholder={campo.placeholder}
+                      />
+                      {campo.descricao && (
+                        <p className="text-gray-500 text-xs mt-1">{campo.descricao}</p>
+                      )}
+                    </div>
+                  )
+                }
+
+                return null
+              })}
             </div>
 
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mt-6">
@@ -284,7 +839,13 @@ export default function IntegracoesApisPage() {
             </div>
           </div>
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-6 gap-2">
+            <button
+              onClick={fecharIntegracao}
+              className="flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors font-medium"
+            >
+              Cancelar
+            </button>
             <button
               onClick={salvarIntegracao}
               disabled={salvando || !podeEditar('integracao_apis')}
@@ -299,4 +860,3 @@ export default function IntegracoesApisPage() {
     </div>
   )
 }
-

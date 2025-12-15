@@ -214,13 +214,13 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 85+ endpoints implementados
-- **Módulos Backend**: 22 módulos modulares
-- **Páginas Frontend**: 30+ páginas principais
-- **Tabelas no Banco**: 25+ tabelas principais
+- **Endpoints API**: 95+ endpoints implementados
+- **Módulos Backend**: 24 módulos modulares
+- **Páginas Frontend**: 32+ páginas principais
+- **Tabelas no Banco**: 28+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 22 módulos completos
-- **Integrações**: 1 implementada (Focus NFe), estrutura para múltiplas
+- **Módulos Implementados**: 24 módulos completos
+- **Integrações**: 8 integrações implementadas (Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
 
 ---
 
@@ -236,7 +236,7 @@ npm run dev
 7. **Help Desk** - Sistema completo de tickets
 8. **Serviços** - Gerenciamento de serviços da barbearia
 9. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
-10. **Integrações de APIs** - Sistema escalável de integrações (Focus NFe implementado)
+10. **Integrações de APIs** - Sistema escalável com 8 integrações implementadas (Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
 11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade, marcação de almoço/saída
 12. **Fechamentos Especiais** - Configuração de dias de fechamento
 13. **Produtos** - Gerenciamento completo de produtos com histórico de preços de custo
@@ -250,6 +250,7 @@ npm run dev
 21. **Emissão de Nota Fiscal** - Sistema completo de emissão de NFes com integração Focus NFe e romaneios
 22. **Emissão de Relatórios** - 11 relatórios completos (vendas, despesas, produtos, clientes) com exportação Excel/PDF
 23. **Dashboard Personalizado** - Dashboard com filtros por tipo de usuário (Proprietário vê tudo, Funcionário vê apenas seus dados)
+24. **Cupons e Fidelidades** - Sistema completo de cupons de desconto e programa de fidelidade com regras personalizadas
 
 ### 🔄 Em Desenvolvimento
 - Melhorias no Help Desk
@@ -294,6 +295,9 @@ npm run dev
 - `romaneios_itens` - Itens vinculados aos romaneios
 - `notas_fiscais` - Notas fiscais emitidas
 - `categorias_custo` - Categorias de custo (hierárquicas)
+- `cupons` - Cupons de desconto e fidelidade
+- `cupons_usados` - Registro de uso de cupons
+- `fidelidades` - Controle de fidelidade por cliente
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
@@ -320,6 +324,8 @@ npm run dev
 - `COMANDOS_CRIAR_TABELA_ROMANEIOS.sql`
 - `COMANDOS_CORRIGIR_FUNCAO_ROMANEIOS.sql`
 - `COMANDOS_ATUALIZAR_STATUS_ROMANEIOS.sql`
+- `COMANDOS_CRIAR_TABELA_CUPONS_FIDELIDADES.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_CUPONS_FIDELIDADES.sql`
 
 ---
 
@@ -334,6 +340,7 @@ npm run dev
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
 - **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação de logs
 - **[Guia de Deploy](./docs/DEPLOY_GUIA_COMPLETO.md)** - Instruções consolidadas de deploy
+- **[Documentação de Integrações](./DOCUMENTACAO_INTEGRACOES.md)** - Guia completo de todas as integrações disponíveis
 
 ### Documentação de Deploy
 - **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - Comandos úteis
@@ -402,6 +409,8 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Emissão de Relatórios (11 relatórios completos - concluído em Dezembro 2025)
 - ✅ Dashboard Personalizado por Tipo de Usuário (concluído em Dezembro 2025)
 - ✅ Correção de Abatimento de Estoque em Vendas (concluído em Dezembro 2025)
+- ✅ Módulo de Cupons e Fidelidades (concluído em 14 de Dezembro de 2025)
+- ✅ Integrações de APIs (8 integrações implementadas - concluído em 14 de Dezembro de 2025)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
@@ -440,6 +449,6 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 *Sistema em desenvolvimento ativo* 🚀
 
 **Última Atualização**: 14 de Dezembro de 2025  
-**Versão**: 1.7.0
+**Versão**: 1.8.0
 
 </div>

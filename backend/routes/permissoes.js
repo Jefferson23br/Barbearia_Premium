@@ -91,6 +91,9 @@ router.get('/:usuarioId', async (req, res) => {
           crm_ver: false,
           crm_editar: false,
           crm_excluir: false,
+          cupons_fidelidades_ver: false,
+          cupons_fidelidades_editar: false,
+          cupons_fidelidades_excluir: false,
         },
       });
     }
@@ -192,6 +195,9 @@ router.put('/:usuarioId', async (req, res) => {
           estoque_ver: permissoesBody.estoque_ver || false,
           estoque_editar: permissoesBody.estoque_editar || false,
           estoque_excluir: permissoesBody.estoque_excluir || false,
+          cupons_fidelidades_ver: permissoesBody.cupons_fidelidades_ver || false,
+          cupons_fidelidades_editar: permissoesBody.cupons_fidelidades_editar || false,
+          cupons_fidelidades_excluir: permissoesBody.cupons_fidelidades_excluir || false,
           caixas_ver: permissoesBody.caixas_ver || false,
           caixas_editar: permissoesBody.caixas_editar || false,
           caixas_excluir: permissoesBody.caixas_excluir || false,
@@ -245,6 +251,7 @@ router.put('/:usuarioId', async (req, res) => {
           vendas_ver = $62, vendas_editar = $63, vendas_excluir = $64,
           balanco_demonstrativo_ver = $65, balanco_demonstrativo_editar = $66, balanco_demonstrativo_excluir = $67,
           crm_ver = $68, crm_editar = $69, crm_excluir = $70,
+          cupons_fidelidades_ver = $71, cupons_fidelidades_editar = $72, cupons_fidelidades_excluir = $73,
           updated_at = NOW()
         WHERE usuario_id = $1`,
         [
@@ -318,6 +325,9 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.crm_ver,
           valoresPermissoes.crm_editar,
           valoresPermissoes.crm_excluir,
+          valoresPermissoes.cupons_fidelidades_ver,
+          valoresPermissoes.cupons_fidelidades_editar,
+          valoresPermissoes.cupons_fidelidades_excluir,
         ]
       );
     } else {
@@ -349,9 +359,10 @@ router.put('/:usuarioId', async (req, res) => {
           caixas_ver, caixas_editar, caixas_excluir,
           vendas_ver, vendas_editar, vendas_excluir,
           balanco_demonstrativo_ver, balanco_demonstrativo_editar, balanco_demonstrativo_excluir,
-          crm_ver, crm_editar, crm_excluir
+          crm_ver, crm_editar, crm_excluir,
+          cupons_fidelidades_ver, cupons_fidelidades_editar, cupons_fidelidades_excluir
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $70
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $70, $71, $72, $73
         )`,
         [
           usuarioId,
@@ -424,6 +435,9 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.crm_ver,
           valoresPermissoes.crm_editar,
           valoresPermissoes.crm_excluir,
+          valoresPermissoes.cupons_fidelidades_ver,
+          valoresPermissoes.cupons_fidelidades_editar,
+          valoresPermissoes.cupons_fidelidades_excluir,
         ]
       );
     }

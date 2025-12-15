@@ -121,6 +121,11 @@ export interface PermissoesUsuario {
   crm_ver: boolean
   crm_editar: boolean
   crm_excluir: boolean
+
+  // Cupons e Fidelidades
+  cupons_fidelidades_ver: boolean
+  cupons_fidelidades_editar: boolean
+  cupons_fidelidades_excluir: boolean
 }
 
 export function usePermissions() {
@@ -313,6 +318,9 @@ function criarPermissoesMaster(): PermissoesUsuario {
     crm_ver: true,
     crm_editar: true,
     crm_excluir: true,
+    cupons_fidelidades_ver: true,
+    cupons_fidelidades_editar: true,
+    cupons_fidelidades_excluir: true,
   }
 }
 
@@ -388,6 +396,9 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     crm_ver: false,
     crm_editar: false,
     crm_excluir: false,
+    cupons_fidelidades_ver: false,
+    cupons_fidelidades_editar: false,
+    cupons_fidelidades_excluir: false,
   }
 
   // Proprietário tem acesso padrão a mais coisas
@@ -458,6 +469,9 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.crm_ver = true
     padrao.crm_editar = true
     padrao.crm_excluir = true
+    padrao.cupons_fidelidades_ver = true
+    padrao.cupons_fidelidades_editar = true
+    padrao.cupons_fidelidades_excluir = true
   }
 
   // Funcionário tem acesso limitado
@@ -475,6 +489,7 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     padrao.emissao_relatorios_ver = true
     padrao.balanco_demonstrativo_ver = true
     padrao.crm_ver = true
+    padrao.cupons_fidelidades_ver = true
   }
 
   return padrao

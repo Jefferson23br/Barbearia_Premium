@@ -165,19 +165,19 @@ Documento atualizado com o status completo do projeto em **14 de Dezembro de 202
 ## 📊 Estatísticas do Projeto
 
 ### Backend
-- **Total de Endpoints**: 85+
-- **Módulos**: 22
-- **Linhas de Código**: ~9.000
+- **Total de Endpoints**: 95+
+- **Módulos**: 24
+- **Linhas de Código**: ~10.000+
 - **Estrutura**: Modular e escalável
 
 ### Frontend
-- **Páginas Principais**: 30+
+- **Páginas Principais**: 32+
 - **Componentes UI**: 48+
 - **Projetos**: 3 (Admin, Cliente, Site)
 - **Design**: Responsivo e moderno
 
 ### Banco de Dados
-- **Tabelas**: 22+
+- **Tabelas**: 28+
 - **Schema**: `protese` (em uso)
 - **Índices**: Otimizados
 - **Relacionamentos**: Bem definidos
@@ -362,6 +362,60 @@ Documento atualizado com o status completo do projeto em **14 de Dezembro de 202
 
 ---
 
+### 21. 🎫 Cupons e Fidelidades
+**Status**: ✅ **100% Completo**
+
+- CRUD completo de cupons
+- Configuração de cupons com:
+  - Tipo de desconto (percentual ou valor fixo)
+  - Aplicação (total, apenas serviços, apenas produtos)
+  - Regras de uso (único, limitado, fidelidade)
+  - Regras de fidelidade (compras de serviços/produtos, pagamento online, agendamento pago)
+  - Validade e status
+- Sistema de fidelidade automático:
+  - Controle de progresso por cliente
+  - Liberação automática de cupom ao atingir meta
+  - Reset automático após uso
+  - Prevenção de múltiplos cupons simultâneos
+- Integração com Lançamento de Venda:
+  - Validação de cupom
+  - Aplicação de desconto
+  - Registro de uso
+  - Atualização de fidelidade
+- Visualização de fidelidades por cliente
+- Busca e filtros avançados
+
+**Endpoints**: 10  
+**Páginas Frontend**: 1
+
+---
+
+### 22. 🔌 Integrações de APIs Externas (Expandido)
+**Status**: ✅ **100% Completo**
+
+**8 Integrações Implementadas:**
+
+1. **Focus NFe** - Emissão de Notas Fiscais
+2. **PLUG NFe** - Emissão de Notas Fiscais
+3. **Asaas** - Pagamentos (PIX, boleto, cartão)
+4. **Mercado Pago** - Pagamentos (PIX, boleto, cartão)
+5. **PagSeguro/PagBank** - Pagamentos (PIX, boleto, cartão)
+6. **Twilio** - Comunicações (SMS, WhatsApp, voz, email, chat)
+7. **WhatsApp Business API** - Mensagens e atendimento
+8. **SendGrid** - Emails transacionais e marketing
+
+**Funcionalidades:**
+- Interface unificada para todas as integrações
+- Campos específicos por integração
+- Suporte a múltiplos ambientes
+- Configuração de webhooks
+- Documentação completa
+
+**Endpoints**: 5 (base) + específicos por integração  
+**Páginas Frontend**: 1
+
+---
+
 ## 🔄 Módulos em Desenvolvimento
 
 ---
@@ -467,6 +521,7 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 ---
 
 **Última Atualização**: 14 de Dezembro de 2025  
+**Versão**: 1.8.0  
 **Próxima Revisão**: Janeiro 2026
 
 

@@ -25,6 +25,7 @@ const balancoDemonstrativoRoutes = require('./balanco-demonstrativo');
 const emissaoNfeRoutes = require('./emissao-nfe');
 const relatoriosRoutes = require('./relatorios');
 const dashboardRoutes = require('./dashboard');
+const cuponsFidelidadesRoutes = require('./cupons-fidelidades');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -50,6 +51,7 @@ router.use('/balanco-demonstrativo', balancoDemonstrativoRoutes);
 router.use('/emissao-nfe', emissaoNfeRoutes);
 router.use('/relatorios', relatoriosRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/cupons-fidelidades', cuponsFidelidadesRoutes);
 
 module.exports = router;
 

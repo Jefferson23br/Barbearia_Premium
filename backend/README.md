@@ -60,7 +60,8 @@ backend/
 │   ├── faturamento.js # Faturamento e romaneios
 │   ├── emissao-nfe.js # Emissão de notas fiscais
 │   ├── relatorios.js # Geração de relatórios
-│   └── dashboard.js # Dashboard personalizado
+│   ├── dashboard.js # Dashboard personalizado
+│   └── cupons-fidelidades.js # Cupons e fidelidades
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
 └── utils/              # Utilitários
@@ -273,6 +274,18 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `PUT /api/v1/fechamentos-especiais/:id` - Atualizar fechamento especial
 - `DELETE /api/v1/fechamentos-especiais/:id` - Excluir fechamento especial
 
+### 🎫 Cupons e Fidelidades
+- `GET /api/v1/cupons-fidelidades/cupons` - Listar cupons
+- `POST /api/v1/cupons-fidelidades/cupons` - Criar cupom
+- `GET /api/v1/cupons-fidelidades/cupons/:id` - Buscar cupom específico
+- `PUT /api/v1/cupons-fidelidades/cupons/:id` - Atualizar cupom
+- `DELETE /api/v1/cupons-fidelidades/cupons/:id` - Excluir cupom
+- `GET /api/v1/cupons-fidelidades/cupons/validar/:codigo` - Validar cupom
+- `POST /api/v1/cupons-fidelidades/cupons/usar` - Registrar uso de cupom
+- `GET /api/v1/cupons-fidelidades/fidelidades` - Listar fidelidades
+- `GET /api/v1/cupons-fidelidades/fidelidades/cliente/:clienteId` - Fidelidades de um cliente
+- `POST /api/v1/cupons-fidelidades/fidelidades/atualizar` - Atualizar fidelidade
+
 ### 🏥 Health Check
 - `GET /health` - Status da API
 - `GET /api/test-db` - Teste de conexão com banco
@@ -318,6 +331,9 @@ Implementei as seguintes tabelas principais:
 - `romaneios_itens` - Itens vinculados aos romaneios
 - `notas_fiscais` - Notas fiscais emitidas
 - `categorias_custo` - Categorias de custo (hierárquicas)
+- `cupons` - Cupons de desconto e fidelidade
+- `cupons_usados` - Registro de uso de cupons
+- `fidelidades` - Controle de fidelidade por cliente
 
 ### Scripts SQL
 
@@ -346,6 +362,8 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_CRIAR_TABELA_ROMANEIOS.sql`
 - `COMANDOS_CORRIGIR_FUNCAO_ROMANEIOS.sql`
 - `COMANDOS_ATUALIZAR_STATUS_ROMANEIOS.sql`
+- `COMANDOS_CRIAR_TABELA_CUPONS_FIDELIDADES.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_CUPONS_FIDELIDADES.sql`
 
 ---
 
@@ -500,4 +518,4 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 **Última atualização**: 14 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
-**Versão**: 1.7.0
+**Versão**: 1.8.0

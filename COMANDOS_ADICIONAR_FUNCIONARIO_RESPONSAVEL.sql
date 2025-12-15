@@ -39,3 +39,4 @@ COMMENT ON COLUMN protese.usuarios_clientes.funcionario_responsavel_id IS 'ID do
 
 
 
+

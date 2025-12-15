@@ -204,20 +204,20 @@ export default function DashboardPage() {
         </motion.div>
 
         {dados.is_proprietario && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Total de Clientes</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Total de Clientes</p>
                 <p className="text-2xl font-bold text-white mt-1">{dados.total_clientes}</p>
-              </div>
-              <Users className="h-8 w-8 text-blue-500" />
             </div>
-          </motion.div>
+            <Users className="h-8 w-8 text-blue-500" />
+          </div>
+        </motion.div>
         )}
 
         <motion.div
@@ -272,7 +272,7 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-center py-8">Nenhuma venda registrada</p>
+          <p className="text-gray-400 text-center py-8">Nenhuma venda registrada</p>
           )}
         </motion.div>
 
@@ -314,7 +314,7 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-center py-8">Nenhum agendamento</p>
+          <p className="text-gray-400 text-center py-8">Nenhum agendamento</p>
           )}
         </motion.div>
       </div>
