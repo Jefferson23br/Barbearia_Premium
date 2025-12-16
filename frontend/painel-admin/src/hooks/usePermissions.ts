@@ -134,6 +134,17 @@ export function usePermissions() {
 
   useEffect(() => {
     carregarPermissoes()
+    
+    // Listener para recarregar permissões quando forem atualizadas
+    const handlePermissoesAtualizadas = () => {
+      carregarPermissoes()
+    }
+    
+    window.addEventListener('permissoes-atualizadas', handlePermissoesAtualizadas)
+    
+    return () => {
+      window.removeEventListener('permissoes-atualizadas', handlePermissoesAtualizadas)
+    }
   }, [])
 
   const carregarPermissoes = async () => {
@@ -148,27 +159,16 @@ export function usePermissions() {
       
       // Se for Master, tem todas as permissões
       if (admin.tipo_usuario === 'master') {
-        setPermissoes(criarPermissoesMaster())
+        // Master sempre tem todas as permissões, mas ainda busca do backend
+        const permissoesMaster = criarPermissoesMaster()
+        setPermissoes(permissoesMaster)
         setLoading(false)
+        // Buscar do backend em background para manter sincronizado
+        buscarPermissoesBackend(admin.id)
         return
       }
 
-      // Primeiro, verificar se já tem permissões no localStorage
-      const permissoesSalvas = localStorage.getItem('permissoes')
-      if (permissoesSalvas) {
-        try {
-          const permissoes = JSON.parse(permissoesSalvas)
-          setPermissoes(permissoes)
-          setLoading(false)
-          // Também buscar do backend para atualizar (sem bloquear UI)
-          buscarPermissoesBackend(admin.id)
-          return
-        } catch (error) {
-          console.error('Erro ao ler permissões do localStorage:', error)
-        }
-      }
-
-      // Buscar permissões do backend
+      // SEMPRE buscar do backend primeiro (não usar localStorage como fonte primária)
       await buscarPermissoesBackend(admin.id)
     } catch (error) {
       console.error('Erro ao carregar permissões:', error)
@@ -181,26 +181,36 @@ export function usePermissions() {
   const buscarPermissoesBackend = async (adminId: string) => {
     try {
       const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
-      const response = await fetch(`${apiUrl}/api/v1/permissoes/${adminId}`)
+      const response = await fetch(`${apiUrl}/api/v1/permissoes/${adminId}`, {
+        cache: 'no-store', // Sempre buscar do servidor, não usar cache
+      })
       
       if (response.ok) {
         const data = await response.json()
         const permissoes = data.permissoes || {}
-        setPermissoes(permissoes)
-        // Salvar no localStorage para uso futuro
-        localStorage.setItem('permissoes', JSON.stringify(permissoes))
+        
+        // Garantir que todas as permissões existam (preencher com false se não existirem)
+        const permissoesCompletas = criarPermissoesVazias()
+        Object.keys(permissoesCompletas).forEach((key) => {
+          if (permissoes[key] !== undefined) {
+            permissoesCompletas[key as keyof PermissoesUsuario] = permissoes[key]
+          }
+        })
+        
+        setPermissoes(permissoesCompletas)
+        // Salvar no localStorage apenas como cache (não como fonte primária)
+        localStorage.setItem('permissoes', JSON.stringify(permissoesCompletas))
       } else {
-        // Se não encontrar, usar permissões padrão baseadas no tipo
-        const adminData = localStorage.getItem('admin')
-        if (adminData) {
-          const admin = JSON.parse(adminData)
-          const permissoesPadrao = criarPermissoesPorTipo(admin.tipo_usuario)
-          setPermissoes(permissoesPadrao)
-          localStorage.setItem('permissoes', JSON.stringify(permissoesPadrao))
-        }
+        // Se não encontrar no backend, criar permissões vazias (todas false)
+        const permissoesVazias = criarPermissoesVazias()
+        setPermissoes(permissoesVazias)
+        localStorage.setItem('permissoes', JSON.stringify(permissoesVazias))
       }
     } catch (error) {
       console.error('Erro ao buscar permissões do backend:', error)
+      // Em caso de erro, criar permissões vazias
+      const permissoesVazias = criarPermissoesVazias()
+      setPermissoes(permissoesVazias)
     }
   }
 
@@ -324,9 +334,9 @@ function criarPermissoesMaster(): PermissoesUsuario {
   }
 }
 
-// Criar permissões padrão por tipo de usuário
-function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
-  const padrao: PermissoesUsuario = {
+// Criar permissões vazias (todas false) - usado quando não há permissões no banco
+function criarPermissoesVazias(): PermissoesUsuario {
+  return {
     dashboard_ver: false,
     agenda_ver: false,
     agenda_editar: false,
@@ -400,98 +410,5 @@ function criarPermissoesPorTipo(tipo: string): PermissoesUsuario {
     cupons_fidelidades_editar: false,
     cupons_fidelidades_excluir: false,
   }
-
-  // Proprietário tem acesso padrão a mais coisas
-  if (tipo === 'proprietario') {
-    padrao.dashboard_ver = true
-    padrao.agenda_ver = true
-    padrao.agenda_editar = true
-    padrao.agenda_excluir = true
-    padrao.lancamento_venda_ver = true
-    padrao.lancamento_venda_editar = true
-    padrao.lancamento_venda_excluir = true
-    padrao.lancamento_despesa_ver = true
-    padrao.lancamento_despesa_editar = true
-    padrao.lancamento_despesa_excluir = true
-    padrao.receitas_ver = true
-    padrao.receitas_editar = true
-    padrao.receitas_excluir = true
-    padrao.despesas_ver = true
-    padrao.despesas_editar = true
-    padrao.despesas_excluir = true
-    padrao.faturamento_ver = true
-    padrao.faturamento_editar = true
-    padrao.faturamento_excluir = true
-    padrao.usuarios_ver = true
-    padrao.usuarios_editar = true
-    padrao.usuarios_excluir = true
-    padrao.funcionarios_ver = true
-    padrao.funcionarios_editar = true
-    padrao.funcionarios_excluir = true
-    padrao.controle_acessos_ver = true
-    padrao.controle_logs_ver = true
-    padrao.help_desk_ver = true
-    padrao.help_desk_editar = true
-    padrao.help_desk_excluir = true
-    padrao.servicos_ver = true
-    padrao.servicos_editar = true
-    padrao.servicos_excluir = true
-    padrao.emissao_nfe_ver = true
-    padrao.emissao_nfe_editar = true
-    padrao.emissao_nfe_excluir = true
-    padrao.emissao_relatorios_ver = true
-    padrao.emissao_relatorios_editar = true
-    padrao.emissao_relatorios_excluir = true
-    padrao.integracao_apis_ver = true
-    padrao.integracao_apis_editar = true
-    padrao.integracao_apis_excluir = true
-    padrao.habilitar_api_ver = true
-    padrao.habilitar_api_editar = true
-    padrao.habilitar_api_excluir = true
-    padrao.configuracoes_ver = true
-    padrao.configuracoes_editar = true
-    padrao.configuracoes_excluir = true
-    padrao.produtos_ver = true
-    padrao.produtos_editar = true
-    padrao.produtos_excluir = true
-    padrao.estoque_ver = true
-    padrao.estoque_editar = true
-    padrao.estoque_excluir = true
-    padrao.caixas_ver = true
-    padrao.caixas_editar = true
-    padrao.caixas_excluir = true
-    padrao.vendas_ver = true
-    padrao.vendas_editar = true
-    padrao.vendas_excluir = true
-    padrao.balanco_demonstrativo_ver = true
-    padrao.balanco_demonstrativo_editar = true
-    padrao.balanco_demonstrativo_excluir = true
-    padrao.crm_ver = true
-    padrao.crm_editar = true
-    padrao.crm_excluir = true
-    padrao.cupons_fidelidades_ver = true
-    padrao.cupons_fidelidades_editar = true
-    padrao.cupons_fidelidades_excluir = true
-  }
-
-  // Funcionário tem acesso limitado
-  if (tipo === 'funcionario') {
-    padrao.dashboard_ver = true
-    padrao.agenda_ver = true
-    padrao.lancamento_venda_ver = true
-    padrao.lancamento_despesa_ver = true
-    padrao.receitas_ver = true
-    padrao.despesas_ver = true
-    padrao.faturamento_ver = true
-    padrao.help_desk_ver = true
-    padrao.servicos_ver = true
-    padrao.emissao_nfe_ver = true
-    padrao.emissao_relatorios_ver = true
-    padrao.balanco_demonstrativo_ver = true
-    padrao.crm_ver = true
-    padrao.cupons_fidelidades_ver = true
-  }
-
-  return padrao
 }
 

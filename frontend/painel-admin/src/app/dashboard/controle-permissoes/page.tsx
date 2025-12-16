@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
+import * as Icons from 'lucide-react'
 import { Settings, User, Eye, Edit, Trash2, Save, X, Check, AlertCircle } from 'lucide-react'
 
 interface Funcionario {
@@ -223,19 +224,56 @@ interface ModuloPermissao {
   }
 }
 
+interface ModuloBackend {
+  id: string
+  nome: string
+  icone: string
+  ordem: number
+  itens: Array<{
+    id: string
+    label: string
+    path: string
+    icon: string
+    ordem: number
+  }>
+}
+
+interface ModuloPermissaoAgrupado {
+  id: string
+  nome: string
+  icone: string
+  ordem: number
+  itens: ModuloPermissao[]
+}
+
 export default function ControlePermissoesPage() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<string>('')
   const [permissoes, setPermissoes] = useState<Permissoes>(permissoesPadrao)
   const [permissoesOriginais, setPermissoesOriginais] = useState<Permissoes>(permissoesPadrao)
+  const [modulosBackend, setModulosBackend] = useState<ModuloBackend[]>([])
   const [loading, setLoading] = useState(false)
   const [salvando, setSalvando] = useState(false)
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
 
-  // Carregar lista de funcionários
+  // Carregar lista de funcionários e módulos
   useEffect(() => {
     carregarFuncionarios()
+    carregarModulos()
   }, [])
+  
+  const carregarModulos = async () => {
+    try {
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const response = await fetch(`${apiUrl}/api/v1/modulos`)
+      if (response.ok) {
+        const data = await response.json()
+        setModulosBackend(data.modulos || [])
+      }
+    } catch (error) {
+      console.error('Erro ao carregar módulos:', error)
+    }
+  }
 
   // Carregar permissões quando selecionar funcionário
   useEffect(() => {
@@ -339,6 +377,15 @@ export default function ControlePermissoesPage() {
       setPermissoesOriginais(permissoes)
       setMensagem({ tipo: 'sucesso', texto: 'Permissões salvas com sucesso!' })
       setTimeout(() => setMensagem({ tipo: null, texto: '' }), 3000)
+      
+      // Recarregar permissões do backend para garantir sincronização
+      await carregarPermissoes(funcionarioSelecionado)
+      
+      // Disparar evento para recarregar permissões em outros componentes
+      // (admin já foi declarado acima, então podemos reutilizar)
+      if (admin) {
+        window.dispatchEvent(new CustomEvent('permissoes-atualizadas'))
+      }
     } catch (error: any) {
       console.error('Erro ao salvar permissões:', error)
       setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao salvar permissões' })
@@ -349,7 +396,64 @@ export default function ControlePermissoesPage() {
 
   const temAlteracoes = JSON.stringify(permissoes) !== JSON.stringify(permissoesOriginais)
 
-  const modulosPermissoes: ModuloPermissao[] = [
+  // Função para obter permissão de um item
+  const obterPermissao = (itemId: string): { ver?: boolean; editar?: boolean; excluir?: boolean } => {
+    const chaveVer = `${itemId}_ver` as keyof Permissoes
+    const chaveEditar = `${itemId}_editar` as keyof Permissoes
+    const chaveExcluir = `${itemId}_excluir` as keyof Permissoes
+    
+    // Itens que só têm permissão de ver
+    const apenasVer = ['dashboard', 'controle_acessos', 'controle_logs']
+    
+    if (apenasVer.includes(itemId)) {
+      return {
+        ver: permissoes[chaveVer] as boolean,
+      }
+    }
+    
+    return {
+      ver: permissoes[chaveVer] as boolean,
+      editar: permissoes[chaveEditar] as boolean,
+      excluir: permissoes[chaveExcluir] as boolean,
+    }
+  }
+
+  // Agrupar permissões por módulos do backend
+  const modulosPermissoesAgrupados: ModuloPermissaoAgrupado[] = modulosBackend.map((modulo) => {
+    const itens: ModuloPermissao[] = modulo.itens.map((item) => {
+      const permissoesItem = obterPermissao(item.id)
+      const apenasVer = Object.keys(permissoesItem).length === 1 && permissoesItem.ver !== undefined
+      
+      return {
+        id: item.id,
+        nome: item.label,
+        apenasVer,
+        permissoes: permissoesItem,
+      }
+    })
+
+    return {
+      id: modulo.id,
+      nome: modulo.nome,
+      icone: modulo.icone,
+      ordem: modulo.ordem,
+      itens,
+    }
+  }).filter(modulo => modulo.itens.length > 0) // Filtrar módulos vazios
+
+  // Ordenar módulos por ordem
+  modulosPermissoesAgrupados.sort((a, b) => a.ordem - b.ordem)
+
+  // Coletar todos os IDs de itens que estão nos módulos
+  const itensNosModulos = new Set<string>()
+  modulosPermissoesAgrupados.forEach((modulo) => {
+    modulo.itens.forEach((item) => {
+      itensNosModulos.add(item.id)
+    })
+  })
+
+  // Itens que realmente não estão em módulos (apenas os que aparecem individualmente no sidebar)
+  const itensIndividuaisPermissoes: ModuloPermissao[] = [
     {
       id: 'dashboard',
       nome: 'Dashboard',
@@ -379,99 +483,13 @@ export default function ControlePermissoesPage() {
       },
     },
     {
-      id: 'lancamento_despesa',
-      nome: 'Lançamento de Despesa',
+      id: 'crm',
+      nome: 'CRM',
       apenasVer: false,
       permissoes: {
-        ver: permissoes.lancamento_despesa_ver,
-        editar: permissoes.lancamento_despesa_editar,
-        excluir: permissoes.lancamento_despesa_excluir,
-      },
-    },
-    {
-      id: 'receitas',
-      nome: 'Receitas',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.receitas_ver,
-        editar: permissoes.receitas_editar,
-        excluir: permissoes.receitas_excluir,
-      },
-    },
-    {
-      id: 'despesas',
-      nome: 'Despesas',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.despesas_ver,
-        editar: permissoes.despesas_editar,
-        excluir: permissoes.despesas_excluir,
-      },
-    },
-    {
-      id: 'faturamento',
-      nome: 'Faturamento',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.faturamento_ver,
-        editar: permissoes.faturamento_editar,
-        excluir: permissoes.faturamento_excluir,
-      },
-    },
-    {
-      id: 'usuarios',
-      nome: 'Gerenciamento de Usuários',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.usuarios_ver,
-        editar: permissoes.usuarios_editar,
-        excluir: permissoes.usuarios_excluir,
-      },
-    },
-    {
-      id: 'funcionarios',
-      nome: 'Gerenciamento de Funcionários',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.funcionarios_ver,
-        editar: permissoes.funcionarios_editar,
-        excluir: permissoes.funcionarios_excluir,
-      },
-    },
-    {
-      id: 'estoque',
-      nome: 'Estoque',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.estoque_ver,
-        editar: permissoes.estoque_editar,
-        excluir: permissoes.estoque_excluir,
-      },
-    },
-    {
-      id: 'caixas',
-      nome: 'Caixas',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.caixas_ver,
-        editar: permissoes.caixas_editar,
-        excluir: permissoes.caixas_excluir,
-      },
-    },
-    {
-      id: 'controle_acessos',
-      nome: 'Controle de Acessos',
-      apenasVer: true,
-      permissoes: {
-        ver: permissoes.controle_acessos_ver,
-      },
-    },
-    {
-      id: 'controle_logs',
-      nome: 'Controle de Logs',
-      apenasVer: true,
-      permissoes: {
-        ver: permissoes.controle_logs_ver,
+        ver: permissoes.crm_ver,
+        editar: permissoes.crm_editar,
+        excluir: permissoes.crm_excluir,
       },
     },
     {
@@ -485,96 +503,6 @@ export default function ControlePermissoesPage() {
       },
     },
     {
-      id: 'servicos',
-      nome: 'Serviços',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.servicos_ver,
-        editar: permissoes.servicos_editar,
-        excluir: permissoes.servicos_excluir,
-      },
-    },
-    {
-      id: 'produtos',
-      nome: 'Produtos',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.produtos_ver,
-        editar: permissoes.produtos_editar,
-        excluir: permissoes.produtos_excluir,
-      },
-    },
-    {
-      id: 'emissao_nfe',
-      nome: 'Emissão de NFe',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.emissao_nfe_ver,
-        editar: permissoes.emissao_nfe_editar,
-        excluir: permissoes.emissao_nfe_excluir,
-      },
-    },
-    {
-      id: 'emissao_relatorios',
-      nome: 'Emissão de Relatórios',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.emissao_relatorios_ver,
-        editar: permissoes.emissao_relatorios_editar,
-        excluir: permissoes.emissao_relatorios_excluir,
-      },
-    },
-    {
-      id: 'balanco_demonstrativo',
-      nome: 'Balanço Demonstrativo',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.balanco_demonstrativo_ver,
-        editar: permissoes.balanco_demonstrativo_editar,
-        excluir: permissoes.balanco_demonstrativo_excluir,
-      },
-    },
-    {
-      id: 'crm',
-      nome: 'CRM',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.crm_ver,
-        editar: permissoes.crm_editar,
-        excluir: permissoes.crm_excluir,
-      },
-    },
-    {
-      id: 'cupons_fidelidades',
-      nome: 'Cupons e Fidelidades',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.cupons_fidelidades_ver,
-        editar: permissoes.cupons_fidelidades_editar,
-        excluir: permissoes.cupons_fidelidades_excluir,
-      },
-    },
-    {
-      id: 'integracao_apis',
-      nome: 'Integração de APIs Externas',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.integracao_apis_ver,
-        editar: permissoes.integracao_apis_editar,
-        excluir: permissoes.integracao_apis_excluir,
-      },
-    },
-    {
-      id: 'habilitar_api',
-      nome: 'Habilitar API',
-      apenasVer: false,
-      permissoes: {
-        ver: permissoes.habilitar_api_ver,
-        editar: permissoes.habilitar_api_editar,
-        excluir: permissoes.habilitar_api_excluir,
-      },
-    },
-    {
       id: 'configuracoes',
       nome: 'Configurações',
       apenasVer: false,
@@ -584,7 +512,7 @@ export default function ControlePermissoesPage() {
         excluir: permissoes.configuracoes_excluir,
       },
     },
-  ]
+  ].filter((item) => !itensNosModulos.has(item.id)) // Filtrar itens que já estão nos módulos
 
   const funcionario = funcionarios.find((f) => f.id === funcionarioSelecionado)
 
@@ -656,8 +584,109 @@ export default function ControlePermissoesPage() {
         <div className="bg-zinc-900 border border-amber-500/20 rounded-lg p-6">
           <h2 className="text-xl font-bold text-white mb-6">Permissões do Funcionário</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {modulosPermissoes.map((modulo) => (
+          {/* Itens Individuais */}
+          {itensIndividuaisPermissoes.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-white mb-4">Itens Individuais</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {itensIndividuaisPermissoes.map((modulo) => (
+                  <motion.div
+                    key={modulo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-zinc-800 border border-zinc-700 rounded-lg p-4"
+                  >
+                    <h3 className="text-white font-semibold mb-4">{modulo.nome}</h3>
+                    <div className="space-y-3">
+                      {modulo.apenasVer ? (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={modulo.permissoes.ver || false}
+                            onChange={(e) => {
+                              const chave = `${modulo.id}_ver` as keyof Permissoes
+                              atualizarPermissao(chave, e.target.checked)
+                            }}
+                            className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                          />
+                          <div className="flex items-center gap-2 text-gray-300">
+                            <Eye className="h-4 w-4" />
+                            <span>Visualizar</span>
+                          </div>
+                        </label>
+                      ) : (
+                        <>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={modulo.permissoes.ver || false}
+                              onChange={(e) => {
+                                const chave = `${modulo.id}_ver` as keyof Permissoes
+                                atualizarPermissao(chave, e.target.checked)
+                                if (!e.target.checked) {
+                                  atualizarPermissao(`${modulo.id}_editar` as keyof Permissoes, false)
+                                  atualizarPermissao(`${modulo.id}_excluir` as keyof Permissoes, false)
+                                }
+                              }}
+                              className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                            />
+                            <div className="flex items-center gap-2 text-gray-300">
+                              <Eye className="h-4 w-4" />
+                              <span>Visualizar</span>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={modulo.permissoes.editar || false}
+                              disabled={!modulo.permissoes.ver}
+                              onChange={(e) => {
+                                const chave = `${modulo.id}_editar` as keyof Permissoes
+                                atualizarPermissao(chave, e.target.checked)
+                              }}
+                              className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            <div className="flex items-center gap-2 text-gray-300">
+                              <Edit className="h-4 w-4" />
+                              <span>Editar</span>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={modulo.permissoes.excluir || false}
+                              disabled={!modulo.permissoes.ver}
+                              onChange={(e) => {
+                                const chave = `${modulo.id}_excluir` as keyof Permissoes
+                                atualizarPermissao(chave, e.target.checked)
+                              }}
+                              className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-2 focus:ring-amber-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            <div className="flex items-center gap-2 text-gray-300">
+                              <Trash2 className="h-4 w-4" />
+                              <span>Excluir</span>
+                            </div>
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Módulos Agrupados */}
+          {modulosPermissoesAgrupados.map((moduloGrupo) => {
+            const ModuloIcon = (Icons as any)[moduloGrupo.icone] || Settings
+            return (
+              <div key={moduloGrupo.id} className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <ModuloIcon className="h-5 w-5 text-amber-500" />
+                  <h3 className="text-lg font-semibold text-white">{moduloGrupo.nome}</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {moduloGrupo.itens.map((modulo) => (
               <motion.div
                 key={modulo.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -740,8 +769,11 @@ export default function ControlePermissoesPage() {
                   )}
                 </div>
               </motion.div>
-            ))}
-          </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
 
           {/* Botões de Ação */}
           <div className="mt-6 flex items-center gap-4">

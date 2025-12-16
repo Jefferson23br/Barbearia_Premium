@@ -3,47 +3,24 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion } from 'motion/react'
-import {
-  LayoutDashboard,
-  Calendar,
-  ShoppingCart,
-  TrendingDown,
-  TrendingUp,
-  FileText,
-  Receipt,
-  Users,
-  UserCog,
-  Shield,
-  FileSearch,
-  Settings,
-  HelpCircle,
-  ChevronLeft,
-  Menu,
-  X,
-  Scissors,
-  FileCheck,
-  BarChart3,
-  Plug,
-  Key,
-  Cog,
-  Package,
-  Warehouse,
-  Wallet,
-  FileBarChart,
-  UsersRound,
-} from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import * as Icons from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface MenuItem {
   id: string
   label: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: string
   path: string
-  levels: string[] // Níveis que podem acessar (fallback se não houver permissão)
-  permissionKey: string // Chave de permissão no banco (ex: 'dashboard_ver', 'agenda_ver')
-  badge?: string
-  children?: MenuItem[]
+  permissionKey: string
+}
+
+interface Modulo {
+  id: string
+  nome: string
+  icone: string
+  ordem: number
+  itens: MenuItem[]
 }
 
 interface SidebarProps {
@@ -53,232 +30,150 @@ interface SidebarProps {
   onClose?: () => void
 }
 
+// Itens que aparecem ANTES dos módulos
+const itensIndividuaisAntes: MenuItem[] = [
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: 'LayoutDashboard',
+    path: '/dashboard',
+    permissionKey: 'dashboard',
+  },
+  {
+    id: 'agenda',
+    label: 'Agenda',
+    icon: 'Calendar',
+    path: '/dashboard/agenda',
+    permissionKey: 'agenda',
+  },
+  {
+    id: 'lancamento-venda',
+    label: 'Lançamento de Venda',
+    icon: 'ShoppingCart',
+    path: '/dashboard/lancamento-venda',
+    permissionKey: 'lancamento_venda',
+  },
+]
+
+// Itens que aparecem DEPOIS dos módulos
+const itensIndividuaisDepois: MenuItem[] = [
+  {
+    id: 'crm',
+    label: 'CRM',
+    icon: 'UsersRound',
+    path: '/dashboard/crm',
+    permissionKey: 'crm',
+  },
+  {
+    id: 'help-desk',
+    label: 'Help Desk',
+    icon: 'HelpCircle',
+    path: '/dashboard/help-desk',
+    permissionKey: 'help_desk',
+  },
+  {
+    id: 'configuracoes',
+    label: 'Configurações',
+    icon: 'Cog',
+    path: '/dashboard/configuracoes',
+    permissionKey: 'configuracoes',
+  },
+]
+
 export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose }: SidebarProps) {
   const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [modulos, setModulos] = useState<Modulo[]>([])
+  const [expandedModulos, setExpandedModulos] = useState<Set<string>>(new Set())
+  const [loading, setLoading] = useState(true)
   const { podeAcessar, loading: permissoesLoading } = usePermissions()
 
-  // Definir itens do menu com controle de acesso (na ordem especificada)
-  const menuItems: MenuItem[] = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      path: '/dashboard',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'dashboard',
-    },
-    {
-      id: 'agenda',
-      label: 'Agenda',
-      icon: Calendar,
-      path: '/dashboard/agenda',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'agenda',
-    },
-    {
-      id: 'lancamento-venda',
-      label: 'Lançamento de Venda',
-      icon: ShoppingCart,
-      path: '/dashboard/lancamento-venda',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'lancamento_venda',
-    },
-    {
-      id: 'lancamento-despesa',
-      label: 'Lançamento de Despesas',
-      icon: TrendingDown,
-      path: '/dashboard/lancamento-despesa',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'lancamento_despesa',
-    },
-    {
-      id: 'emissao-nfe',
-      label: 'Emissão de Nota Fiscal',
-      icon: FileCheck,
-      path: '/dashboard/emissao-nfe',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'emissao_nfe',
-    },
-    {
-      id: 'servicos',
-      label: 'Serviços',
-      icon: Scissors,
-      path: '/dashboard/servicos',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'servicos',
-    },
-    {
-      id: 'produtos',
-      label: 'Produtos',
-      icon: Package,
-      path: '/dashboard/produtos',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'produtos',
-    },
-    {
-      id: 'receitas',
-      label: 'Receitas',
-      icon: TrendingUp,
-      path: '/dashboard/receitas',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'receitas',
-    },
-    {
-      id: 'despesas',
-      label: 'Despesas',
-      icon: FileText,
-      path: '/dashboard/despesas',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'despesas',
-    },
-    {
-      id: 'faturamento',
-      label: 'Faturamento',
-      icon: Receipt,
-      path: '/dashboard/faturamento',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'faturamento',
-    },
-    {
-      id: 'emissao-relatorios',
-      label: 'Emissão de Relatórios',
-      icon: BarChart3,
-      path: '/dashboard/emissao-relatorios',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'emissao_relatorios',
-    },
-    {
-      id: 'balanco-demonstrativo',
-      label: 'Balanço Demonstrativo',
-      icon: FileBarChart,
-      path: '/dashboard/balanco-demonstrativo',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'balanco_demonstrativo',
-    },
-    {
-      id: 'crm',
-      label: 'CRM',
-      icon: UsersRound,
-      path: '/dashboard/crm',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'crm',
-    },
-    {
-      id: 'cupons-fidelidades',
-      label: 'Cupons e Fidelidades',
-      icon: FileCheck,
-      path: '/dashboard/cupons-fidelidades',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'cupons_fidelidades',
-    },
-    {
-      id: 'usuarios',
-      label: 'Gerenciamento de Usuários',
-      icon: Users,
-      path: '/dashboard/usuarios',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'usuarios',
-    },
-    {
-      id: 'funcionarios',
-      label: 'Gerenciamento de Funcionários',
-      icon: UserCog,
-      path: '/dashboard/funcionarios',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'funcionarios',
-    },
-    {
-      id: 'estoque',
-      label: 'Estoque',
-      icon: Warehouse,
-      path: '/dashboard/estoque',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'estoque',
-    },
-    {
-      id: 'caixas',
-      label: 'Caixas',
-      icon: Wallet,
-      path: '/dashboard/caixas',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'caixas',
-    },
-    {
-      id: 'acessos',
-      label: 'Controle de Acessos',
-      icon: Shield,
-      path: '/dashboard/controle-acessos',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'controle_acessos',
-    },
-    {
-      id: 'logs',
-      label: 'Controle de Logs',
-      icon: FileSearch,
-      path: '/dashboard/controle-logs',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'controle_logs',
-    },
-    {
-      id: 'permissoes',
-      label: 'Controle de Permissão',
-      icon: Settings,
-      path: '/dashboard/controle-permissoes',
-      levels: ['master'],
-      permissionKey: 'controle_permissoes',
-    },
-    {
-      id: 'help-desk',
-      label: 'Help Desk',
-      icon: HelpCircle,
-      path: '/dashboard/help-desk',
-      levels: ['master', 'proprietario', 'funcionario'],
-      permissionKey: 'help_desk',
-    },
-    {
-      id: 'integracao-apis',
-      label: 'Integração de APIs',
-      icon: Plug,
-      path: '/dashboard/integracoes-apis',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'integracao_apis',
-    },
-    {
-      id: 'habilitar-api',
-      label: 'Habilitar API',
-      icon: Key,
-      path: '/dashboard/habilitar-api',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'habilitar_api',
-    },
-    {
-      id: 'configuracoes',
-      label: 'Configurações',
-      icon: Cog,
-      path: '/dashboard/configuracoes',
-      levels: ['master', 'proprietario'],
-      permissionKey: 'configuracoes',
-    },
-  ]
+  // Carregar módulos do backend
+  useEffect(() => {
+    const carregarModulos = async () => {
+      try {
+        const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+        const response = await fetch(`${apiUrl}/api/v1/modulos`, {
+          cache: 'no-store', // Sempre buscar do servidor
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setModulos(data.modulos || [])
+          
+          // Expandir módulos que contêm a rota atual
+          const modulosComRotaAtual = data.modulos
+            .filter((modulo: Modulo) =>
+              modulo.itens.some((item) => pathname.startsWith(item.path))
+            )
+            .map((modulo: Modulo) => modulo.id)
+          
+          if (modulosComRotaAtual.length > 0) {
+            setExpandedModulos(new Set(modulosComRotaAtual))
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar módulos:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  // Filtrar itens do menu baseado nas permissões granulares
-  const filteredMenuItems = menuItems.filter((item) => {
-    // Master sempre tem acesso a tudo (sem verificar permissões)
+    carregarModulos()
+    
+    // Listener para recarregar módulos quando permissões forem atualizadas
+    const handlePermissoesAtualizadas = () => {
+      carregarModulos()
+    }
+    
+    window.addEventListener('permissoes-atualizadas', handlePermissoesAtualizadas)
+    
+    return () => {
+      window.removeEventListener('permissoes-atualizadas', handlePermissoesAtualizadas)
+    }
+  }, [pathname])
+
+  // Função para obter ícone dinamicamente
+  const getIcon = (iconName: string) => {
+    const IconComponent = (Icons as any)[iconName] || Icons.Circle
+    return IconComponent
+  }
+
+  // Função para obter permissionKey de um item_id
+  const obterPermissionKey = (itemId: string): string => {
+    // Mapear item_id para permissionKey (normalmente são iguais, mas pode haver exceções)
+    // Exemplo: 'lancamento_venda' -> 'lancamento_venda' ou 'vendas'
+    if (itemId === 'lancamento_venda') {
+      // Verificar se existe vendas_ver, senão usar lancamento_venda
+      return 'lancamento_venda'
+    }
+    return itemId
+  }
+
+  // Filtrar itens baseado em permissões
+  const filtrarItens = (itens: MenuItem[]) => {
     if (tipoUsuario === 'master') {
-      return item.levels.includes('master')
+      return itens
     }
 
-    // Para outros usuários, APENAS verificar permissão granular
-    // Se ainda estiver carregando, não mostrar nada (evita flash de itens não autorizados)
     if (permissoesLoading) {
-      return false
+      return []
     }
 
-    // Verificar se tem permissão de ver para este módulo
-    const temAcesso = podeAcessar(item.permissionKey)
-    return temAcesso
-  })
+    return itens.filter((item) => {
+      const permissionKey = item.permissionKey || obterPermissionKey(item.id)
+      return podeAcessar(permissionKey)
+    })
+  }
+
+  // Verificar se um módulo tem itens visíveis
+  const moduloTemItensVisiveis = (modulo: Modulo) => {
+    // Converter itens do módulo para MenuItem com permissionKey
+    const itensComPermissao: MenuItem[] = modulo.itens.map((item) => ({
+      ...item,
+      permissionKey: obterPermissionKey(item.id),
+    }))
+    return filtrarItens(itensComPermissao).length > 0
+  }
 
   const isActive = (path: string) => {
     if (path === '/dashboard') {
@@ -286,6 +181,105 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     }
     return pathname.startsWith(path)
   }
+
+  const toggleModulo = (moduloId: string) => {
+    setExpandedModulos((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(moduloId)) {
+        newSet.delete(moduloId)
+      } else {
+        newSet.add(moduloId)
+      }
+      return newSet
+    })
+  }
+
+  const renderMenuItem = (item: MenuItem, isChild = false) => {
+    const Icon = getIcon(item.icon)
+    const active = isActive(item.path)
+    
+    return (
+      <Link
+        key={item.id}
+        href={item.path}
+        onClick={isMobile ? onClose : undefined}
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+          isChild ? 'pl-8' : ''
+        } ${
+          active
+            ? 'bg-amber-500/10 text-amber-500 border-l-4 border-amber-500'
+            : 'text-gray-300 hover:bg-zinc-800 hover:text-white'
+        }`}
+        title={isCollapsed && !isMobile ? item.label : undefined}
+      >
+        <Icon className="h-5 w-5 flex-shrink-0" />
+        {(!isCollapsed || isMobile) && (
+          <span className="font-medium flex-1">{item.label}</span>
+        )}
+      </Link>
+    )
+  }
+
+  const renderModulo = (modulo: Modulo) => {
+    // Converter itens do módulo para MenuItem com permissionKey
+    const itensComPermissao: MenuItem[] = modulo.itens.map((item) => ({
+      ...item,
+      permissionKey: obterPermissionKey(item.id),
+    }))
+    
+    const itensVisiveis = filtrarItens(itensComPermissao)
+    
+    if (itensVisiveis.length === 0) {
+      return null
+    }
+
+    const isExpanded = expandedModulos.has(modulo.id)
+    const ModuloIcon = getIcon(modulo.icone || 'Folder')
+    const temItemAtivo = itensVisiveis.some((item) => isActive(item.path))
+
+    return (
+      <div key={modulo.id} className="space-y-1">
+        <button
+          onClick={() => toggleModulo(modulo.id)}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+            temItemAtivo
+              ? 'bg-amber-500/10 text-amber-500'
+              : 'text-gray-300 hover:bg-zinc-800 hover:text-white'
+          }`}
+          title={isCollapsed && !isMobile ? modulo.nome : undefined}
+        >
+          <ModuloIcon className="h-5 w-5 flex-shrink-0" />
+          {(!isCollapsed || isMobile) && (
+            <>
+              <span className="font-medium flex-1 text-left">{modulo.nome}</span>
+              <Icons.ChevronDown
+                className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              />
+            </>
+          )}
+        </button>
+        <AnimatePresence>
+          {isExpanded && (!isCollapsed || isMobile) && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="space-y-1 pl-2">
+                {itensVisiveis.map((item) => renderMenuItem(item, true))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    )
+  }
+
+  const itensAntesFiltrados = filtrarItens(itensIndividuaisAntes)
+  const itensDepoisFiltrados = filtrarItens(itensIndividuaisDepois)
+  const modulosFiltrados = modulos.filter(moduloTemItensVisiveis)
 
   // Se mobile, renderizar overlay
   if (isMobile) {
@@ -320,34 +314,24 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
                 onClick={onClose}
                 className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-gray-400" />
+                <Icons.X className="h-5 w-5 text-gray-400" />
               </button>
             </div>
             <nav className="space-y-1">
-              {filteredMenuItems.map((item) => {
-                const Icon = item.icon
-                const active = isActive(item.path)
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.path}
-                    onClick={onClose}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      active
-                        ? 'bg-amber-500/10 text-amber-500 border-l-4 border-amber-500'
-                        : 'text-gray-300 hover:bg-zinc-800 hover:text-white'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">{item.label}</span>
-                    {item.badge && (
-                      <span className="ml-auto text-xs px-2 py-1 bg-zinc-700 rounded text-gray-400">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                )
-              })}
+              {loading ? (
+                <div className="text-gray-400 text-center py-4">Carregando...</div>
+              ) : (
+                <>
+                  {/* Itens individuais antes dos módulos */}
+                  {itensAntesFiltrados.map((item) => renderMenuItem(item))}
+                  
+                  {/* Módulos */}
+                  {modulosFiltrados.map((modulo) => renderModulo(modulo))}
+                  
+                  {/* Itens individuais depois dos módulos */}
+                  {itensDepoisFiltrados.map((item) => renderMenuItem(item))}
+                </>
+              )}
             </nav>
           </div>
         </motion.aside>
@@ -376,7 +360,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-2 hover:bg-zinc-800 rounded-lg transition-colors ml-auto"
           >
-            <ChevronLeft
+            <Icons.ChevronLeft
               className={`h-5 w-5 text-gray-400 transition-transform ${
                 isCollapsed ? 'rotate-180' : ''
               }`}
@@ -387,34 +371,20 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-        {filteredMenuItems.map((item) => {
-          const Icon = item.icon
-          const active = isActive(item.path)
-          return (
-            <Link
-              key={item.id}
-              href={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
-                active
-                  ? 'bg-amber-500/10 text-amber-500 border-l-4 border-amber-500'
-                  : 'text-gray-300 hover:bg-zinc-800 hover:text-white'
-              }`}
-              title={isCollapsed ? item.label : undefined}
-            >
-              <Icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <>
-                  <span className="font-medium flex-1">{item.label}</span>
-                  {item.badge && (
-                    <span className="text-xs px-2 py-1 bg-zinc-700 rounded text-gray-400">
-                      {item.badge}
-                    </span>
-                  )}
-                </>
-              )}
-            </Link>
-          )
-        })}
+        {loading ? (
+          <div className="text-gray-400 text-center py-4">Carregando...</div>
+        ) : (
+          <>
+            {/* Itens individuais antes dos módulos */}
+            {itensAntesFiltrados.map((item) => renderMenuItem(item))}
+            
+            {/* Módulos */}
+            {modulosFiltrados.map((modulo) => renderModulo(modulo))}
+            
+            {/* Itens individuais depois dos módulos */}
+            {itensDepoisFiltrados.map((item) => renderMenuItem(item))}
+          </>
+        )}
       </nav>
 
       {/* Footer */}
@@ -428,4 +398,3 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     </aside>
   )
 }
-

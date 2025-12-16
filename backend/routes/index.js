@@ -26,6 +26,7 @@ const emissaoNfeRoutes = require('./emissao-nfe');
 const relatoriosRoutes = require('./relatorios');
 const dashboardRoutes = require('./dashboard');
 const cuponsFidelidadesRoutes = require('./cupons-fidelidades');
+const modulosRoutes = require('./modulos');
 
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
@@ -52,6 +53,7 @@ router.use('/emissao-nfe', emissaoNfeRoutes);
 router.use('/relatorios', relatoriosRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/cupons-fidelidades', cuponsFidelidadesRoutes);
+router.use('/modulos', modulosRoutes);
 
 module.exports = router;
 

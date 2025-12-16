@@ -376,6 +376,6 @@ Ao finalizar a venda, o sistema executa automaticamente:
 
 ---
 
-**Última atualização**: 13 de Dezembro de 2025  
-**Versão do documento**: 1.0
+**Última atualização**: 16 de Dezembro de 2025  
+**Versão do documento**: 1.1
 
