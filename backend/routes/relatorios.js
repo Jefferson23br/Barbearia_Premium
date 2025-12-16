@@ -11,21 +11,43 @@ const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
  * Middleware para verificar permissões
  */
 const verificarPermissao = async (req, res, next) => {
-  const usuarioId = req.headers['x-user-id'];
-  const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+  const usuarioId = req.headers['x-user-id'] || req.headers['X-User-Id'];
+  const usuarioTipo = req.headers['x-user-tipo'] || req.headers['X-User-Tipo'] || 'administrativo';
 
-  if (usuarioTipo !== 'master') {
+  // Se não tem usuário identificado, negar acesso
+  if (!usuarioId) {
+    return res.status(401).json({ error: 'Usuário não identificado. Faça login novamente.' });
+  }
+
+  // Master sempre tem acesso
+  if (usuarioTipo === 'master') {
+    return next();
+  }
+
+  try {
+    // Verificar permissões: emissao_relatorios_ver
     const permissoesResult = await pool.query(
       'SELECT emissao_relatorios_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
       [usuarioId]
     );
 
-    if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].emissao_relatorios_ver) {
-      return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+    if (permissoesResult.rows.length === 0) {
+      // Se não tem registro de permissões, negar acesso
+      return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente. Configure as permissões do usuário.' });
     }
-  }
 
-  next();
+    const permissoes = permissoesResult.rows[0];
+    const temAcesso = permissoes.emissao_relatorios_ver === true;
+
+    if (!temAcesso) {
+      return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente para acessar relatórios.' });
+    }
+
+    next();
+  } catch (error) {
+    console.error('Erro ao verificar permissões:', error);
+    return res.status(500).json({ error: 'Erro ao verificar permissões do usuário.' });
+  }
 };
 
 /**
