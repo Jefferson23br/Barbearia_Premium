@@ -126,6 +126,11 @@ export interface PermissoesUsuario {
   cupons_fidelidades_ver: boolean
   cupons_fidelidades_editar: boolean
   cupons_fidelidades_excluir: boolean
+
+  // Serviços de Integração
+  servicos_integracao_ver: boolean
+  servicos_integracao_editar: boolean
+  servicos_integracao_excluir: boolean
 }
 
 export function usePermissions() {
@@ -217,11 +222,29 @@ export function usePermissions() {
   const temPermissao = (modulo: string, acao: 'ver' | 'editar' | 'excluir' = 'ver'): boolean => {
     if (!permissoes) return false
 
+    // Master sempre tem todas as permissões
+    const adminData = localStorage.getItem('admin')
+    if (adminData) {
+      const admin = JSON.parse(adminData)
+      if (admin.tipo_usuario === 'master') {
+        return true
+      }
+    }
+
     const chave = `${modulo}_${acao}` as keyof PermissoesUsuario
     return permissoes[chave] === true
   }
 
   const podeAcessar = (modulo: string): boolean => {
+    // Master sempre pode acessar tudo
+    const adminData = localStorage.getItem('admin')
+    if (adminData) {
+      const admin = JSON.parse(adminData)
+      if (admin.tipo_usuario === 'master') {
+        return true
+      }
+    }
+
     // Mapear lancamento_venda para vendas no backend
     if (modulo === 'lancamento_venda') {
       return temPermissao('vendas', 'ver') || temPermissao('lancamento_venda', 'ver')
@@ -230,6 +253,15 @@ export function usePermissions() {
   }
 
   const podeEditar = (modulo: string): boolean => {
+    // Master sempre pode editar tudo
+    const adminData = localStorage.getItem('admin')
+    if (adminData) {
+      const admin = JSON.parse(adminData)
+      if (admin.tipo_usuario === 'master') {
+        return true
+      }
+    }
+
     // Mapear lancamento_venda para vendas no backend
     if (modulo === 'lancamento_venda') {
       return temPermissao('vendas', 'editar') || temPermissao('lancamento_venda', 'editar')
@@ -238,6 +270,15 @@ export function usePermissions() {
   }
 
   const podeExcluir = (modulo: string): boolean => {
+    // Master sempre pode excluir tudo
+    const adminData = localStorage.getItem('admin')
+    if (adminData) {
+      const admin = JSON.parse(adminData)
+      if (admin.tipo_usuario === 'master') {
+        return true
+      }
+    }
+
     // Mapear lancamento_venda para vendas no backend
     if (modulo === 'lancamento_venda') {
       return temPermissao('vendas', 'excluir') || temPermissao('lancamento_venda', 'excluir')
@@ -331,6 +372,9 @@ function criarPermissoesMaster(): PermissoesUsuario {
     cupons_fidelidades_ver: true,
     cupons_fidelidades_editar: true,
     cupons_fidelidades_excluir: true,
+    servicos_integracao_ver: true,
+    servicos_integracao_editar: true,
+    servicos_integracao_excluir: true,
   }
 }
 
@@ -409,6 +453,9 @@ function criarPermissoesVazias(): PermissoesUsuario {
     cupons_fidelidades_ver: false,
     cupons_fidelidades_editar: false,
     cupons_fidelidades_excluir: false,
+    servicos_integracao_ver: false,
+    servicos_integracao_editar: false,
+    servicos_integracao_excluir: false,
   }
 }
 

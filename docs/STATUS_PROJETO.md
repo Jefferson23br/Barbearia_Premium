@@ -411,7 +411,7 @@ Documento atualizado com o status completo do projeto em **16 de Dezembro de 202
 ### 22. 🔌 Integrações de APIs Externas (Expandido)
 **Status**: ✅ **100% Completo**
 
-**8 Integrações Implementadas:**
+**9 Integrações Implementadas:**
 
 1. **Focus NFe** - Emissão de Notas Fiscais
 2. **PLUG NFe** - Emissão de Notas Fiscais
@@ -421,6 +421,20 @@ Documento atualizado com o status completo do projeto em **16 de Dezembro de 202
 6. **Twilio** - Comunicações (SMS, WhatsApp, voz, email, chat)
 7. **WhatsApp Business API** - Mensagens e atendimento
 8. **SendGrid** - Emails transacionais e marketing
+9. **DocSales** - Assinatura de contratos (eSign as a Service) - **16 de Dezembro de 2025**
+
+### 23. 📝 Serviços de Integração
+**Status**: ✅ **100% Completo (16 de Dezembro de 2025)**
+
+- Página principal listando todas as integrações disponíveis
+- Status de configuração de cada integração
+- Links para páginas específicas de cada integração
+- Página DocSales com gerenciamento completo de documentos
+- Permissões específicas: `servicos_integracao_ver`, `servicos_integracao_editar`, `servicos_integracao_excluir`
+- Master acessa tudo automaticamente sem configuração
+
+**Endpoints**: 6 (DocSales)  
+**Páginas Frontend**: 2
 
 **Funcionalidades:**
 - Interface unificada para todas as integrações
@@ -541,5 +555,16 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 **Última Atualização**: 16 de Dezembro de 2025  
 **Versão**: 1.9.0  
 **Próxima Revisão**: Janeiro 2026
+
+**URLs de Produção:**
+- Painel Admin: https://admin.protesecapilarcuiaba.com.br
+- Painel Cliente: https://app.protesecapilarcuiaba.com.br
+- Site Público: https://www.protesecapilarcuiaba.com.br
+- API Backend: https://api.protesecapilarcuiaba.com.br
+
+**Infraestrutura:**
+- Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
+- Frontend: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
+- Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)
 
 

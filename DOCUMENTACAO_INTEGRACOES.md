@@ -1,6 +1,6 @@
 # Documentação de Integrações - Sistema de Gestão
 
-**Última atualização:** 14 de dezembro de 2025
+**Última atualização:** 16 de dezembro de 2025
 
 Este documento contém informações detalhadas sobre como configurar e obter as credenciais necessárias para cada integração disponível no sistema.
 
@@ -16,6 +16,7 @@ Este documento contém informações detalhadas sobre como configurar e obter as
 6. [Twilio](#6-twilio)
 7. [WhatsApp Business API](#7-whatsapp-business-api)
 8. [SendGrid](#8-sendgrid)
+9. [DocSales](#9-docsales)
 
 ---
 
@@ -520,6 +521,131 @@ Para dúvidas sobre integrações específicas, consulte:
 - A documentação oficial de cada serviço (links fornecidos acima)
 - O suporte técnico do provedor da integração
 - A equipe de desenvolvimento do sistema
+
+---
+
+---
+
+## 9. DocSales
+
+### Descrição
+Integração para gestão de assinaturas de contratos eletrônicos através da plataforma DocSales.
+
+### O que é necessário
+- Conta ativa no DocSales
+- Token de acesso (gerado no painel)
+- Email remetente (opcional)
+
+### Como obter as credenciais
+
+#### Passo 1: Criar conta no DocSales
+1. Acesse: https://www.docsales.com.br/
+2. Clique em "Criar conta" ou "Cadastre-se"
+3. Preencha os dados da empresa
+4. Complete o cadastro e verifique seu email
+
+#### Passo 2: Obter Token de Acesso
+1. Faça login no painel do DocSales
+2. Acesse: **Configurações** > **Integrações**
+3. Clique em **Gerar Token de Acesso**
+4. Copie o token gerado (ele só será exibido uma vez)
+5. Guarde o token em local seguro
+
+#### Passo 3: Obter Token de Homologação (para testes)
+1. No painel do DocSales, acesse o ambiente de sandbox/homologação
+2. Siga os mesmos passos do item anterior para gerar o token de homologação
+3. Guarde o token em local seguro
+
+#### Passo 4: Configurar Webhook (Opcional)
+1. No painel do DocSales, acesse: **Configurações** > **Webhooks**
+2. Configure a URL do webhook: `https://seu-dominio.com.br/api/v1/docsales/webhook`
+3. Selecione os eventos que deseja receber:
+   - Documento criado
+   - Documento visualizado
+   - Documento assinado
+   - Documento recusado
+   - Documento cancelado
+   - Documento expirado
+4. Salve as configurações
+
+#### Passo 5: Configurar no sistema
+1. Acesse: **Integrações de APIs** no menu
+2. Selecione **DocSales**
+3. Preencha os campos:
+   - **Token de Acesso (Produção)**: Token gerado na conta de produção
+   - **Token de Acesso (Homologação)**: Token gerado na conta de homologação
+   - **URL de Webhook**: URL para receber notificações (opcional)
+   - **Email Padrão do Remetente**: Email que será usado como remetente (opcional)
+4. Selecione o ambiente (Homologação ou Produção)
+5. Ative a integração e salve
+
+### Funcionalidades disponíveis
+
+#### Enviar documento para assinatura
+```javascript
+POST /api/v1/docsales/documentos
+{
+  "titulo": "Contrato de Prestação de Serviços",
+  "conteudo": "Base64 do PDF ou texto do documento",
+  "signatarios": [
+    {
+      "nome": "João Silva",
+      "email": "joao@exemplo.com",
+      "cpf": "123.456.789-00",
+      "ordem": 1,
+      "tipo": "signatario"
+    }
+  ],
+  "opcoes": {
+    "prazo_dias": 30,
+    "enviar_email": true,
+    "permitir_recusar": true
+  }
+}
+```
+
+#### Consultar status de documento
+```javascript
+GET /api/v1/docsales/documentos/:id
+```
+
+#### Listar documentos
+```javascript
+GET /api/v1/docsales/documentos?status=assinado&pagina=1&limite=10
+```
+
+#### Cancelar documento
+```javascript
+POST /api/v1/docsales/documentos/:id/cancelar
+{
+  "motivo": "Documento não é mais necessário"
+}
+```
+
+#### Baixar documento assinado
+```javascript
+GET /api/v1/docsales/documentos/:id/download
+```
+
+### Documentação oficial
+- Site: https://www.docsales.com.br/
+- Documentação da API: https://www.docsales.com.br/esign-as-a-service/
+- Suporte: [email protected]
+
+### Observações importantes
+- O DocSales possui um limite de 200 requisições por mês para criação de documentos (plano básico)
+- Para aumentar o limite, entre em contato com o suporte do DocSales
+- Use sempre o ambiente de homologação para testes antes de ir para produção
+- Configure webhooks para receber notificações em tempo real sobre o status dos documentos
+- Mantenha os tokens em local seguro
+- O sistema oferece suporte técnico por e-mail, WhatsApp e telefone
+
+### Status dos documentos
+- **pendente**: Documento aguardando assinatura
+- **assinado**: Documento assinado por todos os signatários
+- **cancelado**: Documento cancelado
+- **expirado**: Documento expirado (prazo ultrapassado)
+- **recusado**: Documento recusado por um dos signatários
 
 ---
 

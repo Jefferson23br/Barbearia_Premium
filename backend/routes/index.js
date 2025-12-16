@@ -28,6 +28,15 @@ const dashboardRoutes = require('./dashboard');
 const cuponsFidelidadesRoutes = require('./cupons-fidelidades');
 const modulosRoutes = require('./modulos');
 
+// Importa rotas do DocSales de forma opcional
+let docsalesRoutes;
+try {
+  docsalesRoutes = require('./docsales');
+} catch (error) {
+  console.warn('Rotas do DocSales não disponíveis:', error.message);
+  docsalesRoutes = null;
+}
+
 // Registrar rotas
 router.use('/clientes', clientesRoutes);
 router.use('/funcionarios', funcionariosRoutes);
@@ -54,6 +63,11 @@ router.use('/relatorios', relatoriosRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/cupons-fidelidades', cuponsFidelidadesRoutes);
 router.use('/modulos', modulosRoutes);
+
+// Registra rotas do DocSales apenas se disponível
+if (docsalesRoutes) {
+  router.use('/docsales', docsalesRoutes);
+}
 
 module.exports = router;
 

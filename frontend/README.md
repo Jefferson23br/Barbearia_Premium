@@ -38,8 +38,9 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ Controle de Logs (sistema completo com exportação CSV)
 - ✅ Gerenciamento de Serviços (CRUD com imagens)
 - ✅ Configurações do Sistema (dados da empresa, horários, agendamento)
-- ✅ Integrações de APIs Externas (Focus NFe e estrutura escalável)
+- ✅ Integrações de APIs Externas (9 integrações: Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid, DocSales)
 - ✅ Habilitar API (controle de funcionalidades das integrações)
+- ✅ Serviços de Integração (módulo para gerenciar e usar integrações configuradas)
 - ✅ **Sistema de Agendamentos** (visualização em dia/semana/mês, busca de disponibilidade)
 - ✅ **Fechamentos Especiais** (gerenciamento de dias de fechamento)
 - ✅ **Módulo de Produtos** (CRUD completo com histórico de preços de custo)
@@ -54,9 +55,12 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Emissão de Relatórios** (11 relatórios completos com exportação)
 - ✅ **Dashboard Personalizado** (filtros por tipo de usuário)
 - ✅ **Cupons e Fidelidades** (sistema completo de cupons e programa de fidelidade)
-- ✅ **Integrações de APIs** (8 integrações: Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
+- ✅ **Integrações de APIs** (9 integrações: Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid, DocSales)
 - ✅ **Sistema de Módulos no Menu** - Menu organizado por módulos expansíveis (16 de Dezembro de 2025)
 - ✅ **Correção do Sistema de Permissões** - Permissões sempre do PostgreSQL, sem duplicações (16 de Dezembro de 2025)
+- ✅ **Integração DocSales** - Sistema de assinatura de contratos (16 de Dezembro de 2025)
+- ✅ **Serviços de Integração** - Módulo para gerenciar integrações (16 de Dezembro de 2025)
+- ✅ **Master Acessa Tudo** - Master não precisa configurar permissões (16 de Dezembro de 2025)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)
@@ -341,4 +345,9 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 **Última atualização**: 16 de Dezembro de 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI  
-**Versão**: 1.9.0
+**Versão**: 1.9.0  
+**VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)  
+**URLs**: 
+- Admin: https://admin.protesecapilarcuiaba.com.br
+- Cliente: https://app.protesecapilarcuiaba.com.br
+- Site: https://www.protesecapilarcuiaba.com.br

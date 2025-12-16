@@ -239,5 +239,12 @@ systemctl status postgresql
 ---
 
 **Última Atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.1
+**Versão**: 1.2
+
+**Informações Importantes:**
+- **Site URL**: www.protesecapilarcuiaba.com.br
+- **API_BASE_URL**: https://api.protesecapilarcuiaba.com.br
+- **DB_NAME**: protese_capilar
+- **DB_USER**: protese_user
+- **CORS_ORIGINS**: https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 

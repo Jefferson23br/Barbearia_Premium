@@ -382,5 +382,19 @@ Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Últ
 - ✅ Sistema de Módulos no Menu - Menu organizado por módulos expansíveis
 - ✅ Correção do Sistema de Permissões - Permissões sempre do PostgreSQL, sem duplicações
 - ✅ Reorganização do Menu Sidebar - Ordem correta e organização por categorias
+- ✅ Integração DocSales - Sistema de assinatura de contratos (eSign as a Service)
+- ✅ Serviços de Integração - Módulo para gerenciar e usar integrações configuradas
+- ✅ Master Acessa Tudo - Master não precisa configurar permissões
 
 **Próxima Grande Funcionalidade**: Balanço Demonstrativo e CRM
+
+**URLs de Produção:**
+- Painel Admin: https://admin.protesecapilarcuiaba.com.br
+- Painel Cliente: https://app.protesecapilarcuiaba.com.br
+- Site Público: https://www.protesecapilarcuiaba.com.br
+- API Backend: https://api.protesecapilarcuiaba.com.br
+
+**Infraestrutura:**
+- Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
+- Frontend: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
+- Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)

@@ -348,6 +348,42 @@ const tiposIntegracao: TipoIntegracao[] = [
         descricao: 'URL para receber notificações de eventos do SendGrid (delivery, opens, clicks, etc). Configure também no painel do SendGrid'
       }
     ]
+  },
+  {
+    tipo: 'docsales',
+    nome: 'DocSales',
+    descricao: 'Configure a integração com DocSales para gestão de assinaturas de contratos eletrônicos',
+    icone: '📝',
+    campos: [
+      {
+        nome: 'Token de Acesso (Produção)',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Seu Token de Acesso do DocSales (Produção)',
+        descricao: 'Token de acesso fornecido pelo DocSales para ambiente de produção. Gere em: Configurações > Integrações > Gerar Token'
+      },
+      {
+        nome: 'Token de Acesso (Homologação)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Seu Token de Acesso do DocSales (Homologação)',
+        descricao: 'Token de acesso fornecido pelo DocSales para ambiente de homologação/testes'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/docsales',
+        descricao: 'URL para receber notificações de eventos do DocSales (documento assinado, cancelado, expirado, etc). Configure também no painel do DocSales'
+      },
+      {
+        nome: 'Email Padrão do Remetente (Opcional)',
+        chave: 'email_remetente',
+        tipo: 'text',
+        placeholder: 'contratos@seu-dominio.com.br',
+        descricao: 'Email padrão que será usado como remetente ao enviar documentos para assinatura'
+      }
+    ]
   }
 ]
 

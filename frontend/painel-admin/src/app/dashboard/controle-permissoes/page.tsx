@@ -136,6 +136,11 @@ interface Permissoes {
   cupons_fidelidades_ver: boolean
   cupons_fidelidades_editar: boolean
   cupons_fidelidades_excluir: boolean
+
+  // Serviços de Integração
+  servicos_integracao_ver: boolean
+  servicos_integracao_editar: boolean
+  servicos_integracao_excluir: boolean
 }
 
 const permissoesPadrao: Permissoes = {
@@ -211,6 +216,9 @@ const permissoesPadrao: Permissoes = {
     cupons_fidelidades_ver: false,
     cupons_fidelidades_editar: false,
     cupons_fidelidades_excluir: false,
+    servicos_integracao_ver: false,
+    servicos_integracao_editar: false,
+    servicos_integracao_excluir: false,
   }
 
 interface ModuloPermissao {

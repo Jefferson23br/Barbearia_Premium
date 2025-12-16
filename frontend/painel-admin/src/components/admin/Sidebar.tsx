@@ -167,6 +167,11 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
 
   // Verificar se um módulo tem itens visíveis
   const moduloTemItensVisiveis = (modulo: Modulo) => {
+    // Master vê todos os módulos
+    if (tipoUsuario === 'master') {
+      return modulo.itens.length > 0
+    }
+    
     // Converter itens do módulo para MenuItem com permissionKey
     const itensComPermissao: MenuItem[] = modulo.itens.map((item) => ({
       ...item,

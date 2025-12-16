@@ -17,6 +17,7 @@
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
 ![Last Update](https://img.shields.io/badge/Última_Atualização-16_Dezembro_2025-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Versão-1.9.0-green?style=flat-square)
 
 </div>
 
@@ -84,6 +85,7 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 **Infraestrutura:**
 - **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger) - API, Backend e Banco de dados PostgreSQL
 - **Frontend**: VPS 45.132.157.28 (Hostinger - conta com domínio liberado) - Aplicações frontend
+- **Banco de Dados**: PostgreSQL 15+ (Schema: `protese`, Database: `protese_capilar`, User: `protese_user`)
 
 </div>
 
@@ -232,6 +234,12 @@ npm run dev
 | **Site Público** | https://www.protesecapilarcuiaba.com.br | 🔄 Desenvolvimento |
 | **API Backend** | https://api.protesecapilarcuiaba.com.br | ✅ Produção |
 
+**Configuração:**
+- **API_BASE_URL**: https://api.protesecapilarcuiaba.com.br
+- **CORS_ORIGINS**: https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+- **DB_NAME**: protese_capilar
+- **DB_USER**: protese_user
+
 ---
 
 ## 📊 Estatísticas do Projeto
@@ -242,7 +250,7 @@ npm run dev
 - **Tabelas no Banco**: 30+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
 - **Módulos Implementados**: 26 módulos completos
-- **Integrações**: 8 integrações implementadas (Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
+- **Integrações**: 9 integrações implementadas (Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid, DocSales)
 
 ---
 
@@ -260,7 +268,8 @@ npm run dev
 8. **Help Desk** - Sistema completo de tickets
 9. **Serviços** - Gerenciamento de serviços da barbearia
 10. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
-11. **Integrações de APIs** - Sistema escalável com 8 integrações implementadas
+11. **Integrações de APIs** - Sistema escalável com 9 integrações implementadas (incluindo DocSales para assinatura de contratos)
+12. **Serviços de Integração** - Módulo para gerenciar e usar integrações configuradas (16 de Dezembro de 2025)
 12. **Agendamentos** - Sistema completo de agendamentos
 13. **Fechamentos Especiais** - Configuração de dias de fechamento
 14. **Produtos** - Gerenciamento completo de produtos
@@ -397,6 +406,9 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Sistema de Módulos no Menu (concluído em 16 de Dezembro de 2025)
 - ✅ Correção do Sistema de Permissões (concluído em 16 de Dezembro de 2025)
 - ✅ Reorganização do Menu Sidebar (concluído em 16 de Dezembro de 2025)
+- ✅ Integração DocSales - Sistema de assinatura de contratos (concluído em 16 de Dezembro de 2025)
+- ✅ Módulo Serviços de Integração - Página para gerenciar integrações (concluído em 16 de Dezembro de 2025)
+- ✅ Master acessa tudo automaticamente sem configuração de permissões (concluído em 16 de Dezembro de 2025)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
@@ -436,6 +448,8 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 *Sistema em desenvolvimento ativo* 🚀
 
 **Última Atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.9.0
+**Versão**: 1.9.0  
+**Desenvolvido para**: Prótese Capilar Cuiabá  
+**Status**: ✅ Em Produção e Funcionando
 
 </div>

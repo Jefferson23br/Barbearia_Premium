@@ -63,3 +63,4 @@ COMMENT ON COLUMN protese.logs_sistema.status IS 'Status da ação: sucesso, err
 
 
 
+

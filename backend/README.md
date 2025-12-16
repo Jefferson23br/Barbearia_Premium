@@ -10,7 +10,9 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 **URL**: https://api.protesecapilarcuiaba.com.br  
 **Porta**: 3001  
 **VPS**: 82.25.65.201 (Hostinger)  
-**Última Atualização**: 16 de Dezembro de 2025
+**Última Atualização**: 16 de Dezembro de 2025  
+**VPS**: 82.25.65.201 (Hostinger)  
+**Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)
 
 ---
 
@@ -50,6 +52,7 @@ backend/
 │   ├── estoque.js     # Gerenciamento de estoque
 │   ├── configuracoes.js # Configurações do sistema
 │   ├── integracoes.js # Integrações de APIs externas
+│   ├── docsales.js # Integração DocSales (assinatura de contratos)
 │   ├── agendamentos.js # Sistema de agendamentos
 │   ├── fechamentos-especiais.js # Fechamentos especiais
 │   ├── produtos.js # Gerenciamento de produtos
@@ -66,6 +69,8 @@ backend/
 │   └── modulos.js # Sistema de módulos do menu
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
+├── services/           # Serviços de integração
+│   └── integracoes.js  # Serviço unificado de integrações (DocSales, etc)
 └── utils/              # Utilitários
     ├── logger.js      # Sistema de logs
     └── logHelper.js   # Helpers de logs
@@ -250,6 +255,14 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `POST /api/v1/integracoes` - Criar nova integração
 - `PUT /api/v1/integracoes/:tipo` - Atualizar integração
 - `PUT /api/v1/integracoes/:tipo/funcionalidade/:funcionalidade` - Habilitar/desabilitar funcionalidade
+
+### 📝 DocSales (Assinatura de Contratos)
+- `POST /api/v1/docsales/documentos` - Enviar documento para assinatura
+- `GET /api/v1/docsales/documentos/:id` - Consultar status do documento
+- `POST /api/v1/docsales/documentos/:id/cancelar` - Cancelar documento
+- `GET /api/v1/docsales/documentos` - Listar documentos
+- `GET /api/v1/docsales/documentos/:id/download` - Baixar documento assinado
+- `POST /api/v1/docsales/webhook` - Receber notificações de webhook
 
 ### 🎫 Help Desk
 - `GET /api/v1/help-desk/chamados` - Listar chamados
@@ -527,4 +540,6 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 **Última atualização**: 16 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
-**Versão**: 1.9.0
+**Versão**: 1.9.0  
+**VPS**: 82.25.65.201 (Hostinger)  
+**Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)

@@ -8,7 +8,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 
 **Data**: 16 de Dezembro de 2025  
 **Status**: ✅ **Todas as implementações concluídas e em produção**  
-**Foco**: Reorganização do Menu Sidebar e Correção do Sistema de Permissões
+**Foco**: Reorganização do Menu Sidebar, Correção do Sistema de Permissões, Integração DocSales e Módulo Serviços de Integração
 
 ---
 
@@ -295,6 +295,109 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 
 ---
 
+### 3. 📝 Integração DocSales - Sistema de Assinatura de Contratos
+
+**Data de Implementação**: 16 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi criado:
+
+**Backend:**
+- ✅ Serviço unificado de integrações (`backend/services/integracoes.js`)
+- ✅ Classe base `IntegracaoBase` para estrutura comum
+- ✅ Classe `DocSalesIntegracao` com métodos específicos:
+  - `enviarDocumentoParaAssinatura()` - Enviar documento para assinatura
+  - `consultarStatusDocumento()` - Consultar status do documento
+  - `cancelarDocumento()` - Cancelar documento pendente
+  - `listarDocumentos()` - Listar todos os documentos
+  - `baixarDocumentoAssinado()` - Baixar documento assinado
+- ✅ Rotas DocSales (`backend/routes/docsales.js`):
+  - `POST /api/v1/docsales/documentos` - Enviar documento
+  - `GET /api/v1/docsales/documentos/:id` - Consultar status
+  - `POST /api/v1/docsales/documentos/:id/cancelar` - Cancelar
+  - `GET /api/v1/docsales/documentos` - Listar documentos
+  - `GET /api/v1/docsales/documentos/:id/download` - Baixar documento
+  - `POST /api/v1/docsales/webhook` - Receber webhooks
+- ✅ Import opcional para evitar crashes se serviço não estiver disponível
+- ✅ Factory function `criarIntegracao()` para instanciar integrações
+
+**Frontend:**
+- ✅ Página "Serviços de Integração" (`frontend/painel-admin/src/app/dashboard/servicos-integracao/page.tsx`)
+  - Lista todas as integrações disponíveis
+  - Mostra status de configuração
+  - Links para páginas específicas de cada integração
+- ✅ Página DocSales (`frontend/painel-admin/src/app/dashboard/servicos-integracao/docsales/page.tsx`)
+  - Listagem de documentos com filtros
+  - Consulta de status
+  - Download de documentos assinados
+  - Cancelamento de documentos pendentes
+  - Badges coloridos para status
+  - Informações de signatários
+
+**Banco de Dados:**
+- ✅ Item "Serviços de Integração" adicionado ao módulo "Integrações"
+- ✅ Permissões adicionadas: `servicos_integracao_ver`, `servicos_integracao_editar`, `servicos_integracao_excluir`
+
+**Documentação:**
+- ✅ `DOCUMENTACAO_INTEGRACOES.md` atualizado com seção DocSales
+- ✅ Instruções de configuração e uso
+
+#### Funcionalidades:
+
+1. **Envio de Documentos**
+   - Envio de documentos para assinatura via API DocSales
+   - Suporte a múltiplos signatários
+   - Configuração de email padrão do remetente
+
+2. **Consulta de Status**
+   - Consulta em tempo real do status dos documentos
+   - Status: pendente, assinado, cancelado, expirado
+
+3. **Download de Documentos**
+   - Download de documentos assinados
+   - Suporte a PDF
+
+4. **Webhooks**
+   - Recebimento de notificações de mudanças de status
+   - Atualização automática do sistema
+
+#### Características Técnicas:
+
+- ✅ Serviço unificado para todas as integrações futuras
+- ✅ Estrutura escalável e extensível
+- ✅ Tratamento de erros robusto
+- ✅ Import opcional para evitar crashes
+- ✅ Interface moderna e responsiva
+
+---
+
+### 4. 🔐 Master Acessa Tudo Automaticamente
+
+**Data de Implementação**: 16 de Dezembro de 2025  
+**Status**: ✅ **100% Completo e Funcionando**
+
+#### O que foi corrigido:
+
+**Frontend:**
+- ✅ Hook `usePermissions` atualizado para Master sempre ter todas as permissões
+- ✅ Funções `podeAcessar()`, `podeEditar()`, `podeExcluir()` retornam `true` para Master
+- ✅ Função `temPermissao()` retorna `true` para Master
+- ✅ Páginas verificam se é Master antes de verificar permissões
+- ✅ Master não precisa de configuração de permissões
+
+#### Funcionalidades:
+
+1. **Acesso Total**
+   - Master sempre pode acessar tudo
+   - Não precisa configurar permissões
+   - Verifica tipo de usuário antes de verificar permissões
+
+2. **Consistência**
+   - Master ainda busca permissões do backend para consistência
+   - Mas sempre retorna `true` para verificações
+
+---
+
 ## ✅ Checklist de Implementação
 
 - [x] Tabelas de módulos criadas no PostgreSQL
@@ -306,6 +409,12 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 - [x] Recarregamento automático implementado
 - [x] Balanço Demonstrativo movido para Relatórios
 - [x] Ordem do menu corrigida
+- [x] Integração DocSales implementada
+- [x] Serviço unificado de integrações criado
+- [x] Página Serviços de Integração criada
+- [x] Página DocSales criada
+- [x] Permissões para Serviços de Integração adicionadas
+- [x] Master acessa tudo automaticamente
 - [x] Testes manuais completos
 - [x] Documentação atualizada
 

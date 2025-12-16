@@ -218,7 +218,19 @@ src/app/
 
 ---
 
-**Última atualização**: 16 de Dezembro de 2025
+**Última atualização**: 16 de Dezembro de 2025  
+**Versão**: 1.9.0
+
+**URLs de Produção:**
+- Painel Admin: https://admin.protesecapilarcuiaba.com.br
+- Painel Cliente: https://app.protesecapilarcuiaba.com.br
+- Site Público: https://www.protesecapilarcuiaba.com.br
+- API Backend: https://api.protesecapilarcuiaba.com.br
+
+**Infraestrutura:**
+- Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
+- Frontend: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
+- Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)
 
 
 

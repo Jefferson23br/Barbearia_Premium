@@ -10,9 +10,10 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 **Período**: Dezembro 2025  
 **Status**: ✅ **Todas as implementações concluídas e em produção**  
-**Módulos Adicionados**: 10 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque, Caixas, Lançamento de Venda, Receitas, Despesas, Faturamento, Emissão de NFe, Emissão de Relatórios, Dashboard Personalizado)  
-**Endpoints Criados**: 50+ novos endpoints  
-**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque, sistema financeiro completo, correção de abatimento de estoque
+**Última Atualização**: 16 de Dezembro de 2025  
+**Módulos Adicionados**: 12 novos módulos completos (Marcar Almoço/Saída, Produtos, Estoque, Caixas, Lançamento de Venda, Receitas, Despesas, Faturamento, Emissão de NFe, Emissão de Relatórios, Dashboard Personalizado, Serviços de Integração)  
+**Endpoints Criados**: 56+ novos endpoints  
+**Melhorias**: Sistema de agendamentos expandido, reorganização completa do menu, integração Produtos-Estoque, sistema financeiro completo, correção de abatimento de estoque, sistema de módulos no menu, correção de permissões, integração DocSales
 
 ---
 
@@ -949,12 +950,16 @@ Implementado dashboard com filtros por tipo de usuário:
 
 Para detalhes completos das implementações de 16 de Dezembro de 2025, consulte o documento específico: **[IMPLEMENTACOES_16_DEZEMBRO_2025.md](./IMPLEMENTACOES_16_DEZEMBRO_2025.md)**
 
-### Resumo das Implementações:
+### Resumo das Implementações de 16 de Dezembro de 2025:
 
 1. **Sistema de Módulos no Menu** - Menu organizado por módulos expansíveis
 2. **Correção do Sistema de Permissões** - Permissões sempre do PostgreSQL, sem duplicações
 3. **Reorganização do Menu Sidebar** - Ordem correta e organização por categorias
+4. **Integração DocSales** - Sistema de assinatura de contratos (eSign as a Service)
+5. **Serviços de Integração** - Módulo para gerenciar e usar integrações configuradas
+6. **Master Acessa Tudo** - Master não precisa configurar permissões
 
 **Versão**: 1.9.0  
-**Status**: ✅ **Todas as implementações concluídas e em produção**
+**Status**: ✅ **Todas as implementações concluídas e em produção**  
+**Última Atualização**: 16 de Dezembro de 2025
 
