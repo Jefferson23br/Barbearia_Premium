@@ -31,3 +31,8 @@ WHERE conrelid = 'protese.logs_sistema'::regclass
 
 
 
+
+
+
+
+
