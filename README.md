@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-14_Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-16_Dezembro_2025-blue?style=flat-square)
 
 </div>
 
@@ -126,12 +126,14 @@ Barbearia_Premium/
 - ✅ Senhas hasheadas com bcrypt (10 rounds)
 - ✅ Validação de contas ativas/inativas
 - ✅ CORS configurado para múltiplas origens
-- ✅ Sistema de permissões granular (RBAC)
+- ✅ Sistema de permissões granular (RBAC) por usuário
+- ✅ Sistema de módulos organizados no menu
 
 ### 👥 Gerenciamento de Usuários
 - ✅ **Funcionários**: CRUD completo com upload de foto, busca avançada, logs de ações
 - ✅ **Clientes**: CRUD completo com funcionário responsável, busca unificada, validações
 - ✅ Sistema de permissões por módulo (Master, Proprietário, Funcionário)
+- ✅ **Menu organizado por módulos** - Sistema expansível com módulos e subitens
 
 ### 📊 Controle e Monitoramento
 - ✅ **Controle de Acessos**: Dashboard com estatísticas, logs de login, filtros avançados
@@ -156,13 +158,33 @@ Barbearia_Premium/
 - ✅ Animações suaves com Framer Motion
 - ✅ Dark mode nativo
 - ✅ Feedback visual em todas as ações
+- ✅ **Menu Sidebar com Módulos Expansíveis** - Organização por categorias
 
 ### ⚙️ Backend
-- ✅ API REST completa (~40+ endpoints)
+- ✅ API REST completa (~100+ endpoints)
 - ✅ Estrutura modular e escalável
 - ✅ Middleware automático de logging
 - ✅ Upload de arquivos (fotos e anexos)
 - ✅ Integração completa com PostgreSQL
+- ✅ **Sistema de Módulos** - Organização de itens do menu em módulos
+
+### 💰 Sistema Financeiro Completo
+- ✅ **Lançamento de Venda** - Sistema completo com serviços, produtos, descontos e parcelamento
+- ✅ **Receitas** - Gerenciamento completo com efetivação de pagamentos
+- ✅ **Lançamento de Despesa** - Sistema completo com parcelamento
+- ✅ **Despesas** - Gerenciamento completo com quitação e monitoramento
+- ✅ **Faturamento** - Visualização unificada, edição e criação de romaneios
+- ✅ **Caixas** - Gerenciamento de contas e movimentações financeiras
+- ✅ **Emissão de Nota Fiscal** - Integração com Focus NFe
+- ✅ **Emissão de Relatórios** - 11 relatórios completos com exportação
+
+### 📦 Gestão de Produtos e Estoque
+- ✅ **Produtos** - CRUD completo com histórico de preços de custo
+- ✅ **Estoque** - Gerenciamento completo com lançamento de entradas e atualização automática
+- ✅ **Abatimento Automático** - Estoque é abatido automaticamente em vendas
+
+### 🎁 Marketing e Fidelização
+- ✅ **Cupons e Fidelidades** - Sistema completo de cupons de desconto e programa de fidelidade
 
 ---
 
@@ -214,12 +236,12 @@ npm run dev
 
 ## 📊 Estatísticas do Projeto
 
-- **Endpoints API**: 95+ endpoints implementados
-- **Módulos Backend**: 24 módulos modulares
-- **Páginas Frontend**: 32+ páginas principais
-- **Tabelas no Banco**: 28+ tabelas principais
+- **Endpoints API**: 100+ endpoints implementados
+- **Módulos Backend**: 26 módulos modulares
+- **Páginas Frontend**: 35+ páginas principais
+- **Tabelas no Banco**: 30+ tabelas principais
 - **Componentes UI**: 48+ componentes shadcn/ui
-- **Módulos Implementados**: 24 módulos completos
+- **Módulos Implementados**: 26 módulos completos
 - **Integrações**: 8 integrações implementadas (Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
 
 ---
@@ -227,34 +249,36 @@ npm run dev
 ## 🎯 Módulos do Sistema
 
 ### ✅ Implementados e Funcionando
+
 1. **Autenticação** - Login cliente e admin
 2. **Gerenciamento de Funcionários** - CRUD completo
 3. **Gerenciamento de Clientes** - CRUD completo
-4. **Sistema de Permissões** - RBAC granular
-5. **Controle de Acessos** - Logs de login com estatísticas
-6. **Controle de Logs** - Sistema de auditoria completo
-7. **Help Desk** - Sistema completo de tickets
-8. **Serviços** - Gerenciamento de serviços da barbearia
-9. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
-10. **Integrações de APIs** - Sistema escalável com 8 integrações implementadas (Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
-11. **Agendamentos** - Sistema completo de agendamentos com busca de disponibilidade, marcação de almoço/saída
-12. **Fechamentos Especiais** - Configuração de dias de fechamento
-13. **Produtos** - Gerenciamento completo de produtos com histórico de preços de custo
-14. **Estoque** - Gerenciamento completo de estoque com lançamento de entradas e atualização automática
-15. **Caixas** - Gerenciamento completo de contas e movimentações financeiras (entradas, saídas, transferências)
-16. **Lançamento de Venda** - Sistema completo de lançamento de vendas com serviços, produtos, descontos e parcelamento
-17. **Receitas** - Gerenciamento completo de receitas com efetivação de pagamentos individuais e em lote
-18. **Lançamento de Despesa** - Sistema completo de lançamento de despesas com parcelamento e integração com caixas
-19. **Despesas** - Gerenciamento completo de despesas com quitação individual e em lote, monitoramento de contas a pagar
-20. **Faturamento** - Visualização unificada de movimentações, edição linha por linha e criação de romaneios
-21. **Emissão de Nota Fiscal** - Sistema completo de emissão de NFes com integração Focus NFe e romaneios
-22. **Emissão de Relatórios** - 11 relatórios completos (vendas, despesas, produtos, clientes) com exportação Excel/PDF
-23. **Dashboard Personalizado** - Dashboard com filtros por tipo de usuário (Proprietário vê tudo, Funcionário vê apenas seus dados)
-24. **Cupons e Fidelidades** - Sistema completo de cupons de desconto e programa de fidelidade com regras personalizadas
+4. **Sistema de Permissões** - RBAC granular por usuário
+5. **Sistema de Módulos** - Organização do menu em módulos expansíveis
+6. **Controle de Acessos** - Logs de login com estatísticas
+7. **Controle de Logs** - Sistema de auditoria completo
+8. **Help Desk** - Sistema completo de tickets
+9. **Serviços** - Gerenciamento de serviços da barbearia
+10. **Configurações** - Configurações gerais do sistema (empresa, horários, agendamento)
+11. **Integrações de APIs** - Sistema escalável com 8 integrações implementadas
+12. **Agendamentos** - Sistema completo de agendamentos
+13. **Fechamentos Especiais** - Configuração de dias de fechamento
+14. **Produtos** - Gerenciamento completo de produtos
+15. **Estoque** - Gerenciamento completo de estoque
+16. **Caixas** - Gerenciamento de contas e movimentações
+17. **Lançamento de Venda** - Sistema completo de vendas
+18. **Receitas** - Gerenciamento completo de receitas
+19. **Lançamento de Despesa** - Sistema completo de despesas
+20. **Despesas** - Gerenciamento completo de despesas
+21. **Faturamento** - Visualização unificada e romaneios
+22. **Emissão de Nota Fiscal** - Integração Focus NFe
+23. **Emissão de Relatórios** - 11 relatórios completos
+24. **Dashboard Personalizado** - Filtros por tipo de usuário
+25. **Cupons e Fidelidades** - Sistema completo
+26. **Balanço Demonstrativo** - Estrutura criada
 
 ### 🔄 Em Desenvolvimento
 - Melhorias no Help Desk
-- Balanço Demonstrativo
 - CRM
 - Melhorias nos Relatórios (gráficos, mais métricas)
 
@@ -268,27 +292,27 @@ npm run dev
 - `usuarios_administrativos` - Administradores/Funcionários
 - `usuarios_clientes` - Clientes do sistema
 - `permissoes_usuarios` - Permissões granulares por módulo
+- `modulos` - Módulos do sistema para organização do menu
+- `modulos_itens` - Itens do menu agrupados por módulos
 - `controle_acessos` - Logs de acesso/login
 - `logs_sistema` - Logs de ações do sistema
 - `help_desk_chamados` - Chamados do Help Desk
 - `help_desk_respostas` - Respostas dos chamados
-- `help_desk_anexos` - Anexos dos chamados
 - `servicos` - Serviços oferecidos pela barbearia
 - `configuracoes` - Configurações gerais do sistema
 - `integracoes` - Integrações com APIs externas
-- `integracoes_habilitadas` - Funcionalidades habilitadas por integração
 - `agendamentos` - Agendamentos de serviços
 - `fechamentos_especiais` - Dias de fechamento especiais
 - `produtos` - Produtos da barbearia
 - `produtos_precos_custo` - Histórico de preços de custo dos produtos
 - `estoque_movimentacoes` - Movimentações de entrada de estoque
 - `contas` - Contas/Caixas do sistema
-- `movimentacoes_caixa` - Movimentações financeiras (entradas, saídas, transferências)
+- `movimentacoes_caixa` - Movimentações financeiras
 - `vendas` - Vendas realizadas
 - `vendas_servicos` - Serviços vinculados às vendas
 - `vendas_produtos` - Produtos vinculados às vendas
 - `vendas_parcelas` - Parcelas das vendas
-- `receitas` - Receitas do sistema (vinculadas ou não a vendas)
+- `receitas` - Receitas do sistema
 - `despesas` - Despesas do sistema
 - `despesas_parcelas` - Parcelas das despesas
 - `romaneios` - Romaneios de faturamento
@@ -300,32 +324,9 @@ npm run dev
 - `fidelidades` - Controle de fidelidade por cliente
 
 **Scripts SQL importantes:**
-- `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
-- `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
-- `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
-- `COMANDOS_CRIAR_TABELA_LOGS_SISTEMA.sql`
-- `COMANDOS_CRIAR_TABELA_CONFIGURACOES.sql`
-- `COMANDOS_CRIAR_TABELA_INTEGRACOES.sql`
-- `COMANDOS_CRIAR_TABELA_AGENDAMENTOS.sql`
-- `DDL_FECHAMENTOS_ESPECIAIS.sql`
-- `COMANDOS_CRIAR_TABELA_PRODUTOS.sql`
-- `COMANDOS_ADICIONAR_PERMISSOES_PRODUTOS_ESTOQUE.sql`
-- `COMANDOS_CRIAR_TABELA_ESTOQUE.sql`
-- `COMANDOS_ATUALIZAR_TRIGGER_ESTOQUE_FORNECEDOR.sql`
-- `COMANDOS_CRIAR_TABELA_CAIXAS.sql`
-- `COMANDOS_ADICIONAR_PERMISSOES_CAIXAS.sql`
-- `COMANDOS_CRIAR_TABELA_VENDAS.sql`
-- `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql`
-- `COMANDOS_CRIAR_TABELA_RECEITAS.sql`
-- `COMANDOS_ADICIONAR_PERMISSOES_RECEITAS.sql`
-- `COMANDOS_CRIAR_TABELA_DESPESAS.sql`
-- `COMANDOS_ADICIONAR_PERMISSOES_DESPESAS.sql`
-- `COMANDOS_ADICIONAR_MOVIMENTACAO_CAIXA_ID_DESPESAS.sql`
-- `COMANDOS_CRIAR_TABELA_ROMANEIOS.sql`
-- `COMANDOS_CORRIGIR_FUNCAO_ROMANEIOS.sql`
-- `COMANDOS_ATUALIZAR_STATUS_ROMANEIOS.sql`
-- `COMANDOS_CRIAR_TABELA_CUPONS_FIDELIDADES.sql`
-- `COMANDOS_ADICIONAR_PERMISSOES_CUPONS_FIDELIDADES.sql`
+- `COMANDOS_CRIAR_TABELA_MODULOS.sql` - Sistema de módulos
+- `COMANDOS_ADICIONAR_BALANCO_RELATORIOS.sql` - Adicionar Balanço ao módulo Relatórios
+- E muitos outros scripts de criação e atualização
 
 ---
 
@@ -334,7 +335,6 @@ npm run dev
 ### Documentação Principal
 - **[Histórico de Implementações](./docs/HISTORICO_IMPLEMENTACOES.md)** - Tudo que foi implementado
 - **[Implementações Dezembro 2025](./docs/IMPLEMENTACOES_DEZEMBRO_2025.md)** - Implementações mais recentes
-- **[Implementações Janeiro 2025](./docs/IMPLEMENTACOES_JANEIRO_2025.md)** - Implementações de janeiro
 - **[Status do Projeto](./docs/STATUS_PROJETO.md)** - Status atual completo
 - **[Roadmap](./docs/ROADMAP.md)** - Próximos passos e planejamento
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
@@ -375,6 +375,7 @@ O sistema foi desenvolvido com foco em:
 - **Responsividade**: Layout adaptativo para todos os dispositivos
 - **Performance**: Otimizações de build e carregamento
 - **Experiência do Usuário**: Interface intuitiva e feedback visual
+- **Organização**: Menu organizado por módulos expansíveis
 
 ---
 
@@ -383,7 +384,7 @@ O sistema foi desenvolvido com foco em:
 - Senhas hasheadas com bcrypt (10 rounds)
 - CORS configurado para origens específicas
 - Validação de inputs em todos os formulários
-- Sistema de permissões granular (RBAC)
+- Sistema de permissões granular (RBAC) por usuário
 - Logs de auditoria para todas as ações críticas
 
 ---
@@ -393,33 +394,19 @@ O sistema foi desenvolvido com foco em:
 Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap](./docs/ROADMAP.md)**.
 
 **Foco Atual (Q4 2025 / Q1 2026):**
-- ✅ Sistema de Agendamentos completo (concluído em Dezembro 2025)
-- ✅ Marcar Almoço/Saída (concluído em Dezembro 2025)
-- ✅ Módulo de Produtos completo (concluído em Dezembro 2025)
-- ✅ Reorganização do Menu (concluído em Dezembro 2025)
-- ✅ Módulo de Estoque completo (concluído em Dezembro 2025)
-- ✅ Módulo de Caixas completo (concluído em Dezembro 2025)
-- ✅ Lançamento de Venda completo (concluído em Dezembro 2025)
-- ✅ Módulo de Receitas completo (concluído em Dezembro 2025)
-- ✅ Lançamento de Despesa completo (concluído em Dezembro 2025)
-- ✅ Módulo de Despesas completo (concluído em Dezembro 2025)
-- ✅ Módulo de Faturamento completo (concluído em Dezembro 2025)
-- ✅ Sistema de Romaneios completo (concluído em Dezembro 2025)
-- ✅ Emissão de Nota Fiscal (integração Focus NFe - concluído em Dezembro 2025)
-- ✅ Emissão de Relatórios (11 relatórios completos - concluído em Dezembro 2025)
-- ✅ Dashboard Personalizado por Tipo de Usuário (concluído em Dezembro 2025)
-- ✅ Correção de Abatimento de Estoque em Vendas (concluído em Dezembro 2025)
-- ✅ Módulo de Cupons e Fidelidades (concluído em 14 de Dezembro de 2025)
-- ✅ Integrações de APIs (8 integrações implementadas - concluído em 14 de Dezembro de 2025)
+- ✅ Sistema de Módulos no Menu (concluído em 16 de Dezembro de 2025)
+- ✅ Correção do Sistema de Permissões (concluído em 16 de Dezembro de 2025)
+- ✅ Reorganização do Menu Sidebar (concluído em 16 de Dezembro de 2025)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
-
-**Planejado:**
 - 🔄 Balanço Demonstrativo
 - 🔄 CRM
-- 🔄 Analytics e relatórios
+
+**Planejado:**
+- 🔄 Analytics e relatórios avançados
 - 🔄 Sistema de notificações
+- 🔄 Aplicativo mobile
 
 ---
 
@@ -448,7 +435,7 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 14 de Dezembro de 2025  
-**Versão**: 1.8.0
+**Última Atualização**: 16 de Dezembro de 2025  
+**Versão**: 1.9.0
 
 </div>

@@ -373,9 +373,14 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🔄 Atualizações do Roadmap
 
-Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **14 de Dezembro de 2025**
+Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **16 de Dezembro de 2025**
 
 ---
 
 **Status Geral do Projeto**: ✅ **Em Produção e Funcionando**  
+**Últimas Implementações (16 de Dezembro de 2025)**:
+- ✅ Sistema de Módulos no Menu - Menu organizado por módulos expansíveis
+- ✅ Correção do Sistema de Permissões - Permissões sempre do PostgreSQL, sem duplicações
+- ✅ Reorganização do Menu Sidebar - Ordem correta e organização por categorias
+
 **Próxima Grande Funcionalidade**: Balanço Demonstrativo e CRM

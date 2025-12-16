@@ -49,4 +49,4 @@ npm run build
 
 *Página temporária enquanto o site completo está em desenvolvimento* 🚧
 
-**Última atualização**: 12 de Dezembro de 2025
+**Última atualização**: 16 de Dezembro de 2025

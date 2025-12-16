@@ -937,9 +937,11 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
-**Última atualização**: 13 de Dezembro de 2025  
-**Versão do documento**: 1.4
+**Última atualização**: 16 de Dezembro de 2025  
+**Versão do documento**: 1.5
 
-> **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md).
+> **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte:
+> - [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md) - Implementações de 12-14 de Dezembro
+> - [`IMPLEMENTACOES_16_DEZEMBRO_2025.md`](./IMPLEMENTACOES_16_DEZEMBRO_2025.md) - Implementações de 16 de Dezembro (Sistema de Módulos e Correções de Permissões)
 
 

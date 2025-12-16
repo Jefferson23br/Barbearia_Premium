@@ -18,22 +18,24 @@ Documentação completa para deploy do sistema em produção.
 
 ## 🏗️ Arquitetura Atual
 
-### VPS Backend (srv842883)
-- **IP**: Ver documentação de DNS
+### VPS Backend (82.25.65.201)
+- **IP**: 82.25.65.201
 - **Sistema**: AlmaLinux 9
 - **Painel**: CyberPanel
 - **Serviços**:
-  - PostgreSQL
+  - PostgreSQL (DB_NAME: protese_capilar, DB_USER: protese_user)
   - API Backend (Node.js + Express)
   - Nginx (proxy reverso)
+- **Conta**: Hostinger (conta principal)
 
-### VPS Frontend (45.132.x.x)
-- **IP**: Ver documentação de DNS
+### VPS Frontend (45.132.157.28)
+- **IP**: 45.132.157.28
 - **Sistema**: AlmaLinux 9
 - **Painel**: CyberPanel
 - **Serviços**:
   - Nginx (servidor web estático)
   - Frontends (Next.js SSG)
+- **Conta**: Hostinger (conta com domínio liberado)
 
 ---
 
@@ -50,9 +52,16 @@ Documentação completa para deploy do sistema em produção.
 
 ### Comandos Mais Usados
 
-**Conectar ao servidor:**
+**Conectar ao servidor Backend:**
 ```bash
+ssh root@82.25.65.201
+# ou
 ssh root@srv842883.hostinger.com.br
+```
+
+**Conectar ao servidor Frontend:**
+```bash
+ssh root@45.132.157.28
 ```
 
 **Backend:**
@@ -67,8 +76,8 @@ pm2 logs api-protese-capilar
 cd frontend/painel-admin
 npm run build
 
-# Upload para VPS
-scp -r out/* root@45.132.x.x:/home/protesecapilarcuiaba.com/public_html/
+# Upload para VPS Frontend
+scp -r out/* root@45.132.157.28:/home/cyberpanel/app/frontend-admin/
 ```
 
 ---

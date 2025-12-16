@@ -55,6 +55,8 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Dashboard Personalizado** (filtros por tipo de usuário)
 - ✅ **Cupons e Fidelidades** (sistema completo de cupons e programa de fidelidade)
 - ✅ **Integrações de APIs** (8 integrações: Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid)
+- ✅ **Sistema de Módulos no Menu** - Menu organizado por módulos expansíveis (16 de Dezembro de 2025)
+- ✅ **Correção do Sistema de Permissões** - Permissões sempre do PostgreSQL, sem duplicações (16 de Dezembro de 2025)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)
@@ -336,7 +338,7 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: 14 de Dezembro de 2025  
+**Última atualização**: 16 de Dezembro de 2025  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI  
-**Versão**: 1.8.0
+**Versão**: 1.9.0

@@ -208,6 +208,6 @@ Antes de fazer deploy, verifique:
 
 ---
 
-**Última Atualização**: 12 de Dezembro de 2025  
-**Versão**: 1.0
+**Última Atualização**: 16 de Dezembro de 2025  
+**Versão**: 1.1
 

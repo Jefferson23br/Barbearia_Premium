@@ -1,6 +1,6 @@
 # 📊 Status do Projeto - Sistema Barbearia Premium
 
-Documento atualizado com o status completo do projeto em **14 de Dezembro de 2025**.
+Documento atualizado com o status completo do projeto em **16 de Dezembro de 2025**.
 
 ---
 
@@ -8,8 +8,8 @@ Documento atualizado com o status completo do projeto em **14 de Dezembro de 202
 
 **Nome do Projeto**: Sistema Barbearia Premium  
 **Status**: ✅ **Em Produção**  
-**Última Atualização**: 14 de Dezembro de 2025  
-**Versão Atual**: 1.7.0
+**Última Atualização**: 16 de Dezembro de 2025  
+**Versão Atual**: 1.9.0
 
 ---
 
@@ -62,13 +62,31 @@ Documento atualizado com o status completo do projeto em **14 de Dezembro de 202
 **Status**: ✅ **100% Completo**
 
 - Permissões granulares por módulo
+- Permissões por usuário (não por categoria)
 - Interface de gerenciamento
 - Controle no sidebar
 - Controle em botões
 - 3 níveis: Master, Proprietário, Funcionário
+- Sempre busca do PostgreSQL
+- Recarregamento automático após alterações
 
 **Endpoints**: 2  
 **Páginas Frontend**: 1
+
+---
+
+### 4.1. 📂 Sistema de Módulos no Menu
+**Status**: ✅ **100% Completo (16 de Dezembro de 2025)**
+
+- Menu organizado por módulos expansíveis
+- 8 módulos implementados (Financeiro, Fiscal, Operação, Estoque, Marketing & Fidelização, Relatórios, Administração, Integrações)
+- Itens individuais (Dashboard, Agenda, Lançamento de Venda, CRM, Help Desk, Configurações)
+- Módulos expansíveis/colapsáveis
+- Controle de permissões integrado
+- Recarregamento automático
+
+**Endpoints**: 1  
+**Tabelas**: 2 (`modulos`, `modulos_itens`)
 
 ---
 
@@ -520,8 +538,8 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 ---
 
-**Última Atualização**: 14 de Dezembro de 2025  
-**Versão**: 1.8.0  
+**Última Atualização**: 16 de Dezembro de 2025  
+**Versão**: 1.9.0  
 **Próxima Revisão**: Janeiro 2026
 
 
