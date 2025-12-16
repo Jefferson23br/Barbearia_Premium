@@ -11,6 +11,15 @@ router.get('/:usuarioId', async (req, res) => {
   try {
     const { usuarioId } = req.params;
 
+    // Validar se o usuarioId foi fornecido
+    if (!usuarioId || usuarioId.trim() === '') {
+      return res.status(400).json({
+        error: 'ID do usuário é obrigatório',
+      });
+    }
+
+    console.log(`[PERMISSÕES] Buscando permissões para usuário: ${usuarioId}`);
+
     // Buscar permissões do usuário
     const result = await pool.query(
       `SELECT * FROM protese.permissoes_usuarios
@@ -18,8 +27,11 @@ router.get('/:usuarioId', async (req, res) => {
       [usuarioId]
     );
 
+    console.log(`[PERMISSÕES] Resultado da consulta: ${result.rows.length} registro(s) encontrado(s)`);
+
     if (result.rows.length === 0) {
       // Se não existir, retornar permissões padrão (todas false)
+      console.log(`[PERMISSÕES] Nenhum registro encontrado para usuário ${usuarioId}, retornando permissões padrão`);
       return res.json({
         permissoes: {
           dashboard_ver: false,
@@ -98,11 +110,18 @@ router.get('/:usuarioId', async (req, res) => {
       });
     }
 
+    const permissoes = result.rows[0];
+    console.log(`[PERMISSÕES] Permissões encontradas para usuário ${usuarioId}:`, {
+      emissao_relatorios_ver: permissoes.emissao_relatorios_ver,
+      dashboard_ver: permissoes.dashboard_ver,
+      agenda_ver: permissoes.agenda_ver,
+    });
+
     res.json({
-      permissoes: result.rows[0],
+      permissoes: permissoes,
     });
   } catch (error) {
-    console.error('Erro ao buscar permissões:', error);
+    console.error('[PERMISSÕES] Erro ao buscar permissões:', error);
     res.status(500).json({
       error: 'Erro ao buscar permissões',
       message: error.message,
@@ -119,6 +138,16 @@ router.put('/:usuarioId', async (req, res) => {
     const { usuarioId } = req.params;
     const permissoesBody = req.body;
 
+    console.log(`[PERMISSÕES] Atualizando permissões para usuário: ${usuarioId}`);
+    console.log(`[PERMISSÕES] Dados recebidos:`, {
+      emissao_relatorios_ver: permissoesBody.emissao_relatorios_ver,
+    });
+
+    // Validar se o usuarioId foi fornecido
+    if (!usuarioId || usuarioId.trim() === '') {
+      return res.status(400).json({ error: 'ID do usuário é obrigatório' });
+    }
+
     // Verificar se o usuário existe
     const usuarioCheck = await pool.query(
       'SELECT id, nome_completo, tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
@@ -126,10 +155,12 @@ router.put('/:usuarioId', async (req, res) => {
     );
 
     if (usuarioCheck.rows.length === 0) {
+      console.log(`[PERMISSÕES] Usuário ${usuarioId} não encontrado`);
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
     const usuario = usuarioCheck.rows[0];
+    console.log(`[PERMISSÕES] Usuário encontrado: ${usuario.nome_completo} (${usuario.tipo_usuario})`);
 
     // Master não precisa de permissões
     if (usuario.tipo_usuario === 'master') {
@@ -330,6 +361,7 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.cupons_fidelidades_excluir,
         ]
       );
+      console.log(`[PERMISSÕES] Permissões atualizadas para usuário ${usuarioId}`);
     } else {
       // Criar novo registro de permissões
       await pool.query(
@@ -440,11 +472,21 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.cupons_fidelidades_excluir,
         ]
       );
+      console.log(`[PERMISSÕES] Novo registro de permissões criado para usuário ${usuarioId}`);
+    }
+
+    // Verificar se as permissões foram salvas corretamente
+    const verificarPermissoes = await pool.query(
+      'SELECT emissao_relatorios_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+      [usuarioId]
+    );
+    if (verificarPermissoes.rows.length > 0) {
+      console.log(`[PERMISSÕES] Permissões confirmadas no banco:`, verificarPermissoes.rows[0]);
     }
 
     // Registrar log
-    const usuarioLogadoId = req.headers['x-user-id'] || null;
-    const usuarioLogadoTipo = req.headers['x-user-tipo'] || 'administrativo';
+    const usuarioLogadoId = req.headers['x-user-id'] || req.headers['X-User-Id'] || null;
+    const usuarioLogadoTipo = req.headers['x-user-tipo'] || req.headers['X-User-Tipo'] || 'administrativo';
     if (usuarioLogadoId) {
       await registrarLog({
         usuarioId: usuarioLogadoId,
