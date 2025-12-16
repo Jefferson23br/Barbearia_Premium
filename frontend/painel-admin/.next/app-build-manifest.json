@@ -26,20 +26,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/controle-permissoes/page.js"
     ],
-    "/dashboard/integracoes-apis/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/integracoes-apis/page.js"
-    ],
-    "/dashboard/emissao-relatorios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/emissao-relatorios/page.js"
-    ],
     "/dashboard/lancamento-venda/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/lancamento-venda/page.js"
+    ],
+    "/dashboard/cupons-fidelidades/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/cupons-fidelidades/page.js"
+    ],
+    "/dashboard/integracoes-apis/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/integracoes-apis/page.js"
     ]
   }
 }
