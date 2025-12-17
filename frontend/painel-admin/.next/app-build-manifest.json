@@ -21,30 +21,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
-    "/dashboard/integracoes-apis/page": [
+    "/dashboard/crm/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/integracoes-apis/page.js"
+      "static/chunks/app/dashboard/crm/page.js"
     ],
-    "/dashboard/servicos-integracao/page": [
+    "/dashboard/help-desk/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/servicos-integracao/page.js"
+      "static/chunks/app/dashboard/help-desk/page.js"
     ],
-    "/dashboard/controle-permissoes/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-permissoes/page.js"
-    ],
-    "/dashboard/funcionarios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/funcionarios/page.js"
-    ],
-    "/dashboard/servicos-integracao/docsales/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/servicos-integracao/docsales/page.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
