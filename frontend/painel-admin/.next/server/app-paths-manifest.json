@@ -1,8 +1,6 @@
 {
+  "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/servicos-integracao/page": "app/dashboard/servicos-integracao/page.js",
-  "/dashboard/integracoes-apis/page": "app/dashboard/integracoes-apis/page.js",
-  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js",
-  "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js",
-  "/dashboard/servicos-integracao/docsales/page": "app/dashboard/servicos-integracao/docsales/page.js"
+  "/dashboard/crm/page": "app/dashboard/crm/page.js",
+  "/dashboard/help-desk/page": "app/dashboard/help-desk/page.js"
 }
