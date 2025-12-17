@@ -27,6 +27,7 @@ const relatoriosRoutes = require('./relatorios');
 const dashboardRoutes = require('./dashboard');
 const cuponsFidelidadesRoutes = require('./cupons-fidelidades');
 const modulosRoutes = require('./modulos');
+const crmRoutes = require('./crm');
 
 // Importa rotas do DocSales de forma opcional
 let docsalesRoutes;
@@ -63,6 +64,7 @@ router.use('/relatorios', relatoriosRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/cupons-fidelidades', cuponsFidelidadesRoutes);
 router.use('/modulos', modulosRoutes);
+router.use('/crm', crmRoutes);
 
 // Registra rotas do DocSales apenas se disponível
 if (docsalesRoutes) {
