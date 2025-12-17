@@ -1,6 +1,6 @@
 # 📊 Status do Projeto - Sistema Barbearia Premium
 
-Documento atualizado com o status completo do projeto em **16 de Dezembro de 2025**.
+Documento atualizado com o status completo do projeto em **27 de Janeiro de 2026**.
 
 ---
 
@@ -8,8 +8,8 @@ Documento atualizado com o status completo do projeto em **16 de Dezembro de 202
 
 **Nome do Projeto**: Sistema Barbearia Premium  
 **Status**: ✅ **Em Produção**  
-**Última Atualização**: 16 de Dezembro de 2025  
-**Versão Atual**: 1.9.0
+**Última Atualização**: 27 de Janeiro de 2026  
+**Versão Atual**: 2.0.0
 
 ---
 
@@ -448,6 +448,49 @@ Documento atualizado com o status completo do projeto em **16 de Dezembro de 202
 
 ---
 
+### 24. 👥 CRM (Customer Relationship Management)
+**Status**: ✅ **100% Completo (27 de Janeiro de 2026)**
+
+- Sistema completo de relacionamento com clientes
+- Busca de clientes por nome ou email
+- Visualização completa de dados do cliente:
+  - Agendamentos (data, serviço, status, profissional, valor)
+  - Vendas (data, ticket, valor, profissional)
+  - Receitas financeiras (emissão, vencimento, pagamento, ticket, valores)
+  - Relacionamentos (histórico de interações)
+- Gerenciamento de relacionamentos:
+  - Criar, editar e excluir interações
+  - Tipos de interação (Ligação, Email, Visita, Reunião, Mensagem)
+  - Data da interação e funcionário responsável
+  - Descrição e observações
+- Interface com abas organizadas
+- Sistema de permissões integrado
+
+**Endpoints**: 6  
+**Páginas Frontend**: 1  
+**Tabelas**: `crm_relacionamentos`
+
+---
+
+### 25. 📝 Assinaturas
+**Status**: ✅ **Estrutura Criada (27 de Janeiro de 2026)**
+
+- Módulo criado no menu Operação
+- Item de menu adicionado ao módulo "Operação"
+- Sistema de permissões implementado:
+  - `assinaturas_ver`
+  - `assinaturas_editar`
+  - `assinaturas_excluir`
+- Página básica criada com mensagem de "em desenvolvimento"
+- Integração completa com sistema de permissões
+- Pronto para implementação de funcionalidades
+
+**Endpoints**: 0 (estrutura criada)  
+**Páginas Frontend**: 1  
+**Status**: 🔄 Aguardando implementação de funcionalidades
+
+---
+
 ## 🔄 Módulos em Desenvolvimento
 
 ---
@@ -534,8 +577,8 @@ Documento atualizado com o status completo do projeto em **16 de Dezembro de 202
 
 ## 🎯 Próximos Passos
 
-1. **Balanço Demonstrativo** - Estrutura criada, desenvolvimento em andamento
-2. **CRM** - Estrutura criada, desenvolvimento em andamento
+1. **Assinaturas** - Implementação completa de funcionalidades (estrutura criada)
+2. **Balanço Demonstrativo** - Estrutura criada, desenvolvimento em andamento
 3. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
 4. **Melhorias no Help Desk** - Notificações
 5. **Melhorias no Sistema de Agendamentos** - Notificações, lembretes, relatórios
@@ -552,9 +595,9 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 ---
 
-**Última Atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.9.0  
-**Próxima Revisão**: Janeiro 2026
+**Última Atualização**: 27 de Janeiro de 2026  
+**Versão**: 2.0.0  
+**Próxima Revisão**: Fevereiro 2026
 
 **URLs de Produção:**
 - Painel Admin: https://admin.protesecapilarcuiaba.com.br

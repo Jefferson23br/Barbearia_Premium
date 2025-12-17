@@ -2,5 +2,8 @@
   "/page": "app/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/crm/page": "app/dashboard/crm/page.js",
-  "/dashboard/help-desk/page": "app/dashboard/help-desk/page.js"
+  "/dashboard/help-desk/page": "app/dashboard/help-desk/page.js",
+  "/dashboard/faturamento/page": "app/dashboard/faturamento/page.js",
+  "/dashboard/controle-permissoes/page": "app/dashboard/controle-permissoes/page.js",
+  "/dashboard/assinaturas/page": "app/dashboard/assinaturas/page.js"
 }

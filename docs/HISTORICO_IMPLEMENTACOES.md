@@ -937,11 +937,48 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
-**Última atualização**: 16 de Dezembro de 2025  
-**Versão do documento**: 1.5
+---
 
-> **Nota**: Para detalhes completos das implementações de Dezembro 2025, consulte:
+## 🎉 Implementações de Janeiro 2026
+
+### 👥 Sistema CRM (Customer Relationship Management)
+
+**Data**: 27 de Janeiro de 2026  
+**Status**: ✅ **100% Completo**
+
+- Sistema completo de relacionamento com clientes
+- Busca de clientes por nome ou email
+- Visualização completa de dados do cliente (agendamentos, vendas, receitas, relacionamentos)
+- Gerenciamento de relacionamentos (criar, editar, excluir interações)
+- Interface com abas organizadas
+- Sistema de permissões integrado
+
+**Endpoints**: 6  
+**Páginas Frontend**: 1  
+**Tabelas**: `crm_relacionamentos`
+
+### 📝 Módulo Assinaturas
+
+**Data**: 27 de Janeiro de 2026  
+**Status**: ✅ **Estrutura Criada**
+
+- Módulo criado no menu Operação
+- Sistema de permissões implementado
+- Página básica criada
+- Pronto para implementação de funcionalidades
+
+**Endpoints**: 0 (estrutura criada)  
+**Páginas Frontend**: 1  
+**Status**: 🔄 Aguardando implementação de funcionalidades
+
+---
+
+**Última atualização**: 27 de Janeiro de 2026  
+**Versão do documento**: 1.6
+
+> **Nota**: Para detalhes completos das implementações, consulte:
 > - [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md) - Implementações de 12-14 de Dezembro
 > - [`IMPLEMENTACOES_16_DEZEMBRO_2025.md`](./IMPLEMENTACOES_16_DEZEMBRO_2025.md) - Implementações de 16 de Dezembro (Sistema de Módulos e Correções de Permissões)
+> - [`IMPLEMENTACOES_JANEIRO_2026.md`](./IMPLEMENTACOES_JANEIRO_2026.md) - Implementações de Janeiro 2026 (CRM e Assinaturas)
 
 

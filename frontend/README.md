@@ -61,6 +61,8 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Integração DocSales** - Sistema de assinatura de contratos (16 de Dezembro de 2025)
 - ✅ **Serviços de Integração** - Módulo para gerenciar integrações (16 de Dezembro de 2025)
 - ✅ **Master Acessa Tudo** - Master não precisa configurar permissões (16 de Dezembro de 2025)
+- ✅ **CRM** - Sistema completo de relacionamento com clientes (27 de Janeiro de 2026)
+- ✅ **Módulo Assinaturas** - Criado no menu Operação com controle de permissões (27 de Janeiro de 2026)
 
 **Tecnologias utilizadas:**
 - Next.js 14 (App Router)
@@ -342,10 +344,10 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 
 ---
 
-**Última atualização**: 16 de Dezembro de 2025  
+**Última atualização**: 27 de Janeiro de 2026  
 **Status**: ✅ Painel Admin e Cliente em Produção  
 **Tecnologias**: Next.js 14, TypeScript, Tailwind CSS, Radix UI  
-**Versão**: 1.9.0  
+**Versão**: 2.0.0  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)  
 **URLs**: 
 - Admin: https://admin.protesecapilarcuiaba.com.br

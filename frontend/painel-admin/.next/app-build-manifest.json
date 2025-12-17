@@ -30,6 +30,21 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/help-desk/page.js"
+    ],
+    "/dashboard/faturamento/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/faturamento/page.js"
+    ],
+    "/dashboard/assinaturas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/assinaturas/page.js"
+    ],
+    "/dashboard/controle-permissoes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/controle-permissoes/page.js"
     ]
   }
 }

@@ -10,8 +10,7 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 **URL**: https://api.protesecapilarcuiaba.com.br  
 **Porta**: 3001  
 **VPS**: 82.25.65.201 (Hostinger)  
-**Última Atualização**: 16 de Dezembro de 2025  
-**VPS**: 82.25.65.201 (Hostinger)  
+**Última Atualização**: 27 de Janeiro de 2026  
 **Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)
 
 ---
@@ -66,6 +65,7 @@ backend/
 │   ├── relatorios.js # Geração de relatórios
 │   ├── dashboard.js # Dashboard personalizado
 │   ├── cupons-fidelidades.js # Cupons e fidelidades
+│   ├── crm.js # Sistema CRM de relacionamento com clientes
 │   └── modulos.js # Sistema de módulos do menu
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
@@ -301,6 +301,14 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `GET /api/v1/cupons-fidelidades/fidelidades/cliente/:clienteId` - Fidelidades de um cliente
 - `POST /api/v1/cupons-fidelidades/fidelidades/atualizar` - Atualizar fidelidade
 
+### 👥 CRM (Customer Relationship Management)
+- `GET /api/v1/crm/buscar-clientes` - Buscar clientes por nome ou email
+- `GET /api/v1/crm/cliente/:id/dados` - Buscar dados completos do cliente (agendamentos, vendas, receitas, relacionamentos)
+- `GET /api/v1/crm/cliente/:id/relacionamentos` - Listar relacionamentos do cliente
+- `POST /api/v1/crm/cliente/:id/relacionamentos` - Criar relacionamento
+- `PUT /api/v1/crm/cliente/:id/relacionamentos/:relacionamento_id` - Atualizar relacionamento
+- `DELETE /api/v1/crm/cliente/:id/relacionamentos/:relacionamento_id` - Excluir relacionamento
+
 ### 📂 Módulos do Menu
 - `GET /api/v1/modulos` - Listar módulos com seus itens ordenados
 
@@ -352,6 +360,7 @@ Implementei as seguintes tabelas principais:
 - `cupons` - Cupons de desconto e fidelidade
 - `cupons_usados` - Registro de uso de cupons
 - `fidelidades` - Controle de fidelidade por cliente
+- `crm_relacionamentos` - Registro de interações e contatos com clientes no CRM
 - `modulos` - Módulos do sistema para organização do menu
 - `modulos_itens` - Itens do menu agrupados por módulos
 
@@ -386,6 +395,8 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_ADICIONAR_PERMISSOES_CUPONS_FIDELIDADES.sql`
 - `COMANDOS_CRIAR_TABELA_MODULOS.sql`
 - `COMANDOS_ADICIONAR_BALANCO_RELATORIOS.sql`
+- `COMANDOS_CRIAR_TABELA_CRM_RELACIONAMENTOS.sql`
+- `COMANDOS_ADICIONAR_ASSINATURAS.sql`
 
 ---
 
@@ -537,9 +548,9 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 
 ---
 
-**Última atualização**: 16 de Dezembro de 2025  
+**Última atualização**: 27 de Janeiro de 2026  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
-**Versão**: 1.9.0  
+**Versão**: 2.0.0  
 **VPS**: 82.25.65.201 (Hostinger)  
 **Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)

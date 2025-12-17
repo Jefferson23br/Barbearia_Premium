@@ -141,6 +141,11 @@ interface Permissoes {
   servicos_integracao_ver: boolean
   servicos_integracao_editar: boolean
   servicos_integracao_excluir: boolean
+
+  // Assinaturas
+  assinaturas_ver: boolean
+  assinaturas_editar: boolean
+  assinaturas_excluir: boolean
 }
 
 const permissoesPadrao: Permissoes = {
@@ -219,6 +224,9 @@ const permissoesPadrao: Permissoes = {
     servicos_integracao_ver: false,
     servicos_integracao_editar: false,
     servicos_integracao_excluir: false,
+    assinaturas_ver: false,
+    assinaturas_editar: false,
+    assinaturas_excluir: false,
   }
 
 interface ModuloPermissao {

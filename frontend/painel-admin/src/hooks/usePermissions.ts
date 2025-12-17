@@ -131,6 +131,11 @@ export interface PermissoesUsuario {
   servicos_integracao_ver: boolean
   servicos_integracao_editar: boolean
   servicos_integracao_excluir: boolean
+
+  // Assinaturas
+  assinaturas_ver: boolean
+  assinaturas_editar: boolean
+  assinaturas_excluir: boolean
 }
 
 export function usePermissions() {
@@ -375,6 +380,9 @@ function criarPermissoesMaster(): PermissoesUsuario {
     servicos_integracao_ver: true,
     servicos_integracao_editar: true,
     servicos_integracao_excluir: true,
+    assinaturas_ver: true,
+    assinaturas_editar: true,
+    assinaturas_excluir: true,
   }
 }
 
@@ -456,6 +464,9 @@ function criarPermissoesVazias(): PermissoesUsuario {
     servicos_integracao_ver: false,
     servicos_integracao_editar: false,
     servicos_integracao_excluir: false,
+    assinaturas_ver: false,
+    assinaturas_editar: false,
+    assinaturas_excluir: false,
   }
 }
 

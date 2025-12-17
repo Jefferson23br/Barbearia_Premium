@@ -97,6 +97,9 @@ router.get('/:usuarioId', async (req, res) => {
           servicos_integracao_ver: false,
           servicos_integracao_editar: false,
           servicos_integracao_excluir: false,
+          assinaturas_ver: false,
+          assinaturas_editar: false,
+          assinaturas_excluir: false,
         },
       });
     }
@@ -216,6 +219,9 @@ router.put('/:usuarioId', async (req, res) => {
           servicos_integracao_ver: permissoesBody.servicos_integracao_ver || false,
           servicos_integracao_editar: permissoesBody.servicos_integracao_editar || false,
           servicos_integracao_excluir: permissoesBody.servicos_integracao_excluir || false,
+          assinaturas_ver: permissoesBody.assinaturas_ver || false,
+          assinaturas_editar: permissoesBody.assinaturas_editar || false,
+          assinaturas_excluir: permissoesBody.assinaturas_excluir || false,
     };
 
     // Verificar se já existe registro de permissões
@@ -259,6 +265,7 @@ router.put('/:usuarioId', async (req, res) => {
           crm_ver = $68, crm_editar = $69, crm_excluir = $70,
           cupons_fidelidades_ver = $71, cupons_fidelidades_editar = $72, cupons_fidelidades_excluir = $73,
           servicos_integracao_ver = $74, servicos_integracao_editar = $75, servicos_integracao_excluir = $76,
+          assinaturas_ver = $77, assinaturas_editar = $78, assinaturas_excluir = $79,
           updated_at = NOW()
         WHERE usuario_id = $1`,
         [
@@ -335,6 +342,12 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.cupons_fidelidades_ver,
           valoresPermissoes.cupons_fidelidades_editar,
           valoresPermissoes.cupons_fidelidades_excluir,
+          valoresPermissoes.servicos_integracao_ver,
+          valoresPermissoes.servicos_integracao_editar,
+          valoresPermissoes.servicos_integracao_excluir,
+          valoresPermissoes.assinaturas_ver,
+          valoresPermissoes.assinaturas_editar,
+          valoresPermissoes.assinaturas_excluir,
         ]
       );
     } else {
@@ -368,9 +381,10 @@ router.put('/:usuarioId', async (req, res) => {
           balanco_demonstrativo_ver, balanco_demonstrativo_editar, balanco_demonstrativo_excluir,
           crm_ver, crm_editar, crm_excluir,
           cupons_fidelidades_ver, cupons_fidelidades_editar, cupons_fidelidades_excluir,
-          servicos_integracao_ver, servicos_integracao_editar, servicos_integracao_excluir
+          servicos_integracao_ver, servicos_integracao_editar, servicos_integracao_excluir,
+          assinaturas_ver, assinaturas_editar, assinaturas_excluir
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79
         )`,
         [
           usuarioId,
@@ -449,6 +463,9 @@ router.put('/:usuarioId', async (req, res) => {
           valoresPermissoes.servicos_integracao_ver,
           valoresPermissoes.servicos_integracao_editar,
           valoresPermissoes.servicos_integracao_excluir,
+          valoresPermissoes.assinaturas_ver,
+          valoresPermissoes.assinaturas_editar,
+          valoresPermissoes.assinaturas_excluir,
         ]
       );
     }

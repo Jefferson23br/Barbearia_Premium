@@ -115,12 +115,12 @@ router.get('/cliente/:id/dados', async (req, res) => {
     console.log(`[CRM] 📋 Buscando dados do cliente...`);
     const clienteResult = await pool.query(
       `SELECT 
-        id,
-        nome_completo,
-        email,
-        cpf,
-        foto_url,
-        funcionario_responsavel_id,
+        uc.id,
+        uc.nome_completo,
+        uc.email,
+        uc.cpf,
+        uc.foto_url,
+        uc.funcionario_responsavel_id,
         ua.nome_completo as funcionario_responsavel_nome
        FROM protese.usuarios_clientes uc
        LEFT JOIN protese.usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
@@ -142,7 +142,18 @@ router.get('/cliente/:id/dados', async (req, res) => {
     try {
       agendamentosResult = await pool.query(
         `SELECT 
-          a.*,
+          a.id,
+          a.cliente_id,
+          a.funcionario_id,
+          a.servico_id,
+          a.data_agendamento,
+          a.hora_inicio,
+          a.hora_fim,
+          a.status,
+          a.observacoes,
+          a.valor_servico,
+          a.created_at,
+          a.updated_at,
           s.nome as servico_nome,
           f.nome_completo as funcionario_nome
          FROM protese.agendamentos a
@@ -165,7 +176,23 @@ router.get('/cliente/:id/dados', async (req, res) => {
     try {
       vendasResult = await pool.query(
         `SELECT 
-          v.*,
+          v.id,
+          v.ticket,
+          v.funcionario_id,
+          v.cliente_id,
+          v.data_venda,
+          v.valor_total,
+          v.desconto_percentual,
+          v.desconto_valor,
+          v.valor_liquido,
+          v.forma_pagamento,
+          v.numero_parcelas,
+          v.caixa_id,
+          v.observacoes,
+          v.status,
+          v.created_at,
+          v.updated_at,
+          v.cupom_id,
           f.nome_completo as funcionario_nome
          FROM protese.vendas v
          LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
@@ -186,7 +213,23 @@ router.get('/cliente/:id/dados', async (req, res) => {
     try {
       receitasResult = await pool.query(
         `SELECT 
-          r.*,
+          r.id,
+          r.ticket_venda,
+          r.parcela_id,
+          r.venda_id,
+          r.cliente_id,
+          r.forma_pagamento,
+          r.caixa_id,
+          r.data_emissao,
+          r.data_vencimento,
+          r.data_pagamento,
+          r.valor_vencimento,
+          r.valor_pago,
+          r.status,
+          r.observacoes,
+          r.movimentacao_caixa_id,
+          r.created_at,
+          r.updated_at,
           ca.nome as caixa_nome,
           v.ticket as venda_ticket
          FROM protese.receitas r
@@ -209,7 +252,17 @@ router.get('/cliente/:id/dados', async (req, res) => {
     try {
       relacionamentosResult = await pool.query(
         `SELECT 
-          r.*,
+          r.id,
+          r.cliente_id,
+          r.funcionario_id,
+          r.data_interacao,
+          r.tipo_interacao,
+          r.descricao,
+          r.observacoes,
+          r.created_at,
+          r.updated_at,
+          r.created_by,
+          r.updated_by,
           ua.nome_completo as funcionario_nome
          FROM protese.crm_relacionamentos r
          LEFT JOIN protese.usuarios_administrativos ua ON r.funcionario_id = ua.id

@@ -623,11 +623,12 @@ router.post('/', async (req, res) => {
     const ticketBase = ticketResult.rows[0].ticket;
 
     // Inserir venda
+    // Status padrão: 'paga' - quando uma venda é lançada, ela já é considerada finalizada/paga
     const vendaResult = await client.query(
       `INSERT INTO protese.vendas 
        (ticket, funcionario_id, cliente_id, data_venda, valor_total, desconto_percentual, 
-        desconto_valor, valor_liquido, forma_pagamento, numero_parcelas, caixa_id, cupom_id, observacoes, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        desconto_valor, valor_liquido, forma_pagamento, numero_parcelas, caixa_id, cupom_id, observacoes, status, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
        RETURNING *`,
       [
         ticketBase,
@@ -643,6 +644,7 @@ router.post('/', async (req, res) => {
         caixa_id,
         cupomId,
         observacoes || null,
+        'paga', // Status padrão: venda já é considerada paga/finalizada ao ser lançada
         usuarioId
       ]
     );

@@ -2,6 +2,9 @@
 
 Este documento apresenta o roadmap completo do projeto, incluindo funcionalidades implementadas, em desenvolvimento e planejadas para o futuro.
 
+**Última Atualização**: 27 de Janeiro de 2026  
+**Versão**: 2.0.0
+
 ---
 
 ## ✅ Funcionalidades Implementadas (Produção)
@@ -251,6 +254,56 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ---
 
+### 👥 CRM (Customer Relationship Management)
+**Prioridade**: Alta  
+**Status**: ✅ **100% Completo (27 de Janeiro de 2026)**
+
+**Funcionalidades implementadas:**
+- ✅ Busca de clientes por nome ou email
+- ✅ Visualização completa de dados do cliente:
+  - Agendamentos (data, serviço, status, profissional, valor)
+  - Vendas (data, ticket, valor, profissional)
+  - Receitas financeiras (emissão, vencimento, pagamento, ticket, valores)
+  - Relacionamentos (histórico de interações)
+- ✅ Gerenciamento de relacionamentos:
+  - Criar, editar e excluir interações
+  - Tipos de interação (Ligação, Email, Visita, Reunião, Mensagem)
+  - Data da interação e funcionário responsável
+  - Descrição e observações
+- ✅ Interface com abas organizadas
+- ✅ Sistema de permissões integrado
+
+**Melhorias planejadas:**
+- [ ] Exportação de dados do CRM
+- [ ] Relatórios de relacionamentos
+- [ ] Integração com outros módulos
+- [ ] Dashboard de métricas de relacionamento
+- [ ] Notificações de interações
+
+---
+
+### 📝 Módulo Assinaturas
+**Prioridade**: Média  
+**Status**: ✅ **Estrutura Criada (27 de Janeiro de 2026)**
+
+**Estrutura implementada:**
+- ✅ Módulo criado no menu Operação
+- ✅ Sistema de permissões implementado (`assinaturas_ver`, `assinaturas_editar`, `assinaturas_excluir`)
+- ✅ Página básica criada
+- ✅ Integração completa com sistema de permissões
+
+**Funcionalidades planejadas:**
+- [ ] CRUD completo de assinaturas
+- [ ] Gerenciamento de planos de assinatura
+- [ ] Controle de renovação
+- [ ] Histórico de assinaturas
+- [ ] Relatórios de assinaturas
+- [ ] Integração com outros módulos
+
+**Estimativa**: 3-4 semanas
+
+---
+
 ### 🧾 Faturamento
 **Prioridade**: Média  
 **Status**: ✅ **100% Completo (Dezembro 2025)**
@@ -373,12 +426,17 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🔄 Atualizações do Roadmap
 
-Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **16 de Dezembro de 2025**
+Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **27 de Janeiro de 2026**
 
 ---
 
 **Status Geral do Projeto**: ✅ **Em Produção e Funcionando**  
-**Últimas Implementações (16 de Dezembro de 2025)**:
+**Últimas Implementações (27 de Janeiro de 2026)**:
+- ✅ CRM - Sistema completo de relacionamento com clientes (100% completo)
+- ✅ Módulo Assinaturas - Estrutura criada no menu Operação com controle de permissões
+- ✅ Correção de erros SQL no CRM (ambiguidade de colunas)
+
+**Implementações Anteriores (16 de Dezembro de 2025)**:
 - ✅ Sistema de Módulos no Menu - Menu organizado por módulos expansíveis
 - ✅ Correção do Sistema de Permissões - Permissões sempre do PostgreSQL, sem duplicações
 - ✅ Reorganização do Menu Sidebar - Ordem correta e organização por categorias
@@ -386,7 +444,7 @@ Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Últ
 - ✅ Serviços de Integração - Módulo para gerenciar e usar integrações configuradas
 - ✅ Master Acessa Tudo - Master não precisa configurar permissões
 
-**Próxima Grande Funcionalidade**: Balanço Demonstrativo e CRM
+**Próxima Grande Funcionalidade**: Implementação completa do módulo Assinaturas e Balanço Demonstrativo
 
 **URLs de Produção:**
 - Painel Admin: https://admin.protesecapilarcuiaba.com.br

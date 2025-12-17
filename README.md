@@ -16,8 +16,8 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-16_Dezembro_2025-blue?style=flat-square)
-![Version](https://img.shields.io/badge/Versão-1.9.0-green?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-27_Janeiro_2026-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Versão-2.0.0-green?style=flat-square)
 
 </div>
 
@@ -285,10 +285,12 @@ npm run dev
 24. **Dashboard Personalizado** - Filtros por tipo de usuário
 25. **Cupons e Fidelidades** - Sistema completo
 26. **Balanço Demonstrativo** - Estrutura criada
+27. **CRM** - Sistema completo de relacionamento com clientes (27 de Janeiro de 2026)
+28. **Assinaturas** - Módulo criado no menu Operação (27 de Janeiro de 2026)
 
 ### 🔄 Em Desenvolvimento
 - Melhorias no Help Desk
-- CRM
+- Implementação completa do módulo Assinaturas
 - Melhorias nos Relatórios (gráficos, mais métricas)
 
 ---
@@ -331,10 +333,15 @@ npm run dev
 - `cupons` - Cupons de desconto e fidelidade
 - `cupons_usados` - Registro de uso de cupons
 - `fidelidades` - Controle de fidelidade por cliente
+- `crm_relacionamentos` - Registro de interações e contatos com clientes no CRM
+- `modulos` - Módulos do sistema para organização do menu
+- `modulos_itens` - Itens do menu agrupados por módulos
 
 **Scripts SQL importantes:**
 - `COMANDOS_CRIAR_TABELA_MODULOS.sql` - Sistema de módulos
 - `COMANDOS_ADICIONAR_BALANCO_RELATORIOS.sql` - Adicionar Balanço ao módulo Relatórios
+- `COMANDOS_CRIAR_TABELA_CRM_RELACIONAMENTOS.sql` - Tabela de relacionamentos do CRM
+- `COMANDOS_ADICIONAR_ASSINATURAS.sql` - Adicionar módulo Assinaturas
 - E muitos outros scripts de criação e atualização
 
 ---
@@ -402,18 +409,20 @@ O sistema foi desenvolvido com foco em:
 
 Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap](./docs/ROADMAP.md)**.
 
-**Foco Atual (Q4 2025 / Q1 2026):**
+**Foco Atual (Q1 2026):**
 - ✅ Sistema de Módulos no Menu (concluído em 16 de Dezembro de 2025)
 - ✅ Correção do Sistema de Permissões (concluído em 16 de Dezembro de 2025)
 - ✅ Reorganização do Menu Sidebar (concluído em 16 de Dezembro de 2025)
 - ✅ Integração DocSales - Sistema de assinatura de contratos (concluído em 16 de Dezembro de 2025)
 - ✅ Módulo Serviços de Integração - Página para gerenciar integrações (concluído em 16 de Dezembro de 2025)
 - ✅ Master acessa tudo automaticamente sem configuração de permissões (concluído em 16 de Dezembro de 2025)
+- ✅ CRM - Sistema completo de relacionamento com clientes (concluído em 27 de Janeiro de 2026)
+- ✅ Módulo Assinaturas - Criado no menu Operação com controle de permissões (concluído em 27 de Janeiro de 2026)
+- 🔄 Implementação completa do módulo Assinaturas (funcionalidades)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
 - 🔄 Balanço Demonstrativo
-- 🔄 CRM
 
 **Planejado:**
 - 🔄 Analytics e relatórios avançados
@@ -447,8 +456,8 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.9.0  
+**Última Atualização**: 27 de Janeiro de 2026  
+**Versão**: 2.0.0  
 **Desenvolvido para**: Prótese Capilar Cuiabá  
 **Status**: ✅ Em Produção e Funcionando
 
