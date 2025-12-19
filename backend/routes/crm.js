@@ -313,6 +313,120 @@ router.get('/cliente/:id/dados', async (req, res) => {
 });
 
 /**
+ * GET /api/v1/crm/cliente/:id/assinaturas
+ * Busca assinaturas ativas do cliente (estoque de uso)
+ */
+router.get('/cliente/:id/assinaturas', async (req, res) => {
+  const clienteId = req.params.id;
+  console.log(`[CRM] 🔍 Buscando assinaturas do cliente: ${clienteId}`);
+  
+  try {
+    const usuarioId = req.headers['x-user-id'];
+    const usuarioTipo = req.headers['x-user-tipo'] || 'administrativo';
+
+    // Verificar permissão
+    if (usuarioTipo !== 'master') {
+      const permissoesResult = await pool.query(
+        'SELECT crm_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        [usuarioId]
+      );
+
+      if (permissoesResult.rows.length === 0 || !permissoesResult.rows[0].crm_ver) {
+        return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente.' });
+      }
+    }
+
+    // Buscar assinaturas do cliente com detalhes
+    const hoje = new Date().toISOString().split('T')[0];
+    
+    const assinaturasResult = await pool.query(
+      `SELECT 
+        ac.id,
+        ac.assinatura_id,
+        ac.data_aquisicao,
+        ac.data_expiracao,
+        ac.quantidade_servicos_restantes,
+        ac.quantidade_produtos_restantes,
+        ac.status,
+        ac.created_at,
+        ac.updated_at,
+        a.nome as assinatura_nome,
+        a.descricao as assinatura_descricao,
+        a.valor_liquido,
+        CASE 
+          WHEN ac.data_expiracao < $2 THEN 'expirada'
+          WHEN ac.status = 'consumida' THEN 'consumida'
+          WHEN ac.status = 'cancelada' THEN 'cancelada'
+          ELSE ac.status
+        END as status_real
+       FROM protese.assinaturas_clientes ac
+       INNER JOIN protese.assinaturas a ON ac.assinatura_id = a.id
+       WHERE ac.cliente_id = $1
+       ORDER BY ac.data_aquisicao DESC`,
+      [clienteId, hoje]
+    );
+
+    // Buscar detalhes dos serviços e produtos das assinaturas
+    const assinaturasComDetalhes = await Promise.all(
+      assinaturasResult.rows.map(async (assinatura) => {
+        const servicosRestantes = assinatura.quantidade_servicos_restantes || {};
+        const produtosRestantes = assinatura.quantidade_produtos_restantes || {};
+
+        // Buscar informações dos serviços
+        const servicosDetalhes = [];
+        for (const [servicoId, quantidade] of Object.entries(servicosRestantes)) {
+          if (quantidade > 0) {
+            const servicoInfo = await pool.query(
+              'SELECT id, nome, preco FROM protese.servicos WHERE id = $1',
+              [servicoId]
+            );
+            if (servicoInfo.rows.length > 0) {
+              servicosDetalhes.push({
+                servico_id: servicoId,
+                servico_nome: servicoInfo.rows[0].nome,
+                servico_preco: servicoInfo.rows[0].preco,
+                quantidade_restante: quantidade
+              });
+            }
+          }
+        }
+
+        // Buscar informações dos produtos
+        const produtosDetalhes = [];
+        for (const [produtoId, quantidade] of Object.entries(produtosRestantes)) {
+          if (quantidade > 0) {
+            const produtoInfo = await pool.query(
+              'SELECT id, descricao, codigo, preco_venda FROM protese.produtos WHERE id = $1',
+              [produtoId]
+            );
+            if (produtoInfo.rows.length > 0) {
+              produtosDetalhes.push({
+                produto_id: produtoId,
+                produto_descricao: produtoInfo.rows[0].descricao,
+                produto_codigo: produtoInfo.rows[0].codigo,
+                produto_preco: produtoInfo.rows[0].preco_venda,
+                quantidade_restante: quantidade
+              });
+            }
+          }
+        }
+
+        return {
+          ...assinatura,
+          servicos_disponiveis: servicosDetalhes,
+          produtos_disponiveis: produtosDetalhes
+        };
+      })
+    );
+
+    res.json({ assinaturas: assinaturasComDetalhes });
+  } catch (error) {
+    console.error(`[CRM] ❌ Erro ao buscar assinaturas do cliente:`, error);
+    res.status(500).json({ error: 'Erro ao buscar assinaturas', details: error.message });
+  }
+});
+
+/**
  * GET /api/v1/crm/cliente/:id/relacionamentos
  * Lista relacionamentos de um cliente
  */
