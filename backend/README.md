@@ -65,8 +65,9 @@ backend/
 │   ├── relatorios.js # Geração de relatórios
 │   ├── dashboard.js # Dashboard personalizado
 │   ├── cupons-fidelidades.js # Cupons e fidelidades
-│   ├── crm.js # Sistema CRM de relacionamento com clientes
-│   └── modulos.js # Sistema de módulos do menu
+    │   ├── crm.js # Sistema CRM de relacionamento com clientes
+    │   ├── assinaturas.js # Sistema de assinaturas (pacotes de serviços/produtos)
+    │   └── modulos.js # Sistema de módulos do menu
 ├── middlewares/         # Middlewares customizados
 │   └── apiLogger.js   # Middleware de logs automático
 ├── services/           # Serviços de integração
@@ -308,6 +309,14 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 - `POST /api/v1/crm/cliente/:id/relacionamentos` - Criar relacionamento
 - `PUT /api/v1/crm/cliente/:id/relacionamentos/:relacionamento_id` - Atualizar relacionamento
 - `DELETE /api/v1/crm/cliente/:id/relacionamentos/:relacionamento_id` - Excluir relacionamento
+- `GET /api/v1/crm/cliente/:id/assinaturas` - Buscar assinaturas ativas do cliente
+
+### 📋 Assinaturas
+- `GET /api/v1/assinaturas` - Listar assinaturas (com serviços e produtos)
+- `GET /api/v1/assinaturas/:id` - Buscar assinatura específica
+- `POST /api/v1/assinaturas` - Criar assinatura
+- `PUT /api/v1/assinaturas/:id` - Atualizar assinatura
+- `DELETE /api/v1/assinaturas/:id` - Excluir assinatura
 
 ### 📂 Módulos do Menu
 - `GET /api/v1/modulos` - Listar módulos com seus itens ordenados
@@ -361,6 +370,11 @@ Implementei as seguintes tabelas principais:
 - `cupons_usados` - Registro de uso de cupons
 - `fidelidades` - Controle de fidelidade por cliente
 - `crm_relacionamentos` - Registro de interações e contatos com clientes no CRM
+- `assinaturas` - Assinaturas comercializáveis (pacotes de serviços/produtos)
+- `assinaturas_servicos` - Serviços incluídos em cada assinatura
+- `assinaturas_produtos` - Produtos incluídos em cada assinatura
+- `assinaturas_clientes` - Controle de estoque de uso das assinaturas por cliente
+- `vendas_assinaturas` - Assinaturas vinculadas a vendas
 - `modulos` - Módulos do sistema para organização do menu
 - `modulos_itens` - Itens do menu agrupados por módulos
 
@@ -397,6 +411,10 @@ Criei scripts SQL na raiz do projeto para facilitar a configuração:
 - `COMANDOS_ADICIONAR_BALANCO_RELATORIOS.sql`
 - `COMANDOS_CRIAR_TABELA_CRM_RELACIONAMENTOS.sql`
 - `COMANDOS_ADICIONAR_ASSINATURAS.sql`
+- `COMANDOS_CRIAR_TABELA_ASSINATURAS.sql`
+- `COMANDOS_ADICIONAR_ASSINATURAS_VENDAS.sql`
+- `COMANDOS_ADICIONAR_VALIDADE_ASSINATURAS.sql`
+- `COMANDOS_ADICIONAR_PERMISSOES_ASSINATURAS.sql`
 
 ---
 
@@ -548,7 +566,7 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 
 ---
 
-**Última atualização**: 27 de Janeiro de 2026  
+**Última atualização**: 19 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
 **Versão**: 2.0.0  
