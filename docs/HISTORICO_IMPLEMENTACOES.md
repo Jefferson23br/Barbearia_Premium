@@ -957,7 +957,88 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 **Páginas Frontend**: 1  
 **Tabelas**: `crm_relacionamentos`
 
-### 📝 Módulo Assinaturas
+### 📋 Sistema de Assinaturas Completo
+
+**Data**: 27 de Janeiro de 2026  
+**Status**: ✅ **100% Completo**
+
+**Funcionalidades Implementadas:**
+- ✅ CRUD completo de assinaturas (pacotes de serviços e produtos)
+- ✅ Campo validade_em_dias para controle de expiração (ex: 30, 60 dias)
+- ✅ Cálculo automático de preço total (soma de serviços e produtos)
+- ✅ Campo valor_comercializado (valor que será vendido)
+- ✅ Sistema de descontos (percentual e valor fixo)
+- ✅ Cálculo automático de valor_liquido (comercializado - descontos)
+- ✅ Integração completa com sistema de vendas
+- ✅ Assinaturas podem ser vendidas como produtos/serviços
+- ✅ Abatimento automático de serviços/produtos de assinaturas válidas
+- ✅ Controle de estoque de uso por cliente (quantidades restantes)
+- ✅ Sistema que verifica e abate automaticamente nas vendas
+- ✅ Se cliente tem assinatura válida, serviços/produtos são abatidos sem gerar receita adicional
+- ✅ Se não houver mais saldo na assinatura, cobra normalmente
+- ✅ Abatimento parcial (se tem 2 unidades na assinatura e quer 5, abate 2 e cobra 3)
+- ✅ Integração com CRM (aba Assinaturas mostra assinaturas ativas do cliente)
+- ✅ Visualização de assinaturas no CRM com status, datas de aquisição/expiração e saldos restantes
+- ✅ Sistema garante que vendas totalmente cobertas por assinatura sejam finalizadas (valor mínimo de R$ 0,01)
+
+**Backend:**
+- ✅ Rota completa `/api/v1/assinaturas` com 5 endpoints (GET, GET/:id, POST, PUT, DELETE)
+- ✅ Integração em `/api/v1/vendas` com abatimento automático
+- ✅ Endpoint `/api/v1/vendas/cliente/:id/servicos-produtos-disponiveis` para verificar disponibilidade
+- ✅ Função `verificarEAbaterDeAssinatura` para controle de abatimento
+- ✅ Endpoint `/api/v1/crm/cliente/:id/assinaturas` para visualização no CRM
+- ✅ Sistema de permissões integrado
+
+**Frontend:**
+- ✅ Página completa `/dashboard/assinaturas` com CRUD
+- ✅ Interface para adicionar serviços e produtos às assinaturas
+- ✅ Cálculo dinâmico de totais e descontos
+- ✅ Integração em `/dashboard/lancamento-venda`:
+  - Seleção de assinaturas na venda
+  - Seleção de cliente (manual ou via agendamento)
+  - Verificação automática de disponibilidade
+  - Valores zerados automaticamente quando coberto por assinatura
+  - Visualização clara de itens abatidos
+- ✅ Aba Assinaturas no CRM mostrando assinaturas ativas do cliente
+
+**Banco de Dados:**
+- ✅ Tabela `assinaturas` (nome, descricao, preço, valores, validade_em_dias)
+- ✅ Tabela `assinaturas_servicos` (serviços incluídos)
+- ✅ Tabela `assinaturas_produtos` (produtos incluídos)
+- ✅ Tabela `assinaturas_clientes` (controle de estoque de uso por cliente)
+- ✅ Tabela `vendas_assinaturas` (vínculo assinatura-venda)
+- ✅ Campos: data_aquisicao, data_expiracao, quantidade_servicos_restantes, quantidade_produtos_restantes, status
+
+**Arquivos Criados/Modificados:**
+- `COMANDOS_CRIAR_TABELA_ASSINATURAS.sql` - Criação das tabelas principais
+- `COMANDOS_ADICIONAR_ASSINATURAS.sql` - Adicionar módulo ao menu e permissões
+- `COMANDOS_ADICIONAR_ASSINATURAS_VENDAS.sql` - Integração com vendas
+- `COMANDOS_ADICIONAR_VALIDADE_ASSINATURAS.sql` - Campo validade_em_dias
+- `COMANDOS_ADICIONAR_PERMISSOES_ASSINATURAS.sql` - Permissões do módulo
+- `backend/routes/assinaturas.js` - Rotas completas (5 endpoints)
+- `backend/routes/vendas.js` - Integração com abatimento automático
+- `backend/routes/crm.js` - Endpoint de assinaturas do cliente
+- `frontend/painel-admin/src/app/dashboard/assinaturas/page.tsx` - Página completa
+- `frontend/painel-admin/src/app/dashboard/lancamento-venda/page.tsx` - Integração completa
+- `frontend/painel-admin/src/app/dashboard/crm/page.tsx` - Aba Assinaturas
+
+**Endpoints Criados:**
+- `GET /api/v1/assinaturas` - Listar assinaturas
+- `GET /api/v1/assinaturas/:id` - Buscar assinatura
+- `POST /api/v1/assinaturas` - Criar assinatura
+- `PUT /api/v1/assinaturas/:id` - Atualizar assinatura
+- `DELETE /api/v1/assinaturas/:id` - Excluir assinatura
+- `GET /api/v1/vendas/cliente/:id/servicos-produtos-disponiveis` - Verificar disponibilidade
+- `GET /api/v1/crm/cliente/:id/assinaturas` - Assinaturas do cliente
+
+**Tabelas Criadas:**
+- `protese.assinaturas`
+- `protese.assinaturas_servicos`
+- `protese.assinaturas_produtos`
+- `protese.assinaturas_clientes`
+- `protese.vendas_assinaturas`
+
+---
 
 **Data**: 27 de Janeiro de 2026  
 **Status**: ✅ **Estrutura Criada**
@@ -973,8 +1054,8 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 
 ---
 
-**Última atualização**: 27 de Janeiro de 2026  
-**Versão do documento**: 1.6
+**Última atualização**: 19 de Dezembro de 2025  
+**Versão do documento**: 1.7
 
 > **Nota**: Para detalhes completos das implementações, consulte:
 > - [`IMPLEMENTACOES_DEZEMBRO_2025.md`](./IMPLEMENTACOES_DEZEMBRO_2025.md) - Implementações de 12-14 de Dezembro
