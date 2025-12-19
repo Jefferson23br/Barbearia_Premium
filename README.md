@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-27_Janeiro_2026-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-19_Dezembro_2025-blue?style=flat-square)
 ![Version](https://img.shields.io/badge/Versão-2.0.0-green?style=flat-square)
 
 </div>
@@ -188,6 +188,14 @@ Barbearia_Premium/
 ### 🎁 Marketing e Fidelização
 - ✅ **Cupons e Fidelidades** - Sistema completo de cupons de desconto e programa de fidelidade
 
+### 📋 Sistema de Assinaturas
+- ✅ **Assinaturas** - CRUD completo de assinaturas (pacotes de serviços e produtos)
+- ✅ **Validade em Dias** - Controle de expiração das assinaturas
+- ✅ **Integração com Vendas** - Assinaturas podem ser vendidas como produtos/serviços
+- ✅ **Abatimento Automático** - Serviços/produtos de assinaturas são abatidos automaticamente
+- ✅ **Controle de Estoque de Uso** - Sistema que controla quantidades restantes por cliente
+- ✅ **CRM - Aba Assinaturas** - Visualização de assinaturas ativas do cliente no CRM
+
 ---
 
 ## 🚀 Como Começar
@@ -286,12 +294,12 @@ npm run dev
 25. **Cupons e Fidelidades** - Sistema completo
 26. **Balanço Demonstrativo** - Estrutura criada
 27. **CRM** - Sistema completo de relacionamento com clientes (27 de Janeiro de 2026)
-28. **Assinaturas** - Módulo criado no menu Operação (27 de Janeiro de 2026)
+28. **Assinaturas** - Sistema completo de assinaturas com integração a vendas (27 de Janeiro de 2026)
 
 ### 🔄 Em Desenvolvimento
 - Melhorias no Help Desk
-- Implementação completa do módulo Assinaturas
 - Melhorias nos Relatórios (gráficos, mais métricas)
+- Expansão do sistema de Assinaturas (novas funcionalidades)
 
 ---
 
@@ -334,6 +342,11 @@ npm run dev
 - `cupons_usados` - Registro de uso de cupons
 - `fidelidades` - Controle de fidelidade por cliente
 - `crm_relacionamentos` - Registro de interações e contatos com clientes no CRM
+- `assinaturas` - Assinaturas comercializáveis (pacotes de serviços/produtos)
+- `assinaturas_servicos` - Serviços incluídos em cada assinatura
+- `assinaturas_produtos` - Produtos incluídos em cada assinatura
+- `assinaturas_clientes` - Controle de estoque de uso das assinaturas por cliente
+- `vendas_assinaturas` - Assinaturas vinculadas a vendas
 - `modulos` - Módulos do sistema para organização do menu
 - `modulos_itens` - Itens do menu agrupados por módulos
 
@@ -341,7 +354,11 @@ npm run dev
 - `COMANDOS_CRIAR_TABELA_MODULOS.sql` - Sistema de módulos
 - `COMANDOS_ADICIONAR_BALANCO_RELATORIOS.sql` - Adicionar Balanço ao módulo Relatórios
 - `COMANDOS_CRIAR_TABELA_CRM_RELACIONAMENTOS.sql` - Tabela de relacionamentos do CRM
-- `COMANDOS_ADICIONAR_ASSINATURAS.sql` - Adicionar módulo Assinaturas
+- `COMANDOS_ADICIONAR_ASSINATURAS.sql` - Adicionar módulo Assinaturas ao menu
+- `COMANDOS_CRIAR_TABELA_ASSINATURAS.sql` - Criar tabelas do sistema de assinaturas
+- `COMANDOS_ADICIONAR_ASSINATURAS_VENDAS.sql` - Integrar assinaturas ao sistema de vendas
+- `COMANDOS_ADICIONAR_VALIDADE_ASSINATURAS.sql` - Adicionar campo validade_em_dias
+- `COMANDOS_ADICIONAR_PERMISSOES_ASSINATURAS.sql` - Adicionar permissões do módulo
 - E muitos outros scripts de criação e atualização
 
 ---
@@ -417,8 +434,7 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Módulo Serviços de Integração - Página para gerenciar integrações (concluído em 16 de Dezembro de 2025)
 - ✅ Master acessa tudo automaticamente sem configuração de permissões (concluído em 16 de Dezembro de 2025)
 - ✅ CRM - Sistema completo de relacionamento com clientes (concluído em 27 de Janeiro de 2026)
-- ✅ Módulo Assinaturas - Criado no menu Operação com controle de permissões (concluído em 27 de Janeiro de 2026)
-- 🔄 Implementação completa do módulo Assinaturas (funcionalidades)
+- ✅ Módulo Assinaturas - Sistema completo com CRUD, integração a vendas, abatimento automático e controle de validade (concluído em 27 de Janeiro de 2026)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
@@ -456,7 +472,7 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 27 de Janeiro de 2026  
+**Última Atualização**: 19 de Dezembro de 2025  
 **Versão**: 2.0.0  
 **Desenvolvido para**: Prótese Capilar Cuiabá  
 **Status**: ✅ Em Produção e Funcionando

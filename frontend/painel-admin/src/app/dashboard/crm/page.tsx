@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { UsersRound, Search, Calendar, ShoppingCart, FileText, DollarSign, MessageSquare, Plus, Edit, Trash2, Loader2, AlertCircle, CheckCircle2, X, Save, User } from 'lucide-react'
+import { UsersRound, Search, Calendar, ShoppingCart, FileText, DollarSign, MessageSquare, Plus, Edit, Trash2, Loader2, AlertCircle, CheckCircle2, X, Save, User, Scissors, Package } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -78,6 +78,39 @@ interface Relacionamento {
   created_at: string
 }
 
+interface ServicoDisponivel {
+  servico_id: string
+  servico_nome: string
+  servico_preco: number
+  quantidade_restante: number
+}
+
+interface ProdutoDisponivel {
+  produto_id: string
+  produto_descricao: string
+  produto_codigo: string
+  produto_preco: number
+  quantidade_restante: number
+}
+
+interface AssinaturaCliente {
+  id: string
+  assinatura_id: string
+  data_aquisicao: string
+  data_expiracao: string
+  quantidade_servicos_restantes: any
+  quantidade_produtos_restantes: any
+  status: string
+  status_real: string
+  created_at: string
+  updated_at: string
+  assinatura_nome: string
+  assinatura_descricao?: string
+  valor_liquido: number
+  servicos_disponiveis: ServicoDisponivel[]
+  produtos_disponiveis: ProdutoDisponivel[]
+}
+
 export default function CRMPage() {
   const { podeAcessar, podeEditar, podeExcluir } = usePermissions()
   const [searchTerm, setSearchTerm] = useState('')
@@ -89,6 +122,7 @@ export default function CRMPage() {
   const [vendas, setVendas] = useState<Venda[]>([])
   const [receitas, setReceitas] = useState<Receita[]>([])
   const [relacionamentos, setRelacionamentos] = useState<Relacionamento[]>([])
+  const [assinaturas, setAssinaturas] = useState<AssinaturaCliente[]>([])
   const [mostrarModalRelacionamento, setMostrarModalRelacionamento] = useState(false)
   const [relacionamentoEditando, setRelacionamentoEditando] = useState<Relacionamento | null>(null)
   const [salvando, setSalvando] = useState(false)
@@ -232,6 +266,9 @@ export default function CRMPage() {
       setReceitas(data.receitas || [])
       setRelacionamentos(data.relacionamentos || [])
       
+      // Carregar assinaturas separadamente
+      await carregarAssinaturasCliente(clienteId)
+      
       console.log(`[CRM Frontend] ✅ Dados carregados com sucesso`)
     } catch (error: any) {
       console.error(`[CRM Frontend] ❌❌❌ ERRO ao carregar dados do cliente:`, error)
@@ -240,6 +277,40 @@ export default function CRMPage() {
       setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar dados do cliente' })
     } finally {
       setLoadingDados(false)
+    }
+  }, [])
+
+  const carregarAssinaturasCliente = useCallback(async (clienteId: string) => {
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/crm/cliente/${clienteId}/assinaturas`, {
+        headers,
+      })
+
+      if (!response.ok) {
+        console.error(`[CRM Frontend] ❌ Erro ao buscar assinaturas:`, response.status)
+        setAssinaturas([])
+        return
+      }
+
+      const data = await response.json()
+      setAssinaturas(data.assinaturas || [])
+    } catch (error) {
+      console.error(`[CRM Frontend] ❌ Erro ao carregar assinaturas:`, error)
+      setAssinaturas([])
     }
   }, [])
 
@@ -649,10 +720,140 @@ export default function CRMPage() {
           {/* Aba Assinaturas */}
           <TabsContent value="assinaturas" className="space-y-4">
             <Card className="bg-zinc-900 border-amber-500/20 p-6">
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-400">Módulo em desenvolvimento</p>
-              </div>
+              {loadingDados ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 text-amber-500 animate-spin" />
+                </div>
+              ) : assinaturas.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">Nenhuma assinatura encontrada.</p>
+              ) : (
+                <div className="space-y-4">
+                  {assinaturas.map((assinatura) => {
+                    const statusCor = 
+                      assinatura.status_real === 'ativa' ? 'text-green-400' :
+                      assinatura.status_real === 'expirada' ? 'text-red-400' :
+                      assinatura.status_real === 'consumida' ? 'text-yellow-400' :
+                      'text-gray-400'
+                    
+                    const statusLabel = 
+                      assinatura.status_real === 'ativa' ? 'Ativa' :
+                      assinatura.status_real === 'expirada' ? 'Expirada' :
+                      assinatura.status_real === 'consumida' ? 'Consumida' :
+                      assinatura.status_real === 'cancelada' ? 'Cancelada' :
+                      'Desconhecido'
+
+                    const hoje = new Date()
+                    const dataExpiracao = new Date(assinatura.data_expiracao)
+                    const diasRestantes = Math.ceil((dataExpiracao.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24))
+
+                    return (
+                      <div key={assinatura.id} className="p-4 bg-zinc-800 rounded-lg border border-zinc-700">
+                        {/* Cabeçalho da Assinatura */}
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-white font-bold text-lg">{assinatura.assinatura_nome}</h3>
+                            {assinatura.assinatura_descricao && (
+                              <p className="text-gray-400 text-sm mt-1">{assinatura.assinatura_descricao}</p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusCor} bg-zinc-900 border border-current`}>
+                              {statusLabel}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Informações da Assinatura */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                          <div>
+                            <p className="text-gray-400 text-sm">Data de Aquisição</p>
+                            <p className="text-white font-medium">{formatarData(assinatura.data_aquisicao)}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 text-sm">Data de Expiração</p>
+                            <p className={`font-medium ${diasRestantes < 0 ? 'text-red-400' : diasRestantes <= 7 ? 'text-yellow-400' : 'text-white'}`}>
+                              {formatarData(assinatura.data_expiracao)}
+                            </p>
+                            {diasRestantes >= 0 && assinatura.status_real === 'ativa' && (
+                              <p className="text-xs text-gray-500 mt-1">{diasRestantes} {diasRestantes === 1 ? 'dia restante' : 'dias restantes'}</p>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-gray-400 text-sm">Valor Pago</p>
+                            <p className="text-white font-medium">{formatarPreco(assinatura.valor_liquido)}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 text-sm">Total de Itens</p>
+                            <p className="text-white font-medium">
+                              {assinatura.servicos_disponiveis?.length || 0} serviço(s), {assinatura.produtos_disponiveis?.length || 0} produto(s)
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Serviços Disponíveis */}
+                        {assinatura.servicos_disponiveis && assinatura.servicos_disponiveis.length > 0 && (
+                          <div className="mb-4">
+                            <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                              <Scissors className="h-4 w-4" />
+                              Serviços Disponíveis
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {assinatura.servicos_disponiveis.map((servico, idx) => (
+                                <div key={idx} className="p-3 bg-zinc-900 rounded border border-zinc-700">
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <p className="text-white font-medium">{servico.servico_nome}</p>
+                                      <p className="text-gray-400 text-sm">{formatarPreco(servico.servico_preco)} cada</p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-amber-500 font-bold text-lg">{servico.quantidade_restante}x</p>
+                                      <p className="text-gray-400 text-xs">restante(s)</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Produtos Disponíveis */}
+                        {assinatura.produtos_disponiveis && assinatura.produtos_disponiveis.length > 0 && (
+                          <div>
+                            <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                              <Package className="h-4 w-4" />
+                              Produtos Disponíveis
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {assinatura.produtos_disponiveis.map((produto, idx) => (
+                                <div key={idx} className="p-3 bg-zinc-900 rounded border border-zinc-700">
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <p className="text-white font-medium">{produto.produto_descricao}</p>
+                                      <p className="text-gray-400 text-sm">{produto.produto_codigo} - {formatarPreco(produto.produto_preco)} cada</p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-amber-500 font-bold text-lg">{produto.quantidade_restante}x</p>
+                                      <p className="text-gray-400 text-xs">restante(s)</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Mensagem se não há serviços/produtos disponíveis */}
+                        {(!assinatura.servicos_disponiveis || assinatura.servicos_disponiveis.length === 0) && 
+                         (!assinatura.produtos_disponiveis || assinatura.produtos_disponiveis.length === 0) && (
+                          <div className="p-4 bg-zinc-900 rounded border border-zinc-700 text-center">
+                            <p className="text-gray-400">Nenhum serviço ou produto disponível nesta assinatura.</p>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </Card>
           </TabsContent>
 

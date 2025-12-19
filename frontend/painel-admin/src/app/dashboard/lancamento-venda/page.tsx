@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ShoppingCart, User, Calendar, Scissors, Package, DollarSign, Percent, Minus, Plus, X, Save, Loader2, AlertCircle, CheckCircle2, Trash2, Ticket } from 'lucide-react'
+import { ShoppingCart, User, Calendar, Scissors, Package, DollarSign, Percent, Minus, Plus, X, Save, Loader2, AlertCircle, CheckCircle2, Trash2, Ticket, FileText, Search } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -70,6 +70,7 @@ interface ServicoVenda {
   servico_nome: string
   agendamento_id?: string
   valor: number | string
+  podeAbaterAssinatura?: boolean // Indica se pode ser abatido de assinatura
 }
 
 interface ProdutoVenda {
@@ -79,14 +80,35 @@ interface ProdutoVenda {
   quantidade: number
   valor_unitario: number | string
   valor_total: number | string
+  podeAbaterAssinatura?: boolean // Indica se pode ser abatido de assinatura
+  quantidadeAbatida?: number // Quantidade que será abatida da assinatura
+}
+
+interface Assinatura {
+  id: string
+  nome: string
+  valor_liquido: number
+}
+
+interface AssinaturaVenda {
+  assinatura_id: string
+  assinatura_nome: string
+  valor: number | string
 }
 
 export default function LancamentoVendaPage() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
   const [servicos, setServicos] = useState<Servico[]>([])
   const [produtos, setProdutos] = useState<Produto[]>([])
+  const [assinaturas, setAssinaturas] = useState<Assinatura[]>([])
   const [contas, setContas] = useState<Conta[]>([])
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [buscandoClientes, setBuscandoClientes] = useState(false)
+  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null)
+  const [searchTermCliente, setSearchTermCliente] = useState('')
+  const [servicosDisponiveis, setServicosDisponiveis] = useState<{ servico_id: string; servico_nome: string; quantidade_disponivel: number }[]>([])
+  const [produtosDisponiveis, setProdutosDisponiveis] = useState<{ produto_id: string; produto_descricao: string; quantidade_disponivel: number }[]>([])
   const [loading, setLoading] = useState(false)
   const [salvando, setSalvando] = useState(false)
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
@@ -116,9 +138,10 @@ export default function LancamentoVendaPage() {
   } | null>(null)
   const [validandoCupom, setValidandoCupom] = useState(false)
 
-  // Serviços e produtos da venda
+  // Serviços, produtos e assinaturas da venda
   const [servicosVenda, setServicosVenda] = useState<ServicoVenda[]>([])
   const [produtosVenda, setProdutosVenda] = useState<ProdutoVenda[]>([])
+  const [assinaturasVenda, setAssinaturasVenda] = useState<AssinaturaVenda[]>([])
 
   // Refs
   const carregandoRef = useRef(false)
@@ -129,6 +152,7 @@ export default function LancamentoVendaPage() {
       carregarFuncionarios()
       carregarServicos()
       carregarProdutos()
+      carregarAssinaturas()
       carregarContas()
     }
   }, [podeAcessar])
@@ -221,6 +245,31 @@ export default function LancamentoVendaPage() {
     }
   }, [])
 
+  const carregarAssinaturas = useCallback(async () => {
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/assinaturas?is_active=true`, { headers })
+      if (response.ok) {
+        const data = await response.json()
+        setAssinaturas(data.assinaturas || [])
+      }
+    } catch (error) {
+      console.error('Erro ao carregar assinaturas:', error)
+    }
+  }, [])
+
   const carregarContas = useCallback(async () => {
     try {
       const adminData = localStorage.getItem('admin')
@@ -293,16 +342,132 @@ export default function LancamentoVendaPage() {
       return
     }
 
+    // Se já não há cliente selecionado, preencher com o cliente do agendamento
+    if (!formData.cliente_id) {
+      setFormData({ ...formData, cliente_id: agendamento.cliente_id })
+      // Criar objeto cliente com os dados do agendamento
+      setClienteSelecionado({
+        id: agendamento.cliente_id,
+        nome_completo: agendamento.cliente_nome
+      })
+      // Carregar serviços/produtos disponíveis do cliente (será verificado depois)
+      carregarServicosProdutosDisponiveis(agendamento.cliente_id)
+    }
+
+    // Verificar se o serviço está disponível em assinatura (usando os já carregados)
+    const servicoDisponivel = servicosDisponiveis.find(s => s.servico_id === agendamento.servico_id)
+    const podeAbater = servicoDisponivel && servicoDisponivel.quantidade_disponivel > 0
+
     const novoServico: ServicoVenda = {
       servico_id: agendamento.servico_id,
       servico_nome: agendamento.servico_nome,
       agendamento_id: agendamento.id,
-      valor: agendamento.valor_servico,
+      valor: podeAbater ? 0 : parseFloat(agendamento.valor_servico.toString()), // Se pode abater, valor = 0
+      podeAbaterAssinatura: podeAbater,
     }
 
     setServicosVenda([...servicosVenda, novoServico])
-    setFormData({ ...formData, cliente_id: agendamento.cliente_id })
   }
+
+  // Buscar clientes
+  const buscarClientes = useCallback(async (termo: string) => {
+    if (!termo || termo.trim().length < 2) {
+      setClientes([])
+      return
+    }
+
+    setBuscandoClientes(true)
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/crm/buscar-clientes?search=${encodeURIComponent(termo)}`, { headers })
+      if (response.ok) {
+        const data = await response.json()
+        setClientes(data.clientes || [])
+      }
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error)
+      setClientes([])
+    } finally {
+      setBuscandoClientes(false)
+    }
+  }, [])
+
+  // Selecionar cliente manualmente
+  const selecionarCliente = (cliente: Cliente) => {
+    setClienteSelecionado(cliente)
+    setFormData({ ...formData, cliente_id: cliente.id })
+    setSearchTermCliente('')
+    setClientes([])
+    // Carregar serviços/produtos disponíveis do cliente
+    carregarServicosProdutosDisponiveis(cliente.id)
+  }
+
+  // Limpar seleção de cliente
+  const limparCliente = () => {
+    setClienteSelecionado(null)
+    setFormData({ ...formData, cliente_id: '' })
+    setSearchTermCliente('')
+    setClientes([])
+    setServicosDisponiveis([])
+    setProdutosDisponiveis([])
+  }
+
+  // Carregar serviços/produtos disponíveis do cliente
+  const carregarServicosProdutosDisponiveis = useCallback(async (clienteId: string) => {
+    try {
+      const adminData = localStorage.getItem('admin')
+      const admin = adminData ? JSON.parse(adminData) : null
+
+      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      if (admin?.id) {
+        headers['x-user-id'] = admin.id
+        headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
+        headers['x-user-nome'] = admin.nome_completo || null
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/vendas/cliente/${clienteId}/servicos-produtos-disponiveis`, { headers })
+      if (response.ok) {
+        const data = await response.json()
+        setServicosDisponiveis(data.servicos_disponiveis || [])
+        setProdutosDisponiveis(data.produtos_disponiveis || [])
+      } else {
+        setServicosDisponiveis([])
+        setProdutosDisponiveis([])
+      }
+    } catch (error) {
+      console.error('Erro ao carregar serviços/produtos disponíveis:', error)
+      setServicosDisponiveis([])
+      setProdutosDisponiveis([])
+    }
+  }, [])
+
+  // Efeito para buscar clientes quando o termo de busca mudar
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTermCliente.trim().length >= 2) {
+        buscarClientes(searchTermCliente)
+      } else {
+        setClientes([])
+      }
+    }, 300) // Debounce de 300ms
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTermCliente, buscarClientes])
 
   // Remover serviço
   const removerServico = (index: number) => {
@@ -327,17 +492,25 @@ export default function LancamentoVendaPage() {
       return
     }
 
-    const valor = valorServicoManual ? parseFloat(valorServicoManual) : parseFloat(servico.preco.toString())
+    // Verificar se o serviço está disponível em assinatura
+    const servicoDisponivel = servicosDisponiveis.find(s => s.servico_id === servico.id)
+    const podeAbater = servicoDisponivel && servicoDisponivel.quantidade_disponivel > 0
 
-    if (isNaN(valor) || valor <= 0) {
-      setMensagem({ tipo: 'erro', texto: 'Valor inválido' })
-      return
+    // Se pode abater, valor = 0. Caso contrário, usar valor informado ou preço do serviço
+    let valor = 0
+    if (!podeAbater) {
+      valor = valorServicoManual ? parseFloat(valorServicoManual) : parseFloat(servico.preco.toString())
+      if (isNaN(valor) || valor <= 0) {
+        setMensagem({ tipo: 'erro', texto: 'Valor inválido' })
+        return
+      }
     }
 
     const novoServico: ServicoVenda = {
       servico_id: servico.id,
       servico_nome: servico.nome,
-      valor: valor,
+      valor: valor, // Se pode abater, será 0
+      podeAbaterAssinatura: podeAbater,
     }
 
     setServicosVenda([...servicosVenda, novoServico])
@@ -348,26 +521,46 @@ export default function LancamentoVendaPage() {
 
   // Adicionar produto
   const adicionarProduto = (produto: Produto) => {
+    // Verificar se o produto está disponível em assinatura
+    const produtoDisponivel = produtosDisponiveis.find(p => p.produto_id === produto.id)
+    const quantidadeDisponivel = produtoDisponivel ? produtoDisponivel.quantidade_disponivel : 0
+    const podeAbater = quantidadeDisponivel > 0
+
     const produtoExistente = produtosVenda.find(p => p.produto_id === produto.id)
     if (produtoExistente) {
       // Aumentar quantidade
+      const novaQuantidade = produtoExistente.quantidade + 1
+      // Calcular quanto será abatido e quanto será pago
+      const quantidadeAbatida = podeAbater ? Math.min(novaQuantidade, quantidadeDisponivel) : 0
+      const quantidadePaga = novaQuantidade - quantidadeAbatida
+      const valorUnitario = parseFloat(produtoExistente.valor_unitario.toString())
+      
       setProdutosVenda(produtosVenda.map(p =>
         p.produto_id === produto.id
           ? {
               ...p,
-              quantidade: p.quantidade + 1,
-              valor_total: (p.quantidade + 1) * parseFloat(p.valor_unitario.toString())
+              quantidade: novaQuantidade,
+              quantidadeAbatida: quantidadeAbatida,
+              valor_total: quantidadePaga * valorUnitario,
+              podeAbaterAssinatura: podeAbater
             }
           : p
       ))
     } else {
+      // Novo produto
+      const quantidadeAbatida = podeAbater ? Math.min(1, quantidadeDisponivel) : 0
+      const quantidadePaga = 1 - quantidadeAbatida
+      const valorUnitario = parseFloat(produto.preco_venda.toString())
+      
       const novoProduto: ProdutoVenda = {
         produto_id: produto.id,
         produto_codigo: produto.codigo,
         produto_descricao: produto.descricao,
         quantidade: 1,
-        valor_unitario: produto.preco_venda,
-        valor_total: produto.preco_venda,
+        valor_unitario: valorUnitario,
+        valor_total: quantidadePaga * valorUnitario,
+        podeAbaterAssinatura: podeAbater,
+        quantidadeAbatida: quantidadeAbatida
       }
       setProdutosVenda([...produtosVenda, novoProduto])
     }
@@ -385,15 +578,49 @@ export default function LancamentoVendaPage() {
       return
     }
 
+    const produto = produtosVenda[index]
+    // Verificar disponibilidade na assinatura
+    const produtoDisponivel = produtosDisponiveis.find(p => p.produto_id === produto.produto_id)
+    const quantidadeDisponivel = produtoDisponivel ? produtoDisponivel.quantidade_disponivel : 0
+    const podeAbater = quantidadeDisponivel > 0
+    
+    // Calcular quanto será abatido e quanto será pago
+    const quantidadeAbatida = podeAbater ? Math.min(quantidade, quantidadeDisponivel) : 0
+    const quantidadePaga = quantidade - quantidadeAbatida
+    const valorUnitario = parseFloat(produto.valor_unitario.toString())
+
     setProdutosVenda(produtosVenda.map((p, i) =>
       i === index
         ? {
             ...p,
             quantidade,
-            valor_total: quantidade * parseFloat(p.valor_unitario.toString())
+            quantidadeAbatida: quantidadeAbatida,
+            valor_total: quantidadePaga * valorUnitario,
+            podeAbaterAssinatura: podeAbater
           }
         : p
     ))
+  }
+
+  // Adicionar assinatura
+  const adicionarAssinatura = (assinatura: Assinatura) => {
+    const assinaturaExistente = assinaturasVenda.find(a => a.assinatura_id === assinatura.id)
+    if (assinaturaExistente) {
+      setMensagem({ tipo: 'erro', texto: 'Esta assinatura já foi adicionada' })
+      return
+    }
+
+    const novaAssinatura: AssinaturaVenda = {
+      assinatura_id: assinatura.id,
+      assinatura_nome: assinatura.nome,
+      valor: assinatura.valor_liquido,
+    }
+    setAssinaturasVenda([...assinaturasVenda, novaAssinatura])
+  }
+
+  // Remover assinatura
+  const removerAssinatura = (index: number) => {
+    setAssinaturasVenda(assinaturasVenda.filter((_, i) => i !== index))
   }
 
   // Calcular totais
@@ -410,6 +637,11 @@ export default function LancamentoVendaPage() {
       valorTotal += parseFloat(p.valor_total.toString())
     })
 
+    // Soma assinaturas
+    assinaturasVenda.forEach(a => {
+      valorTotal += parseFloat(a.valor.toString())
+    })
+
     // Aplicar descontos
     const descontoPercentual = parseFloat(formData.desconto_percentual) || 0
     const descontoValor = parseFloat(formData.desconto_valor) || 0
@@ -421,7 +653,7 @@ export default function LancamentoVendaPage() {
       valorTotal,
       descontoPorPercentual,
       descontoValor,
-      valorLiquido: Math.max(0, valorLiquido)
+      valorLiquido: Math.max(0.01, valorLiquido) // Mínimo de 1 centavo para permitir vendas totalmente cobertas por assinatura
     }
   }
 
@@ -491,7 +723,9 @@ export default function LancamentoVendaPage() {
     } else if (cupomValidado.aplicar_em === 'apenas_servicos') {
       valorBaseDesconto = servicosVenda.reduce((sum, s) => sum + parseFloat(s.valor.toString()), 0)
     } else if (cupomValidado.aplicar_em === 'apenas_produtos') {
-      valorBaseDesconto = produtosVenda.reduce((sum, p) => sum + parseFloat(p.valor_total.toString()), 0)
+      const valorProdutos = produtosVenda.reduce((sum, p) => sum + parseFloat(p.valor_total.toString()), 0)
+      const valorAssinaturas = assinaturasVenda.reduce((sum, a) => sum + parseFloat(a.valor.toString()), 0)
+      valorBaseDesconto = valorProdutos + valorAssinaturas
     }
 
     if (cupomValidado.tipo_desconto === 'percentual') {
@@ -503,7 +737,8 @@ export default function LancamentoVendaPage() {
 
   const totais = calcularTotais()
   const descontoCupom = calcularDescontoCupom()
-  const valorLiquidoComCupom = Math.max(0, totais.valorLiquido - descontoCupom)
+  // Se o valor líquido for zero ou negativo (tudo coberto por assinatura), ajustar para 1 centavo
+  const valorLiquidoComCupom = Math.max(0.01, totais.valorLiquido - descontoCupom)
 
   // Formatação
   const formatarPreco = (valor: number | string | null | undefined) => {
@@ -523,15 +758,13 @@ export default function LancamentoVendaPage() {
       return
     }
 
-    if (servicosVenda.length === 0 && produtosVenda.length === 0) {
-      setMensagem({ tipo: 'erro', texto: 'Adicione pelo menos um serviço ou produto' })
+    if (servicosVenda.length === 0 && produtosVenda.length === 0 && assinaturasVenda.length === 0) {
+      setMensagem({ tipo: 'erro', texto: 'Adicione pelo menos um serviço, produto ou assinatura' })
       return
     }
 
-    if (valorLiquidoComCupom <= 0) {
-      setMensagem({ tipo: 'erro', texto: 'Valor líquido deve ser maior que zero' })
-      return
-    }
+    // O valorLiquidoComCupom já está garantido como mínimo 0.01, então usar diretamente
+    const valorFinalParaEnvio = valorLiquidoComCupom
 
     // Validação para boleto
     if (formData.forma_pagamento.startsWith('boleto_') && !formData.primeiro_vencimento_boleto) {
@@ -570,8 +803,13 @@ export default function LancamentoVendaPage() {
           quantidade: p.quantidade,
           valor_unitario: parseFloat(p.valor_unitario.toString())
         })),
+        assinaturas: assinaturasVenda.map(a => ({
+          assinatura_id: a.assinatura_id,
+          valor: parseFloat(a.valor.toString())
+        })),
         desconto_percentual: parseFloat(formData.desconto_percentual) || 0,
         desconto_valor: parseFloat(formData.desconto_valor) || 0,
+        cupom_codigo: cupomValidado?.codigo || null,
         forma_pagamento: formData.forma_pagamento,
         caixa_id: formData.caixa_id,
         observacoes: formData.observacoes || null,
@@ -589,7 +827,9 @@ export default function LancamentoVendaPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erro ao criar venda')
+        const errorMessage = data.details || data.error || 'Erro ao criar venda'
+        console.error('Erro detalhado do servidor:', data)
+        throw new Error(errorMessage)
       }
 
       setMensagem({ tipo: 'sucesso', texto: `Venda ${data.venda.ticket} criada com sucesso!` })
@@ -609,6 +849,7 @@ export default function LancamentoVendaPage() {
       })
       setServicosVenda([])
       setProdutosVenda([])
+      setAssinaturasVenda([])
       setAgendamentos([])
 
       setTimeout(() => {
@@ -737,6 +978,66 @@ export default function LancamentoVendaPage() {
             </div>
           </Card>
 
+          {/* Seleção de Cliente */}
+          <Card className="p-6 bg-zinc-900 border-amber-500/20">
+            <h2 className="text-xl font-bold text-gray-300 mb-4">Cliente</h2>
+            {clienteSelecionado ? (
+              <div className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg border border-zinc-700">
+                <div className="flex items-center gap-3">
+                  <User className="h-5 w-5 text-amber-500" />
+                  <div>
+                    <p className="font-semibold text-white">{clienteSelecionado.nome_completo}</p>
+                    <p className="text-sm text-gray-400">{clienteSelecionado.email || 'Sem email'}</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={limparCliente}
+                  className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Limpar
+                </Button>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="flex items-center gap-2">
+                  <Search className="h-5 w-5 text-gray-400 absolute left-3 z-10" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar cliente por nome ou email..."
+                    value={searchTermCliente}
+                    onChange={(e) => setSearchTermCliente(e.target.value)}
+                    className="bg-zinc-800 border-amber-500/20 text-gray-300 pl-10 focus:border-amber-500 focus:ring-amber-500/20"
+                  />
+                </div>
+                {buscandoClientes && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+                  </div>
+                )}
+                {clientes.length > 0 && (
+                  <div className="absolute z-20 w-full mt-2 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {clientes.map((cliente) => (
+                      <div
+                        key={cliente.id}
+                        onClick={() => selecionarCliente(cliente)}
+                        className="p-3 hover:bg-zinc-700 cursor-pointer border-b border-zinc-700 last:border-b-0"
+                      >
+                        <p className="font-medium text-white">{cliente.nome_completo}</p>
+                        <p className="text-sm text-gray-400">{cliente.email || 'Sem email'}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-2">
+                  Digite pelo menos 2 caracteres para buscar. Ou selecione um agendamento para preencher automaticamente.
+                </p>
+              </div>
+            )}
+          </Card>
+
           {/* Agendamentos */}
           {formData.funcionario_id && formData.data_venda && (
             <Card className="p-6 bg-zinc-900 border-amber-500/20">
@@ -809,9 +1110,17 @@ export default function LancamentoVendaPage() {
                       {servico.agendamento_id && (
                         <p className="text-xs text-gray-500">Vinculado a agendamento</p>
                       )}
+                      {servico.podeAbaterAssinatura && (
+                        <p className="text-xs text-green-500 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Disponível na assinatura (será abatido automaticamente)
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className="font-bold text-amber-500">{formatarPreco(servico.valor)}</p>
+                      <p className={`font-bold ${servico.podeAbaterAssinatura ? 'text-green-500' : 'text-amber-500'}`}>
+                        {servico.podeAbaterAssinatura ? 'R$ 0,00 (Coberto pela assinatura)' : formatarPreco(servico.valor)}
+                      </p>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -865,6 +1174,17 @@ export default function LancamentoVendaPage() {
                         <p className="font-semibold text-gray-300">{produto.produto_descricao}</p>
                         <p className="text-xs text-gray-500">Código: {produto.produto_codigo}</p>
                         <p className="text-sm text-gray-400">Unitário: {formatarPreco(produto.valor_unitario)}</p>
+                        {produto.podeAbaterAssinatura && produto.quantidadeAbatida !== undefined && produto.quantidadeAbatida > 0 && (
+                          <p className="text-xs text-green-500 flex items-center gap-1 mt-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            {produto.quantidadeAbatida} unidade(s) será(ão) abatida(s) da assinatura
+                            {produto.quantidade > produto.quantidadeAbatida && (
+                              <span className="text-amber-500">
+                                • {produto.quantidade - produto.quantidadeAbatida} unidade(s) será(ão) cobrada(s)
+                              </span>
+                            )}
+                          </p>
+                        )}
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
@@ -892,8 +1212,10 @@ export default function LancamentoVendaPage() {
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
-                        <p className="font-bold text-amber-500 w-32 text-right">
-                          {formatarPreco(produto.valor_total)}
+                        <p className={`font-bold w-32 text-right ${produto.podeAbaterAssinatura && produto.quantidadeAbatida !== undefined && produto.quantidadeAbatida > 0 && produto.quantidade === produto.quantidadeAbatida ? 'text-green-500' : 'text-amber-500'}`}>
+                          {produto.podeAbaterAssinatura && produto.quantidadeAbatida !== undefined && produto.quantidadeAbatida > 0 && produto.quantidade === produto.quantidadeAbatida 
+                            ? 'R$ 0,00 (Coberto)' 
+                            : formatarPreco(produto.valor_total)}
                         </p>
                         <Button
                           variant="ghost"
@@ -904,6 +1226,59 @@ export default function LancamentoVendaPage() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* Assinaturas */}
+          <Card className="p-6 bg-zinc-900 border-amber-500/20">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-300">Assinaturas</h2>
+              <Select
+                onValueChange={(value) => {
+                  const assinatura = assinaturas.find(a => a.id === value)
+                  if (assinatura) {
+                    adicionarAssinatura(assinatura)
+                  }
+                }}
+              >
+                <SelectTrigger className="w-64 bg-zinc-800 border-amber-500/20 text-gray-300">
+                  <SelectValue placeholder="Selecione uma assinatura" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-amber-500/20">
+                  {assinaturas.map((assinatura) => (
+                    <SelectItem key={assinatura.id} value={assinatura.id} className="text-gray-300">
+                      {assinatura.nome} - {formatarPreco(assinatura.valor_liquido)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {assinaturasVenda.length === 0 ? (
+              <p className="text-gray-400 text-center py-4">Nenhuma assinatura adicionada</p>
+            ) : (
+              <div className="space-y-2">
+                {assinaturasVenda.map((assinatura, index) => (
+                  <div
+                    key={index}
+                    className="p-3 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-between"
+                  >
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-300">{assinatura.assinatura_nome}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <p className="font-bold text-amber-500">{formatarPreco(assinatura.valor)}</p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removerAssinatura(index)}
+                        className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}
