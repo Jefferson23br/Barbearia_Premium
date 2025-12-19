@@ -473,21 +473,58 @@ Documento atualizado com o status completo do projeto em **27 de Janeiro de 2026
 ---
 
 ### 25. 📝 Assinaturas
-**Status**: ✅ **Estrutura Criada (27 de Janeiro de 2026)**
+**Status**: ✅ **100% Completo (27 de Janeiro de 2026)**
 
-- Módulo criado no menu Operação
-- Item de menu adicionado ao módulo "Operação"
-- Sistema de permissões implementado:
-  - `assinaturas_ver`
-  - `assinaturas_editar`
-  - `assinaturas_excluir`
-- Página básica criada com mensagem de "em desenvolvimento"
-- Integração completa com sistema de permissões
-- Pronto para implementação de funcionalidades
+**Funcionalidades Implementadas:**
+- ✅ CRUD completo de assinaturas (pacotes de serviços e produtos)
+- ✅ Campo validade_em_dias para controle de expiração (ex: 30, 60 dias)
+- ✅ Cálculo automático de preço total (soma de serviços e produtos)
+- ✅ Campo valor_comercializado (valor que será vendido)
+- ✅ Sistema de descontos (percentual e valor fixo)
+- ✅ Cálculo automático de valor_liquido (comercializado - descontos)
+- ✅ Integração completa com sistema de vendas
+- ✅ Assinaturas podem ser vendidas como produtos/serviços
+- ✅ Abatimento automático de serviços/produtos de assinaturas válidas
+- ✅ Controle de estoque de uso por cliente (quantidades restantes)
+- ✅ Sistema que verifica e abate automaticamente nas vendas
+- ✅ Se cliente tem assinatura válida, serviços/produtos são abatidos sem gerar receita adicional
+- ✅ Se não houver mais saldo na assinatura, cobra normalmente
+- ✅ Abatimento parcial (se tem 2 unidades na assinatura e quer 5, abate 2 e cobra 3)
+- ✅ Integração com CRM (aba Assinaturas mostra assinaturas ativas do cliente)
+- ✅ Visualização de assinaturas no CRM com status, datas de aquisição/expiração e saldos restantes
+- ✅ Sistema garante que vendas totalmente cobertas por assinatura sejam finalizadas (valor mínimo de R$ 0,01)
 
-**Endpoints**: 0 (estrutura criada)  
-**Páginas Frontend**: 1  
-**Status**: 🔄 Aguardando implementação de funcionalidades
+**Backend:**
+- ✅ Rota completa `/api/v1/assinaturas` com 5 endpoints (GET, GET/:id, POST, PUT, DELETE)
+- ✅ Integração em `/api/v1/vendas` com abatimento automático
+- ✅ Endpoint `/api/v1/vendas/cliente/:id/servicos-produtos-disponiveis` para verificar disponibilidade
+- ✅ Função `verificarEAbaterDeAssinatura` para controle de abatimento
+- ✅ Endpoint `/api/v1/crm/cliente/:id/assinaturas` para visualização no CRM
+- ✅ Sistema de permissões integrado
+
+**Frontend:**
+- ✅ Página completa `/dashboard/assinaturas` com CRUD
+- ✅ Interface para adicionar serviços e produtos às assinaturas
+- ✅ Cálculo dinâmico de totais e descontos
+- ✅ Integração em `/dashboard/lancamento-venda`:
+  - Seleção de assinaturas na venda
+  - Seleção de cliente (manual ou via agendamento)
+  - Verificação automática de disponibilidade
+  - Valores zerados automaticamente quando coberto por assinatura
+  - Visualização clara de itens abatidos
+- ✅ Aba Assinaturas no CRM mostrando assinaturas ativas do cliente
+
+**Banco de Dados:**
+- ✅ Tabela `assinaturas` (nome, descricao, preço, valores, validade_em_dias)
+- ✅ Tabela `assinaturas_servicos` (serviços incluídos)
+- ✅ Tabela `assinaturas_produtos` (produtos incluídos)
+- ✅ Tabela `assinaturas_clientes` (controle de estoque de uso por cliente)
+- ✅ Tabela `vendas_assinaturas` (vínculo assinatura-venda)
+- ✅ Campos: data_aquisicao, data_expiracao, quantidade_servicos_restantes, quantidade_produtos_restantes, status
+
+**Endpoints**: 8 (5 assinaturas + 2 vendas + 1 CRM)  
+**Páginas Frontend**: 2 (Assinaturas + integração em Lançamento de Venda)  
+**Tabelas**: 5 tabelas principais
 
 ---
 
@@ -577,7 +614,7 @@ Documento atualizado com o status completo do projeto em **27 de Janeiro de 2026
 
 ## 🎯 Próximos Passos
 
-1. **Assinaturas** - Implementação completa de funcionalidades (estrutura criada)
+1. **Melhorias em Assinaturas** - Novas funcionalidades e otimizações
 2. **Balanço Demonstrativo** - Estrutura criada, desenvolvimento em andamento
 3. **Emissão de Nota Fiscal** - Integração com Focus NFe (estrutura pronta)
 4. **Melhorias no Help Desk** - Notificações
@@ -595,9 +632,9 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 ---
 
-**Última Atualização**: 27 de Janeiro de 2026  
+**Última Atualização**: 19 de Dezembro de 2025  
 **Versão**: 2.0.0  
-**Próxima Revisão**: Fevereiro 2026
+**Próxima Revisão**: Janeiro 2026
 
 **URLs de Produção:**
 - Painel Admin: https://admin.protesecapilarcuiaba.com.br
