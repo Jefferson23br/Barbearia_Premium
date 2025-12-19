@@ -21,30 +21,40 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/layout.js"
     ],
+    "/dashboard/assinaturas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/assinaturas/page.js"
+    ],
+    "/dashboard/lancamento-venda/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/lancamento-venda/page.js"
+    ],
     "/dashboard/crm/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/crm/page.js"
     ],
-    "/dashboard/help-desk/page": [
+    "/dashboard/receitas/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/help-desk/page.js"
+      "static/chunks/app/dashboard/receitas/page.js"
     ],
     "/dashboard/faturamento/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/faturamento/page.js"
     ],
-    "/dashboard/assinaturas/page": [
+    "/dashboard/caixas/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/assinaturas/page.js"
+      "static/chunks/app/dashboard/caixas/page.js"
     ],
-    "/dashboard/controle-permissoes/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-permissoes/page.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
