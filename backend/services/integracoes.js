@@ -267,6 +267,224 @@ class DocSalesIntegracao extends IntegracaoBase {
 }
 
 /**
+ * Integração com Clicksign
+ * Sistema de assinatura eletrônica de documentos com validade jurídica
+ */
+class ClicksignIntegracao extends IntegracaoBase {
+  constructor(config) {
+    super(config);
+    this.baseUrlProducao = 'https://api.clicksign.com';
+    this.baseUrlHomologacao = 'https://sandbox.clicksign.com';
+  }
+
+  getBaseUrl() {
+    return this.ambiente === 'producao' 
+      ? this.baseUrlProducao 
+      : this.baseUrlHomologacao;
+  }
+
+  getHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.token}`,
+      'Accept': 'application/json'
+    };
+  }
+
+  /**
+   * Envia um documento para assinatura
+   * @param {Object} documento - Dados do documento
+   * @param {string} documento.titulo - Título do documento
+   * @param {string} documento.conteudo - Conteúdo do documento (base64 ou texto)
+   * @param {Array} documento.signatarios - Lista de signatários
+   * @param {Object} documento.opcoes - Opções adicionais (prazo, notificações, etc)
+   * @returns {Promise<Object>} Resposta da API com dados do documento criado
+   */
+  async enviarDocumentoParaAssinatura(documento) {
+    this.validarConfiguracao();
+
+    const url = `${this.getBaseUrl()}/api/v1/documents`;
+    
+    const payload = {
+      document: {
+        path: documento.titulo || 'documento.pdf',
+        content_base64: documento.conteudo,
+        deadline_at: documento.opcoes?.prazo_dias 
+          ? new Date(Date.now() + documento.opcoes.prazo_dias * 24 * 60 * 60 * 1000).toISOString()
+          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        auto_close: documento.opcoes?.auto_close !== false,
+        locale: 'pt-BR'
+      },
+      signers: documento.signatarios.map(s => ({
+        email: s.email,
+        action: 'sign',
+        name: s.nome,
+        documentation: s.cpf?.replace(/\D/g, '') || '',
+        birthday: s.data_nascimento || null,
+        delivery: s.enviar_email !== false ? 'email' : 'none'
+      }))
+    };
+
+    // Adiciona email remetente se configurado
+    if (this.configuracao.email_remetente) {
+      payload.document.from_email = this.configuracao.email_remetente;
+    }
+
+    try {
+      const response = await axios.post(url, payload, {
+        headers: this.getHeaders()
+      });
+
+      const data = response.data;
+      return {
+        sucesso: true,
+        documento_id: data.document?.key || data.key,
+        link_assinatura: data.document?.short_url || data.short_url,
+        dados: data
+      };
+    } catch (error) {
+      console.error('Erro ao enviar documento para assinatura no Clicksign:', error);
+      if (error.response) {
+        throw new Error(error.response.data?.message || error.response.data?.errors?.[0] || `Erro ao enviar documento: ${error.response.statusText}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Consulta o status de um documento
+   * @param {string} documentoId - ID do documento (key)
+   * @returns {Promise<Object>} Status do documento
+   */
+  async consultarStatusDocumento(documentoId) {
+    this.validarConfiguracao();
+
+    const url = `${this.getBaseUrl()}/api/v1/documents/${documentoId}`;
+
+    try {
+      const response = await axios.get(url, {
+        headers: this.getHeaders()
+      });
+
+      const data = response.data;
+      return {
+        sucesso: true,
+        status: data.document?.status || data.status, // 'pending', 'closed', 'canceled', 'expired'
+        documento_id: data.document?.key || documentoId,
+        signatarios: data.document?.signers || data.signers || [],
+        data_assinatura: data.document?.finished_at || data.finished_at,
+        link_documento: data.document?.short_url || data.short_url,
+        dados: data
+      };
+    } catch (error) {
+      console.error('Erro ao consultar status do documento no Clicksign:', error);
+      if (error.response) {
+        throw new Error(error.response.data?.message || error.response.data?.errors?.[0] || `Erro ao consultar documento: ${error.response.statusText}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Cancela um documento pendente
+   * @param {string} documentoId - ID do documento (key)
+   * @param {string} motivo - Motivo do cancelamento
+   * @returns {Promise<Object>} Resultado do cancelamento
+   */
+  async cancelarDocumento(documentoId, motivo = 'Cancelado pelo usuário') {
+    this.validarConfiguracao();
+
+    const url = `${this.getBaseUrl()}/api/v1/documents/${documentoId}/cancel`;
+
+    try {
+      const response = await axios.post(url, { message: motivo }, {
+        headers: this.getHeaders()
+      });
+
+      const data = response.data;
+      return {
+        sucesso: true,
+        documento_id: documentoId,
+        status: 'canceled',
+        dados: data
+      };
+    } catch (error) {
+      console.error('Erro ao cancelar documento no Clicksign:', error);
+      if (error.response) {
+        throw new Error(error.response.data?.message || error.response.data?.errors?.[0] || `Erro ao cancelar documento: ${error.response.statusText}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Lista documentos
+   * @param {Object} filtros - Filtros para busca
+   * @returns {Promise<Object>} Lista de documentos
+   */
+  async listarDocumentos(filtros = {}) {
+    this.validarConfiguracao();
+
+    const params = new URLSearchParams();
+    if (filtros.status) params.append('status', filtros.status);
+    if (filtros.page) params.append('page', filtros.page);
+    if (filtros.per_page) params.append('per_page', filtros.per_page || 20);
+
+    const url = `${this.getBaseUrl()}/api/v1/documents?${params.toString()}`;
+
+    try {
+      const response = await axios.get(url, {
+        headers: this.getHeaders()
+      });
+
+      const data = response.data;
+      return {
+        sucesso: true,
+        documentos: data.documents || data.data || [],
+        total: data.total || 0,
+        pagina: data.page || 1,
+        dados: data
+      };
+    } catch (error) {
+      console.error('Erro ao listar documentos no Clicksign:', error);
+      if (error.response) {
+        throw new Error(error.response.data?.message || error.response.data?.errors?.[0] || `Erro ao listar documentos: ${error.response.statusText}`);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Baixa o documento assinado
+   * @param {string} documentoId - ID do documento (key)
+   * @returns {Promise<Buffer>} Arquivo PDF do documento assinado
+   */
+  async baixarDocumentoAssinado(documentoId) {
+    this.validarConfiguracao();
+
+    const url = `${this.getBaseUrl()}/api/v1/documents/${documentoId}/download`;
+
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          ...this.getHeaders(),
+          'Accept': 'application/pdf'
+        },
+        responseType: 'arraybuffer'
+      });
+
+      return Buffer.from(response.data);
+    } catch (error) {
+      console.error('Erro ao baixar documento assinado no Clicksign:', error);
+      if (error.response) {
+        throw new Error(`Erro ao baixar documento: ${error.response.statusText}`);
+      }
+      throw error;
+    }
+  }
+}
+
+/**
  * Factory para criar instâncias de integrações
  * @param {string} tipo - Tipo da integração
  * @param {Object} config - Configuração da integração
@@ -296,6 +514,9 @@ async function criarIntegracao(tipo, config = null) {
   switch (tipo) {
     case 'docsales':
       return new DocSalesIntegracao(config);
+    
+    case 'clicksign':
+      return new ClicksignIntegracao(config);
     
     // Adicione outras integrações aqui conforme necessário
     // case 'focus_nfe':
@@ -345,6 +566,7 @@ module.exports = {
   criarIntegracao,
   obterConfiguracaoIntegracao,
   IntegracaoBase,
-  DocSalesIntegracao
+  DocSalesIntegracao,
+  ClicksignIntegracao
 };
 
