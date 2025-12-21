@@ -26,65 +26,32 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/lancamento-venda/page.js"
     ],
-    "/dashboard/servicos-integracao/page": [
+    "/dashboard/perfil/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/servicos-integracao/page.js"
+      "static/css/app/dashboard/perfil/page.css",
+      "static/chunks/app/dashboard/perfil/page.js"
     ],
-    "/dashboard/integracoes-apis/page": [
+    "/dashboard/funcionarios/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/integracoes-apis/page.js"
+      "static/css/app/dashboard/funcionarios/page.css",
+      "static/chunks/app/dashboard/funcionarios/page.js"
     ],
-    "/dashboard/habilitar-api/page": [
+    "/dashboard/usuarios/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/habilitar-api/page.js"
+      "static/chunks/app/dashboard/usuarios/page.js"
     ],
-    "/dashboard/controle-permissoes/page": [
+    "/dashboard/controle-logs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/controle-permissoes/page.js"
+      "static/chunks/app/dashboard/controle-logs/page.js"
     ],
     "/dashboard/servicos-integracao/docsales/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/servicos-integracao/docsales/page.js"
-    ],
-    "/dashboard/funcionarios/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/funcionarios/page.js"
-    ],
-    "/dashboard/agenda/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/agenda/page.js"
-    ],
-    "/dashboard/caixas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/caixas/page.js"
-    ],
-    "/dashboard/faturamento/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/faturamento/page.js"
-    ],
-    "/dashboard/crm/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/crm/page.js"
-    ],
-    "/dashboard/receitas/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/receitas/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

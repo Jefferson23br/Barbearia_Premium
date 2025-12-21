@@ -15,15 +15,39 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
 
   useEffect(() => {
-    // Verificar autenticação
-    const adminData = localStorage.getItem('admin')
-    if (!adminData) {
-      router.push('/')
-      return
+    // Função para carregar admin do localStorage
+    const carregarAdmin = () => {
+      const adminData = localStorage.getItem('admin')
+      if (!adminData) {
+        router.push('/')
+        return null
+      }
+      const adminObj = JSON.parse(adminData)
+      setAdmin(adminObj)
+      return adminObj
     }
 
-    const adminObj = JSON.parse(adminData)
-    setAdmin(adminObj)
+    // Carregar admin inicial
+    const adminObj = carregarAdmin()
+    if (!adminObj) return
+
+    // Listener para atualizar admin quando o perfil for atualizado
+    const handleAdminUpdate = (event: CustomEvent) => {
+      setAdmin(event.detail)
+    }
+
+    window.addEventListener('adminUpdated', handleAdminUpdate as EventListener)
+
+    // Listener para recarregar admin quando a página recebe foco (após reload)
+    const handleFocus = () => {
+      const adminData = localStorage.getItem('admin')
+      if (adminData) {
+        const adminObj = JSON.parse(adminData)
+        setAdmin(adminObj)
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
 
     // Carregar permissões se não for Master e ainda não tiver carregado
     if (adminObj.tipo_usuario !== 'master') {
@@ -44,6 +68,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         }
         carregarPermissoes()
       }
+    }
+
+    return () => {
+      window.removeEventListener('adminUpdated', handleAdminUpdate as EventListener)
+      window.removeEventListener('focus', handleFocus)
     }
   }, [router])
 
@@ -106,19 +135,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
               {/* User Menu */}
               <div className="flex items-center gap-3">
-                {admin.foto_url ? (
-                  <img
-                    src={admin.foto_url}
-                    alt={admin.nome_completo}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-amber-500/30"
-                  />
-                ) : (
-                  <UserCircle className="w-10 h-10 text-amber-500" />
-                )}
-                <div className="hidden md:block text-right">
-                  <p className="text-sm font-medium text-white">{admin.nome_completo}</p>
-                  <p className="text-xs text-gray-400 capitalize">{admin.tipo_usuario}</p>
-                </div>
+                <button
+                  onClick={() => router.push('/dashboard/perfil')}
+                  className="flex items-center gap-3 hover:bg-zinc-800 rounded-lg px-2 py-1 transition-colors"
+                  title="Ver perfil"
+                >
+                  {admin.foto_url ? (
+                    <img
+                      src={admin.foto_url}
+                      alt={admin.nome_completo}
+                      className="w-10 h-10 rounded-full object-cover border-2 border-amber-500/30"
+                    />
+                  ) : (
+                    <UserCircle className="w-10 h-10 text-amber-500" />
+                  )}
+                  <div className="hidden md:block text-right">
+                    <p className="text-sm font-medium text-white">{admin.nome_completo}</p>
+                    <p className="text-xs text-gray-400 capitalize">{admin.tipo_usuario}</p>
+                  </div>
+                </button>
                 <button
                   onClick={handleLogout}
                   className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-gray-300 hover:text-red-500"

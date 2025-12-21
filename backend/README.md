@@ -10,7 +10,7 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 **URL**: https://api.protesecapilarcuiaba.com.br  
 **Porta**: 3001  
 **VPS**: 82.25.65.201 (Hostinger)  
-**Última Atualização**: 27 de Janeiro de 2026  
+**Última Atualização**: 21 de Dezembro de 2025  
 **Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)
 
 ---
@@ -566,7 +566,7 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 
 ---
 
-**Última atualização**: 27 de Janeiro de 2026  
+**Última atualização**: 21 de Dezembro de 2025  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
 **Versão**: 2.0.0  

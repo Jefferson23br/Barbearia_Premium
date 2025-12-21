@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { UserCog, Search, Edit, Trash2, Plus, Eye, Mail, X, Save, Loader2, AlertCircle, CheckCircle2, EyeOff } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { ImageCropModal } from '@/components/admin/ImageCropModal'
 
 interface Funcionario {
   id: string
@@ -26,6 +27,10 @@ export default function FuncionariosPage() {
   const [salvando, setSalvando] = useState(false)
   const [mensagem, setMensagem] = useState<{ tipo: 'sucesso' | 'erro' | null; texto: string }>({ tipo: null, texto: '' })
   const [mostrarSenha, setMostrarSenha] = useState(false)
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null)
+  const [fotoFile, setFotoFile] = useState<File | null>(null)
+  const [fotoOriginal, setFotoOriginal] = useState<string | null>(null)
+  const [mostrarCrop, setMostrarCrop] = useState(false)
   const { podeAcessar, podeEditar, podeExcluir } = usePermissions()
 
   // Formulário
@@ -126,7 +131,7 @@ export default function FuncionariosPage() {
     return cores[tipo as keyof typeof cores] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'
   }
 
-  const abrirModal = (tipo: 'criar' | 'editar' | 'excluir' | 'visualizar', funcionario?: Funcionario) => {
+  const abrirModal = async (tipo: 'criar' | 'editar' | 'excluir' | 'visualizar', funcionario?: Funcionario) => {
     setModalTipo(tipo)
     setFuncionarioSelecionado(funcionario || null)
     setMostrarSenha(false) // Resetar visualização de senha ao abrir modal
@@ -156,40 +161,129 @@ export default function FuncionariosPage() {
         nis: '',
         foto_url: '',
       })
+      setFotoPreview(null)
+      setFotoFile(null)
+      setMostrarModal(true)
     } else if (tipo === 'editar' && funcionario) {
-      setFormData({
-        nome_completo: funcionario.nome_completo || '',
-        email: funcionario.email || '',
-        cpf: formatarCPF(funcionario.cpf) || '',
-        rg: (funcionario as any).rg || '',
-        tipo_usuario: funcionario.tipo_usuario || 'funcionario',
-        senha: '',
-        is_active: funcionario.is_active,
-        // Campos de endereço
-        rua: (funcionario as any).rua || '',
-        numero: (funcionario as any).numero || '',
-        complemento: (funcionario as any).complemento || '',
-        bairro: (funcionario as any).bairro || '',
-        cidade: (funcionario as any).cidade || '',
-        estado: (funcionario as any).estado || '',
-        cep: (funcionario as any).cep || '',
-        // Campos de trabalho
-        data_admissao: (funcionario as any).data_admissao ? (funcionario as any).data_admissao.split('T')[0] : '',
-        tipo_contrato: (funcionario as any).tipo_contrato || 'CLT',
-        salario: (funcionario as any).salario ? String((funcionario as any).salario) : '',
-        nis: (funcionario as any).nis || '',
-        foto_url: (funcionario as any).foto_url || '',
-      })
+      // Buscar dados completos do funcionário do backend
+      try {
+        setLoading(true)
+        const adminData = localStorage.getItem('admin')
+        const admin = adminData ? JSON.parse(adminData) : null
+        const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+        
+        const response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionario.id}`, {
+          headers: {
+            'x-user-id': admin?.id || '',
+            'x-user-tipo': admin?.tipo_usuario || 'administrativo',
+          },
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          const funcionarioCompleto = data.funcionario || data
+          
+          // Carregar foto do funcionário se existir
+          setFotoPreview(funcionarioCompleto.foto_url || null)
+          setFotoFile(null) // Limpar arquivo selecionado
+          
+          setFormData({
+            nome_completo: funcionarioCompleto.nome_completo || '',
+            email: funcionarioCompleto.email || '',
+            cpf: formatarCPF(funcionarioCompleto.cpf) || '',
+            rg: funcionarioCompleto.rg || '',
+            tipo_usuario: funcionarioCompleto.tipo_usuario || 'funcionario',
+            senha: '',
+            is_active: funcionarioCompleto.is_active !== false,
+            // Campos de endereço
+            rua: funcionarioCompleto.rua || '',
+            numero: funcionarioCompleto.numero || '',
+            complemento: funcionarioCompleto.complemento || '',
+            bairro: funcionarioCompleto.bairro || '',
+            cidade: funcionarioCompleto.cidade || '',
+            estado: funcionarioCompleto.estado || '',
+            cep: funcionarioCompleto.cep || '',
+            // Campos de trabalho
+            data_admissao: funcionarioCompleto.data_admissao ? funcionarioCompleto.data_admissao.split('T')[0] : '',
+            tipo_contrato: funcionarioCompleto.tipo_contrato || 'CLT',
+            salario: funcionarioCompleto.salario ? String(funcionarioCompleto.salario) : '',
+            nis: funcionarioCompleto.nis || '',
+            foto_url: funcionarioCompleto.foto_url || '',
+          })
+        } else {
+          console.error('Erro ao carregar dados do funcionário:', response.status)
+          setMensagem({ tipo: 'erro', texto: 'Erro ao carregar dados do funcionário' })
+        }
+      } catch (error: any) {
+        console.error('Erro ao carregar funcionário:', error)
+        setMensagem({ tipo: 'erro', texto: error.message || 'Erro ao carregar dados do funcionário' })
+      } finally {
+        setLoading(false)
+      }
+      setMostrarModal(true)
+    } else if (tipo === 'visualizar' || tipo === 'excluir') {
+      setMostrarModal(true)
     }
-    
-    setMostrarModal(true)
   }
 
   const fecharModal = () => {
     setMostrarModal(false)
     setFuncionarioSelecionado(null)
     setMensagem({ tipo: null, texto: '' })
+    setFotoPreview(null)
+    setFotoFile(null)
     setSearchTerm('') // Limpar campo de pesquisa ao fechar modal
+  }
+
+  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        setMensagem({ tipo: 'erro', texto: 'Por favor, selecione apenas arquivos de imagem' })
+        return
+      }
+      
+      // Validar tamanho (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMensagem({ tipo: 'erro', texto: 'A imagem deve ter no máximo 5MB' })
+        return
+      }
+
+      // Criar preview e abrir modal de crop
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const imageUrl = reader.result as string
+        console.log('[FUNCIONARIOS] Imagem carregada, abrindo crop:', imageUrl.substring(0, 50))
+        setFotoOriginal(imageUrl)
+        setMostrarCrop(true)
+      }
+      reader.onerror = (error) => {
+        console.error('[FUNCIONARIOS] Erro ao ler arquivo:', error)
+        setMensagem({ tipo: 'erro', texto: 'Erro ao carregar imagem' })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleCropComplete = (croppedImage: string) => {
+    console.log('[FUNCIONARIOS] Crop completo, imagem recortada recebida')
+    setFotoPreview(croppedImage)
+    
+    // Converter a imagem recortada para File
+    fetch(croppedImage)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], 'foto.jpg', { type: 'image/jpeg' })
+        console.log('[FUNCIONARIOS] Arquivo criado:', file.name, file.size, 'bytes')
+        setFotoFile(file)
+      })
+      .catch(error => {
+        console.error('[FUNCIONARIOS] Erro ao converter imagem:', error)
+      })
+    
+    setFotoOriginal(null)
+    setMostrarCrop(false)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -230,40 +324,8 @@ export default function FuncionariosPage() {
       
       console.log('👤 [FRONTEND] Admin logado:', admin ? { id: admin.id, nome: admin.nome_completo, tipo: admin.tipo_usuario } : 'não encontrado')
       
-      const body = {
-        nome_completo: formData.nome_completo,
-        email: formData.email,
-        cpf: formData.cpf || null,
-        rg: formData.rg || null,
-        tipo_usuario: formData.tipo_usuario,
-        senha: modalTipo === 'criar' ? formData.senha : (formData.senha || undefined),
-        // Campos de endereço
-        rua: formData.rua || '',
-        numero: formData.numero || '',
-        complemento: formData.complemento || '',
-        bairro: formData.bairro || '',
-        cidade: formData.cidade || '',
-        estado: formData.estado || '',
-        cep: formData.cep || '',
-        // Campos de trabalho
-        data_admissao: formData.data_admissao || new Date().toISOString().split('T')[0],
-        tipo_contrato: formData.tipo_contrato || 'CLT',
-        salario: formData.salario ? parseFloat(formData.salario.replace(',', '.')) : null,
-        nis: formData.nis || null,
-        foto_url: formData.foto_url || null,
-      }
-
-      // Remover senha vazia na edição
-      if (modalTipo === 'editar' && !formData.senha) {
-        delete body.senha
-      }
-      
-      console.log('📦 [FRONTEND] Body a ser enviado:', { ...body, senha: body.senha ? '*** (oculto)' : 'não definido' })
-
       // Preparar headers
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      }
+      const headers: any = {}
       if (admin?.id) {
         headers['x-user-id'] = admin.id
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
@@ -274,26 +336,94 @@ export default function FuncionariosPage() {
       const url = modalTipo === 'criar' 
         ? `${apiUrl}/api/v1/funcionarios`
         : `${apiUrl}/api/v1/funcionarios/${funcionarioSelecionado?.id}`
-      
-      console.log('📡 [FRONTEND] Enviando requisição:', {
-        method: modalTipo === 'criar' ? 'POST' : 'PUT',
-        url,
-        headers: { ...headers, 'x-user-id': headers['x-user-id'] ? '***' : 'não definido' },
-        body: { ...body, senha: body.senha ? '*** (oculto)' : 'não definido' }
-      })
-      
-      if (modalTipo === 'criar') {
-        response = await fetch(url, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(body),
-        })
+
+      // Se houver foto, usar FormData, senão usar JSON
+      console.log('[FUNCIONARIOS] Verificando fotoFile:', fotoFile ? `Arquivo: ${fotoFile.name}, Tamanho: ${fotoFile.size}` : 'Nenhum arquivo')
+      if (fotoFile) {
+        console.log('[FUNCIONARIOS] Enviando com FormData (com foto)')
+        const formDataToSend = new FormData()
+        formDataToSend.append('nome_completo', formData.nome_completo)
+        formDataToSend.append('email', formData.email)
+        if (formData.cpf) formDataToSend.append('cpf', formData.cpf)
+        if (formData.rg) formDataToSend.append('rg', formData.rg)
+        formDataToSend.append('tipo_usuario', formData.tipo_usuario)
+        if (modalTipo === 'criar' || (modalTipo === 'editar' && formData.senha)) {
+          formDataToSend.append('senha', formData.senha)
+        }
+        // Campos de endereço
+        if (formData.rua) formDataToSend.append('rua', formData.rua)
+        if (formData.numero) formDataToSend.append('numero', formData.numero)
+        if (formData.complemento) formDataToSend.append('complemento', formData.complemento)
+        if (formData.bairro) formDataToSend.append('bairro', formData.bairro)
+        if (formData.cidade) formDataToSend.append('cidade', formData.cidade)
+        if (formData.estado) formDataToSend.append('estado', formData.estado)
+        if (formData.cep) formDataToSend.append('cep', formData.cep)
+        // Campos de trabalho
+        if (formData.data_admissao) formDataToSend.append('data_admissao', formData.data_admissao)
+        if (formData.tipo_contrato) formDataToSend.append('tipo_contrato', formData.tipo_contrato)
+        if (formData.salario) formDataToSend.append('salario', String(parseFloat(formData.salario.replace(',', '.'))))
+        if (formData.nis) formDataToSend.append('nis', formData.nis)
+        formDataToSend.append('foto', fotoFile)
+        console.log('[FUNCIONARIOS] Foto adicionada ao FormData:', fotoFile.name)
+
+        if (modalTipo === 'criar') {
+          response = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: formDataToSend,
+          })
+        } else {
+          response = await fetch(url, {
+            method: 'PUT',
+            headers,
+            body: formDataToSend,
+          })
+        }
       } else {
-        response = await fetch(url, {
-          method: 'PUT',
-          headers,
-          body: JSON.stringify(body),
-        })
+        // Sem foto, usar JSON
+        const body = {
+          nome_completo: formData.nome_completo,
+          email: formData.email,
+          cpf: formData.cpf || null,
+          rg: formData.rg || null,
+          tipo_usuario: formData.tipo_usuario,
+          senha: modalTipo === 'criar' ? formData.senha : (formData.senha || undefined),
+          // Campos de endereço
+          rua: formData.rua || '',
+          numero: formData.numero || '',
+          complemento: formData.complemento || '',
+          bairro: formData.bairro || '',
+          cidade: formData.cidade || '',
+          estado: formData.estado || '',
+          cep: formData.cep || '',
+          // Campos de trabalho
+          data_admissao: formData.data_admissao || new Date().toISOString().split('T')[0],
+          tipo_contrato: formData.tipo_contrato || 'CLT',
+          salario: formData.salario ? parseFloat(formData.salario.replace(',', '.')) : null,
+          nis: formData.nis || null,
+          foto_url: formData.foto_url || null,
+        }
+
+        // Remover senha vazia na edição
+        if (modalTipo === 'editar' && !formData.senha) {
+          delete body.senha
+        }
+
+        headers['Content-Type'] = 'application/json'
+
+        if (modalTipo === 'criar') {
+          response = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body),
+          })
+        } else {
+          response = await fetch(url, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(body),
+          })
+        }
       }
 
       console.log('📥 [FRONTEND] Resposta recebida:', {
@@ -310,7 +440,25 @@ export default function FuncionariosPage() {
         throw new Error(data.error || data.message || 'Erro ao salvar funcionário')
       }
 
+      // Se for o próprio usuário logado, atualizar localStorage
+      if (admin) {
+        const funcionarioAtualizado = data.funcionario || data
+        if (funcionarioSelecionado?.id === admin.id || (modalTipo === 'criar' && funcionarioAtualizado.id === admin.id)) {
+          const adminAtualizado = {
+            ...admin,
+            nome_completo: funcionarioAtualizado.nome_completo,
+            email: funcionarioAtualizado.email,
+            foto_url: funcionarioAtualizado.foto_url,
+          }
+          localStorage.setItem('admin', JSON.stringify(adminAtualizado))
+          // Disparar evento para atualizar o header
+          window.dispatchEvent(new CustomEvent('adminUpdated', { detail: adminAtualizado }))
+        }
+      }
+
       setMensagem({ tipo: 'sucesso', texto: data.message || 'Funcionário salvo com sucesso!' })
+      setFotoPreview(null)
+      setFotoFile(null)
       setSearchTerm('') // Limpar campo de pesquisa após salvar com sucesso
       await carregarFuncionarios()
       setTimeout(() => {
@@ -384,7 +532,25 @@ export default function FuncionariosPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      {/* Modal de Crop */}
+      {fotoOriginal && mostrarCrop && (
+        <ImageCropModal
+          image={fotoOriginal}
+          isOpen={mostrarCrop}
+          onClose={() => {
+            console.log('[FUNCIONARIOS] Fechando modal de crop')
+            setMostrarCrop(false)
+            setFotoOriginal(null)
+          }}
+          onCropComplete={handleCropComplete}
+          aspect={1}
+          cropShape="round"
+          size={{ width: 200, height: 200 }}
+        />
+      )}
+
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -980,17 +1146,36 @@ export default function FuncionariosPage() {
                         </div>
                       </div>
 
-                      {/* Foto URL */}
+                      {/* Foto do Funcionário */}
                       <div className="mb-4">
-                        <label className="block text-gray-300 mb-2">URL da Foto</label>
-                        <input
-                          type="url"
-                          name="foto_url"
-                          value={formData.foto_url}
-                          onChange={handleInputChange}
-                          placeholder="https://..."
-                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-amber-500"
-                        />
+                        <label className="block text-gray-300 mb-2">Foto do Funcionário</label>
+                        <div className="flex items-center gap-6">
+                          <div className="relative">
+                            {fotoPreview ? (
+                              <img
+                                src={fotoPreview}
+                                alt="Foto do funcionário"
+                                className="w-24 h-24 rounded-full object-cover border-4 border-amber-500/30"
+                              />
+                            ) : (
+                              <div className="w-24 h-24 rounded-full bg-zinc-800 border-4 border-amber-500/30 flex items-center justify-center">
+                                <UserCog className="w-12 h-12 text-gray-500" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFotoChange}
+                              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500 file:text-white hover:file:bg-amber-600 file:cursor-pointer cursor-pointer"
+                            />
+                            <p className="text-xs text-gray-500 mt-2">
+                              Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -1031,6 +1216,7 @@ export default function FuncionariosPage() {
         )}
       </AnimatePresence>
     </div>
+    </>
   )
 }
 

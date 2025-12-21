@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-27_Janeiro_2026-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-21_Dezembro_2025-blue?style=flat-square)
 ![Version](https://img.shields.io/badge/Versão-2.0.0-green?style=flat-square)
 
 </div>
@@ -372,10 +372,12 @@ npm run dev
 - **[Implementações Dezembro 2025](./docs/IMPLEMENTACOES_DEZEMBRO_2025.md)** - Implementações mais recentes
 - **[Status do Projeto](./docs/STATUS_PROJETO.md)** - Status atual completo
 - **[Roadmap](./docs/ROADMAP.md)** - Próximos passos e planejamento
+- **[Próximos Passos](./docs/PROXIMOS_PASSOS.md)** - Planejamento detalhado das próximas implementações
 - **[Estrutura do Projeto](./docs/ESTRUTURA_PROJETO.md)** - Arquitetura completa
 - **[Sistema de Logs](./docs/SISTEMA_LOGS.md)** - Documentação de logs
 - **[Guia de Deploy](./docs/DEPLOY_GUIA_COMPLETO.md)** - Instruções consolidadas de deploy
 - **[Documentação de Integrações](./DOCUMENTACAO_INTEGRACOES.md)** - Guia completo de todas as integrações disponíveis
+- **[Documentação de Vendas, Pagamentos e Caixas](./DOCUMENTACAO_VENDAS_PAGAMENTOS_CAIXAS.md)** - Documentação completa do sistema financeiro
 
 ### Documentação de Deploy
 - **[Comandos Essenciais](./docs/deploy/COMANDOS_ESSENCIAIS.md)** - Comandos úteis
@@ -439,6 +441,7 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Módulo Assinaturas - Sistema completo com CRUD, integração a vendas, abatimento automático e controle de validade (concluído em 27 de Janeiro de 2026)
 - ✅ Correção de Exclusão de Faturamento - Exclusão completa de receitas, movimentações de caixa, CRM e assinaturas (concluído em 27 de Janeiro de 2026)
 - ✅ Correção de Vendas/Receitas/Caixa - Geração automática de movimentações de caixa para vendas pagas à vista (concluído em 27 de Janeiro de 2026)
+- ✅ Documentação Completa de Vendas, Pagamentos e Caixas - Documentação detalhada criada em 21 de Dezembro de 2025
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
@@ -476,7 +479,7 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 27 de Janeiro de 2026  
+**Última Atualização**: 21 de Dezembro de 2025  
 **Versão**: 2.0.0  
 **Desenvolvido para**: Prótese Capilar Cuiabá  
 **Status**: ✅ Em Produção e Funcionando

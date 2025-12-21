@@ -2,7 +2,7 @@
 
 Este documento apresenta o roadmap completo do projeto, incluindo funcionalidades implementadas, em desenvolvimento e planejadas para o futuro.
 
-**Última Atualização**: 27 de Janeiro de 2026  
+**Última Atualização**: 21 de Dezembro de 2025  
 **Versão**: 2.0.0
 
 ---
@@ -426,15 +426,16 @@ Este documento apresenta o roadmap completo do projeto, incluindo funcionalidade
 
 ## 🔄 Atualizações do Roadmap
 
-Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **27 de Janeiro de 2026**
+Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Última atualização: **21 de Dezembro de 2025**
 
 ---
 
 **Status Geral do Projeto**: ✅ **Em Produção e Funcionando**  
-**Últimas Implementações (27 de Janeiro de 2026)**:
-- ✅ CRM - Sistema completo de relacionamento com clientes (100% completo)
-- ✅ Módulo Assinaturas - Estrutura criada no menu Operação com controle de permissões
-- ✅ Correção de erros SQL no CRM (ambiguidade de colunas)
+**Últimas Implementações (21 de Dezembro de 2025)**:
+- ✅ Documentação Completa de Vendas, Pagamentos e Caixas - Documentação detalhada do sistema financeiro criada
+- ✅ CRM - Sistema completo de relacionamento com clientes (100% completo - 27 de Janeiro de 2026)
+- ✅ Módulo Assinaturas - Sistema completo com CRUD, integração a vendas e abatimento automático (100% completo - 27 de Janeiro de 2026)
+- ✅ Correção de erros SQL no CRM (ambiguidade de colunas - 27 de Janeiro de 2026)
 
 **Implementações Anteriores (16 de Dezembro de 2025)**:
 - ✅ Sistema de Módulos no Menu - Menu organizado por módulos expansíveis

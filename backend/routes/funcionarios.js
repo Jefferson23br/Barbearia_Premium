@@ -1,15 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 const pool = require('../config/database');
+const { upload } = require('../config/multer');
 const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 
 /**
  * POST /api/v1/funcionarios
  * Cria um novo funcionário
  */
-router.post('/', async (req, res) => {
+router.post('/', upload.single('foto'), async (req, res) => {
+  let fotoUrl = null;
+  const uploadsDir = path.join(__dirname, '..', 'uploads', 'fotos');
+
   try {
+    // Processar foto se enviada
+    if (req.file) {
+      const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+      fotoUrl = `${baseUrl}/uploads/fotos/${req.file.filename}`;
+    }
+
     const {
       nome_completo,
       email,
@@ -121,7 +133,7 @@ router.post('/', async (req, res) => {
       tipo_usuario,
       senhaHash,
       true, // is_active padrão
-      foto_url || null,
+      fotoUrl || foto_url || null,
     ];
     
     console.log('📝 [POST FUNCIONARIO] Valores para inserção:', {
@@ -311,7 +323,8 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      `SELECT id, nome_completo, email, cpf, tipo_usuario, is_active, created_at, updated_at
+      `SELECT id, nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep, 
+              tipo_usuario, is_active, foto_url, created_at, updated_at
        FROM protese.usuarios_administrativos
        WHERE id = $1`,
       [id]
@@ -335,7 +348,10 @@ router.get('/:id', async (req, res) => {
  * PUT /api/v1/funcionarios/:id
  * Atualiza um funcionário
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('foto'), async (req, res) => {
+  let fotoUrl = null;
+  const uploadsDir = path.join(__dirname, '..', 'uploads', 'fotos');
+
   try {
     const { id } = req.params;
     const {
@@ -367,7 +383,26 @@ router.put('/:id', async (req, res) => {
     );
 
     if (funcionarioAtual.rows.length === 0) {
+      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(404).json({ error: 'Funcionário não encontrado' });
+    }
+
+    // Processar foto se enviada
+    if (req.file) {
+      // Deletar foto antiga se existir
+      if (funcionarioAtual.rows[0].foto_url) {
+        const fotoAntigaPath = path.join(uploadsDir, path.basename(funcionarioAtual.rows[0].foto_url));
+        if (fs.existsSync(fotoAntigaPath)) {
+          try {
+            fs.unlinkSync(fotoAntigaPath);
+          } catch (err) {
+            console.error('Erro ao deletar foto antiga:', err);
+          }
+        }
+      }
+
+      const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+      fotoUrl = `${baseUrl}/uploads/fotos/${req.file.filename}`;
     }
 
     // Validações
@@ -512,7 +547,12 @@ router.put('/:id', async (req, res) => {
       paramIndex++;
     }
 
-    if (foto_url !== undefined) {
+    // Usar fotoUrl do upload se disponível, senão usar foto_url do body, senão manter a atual
+    if (fotoUrl) {
+      updates.push(`foto_url = $${paramIndex}`);
+      params.push(fotoUrl);
+      paramIndex++;
+    } else if (foto_url !== undefined) {
       updates.push(`foto_url = $${paramIndex}`);
       params.push(foto_url || null);
       paramIndex++;

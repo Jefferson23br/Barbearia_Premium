@@ -119,3 +119,5 @@ Em caso de problemas:
 ---
 
 *Documentação mantida atualizada para facilitar deploy e manutenção* 🚀
+
+**Última Atualização**: 21 de Dezembro de 2025

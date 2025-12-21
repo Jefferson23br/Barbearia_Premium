@@ -7,7 +7,7 @@ Painel administrativo completo para gestão da barbearia. Desenvolvido com Next.
 **Status**: ✅ **Em Produção**  
 **URL**: https://admin.protesecapilarcuiaba.com.br  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)  
-**Última Atualização**: 16 de Dezembro de 2025
+**Última Atualização**: 21 de Dezembro de 2025
 
 ---
 
@@ -69,6 +69,8 @@ npm run build
 - **Produtos**: CRUD completo com histórico de preços de custo
 - **Permissões**: Sistema granular de permissões (RBAC) por usuário
 - **Menu por Módulos**: Menu organizado por módulos expansíveis (16 de Dezembro de 2025)
+- **CRM**: Sistema completo de relacionamento com clientes (27 de Janeiro de 2026)
+- **Assinaturas**: Sistema completo com CRUD, integração a vendas e abatimento automático (27 de Janeiro de 2026)
 
 ### ✅ Controle e Monitoramento
 - **Controle de Acessos**: Logs de login com estatísticas
@@ -214,5 +216,5 @@ src/
 
 ---
 
-**Última Atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.9.0
+**Última Atualização**: 21 de Dezembro de 2025  
+**Versão**: 2.0.0
