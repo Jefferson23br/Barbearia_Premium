@@ -566,7 +566,7 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 
 ---
 
-**Última atualização**: 19 de Dezembro de 2025  
+**Última atualização**: 27 de Janeiro de 2026  
 **Estrutura**: ✅ Modular (implementada em Dezembro 2024, atualizada em Janeiro 2025)  
 **Status**: ✅ Em Produção  
 **Versão**: 2.0.0  

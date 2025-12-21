@@ -393,6 +393,7 @@ router.put('/venda/:id', async (req, res) => {
 /**
  * DELETE /api/v1/faturamento/venda/:id
  * Exclui uma venda pelo faturamento
+ * IMPORTANTE: Exclui também receitas, movimentações de caixa, assinaturas, CRM e notas fiscais
  */
 router.delete('/venda/:id', async (req, res) => {
   const client = await pool.connect();
@@ -416,10 +417,12 @@ router.delete('/venda/:id', async (req, res) => {
       }
     }
 
-    // Buscar venda para log
+    const vendaId = req.params.id;
+
+    // Buscar venda completa
     const vendaResult = await client.query(
-      'SELECT ticket FROM protese.vendas WHERE id = $1',
-      [req.params.id]
+      'SELECT * FROM protese.vendas WHERE id = $1',
+      [vendaId]
     );
 
     if (vendaResult.rows.length === 0) {
@@ -427,8 +430,98 @@ router.delete('/venda/:id', async (req, res) => {
       return res.status(404).json({ error: 'Venda não encontrada' });
     }
 
-    // Excluir venda (CASCADE vai excluir serviços, produtos e parcelas)
-    await client.query('DELETE FROM protese.vendas WHERE id = $1', [req.params.id]);
+    const venda = vendaResult.rows[0];
+
+    // Buscar produtos da venda para reverter estoque
+    const produtosVenda = await client.query(
+      'SELECT produto_id, quantidade FROM protese.vendas_produtos WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Reverter estoque
+    for (const produtoVenda of produtosVenda.rows) {
+      await client.query(
+        `UPDATE protese.produtos 
+         SET quantidade_estoque = quantidade_estoque + $1,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $2`,
+        [produtoVenda.quantidade, produtoVenda.produto_id]
+      );
+    }
+
+    // Buscar receitas vinculadas para excluir movimentações de caixa
+    const receitasVenda = await client.query(
+      'SELECT id, movimentacao_caixa_id FROM protese.receitas WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Excluir movimentações de caixa vinculadas às receitas
+    for (const receita of receitasVenda.rows) {
+      if (receita.movimentacao_caixa_id) {
+        await client.query(
+          'DELETE FROM protese.movimentacoes_caixa WHERE id = $1',
+          [receita.movimentacao_caixa_id]
+        );
+      }
+    }
+
+    // Excluir assinaturas_clientes vinculadas a esta venda
+    // IMPORTANTE: Se for venda de assinatura, a assinatura do cliente também será excluída
+    await client.query(
+      'DELETE FROM protese.assinaturas_clientes WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Excluir cupons usados vinculados a esta venda
+    await client.query(
+      'DELETE FROM protese.cupons_usados WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Excluir relacionamentos do CRM que mencionam esta venda na descrição ou observações
+    // Isso garante que não haja referências à venda excluída no CRM
+    if (venda.cliente_id) {
+      try {
+        const relacionamentosCRM = await client.query(
+          `SELECT id FROM protese.crm_relacionamentos 
+           WHERE cliente_id = $1 
+           AND (descricao ILIKE '%' || $2 || '%' OR observacoes ILIKE '%' || $2 || '%')`,
+          [venda.cliente_id, venda.ticket]
+        );
+
+        // Excluir relacionamentos encontrados
+        for (const relacionamento of relacionamentosCRM.rows) {
+          await client.query(
+            'DELETE FROM protese.crm_relacionamentos WHERE id = $1',
+            [relacionamento.id]
+          );
+        }
+      } catch (error) {
+        // Se a tabela não existir ou houver erro, apenas logar e continuar
+        console.error('Erro ao excluir relacionamentos do CRM (não crítico):', error.message);
+      }
+    }
+
+    // Excluir notas fiscais vinculadas (se houver)
+    const notasFiscais = await client.query(
+      'SELECT id FROM protese.notas_fiscais WHERE venda_id = $1',
+      [vendaId]
+    );
+    for (const notaFiscal of notasFiscais.rows) {
+      await client.query(
+        'DELETE FROM protese.notas_fiscais WHERE id = $1',
+        [notaFiscal.id]
+      );
+    }
+
+    // Excluir receitas vinculadas
+    await client.query(
+      'DELETE FROM protese.receitas WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Excluir vendas_assinaturas, vendas_produtos, vendas_servicos (CASCADE vai cuidar disso)
+    await client.query('DELETE FROM protese.vendas WHERE id = $1', [vendaId]);
 
     await client.query('COMMIT');
 
@@ -438,12 +531,12 @@ router.delete('/venda/:id', async (req, res) => {
       usuario_nome: usuarioNome,
       acao: 'excluir',
       modulo: 'faturamento',
-      descricao: `Excluiu venda ${vendaResult.rows[0].ticket} pelo faturamento`,
+      descricao: `Excluiu venda ${venda.ticket} pelo faturamento (incluindo receitas, movimentações, assinaturas e CRM)`,
       ip: getClientIp(req),
       user_agent: getUserAgent(req)
     });
 
-    res.json({ message: 'Venda excluída com sucesso' });
+    res.json({ message: 'Venda excluída com sucesso. Todas as informações relacionadas foram removidas.' });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Erro ao excluir venda:', error);

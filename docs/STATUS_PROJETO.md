@@ -285,7 +285,7 @@ Documento atualizado com o status completo do projeto em **27 de Janeiro de 2026
 ---
 
 ### 16. 🛒 Lançamento de Venda
-**Status**: ✅ **100% Completo**
+**Status**: ✅ **100% Completo (Atualizado em 27 de Janeiro de 2026)**
 
 - Seleção de funcionário e data
 - Listagem de agendamentos do dia (apenas status "agendado")
@@ -300,6 +300,8 @@ Documento atualizado com o status completo do projeto em **27 de Janeiro de 2026
 - Atualização automática de status de agendamentos para "concluido"
 - Integração automática com módulo de Receitas
 - Integração automática com módulo de Caixas (pagamentos à vista)
+- **Geração automática de movimentações de caixa para vendas pagas à vista** (27 de Janeiro de 2026)
+- **Exclusão completa**: Ao excluir venda, remove receitas, movimentações de caixa, assinaturas, CRM e notas fiscais (27 de Janeiro de 2026)
 
 **Endpoints**: 4  
 **Páginas Frontend**: 1
@@ -360,12 +362,20 @@ Documento atualizado com o status completo do projeto em **27 de Janeiro de 2026
 ---
 
 ### 20. 📊 Faturamento
-**Status**: ✅ **100% Completo**
+**Status**: ✅ **100% Completo (Atualizado em 27 de Janeiro de 2026)**
 
 - Visualização unificada de todas as movimentações (Vendas, Despesas, Estoque)
 - Filtros avançados por tipo, data, status, busca
 - Edição linha por linha de vendas, despesas e movimentações de estoque
 - Exclusão de movimentações com validações
+- **Exclusão completa de faturamento**: Ao excluir venda pelo faturamento, remove automaticamente:
+  - Receitas geradas pela venda
+  - Movimentações de caixa vinculadas
+  - Relacionamentos do CRM que mencionam a venda
+  - Assinaturas do cliente (se for venda de assinatura)
+  - Notas fiscais vinculadas
+  - Cupons usados
+  - Reversão de estoque de produtos (27 de Janeiro de 2026)
 - Criação de romaneios (faturamento, estoque, despesa, misto)
 - Visualização detalhada de romaneios com:
   - Cabeçalho com dados da empresa (do módulo Configurações)
@@ -632,9 +642,9 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 ---
 
-**Última Atualização**: 19 de Dezembro de 2025  
+**Última Atualização**: 27 de Janeiro de 2026  
 **Versão**: 2.0.0  
-**Próxima Revisão**: Janeiro 2026
+**Próxima Revisão**: Fevereiro 2026
 
 **URLs de Produção:**
 - Painel Admin: https://admin.protesecapilarcuiaba.com.br
@@ -644,7 +654,7 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 
 **Infraestrutura:**
 - Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
-- Frontend: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
+- Frontend: VPS 45.132.157.28 (Hostinger - conta diferente com domínio liberado)
 - Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)
 
 

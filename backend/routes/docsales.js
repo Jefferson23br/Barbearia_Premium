@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../config/database');
 const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 
 // Importa o serviço de integrações de forma segura
@@ -13,6 +14,27 @@ try {
   criarIntegracao = async () => {
     throw new Error('Serviço de integrações não disponível. Verifique se o diretório services/integracoes.js existe.');
   };
+}
+
+/**
+ * Função auxiliar para verificar se a integração DocSales está configurada e ativa
+ */
+async function verificarIntegracaoDocSales() {
+  const integracaoCheck = await pool.query(
+    'SELECT * FROM protese.integracoes WHERE tipo_integracao = $1',
+    ['docsales']
+  );
+
+  if (integracaoCheck.rows.length === 0) {
+    throw new Error('Integração DocSales não configurada. Configure em Integrações > Integração de APIs.');
+  }
+
+  const integracaoConfig = integracaoCheck.rows[0];
+  if (!integracaoConfig.ativo) {
+    throw new Error('Integração DocSales não está ativa. Ative em Integrações > Habilitar API.');
+  }
+
+  return integracaoConfig;
 }
 
 /**
@@ -170,6 +192,9 @@ router.get('/documentos', async (req, res) => {
   try {
     const { status, data_inicio, data_fim, pagina, limite } = req.query;
 
+    // Verificar se a integração está configurada e ativa
+    await verificarIntegracaoDocSales();
+
     // Cria instância da integração
     const integracao = await criarIntegracao('docsales');
 
@@ -185,6 +210,15 @@ router.get('/documentos', async (req, res) => {
     res.json(resultado);
   } catch (error) {
     console.error('Erro ao listar documentos:', error);
+    
+    // Verificar se é erro de configuração
+    if (error.message && (error.message.includes('não configurada') || error.message.includes('não está ativa'))) {
+      return res.status(400).json({
+        error: 'Integração DocSales não configurada',
+        message: error.message
+      });
+    }
+
     res.status(500).json({
       error: 'Erro ao listar documentos',
       message: error.message,

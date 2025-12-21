@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-19_Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-27_Janeiro_2026-blue?style=flat-square)
 ![Version](https://img.shields.io/badge/Versão-2.0.0-green?style=flat-square)
 
 </div>
@@ -84,7 +84,7 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 
 **Infraestrutura:**
 - **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger) - API, Backend e Banco de dados PostgreSQL
-- **Frontend**: VPS 45.132.157.28 (Hostinger - conta com domínio liberado) - Aplicações frontend
+- **Frontend**: VPS 45.132.157.28 (Hostinger - conta diferente com domínio liberado) - Aplicações frontend
 - **Banco de Dados**: PostgreSQL 15+ (Schema: `protese`, Database: `protese_capilar`, User: `protese_user`)
 
 </div>
@@ -247,6 +247,8 @@ npm run dev
 - **CORS_ORIGINS**: https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 - **DB_NAME**: protese_capilar
 - **DB_USER**: protese_user
+- **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger)
+- **Frontend**: VPS 45.132.157.28 (Hostinger - conta diferente)
 
 ---
 
@@ -435,6 +437,8 @@ Para informações detalhadas sobre o planejamento futuro, consulte o **[Roadmap
 - ✅ Master acessa tudo automaticamente sem configuração de permissões (concluído em 16 de Dezembro de 2025)
 - ✅ CRM - Sistema completo de relacionamento com clientes (concluído em 27 de Janeiro de 2026)
 - ✅ Módulo Assinaturas - Sistema completo com CRUD, integração a vendas, abatimento automático e controle de validade (concluído em 27 de Janeiro de 2026)
+- ✅ Correção de Exclusão de Faturamento - Exclusão completa de receitas, movimentações de caixa, CRM e assinaturas (concluído em 27 de Janeiro de 2026)
+- ✅ Correção de Vendas/Receitas/Caixa - Geração automática de movimentações de caixa para vendas pagas à vista (concluído em 27 de Janeiro de 2026)
 - 🔄 Melhorias no Help Desk
 - 🔄 Melhorias no Estoque (saída, ajustes, relatórios)
 - 🔄 Melhorias nos Relatórios (gráficos, mais métricas)
@@ -472,7 +476,7 @@ Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar C
 
 *Sistema em desenvolvimento ativo* 🚀
 
-**Última Atualização**: 19 de Dezembro de 2025  
+**Última Atualização**: 27 de Janeiro de 2026  
 **Versão**: 2.0.0  
 **Desenvolvido para**: Prótese Capilar Cuiabá  
 **Status**: ✅ Em Produção e Funcionando

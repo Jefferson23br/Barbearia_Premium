@@ -113,10 +113,10 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
         })
         if (response.ok) {
           const data = await response.json()
-          const integracoesAtivas = new Set(
+          const integracoesAtivas = new Set<string>(
             (data.integracoes || [])
               .filter((i: any) => i.ativo === true)
-              .map((i: any) => i.tipo_integracao)
+              .map((i: any) => i.tipo_integracao as string)
           )
           setIntegracoesConfiguradas(integracoesAtivas)
         }
@@ -140,17 +140,41 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
           const data = await response.json()
           const modulosCarregados = data.modulos || []
           
-          setModulos(modulosCarregados)
+          // Remover duplicatas de itens em cada módulo baseado no item.id E no path
+          // Isso garante que não haja duplicatas mesmo se houver IDs diferentes para o mesmo path
+          const modulosSemDuplicatas = modulosCarregados.map((modulo: Modulo) => {
+            const itensUnicosPorId = new Map<string, any>()
+            const itensUnicosPorPath = new Map<string, any>()
+            
+            modulo.itens.forEach((item: any) => {
+              // Primeiro, verificar por ID
+              if (!itensUnicosPorId.has(item.id)) {
+                itensUnicosPorId.set(item.id, item)
+              }
+              // Depois, verificar por path (caso haja IDs diferentes mas mesmo path)
+              if (!itensUnicosPorPath.has(item.path)) {
+                itensUnicosPorPath.set(item.path, item)
+              }
+            })
+            
+            // Usar o Map de paths para garantir que não há duplicatas por path
+            return {
+              ...modulo,
+              itens: Array.from(itensUnicosPorPath.values())
+            }
+          })
+          
+          setModulos(modulosSemDuplicatas)
           
           // Expandir módulos que contêm a rota atual
-          const modulosComRotaAtual = modulosCarregados
+          const modulosComRotaAtual = modulosSemDuplicatas
             .filter((modulo: Modulo) =>
               modulo.itens.some((item) => pathname.startsWith(item.path))
             )
             .map((modulo: Modulo) => modulo.id)
           
           if (modulosComRotaAtual.length > 0) {
-            setExpandedModulos(new Set(modulosComRotaAtual))
+            setExpandedModulos(new Set<string>(modulosComRotaAtual))
           }
         }
       } catch (error) {
@@ -280,7 +304,26 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       permissionKey: obterPermissionKey(item.id),
     }))
     
-    const itensVisiveis = filtrarItens(itensComPermissao, modulo.nome)
+    // Remover duplicatas baseado no item.id (item_id) E no path
+    // Isso garante que não haja duplicatas mesmo se houver IDs diferentes para o mesmo path
+    const itensUnicosPorId = new Map<string, MenuItem>()
+    const itensUnicosPorPath = new Map<string, MenuItem>()
+    
+    itensComPermissao.forEach(item => {
+      // Primeiro, verificar por ID
+      if (!itensUnicosPorId.has(item.id)) {
+        itensUnicosPorId.set(item.id, item)
+      }
+      // Depois, verificar por path (caso haja IDs diferentes mas mesmo path)
+      if (!itensUnicosPorPath.has(item.path)) {
+        itensUnicosPorPath.set(item.path, item)
+      }
+    })
+    
+    // Usar o Map de paths para garantir que não há duplicatas por path
+    const itensSemDuplicatas = Array.from(itensUnicosPorPath.values())
+    
+    const itensVisiveis = filtrarItens(itensSemDuplicatas, modulo.nome)
     
     if (itensVisiveis.length === 0) {
       return null

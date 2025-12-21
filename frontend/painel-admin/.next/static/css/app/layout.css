@@ -2388,6 +2388,9 @@ video {
 .ring-offset-background {
   --tw-ring-offset-color: var(--color-background);
 }
+.ring-offset-zinc-900 {
+  --tw-ring-offset-color: oklch(.21 .006 285.885);
+}
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
@@ -3394,6 +3397,10 @@ html {
   background-color: oklch(.274 .006 286.033);
 }
 
+.data-\[selected\=true\]\:bg-zinc-800[data-selected="true"] {
+  background-color: oklch(.274 .006 286.033);
+}
+
 .data-\[inset\]\:pl-8[data-inset] {
   padding-left: 2rem;
 }
@@ -3458,6 +3465,15 @@ html {
 .data-\[state\=open\]\:text-white[data-state="open"] {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.data-\[selected\=true\]\:text-white[data-selected="true"] {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.data-\[state\=open\]\:text-gray-300[data-state="open"] {
+  color: oklch(.872 .01 258.338);
 }
 
 .data-\[disabled\=true\]\:opacity-50[data-disabled="true"] {

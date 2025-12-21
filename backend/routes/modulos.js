@@ -27,18 +27,35 @@ router.get('/', async (req, res) => {
           [modulo.id]
         );
 
+        // Garantir que não há duplicatas por item_id E por path
+        // Isso garante que não haja duplicatas mesmo se houver IDs diferentes para o mesmo path
+        const itensUnicosPorId = new Map();
+        const itensUnicosPorPath = new Map();
+        
+        itensResult.rows.forEach(item => {
+          // Primeiro, verificar por ID
+          if (!itensUnicosPorId.has(item.item_id)) {
+            itensUnicosPorId.set(item.item_id, item);
+          }
+          // Depois, verificar por path (caso haja IDs diferentes mas mesmo path)
+          if (!itensUnicosPorPath.has(item.item_path)) {
+            itensUnicosPorPath.set(item.item_path, item);
+          }
+        });
+
         return {
           id: modulo.id,
           nome: modulo.nome,
           icone: modulo.icone,
           ordem: modulo.ordem,
-          itens: itensResult.rows.map(item => ({
+          // Usar o Map de paths para garantir que não há duplicatas por path
+          itens: Array.from(itensUnicosPorPath.values()).map(item => ({
             id: item.item_id,
             label: item.item_label,
             path: item.item_path,
             icon: item.item_icon,
             ordem: item.ordem,
-          })),
+          })).sort((a, b) => a.ordem - b.ordem),
         };
       })
     );

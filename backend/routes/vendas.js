@@ -981,11 +981,12 @@ router.post('/', async (req, res) => {
     if (valorLiquido >= 0.01) {
       if (forma_pagamento === 'dinheiro' || forma_pagamento === 'pix' || forma_pagamento === 'ted' || forma_pagamento.startsWith('cartao_1x')) {
         // Pagamento à vista - criar receita única
-        await client.query(
+        const receitaResult = await client.query(
           `INSERT INTO protese.receitas 
            (venda_id, cliente_id, ticket_venda, valor_vencimento, valor_pago, data_emissao, data_vencimento, data_pagamento, 
             forma_pagamento, caixa_id, status, created_by)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+           RETURNING id`,
           [
             venda.id,
             cliente_id || null,
@@ -1001,6 +1002,32 @@ router.post('/', async (req, res) => {
             usuarioId
           ]
         );
+
+        const receitaId = receitaResult.rows[0].id;
+
+        // Criar movimentação de caixa automaticamente para pagamento à vista
+        const movimentacaoResult = await client.query(
+          `INSERT INTO protese.movimentacoes_caixa 
+           (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
+           VALUES ($1, 'entrada', $2, $3, $4, $5, 'receita', $6)
+           RETURNING id`,
+          [
+            caixa_id,
+            valorLiquido,
+            `Receita ${ticketBase} - Venda à vista (${forma_pagamento})`,
+            data_venda,
+            receitaId,
+            usuarioId
+          ]
+        );
+
+        // Atualizar receita com o ID da movimentação
+        await client.query(
+          `UPDATE protese.receitas 
+           SET movimentacao_caixa_id = $1 
+           WHERE id = $2`,
+          [movimentacaoResult.rows[0].id, receitaId]
+        );
       } else if (forma_pagamento.startsWith('cartao_') || forma_pagamento.startsWith('boleto_')) {
         // Pagamento parcelado
         const valorParcela = valorLiquido / numeroParcelas;
@@ -1011,11 +1038,12 @@ router.post('/', async (req, res) => {
           const ticketParcela = numeroParcelas > 1 ? `${ticketBase}/${i.toString().padStart(2, '0')}` : ticketBase;
           const statusParcela = i === 1 && (forma_pagamento.startsWith('cartao_1x') || forma_pagamento === 'boleto_1x') ? 'paga' : 'pendente';
           
-          await client.query(
+          const receitaParcelaResult = await client.query(
             `INSERT INTO protese.receitas 
              (venda_id, cliente_id, ticket_venda, valor_vencimento, valor_pago, data_emissao, data_vencimento, data_pagamento, 
               forma_pagamento, caixa_id, status, created_by)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+             RETURNING id`,
             [
               venda.id,
               cliente_id || null,
@@ -1031,6 +1059,34 @@ router.post('/', async (req, res) => {
               usuarioId
             ]
           );
+
+          const receitaParcelaId = receitaParcelaResult.rows[0].id;
+
+          // Se a parcela está paga (primeira parcela de cartão 1x ou boleto 1x), criar movimentação de caixa
+          if (statusParcela === 'paga') {
+            const movimentacaoResult = await client.query(
+              `INSERT INTO protese.movimentacoes_caixa 
+               (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
+               VALUES ($1, 'entrada', $2, $3, $4, $5, 'receita', $6)
+               RETURNING id`,
+              [
+                caixa_id,
+                valorParcela,
+                `Receita ${ticketParcela} - Parcela ${i}/${numeroParcelas} (${forma_pagamento})`,
+                dataVencimentoStr,
+                receitaParcelaId,
+                usuarioId
+              ]
+            );
+
+            // Atualizar receita com o ID da movimentação
+            await client.query(
+              `UPDATE protese.receitas 
+               SET movimentacao_caixa_id = $1 
+               WHERE id = $2`,
+              [movimentacaoResult.rows[0].id, receitaParcelaId]
+            );
+          }
 
           // Incrementar data para próxima parcela (30 dias)
           dataVencimento.setMonth(dataVencimento.getMonth() + 1);
@@ -1195,11 +1251,71 @@ router.delete('/:id', async (req, res) => {
       );
     }
 
+    // Buscar receitas vinculadas para excluir movimentações de caixa
+    const receitasVenda = await client.query(
+      'SELECT id, movimentacao_caixa_id FROM protese.receitas WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Excluir movimentações de caixa vinculadas às receitas
+    for (const receita of receitasVenda.rows) {
+      if (receita.movimentacao_caixa_id) {
+        await client.query(
+          'DELETE FROM protese.movimentacoes_caixa WHERE id = $1',
+          [receita.movimentacao_caixa_id]
+        );
+      }
+    }
+
     // Excluir assinaturas_clientes vinculadas a esta venda
+    // IMPORTANTE: Isso remove as assinaturas adquiridas pelo cliente nesta venda
+    // Quando uma venda de assinatura é excluída, a assinatura do cliente também deve ser excluída
     await client.query(
       'DELETE FROM protese.assinaturas_clientes WHERE venda_id = $1',
       [vendaId]
     );
+
+    // Excluir cupons usados vinculados a esta venda
+    await client.query(
+      'DELETE FROM protese.cupons_usados WHERE venda_id = $1',
+      [vendaId]
+    );
+
+    // Excluir relacionamentos do CRM que mencionam esta venda na descrição ou observações
+    // Isso garante que não haja referências à venda excluída no CRM
+    if (venda.cliente_id) {
+      try {
+        const relacionamentosCRM = await client.query(
+          `SELECT id FROM protese.crm_relacionamentos 
+           WHERE cliente_id = $1 
+           AND (descricao ILIKE '%' || $2 || '%' OR observacoes ILIKE '%' || $2 || '%')`,
+          [venda.cliente_id, venda.ticket]
+        );
+
+        // Excluir relacionamentos encontrados
+        for (const relacionamento of relacionamentosCRM.rows) {
+          await client.query(
+            'DELETE FROM protese.crm_relacionamentos WHERE id = $1',
+            [relacionamento.id]
+          );
+        }
+      } catch (error) {
+        // Se a tabela não existir ou houver erro, apenas logar e continuar
+        console.error('Erro ao excluir relacionamentos do CRM (não crítico):', error.message);
+      }
+    }
+
+    // Excluir notas fiscais vinculadas (se houver)
+    const notasFiscais = await client.query(
+      'SELECT id FROM protese.notas_fiscais WHERE venda_id = $1',
+      [vendaId]
+    );
+    for (const notaFiscal of notasFiscais.rows) {
+      await client.query(
+        'DELETE FROM protese.notas_fiscais WHERE id = $1',
+        [notaFiscal.id]
+      );
+    }
 
     // Excluir receitas vinculadas
     await client.query(

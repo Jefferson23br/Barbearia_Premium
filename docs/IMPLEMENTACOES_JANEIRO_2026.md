@@ -10,10 +10,10 @@ Documento detalhando todas as implementações realizadas em **Janeiro 2026**.
 
 **Período**: Janeiro 2026  
 **Status**: ✅ **Todas as implementações concluídas e em produção**  
-**Última Atualização**: 19 de Dezembro de 2025  
+**Última Atualização**: 27 de Janeiro de 2026  
 **Módulos Adicionados**: 2 novos módulos (CRM e Assinaturas)  
 **Endpoints Criados**: 12 novos endpoints (6 CRM + 5 Assinaturas + 1 Vendas)  
-**Melhorias**: Sistema completo de CRM, sistema completo de Assinaturas com integração a vendas e abatimento automático
+**Melhorias**: Sistema completo de CRM, sistema completo de Assinaturas com integração a vendas e abatimento automático, correções críticas em vendas/receitas/caixa e exclusão de faturamento
 
 ---
 
@@ -185,6 +185,7 @@ Documento detalhando todas as implementações realizadas em **Janeiro 2026**.
 
 ### Correção de Erro SQL no CRM
 
+**Data**: 27 de Janeiro de 2026  
 **Problema**: Erro `column reference "id" is ambiguous` (código 42702) ao buscar dados do cliente.
 
 **Solução**: 
@@ -194,6 +195,91 @@ Documento detalhando todas as implementações realizadas em **Janeiro 2026**.
 
 **Arquivos Modificados:**
 - `backend/routes/crm.js` - Queries corrigidas
+
+---
+
+### Correção Crítica: Geração de Movimentações de Caixa em Vendas Pagas à Vista
+
+**Data**: 27 de Janeiro de 2026  
+**Status**: ✅ **Corrigido e Funcionando**
+
+**Problema Identificado:**
+- Ao criar uma venda com pagamento à vista (dinheiro, pix, ted ou cartão 1x), a receita era criada como "paga", mas a movimentação de caixa não era gerada automaticamente
+- Isso causava o problema de o saldo do caixa não ser atualizado, mesmo com a receita marcada como paga
+- O trigger `protese.atualizar_saldo_conta()` está na tabela `movimentacoes_caixa`, não em `receitas`, então era necessário criar a movimentação explicitamente
+
+**Solução Implementada:**
+- Modificação em `backend/routes/vendas.js` para criar automaticamente uma movimentação de caixa quando uma receita é criada como "paga" (pagamento à vista)
+- A movimentação é vinculada à receita através do campo `movimentacao_caixa_id`
+- O saldo do caixa é atualizado automaticamente pelo trigger do PostgreSQL
+- Aplicado também para a primeira parcela de cartão/boleto 1x
+
+**Arquivos Modificados:**
+- `backend/routes/vendas.js` - Adicionada criação automática de movimentações de caixa
+
+**Resultado:**
+- ✅ Vendas à vista agora geram receitas e movimentações de caixa automaticamente
+- ✅ O saldo do caixa é atualizado corretamente
+- ✅ O fluxo financeiro está completo e funcionando
+
+---
+
+### Correção: Exclusão Completa de Faturamento (Vendas)
+
+**Data**: 27 de Janeiro de 2026  
+**Status**: ✅ **Corrigido e Funcionando**
+
+**Problema Identificado:**
+- Ao excluir uma venda pelo módulo de Faturamento, apenas a venda era excluída
+- Receitas, movimentações de caixa, assinaturas do cliente, relacionamentos do CRM e notas fiscais permaneciam no sistema
+- Isso causava inconsistências nos dados e informações duplicadas no CRM
+
+**Solução Implementada:**
+- Modificação completa em `backend/routes/faturamento.js` no endpoint `DELETE /api/v1/faturamento/venda/:id`
+- Implementada exclusão completa e ordenada:
+  1. Reversão de estoque dos produtos vendidos
+  2. Exclusão de movimentações de caixa vinculadas às receitas (reverte saldo)
+  3. Exclusão de assinaturas do cliente vinculadas à venda
+  4. Exclusão de cupons usados vinculados à venda
+  5. Exclusão de relacionamentos do CRM que mencionam a venda
+  6. Exclusão de notas fiscais vinculadas
+  7. Exclusão de receitas vinculadas
+  8. Exclusão da venda (com CASCADE para itens relacionados)
+
+**Arquivos Modificados:**
+- `backend/routes/faturamento.js` - Exclusão completa implementada
+- `backend/routes/vendas.js` - Exclusão completa já estava implementada (mantida consistência)
+
+**Resultado:**
+- ✅ Ao excluir um faturamento, todas as informações relacionadas são removidas
+- ✅ O saldo do caixa é revertido corretamente
+- ✅ As informações do CRM são limpas
+- ✅ Se for venda de assinatura, a assinatura do cliente é excluída
+- ✅ Sistema consistente e sem dados órfãos
+
+---
+
+### Correção: Exclusão de Vendas de Assinatura
+
+**Data**: 27 de Janeiro de 2026  
+**Status**: ✅ **Corrigido e Funcionando**
+
+**Problema Identificado:**
+- Ao excluir uma venda de assinatura, a assinatura do cliente não era excluída automaticamente
+- Isso causava inconsistências no estoque de uso das assinaturas
+
+**Solução Implementada:**
+- Já estava implementado em `backend/routes/vendas.js`, mas foi melhorado
+- Garantida exclusão de assinaturas do cliente (`assinaturas_clientes`) vinculadas à venda
+- Adicionada exclusão de relacionamentos do CRM que mencionam a venda
+
+**Arquivos Modificados:**
+- `backend/routes/vendas.js` - Melhorias na exclusão
+
+**Resultado:**
+- ✅ Ao excluir venda de assinatura, a assinatura do cliente é removida automaticamente
+- ✅ O estoque de serviços/produtos da assinatura é removido
+- ✅ O CRM não mostra mais referências à venda excluída
 
 ---
 
@@ -245,7 +331,7 @@ Documento detalhando todas as implementações realizadas em **Janeiro 2026**.
 
 ---
 
-**Última atualização**: 19 de Dezembro de 2025  
-**Versão do documento**: 2.0  
+**Última atualização**: 27 de Janeiro de 2026  
+**Versão do documento**: 2.1  
 **Status**: ✅ Todas as implementações concluídas e documentadas
 
