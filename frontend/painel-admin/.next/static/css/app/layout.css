@@ -1679,6 +1679,9 @@ video {
 .border-blue-500\/30 {
   border-color: rgb(59 130 246 / 0.3);
 }
+.border-current {
+  border-color: currentColor;
+}
 .border-gray-600 {
   --tw-border-opacity: 1;
   border-color: rgb(75 85 99 / var(--tw-border-opacity, 1));
@@ -1721,9 +1724,6 @@ video {
 }
 .border-zinc-800 {
   border-color: oklch(.274 .006 286.033);
-}
-.border-current {
-  border-color: currentColor;
 }
 .border-l-transparent {
   border-left-color: transparent;
@@ -2970,6 +2970,10 @@ html {
   background-color: oklch(.37 .013 285.805);
 }
 
+.focus\:bg-zinc-800:focus {
+  background-color: oklch(.274 .006 286.033);
+}
+
 .focus\:text-accent-foreground:focus {
   color: var(--color-accent-foreground);
 }
@@ -3016,6 +3020,10 @@ html {
 
 .focus-visible\:border-ring:focus-visible {
   border-color: var(--color-ring);
+}
+
+.focus-visible\:border-amber-500:focus-visible {
+  border-color: oklch(.769 .188 70.08);
 }
 
 .focus-visible\:outline-1:focus-visible {
@@ -3382,6 +3390,10 @@ html {
   background-color: var(--color-muted);
 }
 
+.data-\[state\=open\]\:bg-zinc-800[data-state="open"] {
+  background-color: oklch(.274 .006 286.033);
+}
+
 .data-\[inset\]\:pl-8[data-inset] {
   padding-left: 2rem;
 }
@@ -3432,6 +3444,20 @@ html {
 
 .data-\[variant\=destructive\]\:text-destructive[data-variant="destructive"] {
   color: var(--color-destructive);
+}
+
+.data-\[placeholder\]\:text-gray-400[data-placeholder] {
+  color: oklch(.707 .022 261.325);
+}
+
+.data-\[variant\=destructive\]\:text-red-400[data-variant="destructive"] {
+  --tw-text-opacity: 1;
+  color: rgb(248 113 113 / var(--tw-text-opacity, 1));
+}
+
+.data-\[state\=open\]\:text-white[data-state="open"] {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
 .data-\[disabled\=true\]\:opacity-50[data-disabled="true"] {
@@ -3526,8 +3552,17 @@ html {
   background-color: var(--color-accent);
 }
 
+.data-\[variant\=destructive\]\:focus\:bg-red-500\/10:focus[data-variant="destructive"] {
+  background-color: rgb(239 68 68 / 0.1);
+}
+
 .data-\[variant\=destructive\]\:focus\:text-destructive:focus[data-variant="destructive"] {
   color: var(--color-destructive);
+}
+
+.data-\[variant\=destructive\]\:focus\:text-red-400:focus[data-variant="destructive"] {
+  --tw-text-opacity: 1;
+  color: rgb(248 113 113 / var(--tw-text-opacity, 1));
 }
 
 .group[data-disabled="true"] .group-data-\[disabled\=true\]\:pointer-events-none {
@@ -3999,6 +4034,10 @@ html {
   .dark\:data-\[state\=active\]\:text-foreground[data-state="active"] {
     color: var(--color-foreground);
   }
+
+  .dark\:data-\[variant\=destructive\]\:focus\:bg-red-500\/20:focus[data-variant="destructive"] {
+    background-color: rgb(239 68 68 / 0.2);
+  }
 }
 
 .\[\&\:has\(\>\.day-range-end\)\]\:rounded-r-md:has(>.day-range-end) {
@@ -4228,6 +4267,10 @@ html {
 
 .\[\&_svg\:not\(\[class\*\=\'text-\'\]\)\]\:text-muted-foreground svg:not([class*='text-']) {
   color: var(--color-muted-foreground);
+}
+
+.\[\&_svg\:not\(\[class\*\=\'text-\'\]\)\]\:text-gray-400 svg:not([class*='text-']) {
+  color: oklch(.707 .022 261.325);
 }
 
 .\[\&_svg\]\:pointer-events-none svg {

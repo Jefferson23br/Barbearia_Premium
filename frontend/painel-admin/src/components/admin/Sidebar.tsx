@@ -86,7 +86,47 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
   const [modulos, setModulos] = useState<Modulo[]>([])
   const [expandedModulos, setExpandedModulos] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
+  const [integracoesConfiguradas, setIntegracoesConfiguradas] = useState<Set<string>>(new Set())
   const { podeAcessar, loading: permissoesLoading } = usePermissions()
+
+  // Mapeamento de item_id para tipo_integracao
+  const mapeamentoIntegracoes: { [key: string]: string } = {
+    'servico_focus_nfe': 'focus_nfe',
+    'servico_plug_nfe': 'plug_nfe',
+    'servico_asaas': 'asaas',
+    'servico_mercado_pago': 'mercado_pago',
+    'servico_pagseguro': 'pagseguro',
+    'servico_twilio': 'twilio',
+    'servico_whatsapp': 'whatsapp_business',
+    'servico_sendgrid': 'sendgrid',
+    'servico_docsales': 'docsales',
+    'servico_clicksign': 'clicksign',
+  }
+
+  // Carregar integrações configuradas
+  useEffect(() => {
+    const carregarIntegracoes = async () => {
+      try {
+        const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+        const response = await fetch(`${apiUrl}/api/v1/integracoes`, {
+          cache: 'no-store',
+        })
+        if (response.ok) {
+          const data = await response.json()
+          const integracoesAtivas = new Set(
+            (data.integracoes || [])
+              .filter((i: any) => i.ativo === true)
+              .map((i: any) => i.tipo_integracao)
+          )
+          setIntegracoesConfiguradas(integracoesAtivas)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar integrações:', error)
+      }
+    }
+
+    carregarIntegracoes()
+  }, [])
 
   // Carregar módulos do backend
   useEffect(() => {
@@ -98,10 +138,12 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
         })
         if (response.ok) {
           const data = await response.json()
-          setModulos(data.modulos || [])
+          const modulosCarregados = data.modulos || []
+          
+          setModulos(modulosCarregados)
           
           // Expandir módulos que contêm a rota atual
-          const modulosComRotaAtual = data.modulos
+          const modulosComRotaAtual = modulosCarregados
             .filter((modulo: Modulo) =>
               modulo.itens.some((item) => pathname.startsWith(item.path))
             )
@@ -146,12 +188,22 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       // Verificar se existe vendas_ver, senão usar lancamento_venda
       return 'lancamento_venda'
     }
+    
+    // Para serviços de integração, usar o item_id diretamente como permissionKey
+    // Ex: 'servico_focus_nfe' -> 'servico_focus_nfe_ver'
+    if (itemId.startsWith('servico_')) {
+      return `${itemId}_ver`
+    }
+    
     return itemId
   }
 
   // Filtrar itens baseado em permissões
-  const filtrarItens = (itens: MenuItem[]) => {
+  // Para "Serviços de Integração", mostrar todos os itens se o usuário tiver permissão
+  // A verificação de configuração será feita nas páginas individuais
+  const filtrarItens = (itens: MenuItem[], moduloNome?: string) => {
     if (tipoUsuario === 'master') {
+      // Master vê todos os itens
       return itens
     }
 
@@ -160,6 +212,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     }
 
     return itens.filter((item) => {
+      // Verificar permissão
       const permissionKey = item.permissionKey || obterPermissionKey(item.id)
       return podeAcessar(permissionKey)
     })
@@ -167,17 +220,12 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
 
   // Verificar se um módulo tem itens visíveis
   const moduloTemItensVisiveis = (modulo: Modulo) => {
-    // Master vê todos os módulos
-    if (tipoUsuario === 'master') {
-      return modulo.itens.length > 0
-    }
-    
     // Converter itens do módulo para MenuItem com permissionKey
     const itensComPermissao: MenuItem[] = modulo.itens.map((item) => ({
       ...item,
       permissionKey: obterPermissionKey(item.id),
     }))
-    return filtrarItens(itensComPermissao).length > 0
+    return filtrarItens(itensComPermissao, modulo.nome).length > 0
   }
 
   const isActive = (path: string) => {
@@ -232,7 +280,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
       permissionKey: obterPermissionKey(item.id),
     }))
     
-    const itensVisiveis = filtrarItens(itensComPermissao)
+    const itensVisiveis = filtrarItens(itensComPermissao, modulo.nome)
     
     if (itensVisiveis.length === 0) {
       return null
@@ -282,8 +330,8 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
     )
   }
 
-  const itensAntesFiltrados = filtrarItens(itensIndividuaisAntes)
-  const itensDepoisFiltrados = filtrarItens(itensIndividuaisDepois)
+  const itensAntesFiltrados = filtrarItens(itensIndividuaisAntes, undefined)
+  const itensDepoisFiltrados = filtrarItens(itensIndividuaisDepois, undefined)
   const modulosFiltrados = modulos.filter(moduloTemItensVisiveis)
 
   // Se mobile, renderizar overlay

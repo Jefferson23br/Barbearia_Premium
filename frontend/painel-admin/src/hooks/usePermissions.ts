@@ -131,6 +131,18 @@ export interface PermissoesUsuario {
   servicos_integracao_ver: boolean
   servicos_integracao_editar: boolean
   servicos_integracao_excluir: boolean
+  
+  // Permissões individuais para cada serviço de integração
+  servico_focus_nfe_ver: boolean
+  servico_plug_nfe_ver: boolean
+  servico_asaas_ver: boolean
+  servico_mercado_pago_ver: boolean
+  servico_pagseguro_ver: boolean
+  servico_twilio_ver: boolean
+  servico_whatsapp_ver: boolean
+  servico_sendgrid_ver: boolean
+  servico_docsales_ver: boolean
+  servico_clicksign_ver: boolean
 
   // Assinaturas
   assinaturas_ver: boolean
@@ -380,6 +392,16 @@ function criarPermissoesMaster(): PermissoesUsuario {
     servicos_integracao_ver: true,
     servicos_integracao_editar: true,
     servicos_integracao_excluir: true,
+    servico_focus_nfe_ver: true,
+    servico_plug_nfe_ver: true,
+    servico_asaas_ver: true,
+    servico_mercado_pago_ver: true,
+    servico_pagseguro_ver: true,
+    servico_twilio_ver: true,
+    servico_whatsapp_ver: true,
+    servico_sendgrid_ver: true,
+    servico_docsales_ver: true,
+    servico_clicksign_ver: true,
     assinaturas_ver: true,
     assinaturas_editar: true,
     assinaturas_excluir: true,
@@ -464,6 +486,16 @@ function criarPermissoesVazias(): PermissoesUsuario {
     servicos_integracao_ver: false,
     servicos_integracao_editar: false,
     servicos_integracao_excluir: false,
+    servico_focus_nfe_ver: false,
+    servico_plug_nfe_ver: false,
+    servico_asaas_ver: false,
+    servico_mercado_pago_ver: false,
+    servico_pagseguro_ver: false,
+    servico_twilio_ver: false,
+    servico_whatsapp_ver: false,
+    servico_sendgrid_ver: false,
+    servico_docsales_ver: false,
+    servico_clicksign_ver: false,
     assinaturas_ver: false,
     assinaturas_editar: false,
     assinaturas_excluir: false,

@@ -384,6 +384,42 @@ const tiposIntegracao: TipoIntegracao[] = [
         descricao: 'Email padrão que será usado como remetente ao enviar documentos para assinatura'
       }
     ]
+  },
+  {
+    tipo: 'clicksign',
+    nome: 'Clicksign',
+    descricao: 'Configure a integração com Clicksign para assinatura eletrônica de documentos com validade jurídica',
+    icone: '✍️',
+    campos: [
+      {
+        nome: 'Access Token (Produção)',
+        chave: 'token_producao',
+        tipo: 'password',
+        placeholder: 'Seu Access Token da Clicksign (Produção)',
+        descricao: 'Access Token fornecido pela Clicksign para ambiente de produção. Gere em: Configurações > Integrações > Criar Access Token. Acesse: ajuda.clicksign.com/article/994'
+      },
+      {
+        nome: 'Access Token (Homologação/Sandbox)',
+        chave: 'token_homologacao',
+        tipo: 'password',
+        placeholder: 'Seu Access Token da Clicksign (Homologação)',
+        descricao: 'Access Token fornecido pela Clicksign para ambiente de homologação/testes. Use o ambiente sandbox para testes'
+      },
+      {
+        nome: 'URL de Webhook (Opcional)',
+        chave: 'webhook_url',
+        tipo: 'text',
+        placeholder: 'https://seu-dominio.com.br/api/webhooks/clicksign',
+        descricao: 'URL para receber notificações de eventos da Clicksign (documento assinado, cancelado, expirado, etc). Configure também no painel da Clicksign'
+      },
+      {
+        nome: 'Email Padrão do Remetente (Opcional)',
+        chave: 'email_remetente',
+        tipo: 'text',
+        placeholder: 'contratos@seu-dominio.com.br',
+        descricao: 'Email padrão que será usado como remetente ao enviar documentos para assinatura'
+      }
+    ]
   }
 ]
 
