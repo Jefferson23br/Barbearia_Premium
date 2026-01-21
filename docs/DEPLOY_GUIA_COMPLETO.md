@@ -195,6 +195,20 @@ ORDER BY table_name;
 
 ---
 
+Backend Backup no computador
+
+# Baixar a pasta completa e salvar como 'backend_backup'
+scp -r root@82.25.65.201:/home/cyberpanel/app/backend ./backend_backup
+
+# Caso queira baixar sobrescrevendo uma pasta local existente 'backend'
+scp -r root@82.25.65.201:/home/cyberpanel/app/backend ./
+
+# 1. Rodar na VPS (Zipar ignorando node_modules)
+ssh root@82.25.65.201 "cd /home/cyberpanel/app && tar -czf backend.tar.gz --exclude=node_modules backend"
+
+# 2. Rodar no Computador (Baixar o arquivo zip)
+scp root@82.25.65.201:/home/cyberpanel/app/backend.tar.gz ./
+
 ## ⚠️ Checklist de Deploy
 
 Antes de fazer deploy, verifique:
