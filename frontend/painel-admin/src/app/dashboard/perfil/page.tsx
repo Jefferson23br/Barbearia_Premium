@@ -66,7 +66,7 @@ export default function PerfilPage() {
       }
 
       const admin = JSON.parse(adminData)
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/funcionarios/${admin.id}`, {
         headers: {
           'x-user-id': admin.id,
@@ -130,7 +130,7 @@ export default function PerfilPage() {
       }
 
       const admin = JSON.parse(adminData)
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       // Preparar FormData para enviar arquivo se houver
       const formDataToSend = new FormData()
