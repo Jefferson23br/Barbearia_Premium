@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import '../styles/globals.css'
 
 export const metadata: Metadata = {
-  title: 'Prótese Capilar Cuiabá - Painel do Cliente',
-  description: 'Acesse seu painel de cliente da Prótese Capilar Cuiabá. Gerencie seus planos, agende atendimentos e acompanhe seu histórico de serviços.',
+  title: 'Barbearia Premium - Painel do Cliente',
+  description: 'Acesse seu painel de cliente da Barbearia Premium. Gerencie seus planos, agende atendimentos e acompanhe seu histórico de serviços.',
   keywords: ['prótese capilar', 'cuiabá', 'painel cliente', 'agendamento', 'peruca masculina', 'calvície'],
-  authors: [{ name: 'Prótese Capilar Cuiabá' }],
-  creator: 'Prótese Capilar Cuiabá',
-  publisher: 'Prótese Capilar Cuiabá',
+  authors: [{ name: 'Barbearia Premium' }],
+  creator: 'Barbearia Premium',
+  publisher: 'Barbearia Premium',
   icons: {
     icon: '/images/logo.webp',
     shortcut: '/images/logo.webp',
@@ -20,15 +20,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://app.protesecapilarcuiaba.com.br',
-    siteName: 'Prótese Capilar Cuiabá',
-    title: 'Painel do Cliente - Prótese Capilar Cuiabá',
+    url: 'https://appbarber.auctusconsultoria.com.br',
+    siteName: 'Barbearia Premium',
+    title: 'Painel do Cliente - Barbearia Premium',
     description: 'Acesse seu painel de cliente e gerencie seus serviços de prótese capilar.',
     images: ['/images/logo.webp'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Painel do Cliente - Prótese Capilar Cuiabá',
+    title: 'Painel do Cliente - Barbearia Premium',
     description: 'Acesse seu painel de cliente e gerencie seus serviços de prótese capilar.',
     images: ['/images/logo.webp'],
   },
