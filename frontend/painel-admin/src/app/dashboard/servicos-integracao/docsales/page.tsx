@@ -38,7 +38,7 @@ export default function DocSalesPage() {
   const carregarDocumentos = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const params = new URLSearchParams()
       if (filtroStatus) params.append('status', filtroStatus)
 
@@ -59,7 +59,7 @@ export default function DocSalesPage() {
 
   const consultarStatus = async (documentoId: string) => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/docsales/documentos/${documentoId}`)
 
       if (response.ok) {
@@ -76,7 +76,7 @@ export default function DocSalesPage() {
 
   const baixarDocumento = async (documentoId: string) => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/docsales/documentos/${documentoId}/download`)
 
       if (response.ok) {
@@ -99,7 +99,7 @@ export default function DocSalesPage() {
     if (!confirm('Tem certeza que deseja cancelar este documento?')) return
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
