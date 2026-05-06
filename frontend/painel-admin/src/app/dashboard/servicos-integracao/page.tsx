@@ -50,7 +50,7 @@ export default function ServicosIntegracaoPage() {
   const verificarConfiguracoes = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/integracoes`)
 
       if (response.ok) {
