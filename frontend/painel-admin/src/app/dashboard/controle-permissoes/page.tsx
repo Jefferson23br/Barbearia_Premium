@@ -280,7 +280,7 @@ export default function ControlePermissoesPage() {
   
   const carregarModulos = async () => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/modulos`)
       if (response.ok) {
         const data = await response.json()
@@ -304,7 +304,7 @@ export default function ControlePermissoesPage() {
   const carregarFuncionarios = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Buscar tipo do usuário logado para filtrar corretamente
       const adminData = localStorage.getItem('admin')
@@ -331,7 +331,7 @@ export default function ControlePermissoesPage() {
   const carregarPermissoes = async (usuarioId: string) => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/permissoes/${usuarioId}`)
       
       if (!response.ok) {
@@ -364,7 +364,7 @@ export default function ControlePermissoesPage() {
 
     setSalvando(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
