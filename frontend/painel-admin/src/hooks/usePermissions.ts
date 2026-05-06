@@ -202,7 +202,7 @@ export function usePermissions() {
 
   const buscarPermissoesBackend = async (adminId: string) => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/permissoes/${adminId}`, {
         cache: 'no-store', // Sempre buscar do servidor, não usar cache
       })
