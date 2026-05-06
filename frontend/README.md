@@ -20,7 +20,7 @@ frontend/
 ### 1. Painel Administrativo (`painel-admin/`)
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://admin.protesecapilarcuiaba.com.br  
+**URL**: https://appbarber.auctusconsultoria.com.br/admin  
 **Porta de desenvolvimento**: `3000`  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
@@ -77,7 +77,7 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 ### 2. Painel Cliente (`painel-cliente/`)
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://app.protesecapilarcuiaba.com.br  
+**URL**: https://appbarber.auctusconsultoria.com.br  
 **Porta de desenvolvimento**: `3001`  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
@@ -100,7 +100,7 @@ Painel para que os clientes possam acompanhar seus atendimentos e interagir com 
 ### 3. Site de Entrada (`site-entrada/`)
 
 **Status**: 🔄 **Em Desenvolvimento**  
-**URL**: https://www.protesecapilarcuiaba.com.br  
+**URL**: https://appbarber.auctusconsultoria.com.br  
 **Porta de desenvolvimento**: `3002`  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
@@ -259,7 +259,7 @@ Arquivos `.env.local` em cada projeto:
 
 ```env
 # API Backend
-NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
+NEXT_PUBLIC_API_URL=https://api6.actusconsultoria.com.br
 ```
 
 ---
@@ -350,6 +350,6 @@ console.log(JSON.parse(localStorage.getItem('admin')))
 **Versão**: 2.0.0  
 **VPS**: 45.132.157.28 (Hostinger - conta diferente com domínio liberado)  
 **URLs**: 
-- Admin: https://admin.protesecapilarcuiaba.com.br
-- Cliente: https://app.protesecapilarcuiaba.com.br
-- Site: https://www.protesecapilarcuiaba.com.br
+- Admin: https://appbarber.auctusconsultoria.com.br/admin
+- Cliente: https://appbarber.auctusconsultoria.com.br
+- Site: https://appbarber.auctusconsultoria.com.br
