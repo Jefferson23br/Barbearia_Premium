@@ -439,7 +439,7 @@ export default function IntegracoesApisPage() {
   const carregarIntegracoes = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/integracoes`)
 
       if (!response.ok) {
@@ -508,7 +508,7 @@ export default function IntegracoesApisPage() {
 
     setSalvando(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
