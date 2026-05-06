@@ -5,7 +5,7 @@
 Página de entrada do site principal mostrando que está em desenvolvimento, com links para as áreas do sistema.
 
 **Status**: 🔄 **Em Desenvolvimento**  
-**URL**: https://www.protesecapilarcuiaba.com.br  
+**URL**: https://appbarber.auctusconsultoria.com.br  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
 ---
