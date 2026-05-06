@@ -5,7 +5,7 @@
 Painel administrativo completo para gestão da barbearia. Desenvolvido com Next.js 14, TypeScript e Tailwind CSS.
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://admin.protesecapilarcuiaba.com.br  
+**URL**: https://appbarber.auctusconsultoria.com.br/admin  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)  
 **Última Atualização**: 21 de Dezembro de 2025
 
@@ -182,7 +182,7 @@ npm run build
 
 ## 🌐 Deploy
 
-URL de produção: https://admin.protesecapilarcuiaba.com.br
+URL de produção: https://appbarber.auctusconsultoria.com.br/admin
 
 ### Processo de Deploy
 
