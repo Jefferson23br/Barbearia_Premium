@@ -107,7 +107,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
   useEffect(() => {
     const carregarIntegracoes = async () => {
       try {
-        const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+        const apiUrl = 'https://api6.actusconsultoria.com.br'
         const response = await fetch(`${apiUrl}/api/v1/integracoes`, {
           cache: 'no-store',
         })
@@ -132,7 +132,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
   useEffect(() => {
     const carregarModulos = async () => {
       try {
-        const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+        const apiUrl = 'https://api6.actusconsultoria.com.br'
         const response = await fetch(`${apiUrl}/api/v1/modulos`, {
           cache: 'no-store', // Sempre buscar do servidor
         })
