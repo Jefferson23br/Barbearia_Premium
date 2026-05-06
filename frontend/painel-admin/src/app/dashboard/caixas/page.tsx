@@ -132,7 +132,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -314,7 +314,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -381,7 +381,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -432,7 +432,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -509,7 +509,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -591,7 +591,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -660,7 +660,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
