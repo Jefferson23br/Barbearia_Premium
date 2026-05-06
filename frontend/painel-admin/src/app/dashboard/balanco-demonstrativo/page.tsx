@@ -84,7 +84,7 @@ interface RelatorioData {
 }
 
 function getApiBaseUrl() {
-  return 'https://api.protesecapilarcuiaba.com.br'
+  return 'https://api6.actusconsultoria.com.br'
 }
 
 function formatarPreco(valor: number | string): string {
