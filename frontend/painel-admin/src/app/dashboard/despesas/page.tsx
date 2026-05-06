@@ -161,7 +161,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -199,7 +199,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -240,7 +240,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -369,7 +369,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -477,7 +477,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
