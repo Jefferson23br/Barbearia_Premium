@@ -18,7 +18,7 @@ import { Calendar } from '@/components/ui/calendar'
 // Função para obter URL da API
 function getApiBaseUrl() {
   // Sempre usar a API de produção, pois o backend está rodando lá
-  return 'https://api.protesecapilarcuiaba.com.br'
+  return 'https://api6.actusconsultoria.com.br'
   
   // Código antigo (comentado para referência):
   // if (typeof window !== 'undefined') {
@@ -26,7 +26,7 @@ function getApiBaseUrl() {
   //     return 'http://localhost:3001'
   //   }
   // }
-  // return 'https://api.protesecapilarcuiaba.com.br'
+  // return 'https://api6.actusconsultoria.com.br'
 }
 
 // Tipo Funcionario conforme resposta da API
