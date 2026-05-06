@@ -33,11 +33,11 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <img
             src="/images/logo.webp"
-            alt="Prótese Capilar Logo"
+            alt="Barbearia Premium Logo"
             className="w-16 h-16 object-contain"
           />
           <div>
-            <h2 className="text-amber-500 font-bold text-lg">Prótese Capilar</h2>
+            <h2 className="text-amber-500 font-bold text-lg">Barbearia Premium</h2>
             <p className="text-gray-400 text-xs">Cuiabá - MT</p>
           </div>
         </div>
@@ -45,7 +45,7 @@ export default function Home() {
         {/* Navigation Links */}
         <nav className="flex gap-4">
           <a
-            href="https://app.protesecapilarcuiaba.com.br"
+            href="https://appbarber.auctusconsultoria.com.br"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-all group"
@@ -54,7 +54,7 @@ export default function Home() {
             <span className="text-amber-500 font-medium">Área de Cliente</span>
           </a>
           <a
-            href="https://admin.protesecapilarcuiaba.com.br"
+            href="https://appbarber.auctusconsultoria.com.br/admin"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all group"
@@ -184,7 +184,7 @@ export default function Home() {
               <p className="text-amber-500 font-semibold mb-3">Enquanto isso:</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <a
-                  href="https://app.protesecapilarcuiaba.com.br"
+                  href="https://appbarber.auctusconsultoria.com.br"
                   className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl"
                 >
                   Acessar Área de Cliente
@@ -201,7 +201,7 @@ export default function Home() {
           transition={{ delay: 0.9 }}
           className="mt-12 text-gray-500 text-sm"
         >
-          © 2025 Prótese Capilar Cuiabá - Transformando vidas através do cabelo
+          © 2025 Barbearia Premium - Transformando vidas através do cabelo
         </motion.p>
       </div>
 
