@@ -54,7 +54,7 @@ export default function DashboardPage() {
                 />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">Prótese Capilar</h1>
+                <h1 className="text-xl font-bold text-white">Barbearia Premium</h1>
                 <p className="text-xs text-gray-400">Painel do Cliente</p>
               </div>
             </div>
