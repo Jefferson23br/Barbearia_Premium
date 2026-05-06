@@ -51,9 +51,9 @@ export default function EmissaoRelatoriosPage() {
 
   const getApiBaseUrl = () => {
     if (typeof window !== 'undefined') {
-      return process.env.NEXT_PUBLIC_API_URL || 'https://api.protesecapilarcuiaba.com.br'
+      return process.env.NEXT_PUBLIC_API_URL || 'https://api6.actusconsultoria.com.br'
     }
-    return 'https://api.protesecapilarcuiaba.com.br'
+    return 'https://api6.actusconsultoria.com.br'
   }
 
   // Carregar funcionários e categorias
