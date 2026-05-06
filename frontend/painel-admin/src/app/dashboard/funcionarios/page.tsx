@@ -73,7 +73,7 @@ export default function FuncionariosPage() {
       const admin = adminData ? JSON.parse(adminData) : null
       const tipoUsuario = admin?.tipo_usuario || 'master'
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/funcionarios?tipo_usuario=${tipoUsuario}`)
 
       if (!response.ok) {
@@ -170,7 +170,7 @@ export default function FuncionariosPage() {
         setLoading(true)
         const adminData = localStorage.getItem('admin')
         const admin = adminData ? JSON.parse(adminData) : null
-        const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+        const apiUrl = 'https://api6.actusconsultoria.com.br'
         
         const response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionario.id}`, {
           headers: {
@@ -316,7 +316,7 @@ export default function FuncionariosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -479,7 +479,7 @@ export default function FuncionariosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
