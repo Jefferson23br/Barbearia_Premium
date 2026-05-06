@@ -119,9 +119,9 @@ export default function EmissaoNfePage() {
 
   const getApiBaseUrl = () => {
     if (typeof window !== 'undefined') {
-      return process.env.NEXT_PUBLIC_API_URL || 'https://api.protesecapilarcuiaba.com.br'
+      return process.env.NEXT_PUBLIC_API_URL || 'https://api6.actusconsultoria.com.br'
     }
-    return 'https://api.protesecapilarcuiaba.com.br'
+    return 'https://api6.actusconsultoria.com.br'
   }
 
   const formatarPreco = (valor: number | string | null | undefined) => {
