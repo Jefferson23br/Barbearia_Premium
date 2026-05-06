@@ -30,7 +30,7 @@ export default function Home() {
     setSuccess(null);
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br';
+      const apiUrl = 'https://api6.actusconsultoria.com.br';
       
       const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
         method: 'POST',
@@ -132,12 +132,12 @@ export default function Home() {
             <div className="w-24 h-24 flex items-center justify-center">
               <img
                 src="/images/logo.webp"
-                alt="Prótese Capilar Logo"
+                alt="Barbearia Premium Logo"
                 className="w-full h-full object-contain"
               />
             </div>
           </div>
-          <h1 className="text-amber-500 mb-2">Prótese Capilar</h1>
+          <h1 className="text-amber-500 mb-2">Barbearia Premium</h1>
           <p className="text-gray-400">Transformando vidas através do cabelo!</p>
         </motion.div>
 
@@ -470,7 +470,7 @@ export default function Home() {
           transition={{ delay: 0.3 }}
           className="text-center text-gray-500 mt-6"
         >
-          © 2025 Prótese Capilar. Todos os direitos reservados.
+          © 2025 Barbearia Premium. Todos os direitos reservados.
         </motion.p>
       </div>
     </div>
