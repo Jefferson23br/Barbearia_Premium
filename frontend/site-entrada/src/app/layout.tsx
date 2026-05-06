@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Prótese Capilar Cuiabá - Site em Desenvolvimento',
-  description: 'Estamos preparando algo incrível para você! Em breve, novo site da Prótese Capilar Cuiabá - Transformando vidas através do cabelo.',
+  title: 'Barbearia Premium - Site em Desenvolvimento',
+  description: 'Estamos preparando algo incrível para você! Em breve, novo site da Barbearia Premium - Transformando vidas através do cabelo.',
   keywords: ['prótese capilar', 'cuiabá', 'peruca masculina', 'calvície', 'implante capilar'],
-  authors: [{ name: 'Prótese Capilar Cuiabá' }],
+  authors: [{ name: 'Barbearia Premium' }],
   icons: {
     icon: '/images/logo.webp',
     shortcut: '/images/logo.webp',
@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://www.protesecapilarcuiaba.com.br',
-    siteName: 'Prótese Capilar Cuiabá',
-    title: 'Prótese Capilar Cuiabá - Em Breve',
+    url: 'https://appbarber.auctusconsultoria.com.br',
+    siteName: 'Barbearia Premium',
+    title: 'Barbearia Premium - Em Breve',
     description: 'Estamos preparando algo incrível para você! Transformando vidas através do cabelo.',
     images: ['/images/logo.webp'],
   },
