@@ -66,7 +66,7 @@ export default function ServicosPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Preparar headers
       const headers: HeadersInit = {
@@ -235,7 +235,7 @@ export default function ServicosPage() {
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
       }
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(
         `${apiUrl}/api/v1/servicos/${servicoSelecionado.id}/imagens/${campo}`,
         {
@@ -271,7 +271,7 @@ export default function ServicosPage() {
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
       }
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(
         `${apiUrl}/api/v1/servicos/${servicoSelecionado.id}/imagens/capa`,
         {
@@ -325,7 +325,7 @@ export default function ServicosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -425,7 +425,7 @@ export default function ServicosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
