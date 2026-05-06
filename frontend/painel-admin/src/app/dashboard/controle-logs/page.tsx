@@ -68,7 +68,7 @@ export default function ControleLogsPage() {
   const carregarLogs = async () => {
     try {
       setLoading(true)
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const params = new URLSearchParams()
       if (dataInicio) params.append('data_inicio', dataInicio)
@@ -94,7 +94,7 @@ export default function ControleLogsPage() {
 
   const carregarEstatisticas = async () => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const params = new URLSearchParams()
       if (dataInicio) params.append('data_inicio', dataInicio)
@@ -178,7 +178,7 @@ export default function ControleLogsPage() {
   const exportarParaCSV = async () => {
     try {
       setLoading(true)
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Construir parâmetros base
       const baseParams = new URLSearchParams()
