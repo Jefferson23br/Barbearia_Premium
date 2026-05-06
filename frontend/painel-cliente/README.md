@@ -9,7 +9,7 @@
 
 **Sistema completo de gestão para barbearias premium** ✂️
 
-[![Status](https://img.shields.io/badge/status-em_produção-success?style=flat-square)](https://app.protesecapilarcuiaba.com.br)
+[![Status](https://img.shields.io/badge/status-em_produção-success?style=flat-square)](https://appbarber.auctusconsultoria.com.br)
 
 </div>
 
@@ -20,7 +20,7 @@
 Este é o **Painel do Cliente** do Sistema Barbearia Premium, desenvolvido para que os clientes possam acompanhar seus atendimentos e interagir com a barbearia.
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://app.protesecapilarcuiaba.com.br  
+**URL**: https://appbarber.auctusconsultoria.com.br  
 **VPS**: 45.132.157.28 (Hostinger - conta com domínio liberado)
 
 O design foi criado no Figma com foco em uma experiência moderna, elegante e intuitiva, refletindo o padrão premium de uma barbearia de alto nível.
@@ -144,7 +144,7 @@ Este projeto é privado e desenvolvido exclusivamente para uso comercial.
 
 <div align="center">
 
-**Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
+**Desenvolvido com ❤️ para Barbearia Premium**
 
 </div>
 
