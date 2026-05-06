@@ -63,7 +63,7 @@ export default function ProdutosPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Preparar headers
       const headers: HeadersInit = {
@@ -180,7 +180,7 @@ export default function ProdutosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -245,7 +245,7 @@ export default function ProdutosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
