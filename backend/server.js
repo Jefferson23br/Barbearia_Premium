@@ -8,6 +8,7 @@ const multerConfig = require('./config/multer');
 const { initLogger } = require('./utils/logger');
 const apiLoggerMiddleware = require('./middlewares/apiLogger');
 const routes = require('./routes');
+const routesV2 = require('./routes/v2');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -82,6 +83,7 @@ app.get('/api/v1/test', (req, res) => {
 // ============================================================
 
 app.use('/api/v1', routes);
+app.use('/api/v2', routesV2);
 
 // ============================================================
 // MIDDLEWARE DE ERRO
