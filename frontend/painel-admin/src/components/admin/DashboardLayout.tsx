@@ -56,7 +56,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         // Carregar permissões do backend
         const carregarPermissoes = async () => {
           try {
-            const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+            const apiUrl = 'https://api6.actusconsultoria.com.br'
             const response = await fetch(`${apiUrl}/api/v1/permissoes/${adminObj.id}`)
             if (response.ok) {
               const data = await response.json()
