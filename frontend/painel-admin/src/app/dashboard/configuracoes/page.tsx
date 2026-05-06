@@ -100,7 +100,7 @@ export default function ConfiguracoesPage() {
   const carregarConfiguracoes = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/configuracoes`)
 
       if (!response.ok) {
@@ -129,7 +129,7 @@ export default function ConfiguracoesPage() {
 
     setSalvando(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -187,7 +187,7 @@ export default function ConfiguracoesPage() {
   const carregarFechamentos = async () => {
     setCarregandoFechamentos(true)
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/fechamentos-especiais`)
 
       if (!response.ok) {
@@ -240,7 +240,7 @@ export default function ConfiguracoesPage() {
     }
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
@@ -290,7 +290,7 @@ export default function ConfiguracoesPage() {
     }
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
