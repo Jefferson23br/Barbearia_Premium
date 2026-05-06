@@ -110,7 +110,7 @@ export default function HelpDeskPage() {
     try {
       setLoading(true)
       setErro(null)
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       // Buscar dados do admin do localStorage
       const adminData = localStorage.getItem('admin')
@@ -174,7 +174,7 @@ export default function HelpDeskPage() {
 
   const carregarFuncionarios = async () => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       const response = await fetch(`${apiUrl}/api/v1/help-desk/funcionarios`, { 
         cache: 'no-store' 
       })
@@ -199,7 +199,7 @@ export default function HelpDeskPage() {
 
   const carregarChamadoCompleto = async (id: string) => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) return
@@ -231,7 +231,7 @@ export default function HelpDeskPage() {
 
   const criarChamado = async () => {
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) {
@@ -294,7 +294,7 @@ export default function HelpDeskPage() {
     }
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) {
@@ -340,7 +340,7 @@ export default function HelpDeskPage() {
     if (!chamadoSelecionado) return
 
     try {
-      const apiUrl = 'https://api.protesecapilarcuiaba.com.br'
+      const apiUrl = 'https://api6.actusconsultoria.com.br'
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) {
