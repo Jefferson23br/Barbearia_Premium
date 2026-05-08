@@ -19,7 +19,7 @@ async function verificarPermissao(req, res, acao) {
 
   try {
     const permissoesResult = await pool.query(
-      `SELECT cupons_fidelidades_${acao} FROM protese.permissoes_usuarios WHERE usuario_id = $1`,
+      `SELECT cupons_fidelidades_${acao} FROM permissoes_usuarios WHERE usuario_id = $1`,
       [usuarioId]
     );
 
@@ -59,11 +59,11 @@ router.get('/cupons', async (req, res) => {
       SELECT 
         c.*,
         COALESCE((
-          SELECT COUNT(*)::int 
-          FROM protese.cupons_usados cu 
+          SELECT COUNT(*) 
+          FROM cupons_usados cu 
           WHERE cu.cupom_id = c.id
         ), 0) as total_usos
-      FROM protese.cupons c
+      FROM cupons c
       WHERE 1=1
     `;
     const params = [];
@@ -93,7 +93,7 @@ router.get('/cupons', async (req, res) => {
       console.log('[BACKEND] GET /cupons - Cupons:', result.rows.map(c => ({ id: c.id, codigo: c.codigo, nome: c.nome })));
     } else {
       // Verificar se há cupons na tabela
-      const checkCupons = await pool.query('SELECT COUNT(*) as total FROM protese.cupons');
+      const checkCupons = await pool.query('SELECT COUNT(*) as total FROM cupons');
       console.log('[BACKEND] GET /cupons - Total de cupons na tabela:', checkCupons.rows[0].total);
     }
 
@@ -116,8 +116,8 @@ router.get('/cupons/:id', async (req, res) => {
       `SELECT 
         c.*,
         COUNT(cu.id) as total_usos
-       FROM protese.cupons c
-       LEFT JOIN protese.cupons_usados cu ON c.id = cu.cupom_id
+       FROM cupons c
+       LEFT JOIN cupons_usados cu ON c.id = cu.cupom_id
        WHERE c.id = $1
        GROUP BY c.id`,
       [req.params.id]
@@ -194,7 +194,7 @@ router.post('/cupons', async (req, res) => {
 
     // Verificar se código já existe
     const codigoCheck = await client.query(
-      'SELECT id FROM protese.cupons WHERE codigo = $1',
+      'SELECT id FROM cupons WHERE codigo = $1',
       [codigo.toUpperCase()]
     );
 
@@ -205,7 +205,7 @@ router.post('/cupons', async (req, res) => {
 
     // Inserir cupom
     const result = await client.query(
-      `INSERT INTO protese.cupons 
+      `INSERT INTO cupons 
        (codigo, nome, descricao, tipo_desconto, valor_desconto, aplicar_em, regra_uso, 
         limite_usos, regra_fidelidade, quantidade_fidelidade, validade_inicio, validade_fim, 
         is_active, created_by)
@@ -275,7 +275,7 @@ router.put('/cupons/:id', async (req, res) => {
 
     // Buscar cupom atual
     const cupomAtual = await client.query(
-      'SELECT * FROM protese.cupons WHERE id = $1',
+      'SELECT * FROM cupons WHERE id = $1',
       [cupomId]
     );
 
@@ -314,7 +314,7 @@ router.put('/cupons/:id', async (req, res) => {
     // Verificar se código já existe (exceto o próprio cupom)
     if (codigo && codigo.toUpperCase() !== cupomAtual.rows[0].codigo) {
       const codigoCheck = await client.query(
-        'SELECT id FROM protese.cupons WHERE codigo = $1 AND id != $2',
+        'SELECT id FROM cupons WHERE codigo = $1 AND id != $2',
         [codigo.toUpperCase(), cupomId]
       );
 
@@ -326,7 +326,7 @@ router.put('/cupons/:id', async (req, res) => {
 
     // Atualizar cupom
     const result = await client.query(
-      `UPDATE protese.cupons SET
+      `UPDATE cupons SET
         codigo = COALESCE($1, codigo),
         nome = COALESCE($2, nome),
         descricao = COALESCE($3, descricao),
@@ -410,7 +410,7 @@ router.delete('/cupons/:id', async (req, res) => {
 
     // Verificar se cupom existe
     const cupomCheck = await client.query(
-      'SELECT * FROM protese.cupons WHERE id = $1',
+      'SELECT * FROM cupons WHERE id = $1',
       [cupomId]
     );
 
@@ -421,7 +421,7 @@ router.delete('/cupons/:id', async (req, res) => {
 
     // Verificar se há usos do cupom
     const usosCheck = await client.query(
-      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+      'SELECT COUNT(*) as total FROM cupons_usados WHERE cupom_id = $1',
       [cupomId]
     );
 
@@ -431,7 +431,7 @@ router.delete('/cupons/:id', async (req, res) => {
     }
 
     // Excluir cupom
-    await client.query('DELETE FROM protese.cupons WHERE id = $1', [cupomId]);
+    await client.query('DELETE FROM cupons WHERE id = $1', [cupomId]);
 
     await client.query('COMMIT');
 
@@ -475,9 +475,9 @@ router.get('/fidelidades', async (req, res) => {
         c.email as cliente_email,
         cup.codigo as cupom_codigo,
         cup.nome as cupom_nome
-      FROM protese.fidelidades f
-      INNER JOIN protese.usuarios_clientes c ON f.cliente_id = c.id
-      INNER JOIN protese.cupons cup ON f.cupom_id = cup.id
+      FROM fidelidades f
+      INNER JOIN usuarios_clientes c ON f.cliente_id = c.id
+      INNER JOIN cupons cup ON f.cupom_id = cup.id
       WHERE 1=1
     `;
     const params = [];
@@ -534,8 +534,8 @@ router.get('/fidelidades/cliente/:clienteId', async (req, res) => {
         cup.tipo_desconto,
         cup.valor_desconto,
         cup.aplicar_em
-       FROM protese.fidelidades f
-       INNER JOIN protese.cupons cup ON f.cupom_id = cup.id
+       FROM fidelidades f
+       INNER JOIN cupons cup ON f.cupom_id = cup.id
        WHERE f.cliente_id = $1
        ORDER BY f.updated_at DESC`,
       [req.params.clienteId]
@@ -557,7 +557,7 @@ router.get('/cupons/validar/:codigo', async (req, res) => {
     const { cliente_id } = req.query;
 
     const cupomResult = await pool.query(
-      'SELECT * FROM protese.cupons WHERE codigo = $1 AND is_active = true',
+      'SELECT * FROM cupons WHERE codigo = $1 AND is_active = true',
       [req.params.codigo.toUpperCase()]
     );
 
@@ -581,7 +581,7 @@ router.get('/cupons/validar/:codigo', async (req, res) => {
     if (cupom.regra_uso === 'unico') {
       // Verificar se já foi usado
       const usoCheck = await pool.query(
-        'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+        'SELECT COUNT(*) as total FROM cupons_usados WHERE cupom_id = $1',
         [cupom.id]
       );
 
@@ -593,7 +593,7 @@ router.get('/cupons/validar/:codigo', async (req, res) => {
     if (cupom.regra_uso === 'limitado') {
       // Verificar se atingiu o limite
       const usoCheck = await pool.query(
-        'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+        'SELECT COUNT(*) as total FROM cupons_usados WHERE cupom_id = $1',
         [cupom.id]
       );
 
@@ -609,7 +609,7 @@ router.get('/cupons/validar/:codigo', async (req, res) => {
 
       // Verificar se cliente tem fidelidade liberada
       const fidelidadeCheck = await pool.query(
-        'SELECT * FROM protese.fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
+        'SELECT * FROM fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
         [cliente_id, cupom.id]
       );
 
@@ -664,7 +664,7 @@ router.post('/cupons/usar', async (req, res) => {
 
     // Verificar se cupom existe
     const cupomCheck = await client.query(
-      'SELECT * FROM protese.cupons WHERE id = $1',
+      'SELECT * FROM cupons WHERE id = $1',
       [cupom_id]
     );
 
@@ -677,7 +677,7 @@ router.post('/cupons/usar', async (req, res) => {
 
     // Registrar uso do cupom
     await client.query(
-      `INSERT INTO protese.cupons_usados 
+      `INSERT INTO cupons_usados 
        (cupom_id, cliente_id, venda_id, valor_desconto_aplicado, created_by)
        VALUES ($1, $2, $3, $4, $5)`,
       [
@@ -692,7 +692,7 @@ router.post('/cupons/usar', async (req, res) => {
     // Se for cupom de fidelidade, marcar como usado e resetar contagem
     if (cupom.regra_uso === 'fidelidade' && cliente_id) {
       await client.query(
-        `UPDATE protese.fidelidades 
+        `UPDATE fidelidades 
          SET cupom_usado = true,
              data_uso = CURRENT_DATE,
              quantidade_atual = 0,
@@ -734,7 +734,7 @@ router.post('/fidelidades/atualizar', async (req, res) => {
 
     // Buscar cupons de fidelidade ativos
     const cuponsFidelidade = await client.query(
-      `SELECT * FROM protese.cupons 
+      `SELECT * FROM cupons 
        WHERE regra_uso = 'fidelidade' 
        AND is_active = true
        AND (validade_inicio IS NULL OR validade_inicio <= CURRENT_DATE)
@@ -743,12 +743,12 @@ router.post('/fidelidades/atualizar', async (req, res) => {
 
     // Buscar serviços e produtos da venda
     const servicosResult = await client.query(
-      'SELECT servico_id FROM protese.vendas_servicos WHERE venda_id = $1',
+      'SELECT servico_id FROM vendas_servicos WHERE venda_id = $1',
       [venda_id]
     );
 
     const produtosResult = await client.query(
-      'SELECT produto_id, quantidade FROM protese.vendas_produtos WHERE venda_id = $1',
+      'SELECT produto_id, quantidade FROM vendas_produtos WHERE venda_id = $1',
       [venda_id]
     );
 
@@ -777,8 +777,8 @@ router.post('/fidelidades/atualizar', async (req, res) => {
         case 'agendamento_pago':
           // Verificar se há agendamento vinculado e se foi pago
           const agendamentoCheck = await client.query(
-            `SELECT a.id FROM protese.vendas_servicos vs
-             INNER JOIN protese.agendamentos a ON vs.agendamento_id = a.id
+            `SELECT a.id FROM vendas_servicos vs
+             INNER JOIN agendamentos a ON vs.agendamento_id = a.id
              WHERE vs.venda_id = $1 AND a.id IS NOT NULL`,
             [venda_id]
           );
@@ -790,14 +790,14 @@ router.post('/fidelidades/atualizar', async (req, res) => {
 
       // Buscar ou criar registro de fidelidade
       let fidelidadeResult = await client.query(
-        'SELECT * FROM protese.fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
+        'SELECT * FROM fidelidades WHERE cliente_id = $1 AND cupom_id = $2',
         [cliente_id, cupom.id]
       );
 
       if (fidelidadeResult.rows.length === 0) {
         // Criar novo registro
         await client.query(
-          `INSERT INTO protese.fidelidades 
+          `INSERT INTO fidelidades 
            (cliente_id, cupom_id, tipo_contagem, quantidade_atual, quantidade_necessaria)
            VALUES ($1, $2, $3, 1, $4)`,
           [cliente_id, cupom.id, cupom.regra_fidelidade, cupom.quantidade_fidelidade]
@@ -809,7 +809,7 @@ router.post('/fidelidades/atualizar', async (req, res) => {
         if (fidelidade.cupom_usado) {
           // Resetar e começar a contar novamente
           await client.query(
-            `UPDATE protese.fidelidades 
+            `UPDATE fidelidades 
              SET quantidade_atual = 1,
                  cupom_liberado = false,
                  cupom_usado = false,
@@ -830,7 +830,7 @@ router.post('/fidelidades/atualizar', async (req, res) => {
           }
 
           await client.query(
-            `UPDATE protese.fidelidades 
+            `UPDATE fidelidades 
              SET quantidade_atual = $1,
                  cupom_liberado = $2,
                  data_liberacao = CASE WHEN $2 = true AND data_liberacao IS NULL THEN CURRENT_DATE ELSE data_liberacao END,
