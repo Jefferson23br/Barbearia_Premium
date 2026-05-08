@@ -8,9 +8,7 @@ const allowedOrigins = process.env.CORS_ORIGINS
       'http://localhost:3001',
       'http://localhost:3002',
       'http://127.0.0.1:3000',
-      'https://app.protesecapilarcuiaba.com.br',
-      'https://admin.protesecapilarcuiaba.com.br',
-      'https://www.protesecapilarcuiaba.com.br',
+      'https://appbarber.auctusconsultoria.com.br',
     ];
 
 const corsOptions = {
