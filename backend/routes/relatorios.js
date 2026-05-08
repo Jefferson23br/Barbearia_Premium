@@ -16,7 +16,7 @@ const verificarPermissao = async (req, res, next) => {
 
   if (usuarioTipo !== 'master') {
     const permissoesResult = await pool.query(
-      'SELECT emissao_relatorios_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+      'SELECT emissao_relatorios_ver FROM permissoes_usuarios WHERE usuario_id = $1',
       [usuarioId]
     );
 
@@ -43,11 +43,11 @@ router.get('/vendas-totais', verificarPermissao, async (req, res) => {
     const result = await pool.query(
       `SELECT 
         COUNT(*) as total_vendas,
-        COALESCE(SUM(valor_liquido), 0)::numeric as valor_total,
-        COALESCE(SUM(valor_total), 0)::numeric as valor_bruto_total,
-        COALESCE(SUM(desconto_valor), 0)::numeric as total_descontos,
-        COALESCE(AVG(valor_liquido), 0)::numeric as ticket_medio
-      FROM protese.vendas
+        COALESCE(SUM(valor_liquido), 0) as valor_total,
+        COALESCE(SUM(valor_total), 0) as valor_bruto_total,
+        COALESCE(SUM(desconto_valor), 0) as total_descontos,
+        COALESCE(AVG(valor_liquido), 0) as ticket_medio
+      FROM vendas
       WHERE data_venda >= $1 AND data_venda <= $2
         AND status != 'cancelada'`,
       [data_inicio, data_fim]
@@ -58,8 +58,8 @@ router.get('/vendas-totais', verificarPermissao, async (req, res) => {
       `SELECT 
         data_venda,
         COUNT(*) as quantidade_vendas,
-        COALESCE(SUM(valor_liquido), 0)::numeric as valor_total
-      FROM protese.vendas
+        COALESCE(SUM(valor_liquido), 0) as valor_total
+      FROM vendas
       WHERE data_venda >= $1 AND data_venda <= $2
         AND status != 'cancelada'
       GROUP BY data_venda
@@ -97,10 +97,10 @@ router.get('/vendas-por-servico', verificarPermissao, async (req, res) => {
         s.descricao as servico_descricao,
         COUNT(DISTINCT v.id) as quantidade_vendas,
         COUNT(vs.id) as quantidade_itens,
-        COALESCE(SUM(vs.valor), 0)::numeric as valor_total
-      FROM protese.vendas_servicos vs
-      INNER JOIN protese.vendas v ON vs.venda_id = v.id
-      INNER JOIN protese.servicos s ON vs.servico_id = s.id
+        COALESCE(SUM(vs.valor), 0) as valor_total
+      FROM vendas_servicos vs
+      INNER JOIN vendas v ON vs.venda_id = v.id
+      INNER JOIN servicos s ON vs.servico_id = s.id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
       GROUP BY s.id, s.nome, s.descricao
@@ -137,10 +137,10 @@ router.get('/vendas-por-produto', verificarPermissao, async (req, res) => {
         p.descricao as produto_descricao,
         COUNT(DISTINCT v.id) as quantidade_vendas,
         COALESCE(SUM(vp.quantidade), 0) as quantidade_total_vendida,
-        COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total
-      FROM protese.vendas_produtos vp
-      INNER JOIN protese.vendas v ON vp.venda_id = v.id
-      INNER JOIN protese.produtos p ON vp.produto_id = p.id
+        COALESCE(SUM(vp.valor_total), 0) as valor_total
+      FROM vendas_produtos vp
+      INNER JOIN vendas v ON vp.venda_id = v.id
+      INNER JOIN produtos p ON vp.produto_id = p.id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
       GROUP BY p.id, p.codigo, p.descricao
@@ -175,10 +175,10 @@ router.get('/vendas-por-funcionario-totais', verificarPermissao, async (req, res
         f.id,
         f.nome_completo as funcionario_nome,
         COUNT(DISTINCT v.id) as quantidade_vendas,
-        COALESCE(SUM(v.valor_liquido), 0)::numeric as valor_total,
-        COALESCE(AVG(v.valor_liquido), 0)::numeric as ticket_medio
-      FROM protese.vendas v
-      INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+        COALESCE(SUM(v.valor_liquido), 0) as valor_total,
+        COALESCE(AVG(v.valor_liquido), 0) as ticket_medio
+      FROM vendas v
+      INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
     `;
@@ -227,10 +227,10 @@ router.get('/vendas-por-funcionario-separado', verificarPermissao, async (req, r
         'servico' as tipo,
         COUNT(DISTINCT v.id) as quantidade_vendas,
         COUNT(vs.id) as quantidade_itens,
-        COALESCE(SUM(vs.valor), 0)::numeric as valor_total
-      FROM protese.vendas v
-      INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-      INNER JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
+        COALESCE(SUM(vs.valor), 0) as valor_total
+      FROM vendas v
+      INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+      INNER JOIN vendas_servicos vs ON v.id = vs.venda_id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
     `;
@@ -253,10 +253,10 @@ router.get('/vendas-por-funcionario-separado', verificarPermissao, async (req, r
         'produto' as tipo,
         COUNT(DISTINCT v.id) as quantidade_vendas,
         COALESCE(SUM(vp.quantidade), 0) as quantidade_itens,
-        COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total
-      FROM protese.vendas v
-      INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-      INNER JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
+        COALESCE(SUM(vp.valor_total), 0) as valor_total
+      FROM vendas v
+      INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+      INNER JOIN vendas_produtos vp ON v.id = vp.venda_id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
     `;
@@ -311,11 +311,11 @@ router.get('/vendas-por-funcionario-tipo', verificarPermissao, async (req, res) 
           'servico' as tipo_item,
           COUNT(DISTINCT v.id) as quantidade_vendas,
           COUNT(vs.id) as quantidade_itens,
-          COALESCE(SUM(vs.valor), 0)::numeric as valor_total
-        FROM protese.vendas v
-        INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-        INNER JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
-        INNER JOIN protese.servicos s ON vs.servico_id = s.id
+          COALESCE(SUM(vs.valor), 0) as valor_total
+        FROM vendas v
+        INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+        INNER JOIN vendas_servicos vs ON v.id = vs.venda_id
+        INNER JOIN servicos s ON vs.servico_id = s.id
         WHERE v.data_venda >= $1 AND v.data_venda <= $2
           AND v.status != 'cancelada'
       `;
@@ -342,11 +342,11 @@ router.get('/vendas-por-funcionario-tipo', verificarPermissao, async (req, res) 
           'produto' as tipo_item,
           COUNT(DISTINCT v.id) as quantidade_vendas,
           COALESCE(SUM(vp.quantidade), 0) as quantidade_itens,
-          COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total
-        FROM protese.vendas v
-        INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-        INNER JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
-        INNER JOIN protese.produtos p ON vp.produto_id = p.id
+          COALESCE(SUM(vp.valor_total), 0) as valor_total
+        FROM vendas v
+        INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+        INNER JOIN vendas_produtos vp ON v.id = vp.venda_id
+        INNER JOIN produtos p ON vp.produto_id = p.id
         WHERE v.data_venda >= $1 AND v.data_venda <= $2
           AND v.status != 'cancelada'
       `;
@@ -409,11 +409,11 @@ router.get('/despesas-totais', verificarPermissao, async (req, res) => {
     const result = await pool.query(
       `SELECT 
         COUNT(*) as total_despesas,
-        COALESCE(SUM(valor_liquido), 0)::numeric as valor_total,
-        COALESCE(SUM(valor_bruto), 0)::numeric as valor_bruto_total,
-        COALESCE(SUM(CASE WHEN status = 'paga' THEN valor_liquido ELSE 0 END), 0)::numeric as valor_pago,
-        COALESCE(SUM(CASE WHEN status = 'pendente' THEN valor_liquido ELSE 0 END), 0)::numeric as valor_pendente
-      FROM protese.despesas
+        COALESCE(SUM(valor_liquido), 0) as valor_total,
+        COALESCE(SUM(valor_bruto), 0) as valor_bruto_total,
+        COALESCE(SUM(CASE WHEN status = 'paga' THEN valor_liquido ELSE 0 END), 0) as valor_pago,
+        COALESCE(SUM(CASE WHEN status = 'pendente' THEN valor_liquido ELSE 0 END), 0) as valor_pendente
+      FROM despesas
       WHERE data_emissao >= $1 AND data_emissao <= $2
         AND status != 'cancelada'`,
       [data_inicio, data_fim]
@@ -424,8 +424,8 @@ router.get('/despesas-totais', verificarPermissao, async (req, res) => {
       `SELECT 
         data_emissao,
         COUNT(*) as quantidade_despesas,
-        COALESCE(SUM(valor_liquido), 0)::numeric as valor_total
-      FROM protese.despesas
+        COALESCE(SUM(valor_liquido), 0) as valor_total
+      FROM despesas
       WHERE data_emissao >= $1 AND data_emissao <= $2
         AND status != 'cancelada'
       GROUP BY data_emissao
@@ -462,11 +462,11 @@ router.get('/despesas-por-tipo', verificarPermissao, async (req, res) => {
         c.nome as categoria_nome,
         c.codigo as categoria_codigo,
         COUNT(d.id) as quantidade_despesas,
-        COALESCE(SUM(d.valor_liquido), 0)::numeric as valor_total,
-        COALESCE(SUM(CASE WHEN d.status = 'paga' THEN d.valor_liquido ELSE 0 END), 0)::numeric as valor_pago,
-        COALESCE(SUM(CASE WHEN d.status = 'pendente' THEN d.valor_liquido ELSE 0 END), 0)::numeric as valor_pendente
-      FROM protese.despesas d
-      LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
+        COALESCE(SUM(d.valor_liquido), 0) as valor_total,
+        COALESCE(SUM(CASE WHEN d.status = 'paga' THEN d.valor_liquido ELSE 0 END), 0) as valor_pago,
+        COALESCE(SUM(CASE WHEN d.status = 'pendente' THEN d.valor_liquido ELSE 0 END), 0) as valor_pendente
+      FROM despesas d
+      LEFT JOIN categorias_custo c ON d.categoria_custo_id = c.id
       WHERE d.data_emissao >= $1 AND d.data_emissao <= $2
         AND d.status != 'cancelada'
     `;
@@ -512,9 +512,9 @@ router.get('/produtos-estoque', verificarPermissao, async (req, res) => {
         p.preco_venda,
         p.ultimo_preco_custo,
         COALESCE(p.quantidade_estoque, 0) as quantidade_estoque,
-        COALESCE(p.quantidade_estoque * p.preco_venda, 0)::numeric as valor_total_estoque,
+        COALESCE(p.quantidade_estoque * p.preco_venda, 0) as valor_total_estoque,
         p.is_active
-      FROM protese.produtos p
+      FROM produtos p
       ORDER BY p.descricao ASC`
     );
 
@@ -527,8 +527,8 @@ router.get('/produtos-estoque', verificarPermissao, async (req, res) => {
         COUNT(CASE WHEN is_active = true THEN 1 END) as produtos_ativos,
         COUNT(CASE WHEN is_active = false THEN 1 END) as produtos_inativos,
         COALESCE(SUM(quantidade_estoque), 0) as quantidade_total,
-        COALESCE(SUM(quantidade_estoque * preco_venda), 0)::numeric as valor_total_estoque
-      FROM protese.produtos`
+        COALESCE(SUM(quantidade_estoque * preco_venda), 0) as valor_total_estoque
+      FROM produtos`
     );
 
     res.json({
@@ -560,11 +560,11 @@ router.get('/produtos-vendidos', verificarPermissao, async (req, res) => {
         p.descricao as produto_descricao,
         COUNT(DISTINCT v.id) as quantidade_vendas,
         COALESCE(SUM(vp.quantidade), 0) as quantidade_total_vendida,
-        COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total,
-        COALESCE(AVG(vp.valor_unitario), 0)::numeric as preco_medio
-      FROM protese.vendas_produtos vp
-      INNER JOIN protese.vendas v ON vp.venda_id = v.id
-      INNER JOIN protese.produtos p ON vp.produto_id = p.id
+        COALESCE(SUM(vp.valor_total), 0) as valor_total,
+        COALESCE(AVG(vp.valor_unitario), 0) as preco_medio
+      FROM vendas_produtos vp
+      INNER JOIN vendas v ON vp.venda_id = v.id
+      INNER JOIN produtos p ON vp.produto_id = p.id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
       GROUP BY p.id, p.codigo, p.descricao
@@ -601,15 +601,15 @@ router.get('/clientes-compras', verificarPermissao, async (req, res) => {
         c.email as cliente_email,
         c.cpf as cliente_cpf,
         COUNT(DISTINCT v.id) as quantidade_compras,
-        COALESCE(SUM(v.valor_liquido), 0)::numeric as valor_total_gasto,
+        COALESCE(SUM(v.valor_liquido), 0) as valor_total_gasto,
         COALESCE(SUM(CASE WHEN vs.id IS NOT NULL THEN 1 ELSE 0 END), 0) as quantidade_servicos,
         COALESCE(SUM(CASE WHEN vp.id IS NOT NULL THEN 1 ELSE 0 END), 0) as quantidade_produtos,
-        COALESCE(SUM(vs.valor), 0)::numeric as valor_servicos,
-        COALESCE(SUM(vp.valor_total), 0)::numeric as valor_produtos
-      FROM protese.usuarios_clientes c
-      INNER JOIN protese.vendas v ON v.cliente_id = c.id
-      LEFT JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
-      LEFT JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
+        COALESCE(SUM(vs.valor), 0) as valor_servicos,
+        COALESCE(SUM(vp.valor_total), 0) as valor_produtos
+      FROM usuarios_clientes c
+      INNER JOIN vendas v ON v.cliente_id = c.id
+      LEFT JOIN vendas_servicos vs ON v.id = vs.venda_id
+      LEFT JOIN vendas_produtos vp ON v.id = vp.venda_id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND v.status != 'cancelada'
       GROUP BY c.id, c.nome_completo, c.email, c.cpf
@@ -638,11 +638,11 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
         const result = await pool.query(
           `SELECT 
             COUNT(*) as total_vendas,
-            COALESCE(SUM(valor_liquido), 0)::numeric as valor_total,
-            COALESCE(SUM(valor_total), 0)::numeric as valor_bruto_total,
-            COALESCE(SUM(desconto_valor), 0)::numeric as total_descontos,
-            COALESCE(AVG(valor_liquido), 0)::numeric as ticket_medio
-          FROM protese.vendas
+            COALESCE(SUM(valor_liquido), 0) as valor_total,
+            COALESCE(SUM(valor_total), 0) as valor_bruto_total,
+            COALESCE(SUM(desconto_valor), 0) as total_descontos,
+            COALESCE(AVG(valor_liquido), 0) as ticket_medio
+          FROM vendas
           WHERE data_venda >= $1 AND data_venda <= $2
             AND status != 'cancelada'`,
           [data_inicio, data_fim]
@@ -651,8 +651,8 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
           `SELECT 
             data_venda,
             COUNT(*) as quantidade_vendas,
-            COALESCE(SUM(valor_liquido), 0)::numeric as valor_total
-          FROM protese.vendas
+            COALESCE(SUM(valor_liquido), 0) as valor_total
+          FROM vendas
           WHERE data_venda >= $1 AND data_venda <= $2
             AND status != 'cancelada'
           GROUP BY data_venda
@@ -668,10 +668,10 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             s.id, s.nome as servico_nome, s.descricao as servico_descricao,
             COUNT(DISTINCT v.id) as quantidade_vendas,
             COUNT(vs.id) as quantidade_itens,
-            COALESCE(SUM(vs.valor), 0)::numeric as valor_total
-          FROM protese.vendas_servicos vs
-          INNER JOIN protese.vendas v ON vs.venda_id = v.id
-          INNER JOIN protese.servicos s ON vs.servico_id = s.id
+            COALESCE(SUM(vs.valor), 0) as valor_total
+          FROM vendas_servicos vs
+          INNER JOIN vendas v ON vs.venda_id = v.id
+          INNER JOIN servicos s ON vs.servico_id = s.id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
           GROUP BY s.id, s.nome, s.descricao
@@ -687,10 +687,10 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             p.id, p.codigo, p.descricao as produto_descricao,
             COUNT(DISTINCT v.id) as quantidade_vendas,
             COALESCE(SUM(vp.quantidade), 0) as quantidade_total_vendida,
-            COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total
-          FROM protese.vendas_produtos vp
-          INNER JOIN protese.vendas v ON vp.venda_id = v.id
-          INNER JOIN protese.produtos p ON vp.produto_id = p.id
+            COALESCE(SUM(vp.valor_total), 0) as valor_total
+          FROM vendas_produtos vp
+          INNER JOIN vendas v ON vp.venda_id = v.id
+          INNER JOIN produtos p ON vp.produto_id = p.id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
           GROUP BY p.id, p.codigo, p.descricao
@@ -704,11 +704,11 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
         const result = await pool.query(
           `SELECT 
             COUNT(*) as total_despesas,
-            COALESCE(SUM(valor_liquido), 0)::numeric as valor_total,
-            COALESCE(SUM(valor_bruto), 0)::numeric as valor_bruto_total,
-            COALESCE(SUM(CASE WHEN status = 'paga' THEN valor_liquido ELSE 0 END), 0)::numeric as valor_pago,
-            COALESCE(SUM(CASE WHEN status = 'pendente' THEN valor_liquido ELSE 0 END), 0)::numeric as valor_pendente
-          FROM protese.despesas
+            COALESCE(SUM(valor_liquido), 0) as valor_total,
+            COALESCE(SUM(valor_bruto), 0) as valor_bruto_total,
+            COALESCE(SUM(CASE WHEN status = 'paga' THEN valor_liquido ELSE 0 END), 0) as valor_pago,
+            COALESCE(SUM(CASE WHEN status = 'pendente' THEN valor_liquido ELSE 0 END), 0) as valor_pendente
+          FROM despesas
           WHERE data_emissao >= $1 AND data_emissao <= $2
             AND status != 'cancelada'`,
           [data_inicio, data_fim]
@@ -717,8 +717,8 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
           `SELECT 
             data_emissao,
             COUNT(*) as quantidade_despesas,
-            COALESCE(SUM(valor_liquido), 0)::numeric as valor_total
-          FROM protese.despesas
+            COALESCE(SUM(valor_liquido), 0) as valor_total
+          FROM despesas
           WHERE data_emissao >= $1 AND data_emissao <= $2
             AND status != 'cancelada'
           GROUP BY data_emissao
@@ -733,10 +733,10 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
           SELECT 
             f.id, f.nome_completo as funcionario_nome,
             COUNT(DISTINCT v.id) as quantidade_vendas,
-            COALESCE(SUM(v.valor_liquido), 0)::numeric as valor_total,
-            COALESCE(AVG(v.valor_liquido), 0)::numeric as ticket_medio
-          FROM protese.vendas v
-          INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+            COALESCE(SUM(v.valor_liquido), 0) as valor_total,
+            COALESCE(AVG(v.valor_liquido), 0) as ticket_medio
+          FROM vendas v
+          INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
         `;
@@ -757,10 +757,10 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             'servico' as tipo,
             COUNT(DISTINCT v.id) as quantidade_vendas,
             COUNT(vs.id) as quantidade_itens,
-            COALESCE(SUM(vs.valor), 0)::numeric as valor_total
-          FROM protese.vendas v
-          INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-          INNER JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
+            COALESCE(SUM(vs.valor), 0) as valor_total
+          FROM vendas v
+          INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+          INNER JOIN vendas_servicos vs ON v.id = vs.venda_id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
         `;
@@ -777,10 +777,10 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             'produto' as tipo,
             COUNT(DISTINCT v.id) as quantidade_vendas,
             COALESCE(SUM(vp.quantidade), 0) as quantidade_itens,
-            COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total
-          FROM protese.vendas v
-          INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-          INNER JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
+            COALESCE(SUM(vp.valor_total), 0) as valor_total
+          FROM vendas v
+          INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+          INNER JOIN vendas_produtos vp ON v.id = vp.venda_id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
         `;
@@ -808,11 +808,11 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
               s.id as item_id, s.nome as item_nome, 'servico' as tipo_item,
               COUNT(DISTINCT v.id) as quantidade_vendas,
               COUNT(vs.id) as quantidade_itens,
-              COALESCE(SUM(vs.valor), 0)::numeric as valor_total
-            FROM protese.vendas v
-            INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-            INNER JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
-            INNER JOIN protese.servicos s ON vs.servico_id = s.id
+              COALESCE(SUM(vs.valor), 0) as valor_total
+            FROM vendas v
+            INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+            INNER JOIN vendas_servicos vs ON v.id = vs.venda_id
+            INNER JOIN servicos s ON vs.servico_id = s.id
             WHERE v.data_venda >= $1 AND v.data_venda <= $2
               AND v.status != 'cancelada'
           `;
@@ -831,11 +831,11 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
               p.id as item_id, p.descricao as item_nome, 'produto' as tipo_item,
               COUNT(DISTINCT v.id) as quantidade_vendas,
               COALESCE(SUM(vp.quantidade), 0) as quantidade_itens,
-              COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total
-            FROM protese.vendas v
-            INNER JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-            INNER JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
-            INNER JOIN protese.produtos p ON vp.produto_id = p.id
+              COALESCE(SUM(vp.valor_total), 0) as valor_total
+            FROM vendas v
+            INNER JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+            INNER JOIN vendas_produtos vp ON v.id = vp.venda_id
+            INNER JOIN produtos p ON vp.produto_id = p.id
             WHERE v.data_venda >= $1 AND v.data_venda <= $2
               AND v.status != 'cancelada'
           `;
@@ -867,11 +867,11 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
           SELECT 
             c.id as categoria_id, c.nome as categoria_nome, c.codigo as categoria_codigo,
             COUNT(d.id) as quantidade_despesas,
-            COALESCE(SUM(d.valor_liquido), 0)::numeric as valor_total,
-            COALESCE(SUM(CASE WHEN d.status = 'paga' THEN d.valor_liquido ELSE 0 END), 0)::numeric as valor_pago,
-            COALESCE(SUM(CASE WHEN d.status = 'pendente' THEN d.valor_liquido ELSE 0 END), 0)::numeric as valor_pendente
-          FROM protese.despesas d
-          LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
+            COALESCE(SUM(d.valor_liquido), 0) as valor_total,
+            COALESCE(SUM(CASE WHEN d.status = 'paga' THEN d.valor_liquido ELSE 0 END), 0) as valor_pago,
+            COALESCE(SUM(CASE WHEN d.status = 'pendente' THEN d.valor_liquido ELSE 0 END), 0) as valor_pendente
+          FROM despesas d
+          LEFT JOIN categorias_custo c ON d.categoria_custo_id = c.id
           WHERE d.data_emissao >= $1 AND d.data_emissao <= $2
             AND d.status != 'cancelada'
         `;
@@ -892,9 +892,9 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             p.id, p.codigo, p.descricao, p.fornecedor,
             p.preco_venda, p.ultimo_preco_custo, 
             COALESCE(p.quantidade_estoque, 0) as quantidade_estoque,
-            COALESCE(p.quantidade_estoque * p.preco_venda, 0)::numeric as valor_total_estoque,
+            COALESCE(p.quantidade_estoque * p.preco_venda, 0) as valor_total_estoque,
             p.is_active
-          FROM protese.produtos p
+          FROM produtos p
           ORDER BY p.descricao ASC`
         );
         // Resumo incluindo TODOS os produtos (ativos e inativos)
@@ -906,8 +906,8 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             COUNT(CASE WHEN is_active = true THEN 1 END) as produtos_ativos,
             COUNT(CASE WHEN is_active = false THEN 1 END) as produtos_inativos,
             COALESCE(SUM(quantidade_estoque), 0) as quantidade_total,
-            COALESCE(SUM(quantidade_estoque * preco_venda), 0)::numeric as valor_total_estoque
-          FROM protese.produtos`
+            COALESCE(SUM(quantidade_estoque * preco_venda), 0) as valor_total_estoque
+          FROM produtos`
         );
         return { resumo: resumo.rows[0], produtos: result.rows };
       }
@@ -918,11 +918,11 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             p.id, p.codigo, p.descricao as produto_descricao,
             COUNT(DISTINCT v.id) as quantidade_vendas,
             COALESCE(SUM(vp.quantidade), 0) as quantidade_total_vendida,
-            COALESCE(SUM(vp.valor_total), 0)::numeric as valor_total,
-            COALESCE(AVG(vp.valor_unitario), 0)::numeric as preco_medio
-          FROM protese.vendas_produtos vp
-          INNER JOIN protese.vendas v ON vp.venda_id = v.id
-          INNER JOIN protese.produtos p ON vp.produto_id = p.id
+            COALESCE(SUM(vp.valor_total), 0) as valor_total,
+            COALESCE(AVG(vp.valor_unitario), 0) as preco_medio
+          FROM vendas_produtos vp
+          INNER JOIN vendas v ON vp.venda_id = v.id
+          INNER JOIN produtos p ON vp.produto_id = p.id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
           GROUP BY p.id, p.codigo, p.descricao
@@ -938,15 +938,15 @@ const buscarDadosRelatorioInterno = async (tipo, queryParams) => {
             c.id as cliente_id, c.nome_completo as cliente_nome,
             c.email as cliente_email, c.cpf as cliente_cpf,
             COUNT(DISTINCT v.id) as quantidade_compras,
-            COALESCE(SUM(v.valor_liquido), 0)::numeric as valor_total_gasto,
+            COALESCE(SUM(v.valor_liquido), 0) as valor_total_gasto,
             COALESCE(SUM(CASE WHEN vs.id IS NOT NULL THEN 1 ELSE 0 END), 0) as quantidade_servicos,
             COALESCE(SUM(CASE WHEN vp.id IS NOT NULL THEN 1 ELSE 0 END), 0) as quantidade_produtos,
-            COALESCE(SUM(vs.valor), 0)::numeric as valor_servicos,
-            COALESCE(SUM(vp.valor_total), 0)::numeric as valor_produtos
-          FROM protese.usuarios_clientes c
-          INNER JOIN protese.vendas v ON v.cliente_id = c.id
-          LEFT JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
-          LEFT JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
+            COALESCE(SUM(vs.valor), 0) as valor_servicos,
+            COALESCE(SUM(vp.valor_total), 0) as valor_produtos
+          FROM usuarios_clientes c
+          INNER JOIN vendas v ON v.cliente_id = c.id
+          LEFT JOIN vendas_servicos vs ON v.id = vs.venda_id
+          LEFT JOIN vendas_produtos vp ON v.id = vp.venda_id
           WHERE v.data_venda >= $1 AND v.data_venda <= $2
             AND v.status != 'cancelada'
           GROUP BY c.id, c.nome_completo, c.email, c.cpf
