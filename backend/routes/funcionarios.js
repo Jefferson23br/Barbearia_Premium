@@ -18,7 +18,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
   try {
     // Processar foto se enviada
     if (req.file) {
-      const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+      const baseUrl = process.env.API_BASE_URL || 'https://api6.auctusconsultoria.com.br';
       fotoUrl = `${baseUrl}/uploads/fotos/${req.file.filename}`;
     }
 
@@ -91,7 +91,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
       // Verificar se CPF já existe
       const cpfCheck = await pool.query(
-        'SELECT id FROM protese.usuarios_administrativos WHERE cpf = $1',
+        'SELECT id FROM usuarios_administrativos WHERE cpf = $1',
         [cpfLimpo]
       );
       if (cpfCheck.rows.length > 0) {
@@ -101,7 +101,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
     // Verificar se email já existe
     const emailCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_administrativos WHERE email = $1',
+      'SELECT id FROM usuarios_administrativos WHERE email = $1',
       [email]
     );
     if (emailCheck.rows.length > 0) {
@@ -160,7 +160,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
     // Inserir no banco de dados
     console.log('💾 [POST FUNCIONARIO] Tentando inserir no banco de dados...');
-    const queryInsert = `INSERT INTO protese.usuarios_administrativos (
+    const queryInsert = `INSERT INTO usuarios_administrativos (
         nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep,
         nis, data_admissao, tipo_contrato, salario, tipo_usuario, senha_hash, is_active, foto_url
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
@@ -277,7 +277,7 @@ router.get('/', async (req, res) => {
     if (tipoUsuarioRequisicao === 'master') {
       // Master vê TODOS os funcionários (incluindo outros Masters)
       query = `SELECT id, nome_completo, email, cpf, tipo_usuario, is_active, created_at
-               FROM protese.usuarios_administrativos
+               FROM usuarios_administrativos
                WHERE is_active = true
                ORDER BY nome_completo ASC`;
       console.log('👥 Query para Master: retornando TODOS os funcionários ativos');
@@ -286,7 +286,7 @@ router.get('/', async (req, res) => {
       // Retorna TODOS os funcionários ativos (não apenas os que têm agendamentos)
       // IMPORTANTE: Comparar com LOWER() para garantir case-insensitive
       query = `SELECT id, nome_completo, email, cpf, tipo_usuario, is_active, created_at
-               FROM protese.usuarios_administrativos
+               FROM usuarios_administrativos
                WHERE LOWER(tipo_usuario) != 'master' AND is_active = true
                ORDER BY nome_completo ASC`;
       console.log('👥 Query para não-Master: retornando funcionários ativos (exceto masters)');
@@ -325,7 +325,7 @@ router.get('/:id', async (req, res) => {
     const result = await pool.query(
       `SELECT id, nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep, 
               tipo_usuario, is_active, foto_url, created_at, updated_at
-       FROM protese.usuarios_administrativos
+       FROM usuarios_administrativos
        WHERE id = $1`,
       [id]
     );
@@ -378,7 +378,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
 
     // Buscar funcionário atual
     const funcionarioAtual = await pool.query(
-      'SELECT * FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT * FROM usuarios_administrativos WHERE id = $1',
       [id]
     );
 
@@ -401,7 +401,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
         }
       }
 
-      const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+      const baseUrl = process.env.API_BASE_URL || 'https://api6.auctusconsultoria.com.br';
       fotoUrl = `${baseUrl}/uploads/fotos/${req.file.filename}`;
     }
 
@@ -422,7 +422,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
 
       // Verificar se CPF já existe em outro funcionário
       const cpfCheck = await pool.query(
-        'SELECT id FROM protese.usuarios_administrativos WHERE cpf = $1 AND id != $2',
+        'SELECT id FROM usuarios_administrativos WHERE cpf = $1 AND id != $2',
         [cpfLimpo, id]
       );
       if (cpfCheck.rows.length > 0) {
@@ -433,7 +433,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
     // Verificar se email já existe em outro funcionário
     if (email) {
       const emailCheck = await pool.query(
-        'SELECT id FROM protese.usuarios_administrativos WHERE email = $1 AND id != $2',
+        'SELECT id FROM usuarios_administrativos WHERE email = $1 AND id != $2',
         [email, id]
       );
       if (emailCheck.rows.length > 0) {
@@ -579,7 +579,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
     updates.push(`updated_at = NOW()`);
     params.push(id);
 
-    const query = `UPDATE protese.usuarios_administrativos SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+    const query = `UPDATE usuarios_administrativos SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
     const result = await pool.query(query, params);
 
     // Registrar log
@@ -624,7 +624,7 @@ router.delete('/:id', async (req, res) => {
 
     // Verificar se funcionário existe
     const funcionarioCheck = await pool.query(
-      'SELECT id, nome_completo, email FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT id, nome_completo, email FROM usuarios_administrativos WHERE id = $1',
       [id]
     );
 
@@ -635,7 +635,7 @@ router.delete('/:id', async (req, res) => {
     const funcionario = funcionarioCheck.rows[0];
 
     // Deletar funcionário do banco
-    await pool.query('DELETE FROM protese.usuarios_administrativos WHERE id = $1', [id]);
+    await pool.query('DELETE FROM usuarios_administrativos WHERE id = $1', [id]);
 
     // Registrar log
     const usuarioId = req.headers['x-user-id'] || null;
