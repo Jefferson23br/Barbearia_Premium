@@ -10,7 +10,7 @@ const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM protese.configuracoes ORDER BY updated_at DESC LIMIT 1`
+      `SELECT * FROM configuracoes ORDER BY updated_at DESC LIMIT 1`
     );
 
     if (result.rows.length === 0) {
@@ -89,7 +89,7 @@ router.put('/', async (req, res) => {
 
     // Verificar se já existe configuração
     const existe = await pool.query(
-      'SELECT id FROM protese.configuracoes ORDER BY updated_at DESC LIMIT 1'
+      'SELECT id FROM configuracoes ORDER BY updated_at DESC LIMIT 1'
     );
 
     const valoresConfig = {
@@ -141,7 +141,7 @@ router.put('/', async (req, res) => {
       // Atualizar configuração existente
       const configId = existe.rows[0].id;
       await pool.query(
-        `UPDATE protese.configuracoes SET
+        `UPDATE configuracoes SET
           nome_empresarial = $1,
           nome_fantasia = $2,
           cnpj = $3,
@@ -235,7 +235,7 @@ router.put('/', async (req, res) => {
     } else {
       // Criar nova configuração
       await pool.query(
-        `INSERT INTO protese.configuracoes (
+        `INSERT INTO configuracoes (
           nome_empresarial, nome_fantasia, cnpj, cnae, cnae_secundario, inscricao_estadual,
           endereco_rua, endereco_numero, endereco_complemento, endereco_bairro, endereco_cidade, endereco_estado, endereco_cep,
           email_contato, telefone_principal, telefone_secundario, whatsapp,
@@ -321,7 +321,7 @@ router.put('/', async (req, res) => {
 
     // Buscar configuração atualizada
     const configAtualizada = await pool.query(
-      `SELECT * FROM protese.configuracoes ORDER BY updated_at DESC LIMIT 1`
+      `SELECT * FROM configuracoes ORDER BY updated_at DESC LIMIT 1`
     );
     const config = configAtualizada.rows[0];
 
