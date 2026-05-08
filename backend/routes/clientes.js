@@ -66,7 +66,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
     // Verificar se email já existe
     const emailCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_clientes WHERE email = $1',
+      'SELECT id FROM usuarios_clientes WHERE email = $1',
       [email]
     );
     if (emailCheck.rows.length > 0) {
@@ -76,7 +76,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
     // Verificar se CPF já existe
     const cpfCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_clientes WHERE cpf = $1',
+      'SELECT id FROM usuarios_clientes WHERE cpf = $1',
       [cpfLimpo]
     );
     if (cpfCheck.rows.length > 0) {
@@ -92,7 +92,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
 
     // Inserir no banco de dados
     const result = await pool.query(
-      `INSERT INTO protese.usuarios_clientes (
+      `INSERT INTO usuarios_clientes (
         nome_completo, email, cpf, rg, rua, numero, complemento,
         bairro, cidade, estado, cep, senha_hash, foto_url, funcionario_responsavel_id
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
@@ -194,8 +194,8 @@ router.get('/', async (req, res) => {
         uc.created_at, 
         uc.updated_at,
         ua.nome_completo as funcionario_responsavel_nome
-       FROM protese.usuarios_clientes uc
-       LEFT JOIN protese.usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
+       FROM usuarios_clientes uc
+       LEFT JOIN usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
        ORDER BY uc.updated_at DESC, uc.nome_completo ASC`
     );
 
@@ -239,8 +239,8 @@ router.get('/:id', async (req, res) => {
         uc.created_at, 
         uc.updated_at,
         ua.nome_completo as funcionario_responsavel_nome
-       FROM protese.usuarios_clientes uc
-       LEFT JOIN protese.usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
+       FROM usuarios_clientes uc
+       LEFT JOIN usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
        WHERE uc.id = $1`,
       [id]
     );
@@ -272,7 +272,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
 
     // Verificar se cliente existe e buscar dados completos (para log)
     const clienteCheck = await pool.query(
-      'SELECT id, nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep, foto_url, is_active, funcionario_responsavel_id FROM protese.usuarios_clientes WHERE id = $1',
+      'SELECT id, nome_completo, email, cpf, rg, rua, numero, complemento, bairro, cidade, estado, cep, foto_url, is_active, funcionario_responsavel_id FROM usuarios_clientes WHERE id = $1',
       [id]
     );
 
@@ -297,7 +297,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
         }
       }
 
-      const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+      const baseUrl = process.env.API_BASE_URL || 'https://api6.auctusconsultoria.com.br';
       fotoUrl = `${baseUrl}/uploads/fotos/${req.file.filename}`;
     }
 
@@ -344,7 +344,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
 
     // Verificar se email já existe em outro cliente
     const emailCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_clientes WHERE email = $1 AND id != $2',
+      'SELECT id FROM usuarios_clientes WHERE email = $1 AND id != $2',
       [email, id]
     );
     if (emailCheck.rows.length > 0) {
@@ -354,7 +354,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
 
     // Verificar se CPF já existe em outro cliente
     const cpfCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_clientes WHERE cpf = $1 AND id != $2',
+      'SELECT id FROM usuarios_clientes WHERE cpf = $1 AND id != $2',
       [cpfLimpo, id]
     );
     if (cpfCheck.rows.length > 0) {
@@ -376,7 +376,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
     let params;
 
     if (senhaHash) {
-      query = `UPDATE protese.usuarios_clientes SET
+      query = `UPDATE usuarios_clientes SET
         nome_completo = $1,
         email = $2,
         cpf = $3,
@@ -415,7 +415,7 @@ router.put('/:id', upload.single('foto'), async (req, res) => {
         id,
       ];
     } else {
-      query = `UPDATE protese.usuarios_clientes SET
+      query = `UPDATE usuarios_clientes SET
         nome_completo = $1,
         email = $2,
         cpf = $3,
@@ -538,7 +538,7 @@ router.delete('/:id', async (req, res) => {
 
     // Verificar se cliente existe e obter foto
     const clienteCheck = await pool.query(
-      'SELECT id, foto_url FROM protese.usuarios_clientes WHERE id = $1',
+      'SELECT id, foto_url FROM usuarios_clientes WHERE id = $1',
       [id]
     );
 
@@ -550,7 +550,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar dados completos do cliente antes de deletar (para log)
     const clienteCompleto = await pool.query(
-      'SELECT nome_completo, email, cpf FROM protese.usuarios_clientes WHERE id = $1',
+      'SELECT nome_completo, email, cpf FROM usuarios_clientes WHERE id = $1',
       [id]
     );
     const dadosCliente = clienteCompleto.rows[0] || {};
@@ -568,7 +568,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Deletar cliente do banco
-    await pool.query('DELETE FROM protese.usuarios_clientes WHERE id = $1', [id]);
+    await pool.query('DELETE FROM usuarios_clientes WHERE id = $1', [id]);
 
     // Registrar log
     const usuarioId = req.headers['x-user-id'] || null;
