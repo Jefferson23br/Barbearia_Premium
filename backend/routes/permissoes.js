@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../config/database');
 const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 const isOracle = Boolean(process.env.ORACLE_HOST);
-const schemaPrefix = isOracle ? '' : 'protese.';
+const schemaPrefix = isOracle ? '' : '';
 
 const CAMPOS_PERMISSOES = [
   'dashboard_ver', 'agenda_ver', 'agenda_editar', 'agenda_excluir',
