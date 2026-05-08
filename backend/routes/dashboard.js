@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 
     // Buscar tipo de usuário do banco
     const usuarioResult = await pool.query(
-      'SELECT id, tipo_usuario, nome_completo FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT id, tipo_usuario, nome_completo FROM usuarios_administrativos WHERE id = $1',
       [usuarioId]
     );
 
@@ -40,10 +40,10 @@ router.get('/', async (req, res) => {
     // 1. Receitas do Mês
     let queryReceitas = `
       SELECT 
-        COALESCE(SUM(CASE WHEN r.status = 'paga' THEN r.valor_pago ELSE 0 END), 0)::numeric as receitas_pagas,
-        COALESCE(SUM(CASE WHEN r.status = 'pendente' THEN r.valor_vencimento ELSE 0 END), 0)::numeric as receitas_pendentes,
-        COALESCE(SUM(r.valor_vencimento), 0)::numeric as receitas_total
-      FROM protese.receitas r
+        COALESCE(SUM(CASE WHEN r.status = 'paga' THEN r.valor_pago ELSE 0 END), 0) as receitas_pagas,
+        COALESCE(SUM(CASE WHEN r.status = 'pendente' THEN r.valor_vencimento ELSE 0 END), 0) as receitas_pendentes,
+        COALESCE(SUM(r.valor_vencimento), 0) as receitas_total
+      FROM receitas r
       WHERE r.data_emissao >= $1
         AND r.data_emissao <= $2
         AND r.status != 'cancelada'
@@ -56,7 +56,7 @@ router.get('/', async (req, res) => {
       queryReceitas += `
         AND r.venda_id IS NOT NULL
         AND EXISTS (
-          SELECT 1 FROM protese.vendas v 
+          SELECT 1 FROM vendas v 
           WHERE v.id = r.venda_id 
           AND v.funcionario_id = $3
         )
@@ -69,10 +69,10 @@ router.get('/', async (req, res) => {
     // 2. Despesas do Mês
     let queryDespesas = `
       SELECT 
-        COALESCE(SUM(CASE WHEN d.status = 'paga' THEN d.valor_liquido ELSE 0 END), 0)::numeric as despesas_pagas,
-        COALESCE(SUM(CASE WHEN d.status = 'pendente' THEN d.valor_liquido ELSE 0 END), 0)::numeric as despesas_pendentes,
-        COALESCE(SUM(d.valor_liquido), 0)::numeric as despesas_total
-      FROM protese.despesas d
+        COALESCE(SUM(CASE WHEN d.status = 'paga' THEN d.valor_liquido ELSE 0 END), 0) as despesas_pagas,
+        COALESCE(SUM(CASE WHEN d.status = 'pendente' THEN d.valor_liquido ELSE 0 END), 0) as despesas_pendentes,
+        COALESCE(SUM(d.valor_liquido), 0) as despesas_total
+      FROM despesas d
       WHERE d.data_emissao >= $1
         AND d.data_emissao <= $2
         AND d.status != 'cancelada'
@@ -92,7 +92,7 @@ router.get('/', async (req, res) => {
     let totalClientes = 0;
     if (isProprietario) {
       const clientesResult = await pool.query(
-        'SELECT COUNT(*) as total FROM protese.usuarios_clientes WHERE is_active = true'
+        'SELECT COUNT(*) as total FROM usuarios_clientes WHERE is_active = true'
       );
       totalClientes = parseInt(clientesResult.rows[0].total) || 0;
     }
@@ -100,7 +100,7 @@ router.get('/', async (req, res) => {
     // 4. Agendamentos Hoje
     let queryAgendamentos = `
       SELECT COUNT(*) as total
-      FROM protese.agendamentos a
+      FROM agendamentos a
       WHERE a.data_agendamento = $1
         AND a.status IN ('agendado', 'confirmado')
     `;
@@ -123,9 +123,9 @@ router.get('/', async (req, res) => {
         v.valor_liquido,
         c.nome_completo as cliente_nome,
         f.nome_completo as funcionario_nome
-      FROM protese.vendas v
-      LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-      LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+      FROM vendas v
+      LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+      LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
       WHERE v.status != 'cancelada'
     `;
 
@@ -150,10 +150,10 @@ router.get('/', async (req, res) => {
         c.nome_completo as cliente_nome,
         f.nome_completo as funcionario_nome,
         s.nome as servico_nome
-      FROM protese.agendamentos a
-      INNER JOIN protese.usuarios_clientes c ON a.cliente_id = c.id
-      INNER JOIN protese.usuarios_administrativos f ON a.funcionario_id = f.id
-      INNER JOIN protese.servicos s ON a.servico_id = s.id
+      FROM agendamentos a
+      INNER JOIN usuarios_clientes c ON a.cliente_id = c.id
+      INNER JOIN usuarios_administrativos f ON a.funcionario_id = f.id
+      INNER JOIN servicos s ON a.servico_id = s.id
       WHERE a.data_agendamento >= $1
         AND a.status IN ('agendado', 'confirmado')
     `;
