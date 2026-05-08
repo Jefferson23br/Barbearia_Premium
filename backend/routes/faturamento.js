@@ -16,7 +16,7 @@ router.get('/movimentacoes', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT faturamento_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -53,10 +53,10 @@ router.get('/movimentacoes', async (req, res) => {
           'venda' as tipo_movimentacao,
           v.created_at,
           v.updated_at
-        FROM protese.vendas v
-        LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-        LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-        LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+        FROM vendas v
+        LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+        LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+        LEFT JOIN contas ca ON v.caixa_id = ca.id
         WHERE 1=1
       `;
       const paramsVendas = [];
@@ -81,7 +81,7 @@ router.get('/movimentacoes', async (req, res) => {
       }
 
       if (search) {
-        queryVendas += ` AND (v.ticket ILIKE $${paramIndex} OR c.nome_completo ILIKE $${paramIndex} OR f.nome_completo ILIKE $${paramIndex})`;
+        queryVendas += ` AND (v.ticket LIKE $${paramIndex} OR c.nome_completo LIKE $${paramIndex} OR f.nome_completo LIKE $${paramIndex})`;
         paramsVendas.push(`%${search}%`);
         paramIndex++;
       }
@@ -113,8 +113,8 @@ router.get('/movimentacoes', async (req, res) => {
           'despesa' as tipo_movimentacao,
           d.created_at,
           d.updated_at
-        FROM protese.despesas d
-        LEFT JOIN protese.contas ca ON d.caixa_id = ca.id
+        FROM despesas d
+        LEFT JOIN contas ca ON d.caixa_id = ca.id
         WHERE 1=1
       `;
       const paramsDespesas = [];
@@ -139,7 +139,7 @@ router.get('/movimentacoes', async (req, res) => {
       }
 
       if (search) {
-        queryDespesas += ` AND (d.ticket ILIKE $${paramIndex} OR d.fornecedor ILIKE $${paramIndex} OR d.descricao ILIKE $${paramIndex})`;
+        queryDespesas += ` AND (d.ticket LIKE $${paramIndex} OR d.fornecedor LIKE $${paramIndex} OR d.descricao LIKE $${paramIndex})`;
         paramsDespesas.push(`%${search}%`);
         paramIndex++;
       }
@@ -171,8 +171,8 @@ router.get('/movimentacoes', async (req, res) => {
           'estoque' as tipo_movimentacao,
           e.created_at,
           e.created_at as updated_at
-        FROM protese.estoque_movimentacoes e
-        JOIN protese.produtos p ON e.produto_id = p.id
+        FROM estoque_movimentacoes e
+        JOIN produtos p ON e.produto_id = p.id
         WHERE 1=1
       `;
       const paramsEstoque = [];
@@ -191,7 +191,7 @@ router.get('/movimentacoes', async (req, res) => {
       }
 
       if (search) {
-        queryEstoque += ` AND (p.codigo ILIKE $${paramIndex} OR p.descricao ILIKE $${paramIndex} OR e.fornecedor ILIKE $${paramIndex})`;
+        queryEstoque += ` AND (p.codigo LIKE $${paramIndex} OR p.descricao LIKE $${paramIndex} OR e.fornecedor LIKE $${paramIndex})`;
         paramsEstoque.push(`%${search}%`);
         paramIndex++;
       }
@@ -241,7 +241,7 @@ router.get('/venda/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -254,9 +254,9 @@ router.get('/venda/:id', async (req, res) => {
       `SELECT v.*, 
               c.nome_completo as cliente_nome,
               f.nome_completo as funcionario_nome
-       FROM protese.vendas v
-       LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-       LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+       FROM vendas v
+       LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+       LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
        WHERE v.id = $1`,
       [req.params.id]
     );
@@ -268,16 +268,16 @@ router.get('/venda/:id', async (req, res) => {
     // Buscar serviços e produtos
     const servicosResult = await pool.query(
       `SELECT vs.*, s.nome as servico_nome
-       FROM protese.vendas_servicos vs
-       JOIN protese.servicos s ON vs.servico_id = s.id
+       FROM vendas_servicos vs
+       JOIN servicos s ON vs.servico_id = s.id
        WHERE vs.venda_id = $1`,
       [req.params.id]
     );
 
     const produtosResult = await pool.query(
       `SELECT vp.*, p.descricao as produto_descricao, p.codigo as produto_codigo
-       FROM protese.vendas_produtos vp
-       JOIN protese.produtos p ON vp.produto_id = p.id
+       FROM vendas_produtos vp
+       JOIN produtos p ON vp.produto_id = p.id
        WHERE vp.venda_id = $1`,
       [req.params.id]
     );
@@ -311,7 +311,7 @@ router.put('/venda/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -336,7 +336,7 @@ router.put('/venda/:id', async (req, res) => {
     } = req.body;
 
     await client.query(
-      `UPDATE protese.vendas 
+      `UPDATE vendas 
        SET data_venda = $1,
            cliente_id = $2,
            funcionario_id = $3,
@@ -407,7 +407,7 @@ router.delete('/venda/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -421,7 +421,7 @@ router.delete('/venda/:id', async (req, res) => {
 
     // Buscar venda completa
     const vendaResult = await client.query(
-      'SELECT * FROM protese.vendas WHERE id = $1',
+      'SELECT * FROM vendas WHERE id = $1',
       [vendaId]
     );
 
@@ -434,14 +434,14 @@ router.delete('/venda/:id', async (req, res) => {
 
     // Buscar produtos da venda para reverter estoque
     const produtosVenda = await client.query(
-      'SELECT produto_id, quantidade FROM protese.vendas_produtos WHERE venda_id = $1',
+      'SELECT produto_id, quantidade FROM vendas_produtos WHERE venda_id = $1',
       [vendaId]
     );
 
     // Reverter estoque
     for (const produtoVenda of produtosVenda.rows) {
       await client.query(
-        `UPDATE protese.produtos 
+        `UPDATE produtos 
          SET quantidade_estoque = quantidade_estoque + $1,
              updated_at = CURRENT_TIMESTAMP
          WHERE id = $2`,
@@ -451,7 +451,7 @@ router.delete('/venda/:id', async (req, res) => {
 
     // Buscar receitas vinculadas para excluir movimentações de caixa
     const receitasVenda = await client.query(
-      'SELECT id, movimentacao_caixa_id FROM protese.receitas WHERE venda_id = $1',
+      'SELECT id, movimentacao_caixa_id FROM receitas WHERE venda_id = $1',
       [vendaId]
     );
 
@@ -459,7 +459,7 @@ router.delete('/venda/:id', async (req, res) => {
     for (const receita of receitasVenda.rows) {
       if (receita.movimentacao_caixa_id) {
         await client.query(
-          'DELETE FROM protese.movimentacoes_caixa WHERE id = $1',
+          'DELETE FROM movimentacoes_caixa WHERE id = $1',
           [receita.movimentacao_caixa_id]
         );
       }
@@ -468,13 +468,13 @@ router.delete('/venda/:id', async (req, res) => {
     // Excluir assinaturas_clientes vinculadas a esta venda
     // IMPORTANTE: Se for venda de assinatura, a assinatura do cliente também será excluída
     await client.query(
-      'DELETE FROM protese.assinaturas_clientes WHERE venda_id = $1',
+      'DELETE FROM assinaturas_clientes WHERE venda_id = $1',
       [vendaId]
     );
 
     // Excluir cupons usados vinculados a esta venda
     await client.query(
-      'DELETE FROM protese.cupons_usados WHERE venda_id = $1',
+      'DELETE FROM cupons_usados WHERE venda_id = $1',
       [vendaId]
     );
 
@@ -483,16 +483,16 @@ router.delete('/venda/:id', async (req, res) => {
     if (venda.cliente_id) {
       try {
         const relacionamentosCRM = await client.query(
-          `SELECT id FROM protese.crm_relacionamentos 
+          `SELECT id FROM crm_relacionamentos 
            WHERE cliente_id = $1 
-           AND (descricao ILIKE '%' || $2 || '%' OR observacoes ILIKE '%' || $2 || '%')`,
+           AND (descricao LIKE '%' || $2 || '%' OR observacoes LIKE '%' || $2 || '%')`,
           [venda.cliente_id, venda.ticket]
         );
 
         // Excluir relacionamentos encontrados
         for (const relacionamento of relacionamentosCRM.rows) {
           await client.query(
-            'DELETE FROM protese.crm_relacionamentos WHERE id = $1',
+            'DELETE FROM crm_relacionamentos WHERE id = $1',
             [relacionamento.id]
           );
         }
@@ -504,24 +504,24 @@ router.delete('/venda/:id', async (req, res) => {
 
     // Excluir notas fiscais vinculadas (se houver)
     const notasFiscais = await client.query(
-      'SELECT id FROM protese.notas_fiscais WHERE venda_id = $1',
+      'SELECT id FROM notas_fiscais WHERE venda_id = $1',
       [vendaId]
     );
     for (const notaFiscal of notasFiscais.rows) {
       await client.query(
-        'DELETE FROM protese.notas_fiscais WHERE id = $1',
+        'DELETE FROM notas_fiscais WHERE id = $1',
         [notaFiscal.id]
       );
     }
 
     // Excluir receitas vinculadas
     await client.query(
-      'DELETE FROM protese.receitas WHERE venda_id = $1',
+      'DELETE FROM receitas WHERE venda_id = $1',
       [vendaId]
     );
 
     // Excluir vendas_assinaturas, vendas_produtos, vendas_servicos (CASCADE vai cuidar disso)
-    await client.query('DELETE FROM protese.vendas WHERE id = $1', [vendaId]);
+    await client.query('DELETE FROM vendas WHERE id = $1', [vendaId]);
 
     await client.query('COMMIT');
 
@@ -557,7 +557,7 @@ router.get('/despesa/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -567,7 +567,7 @@ router.get('/despesa/:id', async (req, res) => {
     }
 
     const despesaResult = await pool.query(
-      `SELECT * FROM protese.despesas WHERE id = $1`,
+      `SELECT * FROM despesas WHERE id = $1`,
       [req.params.id]
     );
 
@@ -577,7 +577,7 @@ router.get('/despesa/:id', async (req, res) => {
 
     // Buscar parcelas
     const parcelasResult = await pool.query(
-      `SELECT * FROM protese.despesas_parcelas WHERE despesa_id = $1 ORDER BY numero_parcela ASC`,
+      `SELECT * FROM despesas_parcelas WHERE despesa_id = $1 ORDER BY numero_parcela ASC`,
       [req.params.id]
     );
 
@@ -609,7 +609,7 @@ router.put('/despesa/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -634,7 +634,7 @@ router.put('/despesa/:id', async (req, res) => {
     } = req.body;
 
     await client.query(
-      `UPDATE protese.despesas 
+      `UPDATE despesas 
        SET data_emissao = $1,
            data_vencimento = $2,
            fornecedor = $3,
@@ -704,7 +704,7 @@ router.delete('/despesa/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -716,7 +716,7 @@ router.delete('/despesa/:id', async (req, res) => {
 
     // Buscar despesa para log
     const despesaResult = await client.query(
-      'SELECT ticket FROM protese.despesas WHERE id = $1',
+      'SELECT ticket FROM despesas WHERE id = $1',
       [req.params.id]
     );
 
@@ -726,7 +726,7 @@ router.delete('/despesa/:id', async (req, res) => {
     }
 
     // Excluir despesa (CASCADE vai excluir parcelas)
-    await client.query('DELETE FROM protese.despesas WHERE id = $1', [req.params.id]);
+    await client.query('DELETE FROM despesas WHERE id = $1', [req.params.id]);
 
     await client.query('COMMIT');
 
@@ -762,7 +762,7 @@ router.get('/estoque/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -773,8 +773,8 @@ router.get('/estoque/:id', async (req, res) => {
 
     const estoqueResult = await pool.query(
       `SELECT e.*, p.codigo, p.descricao as produto_descricao
-       FROM protese.estoque_movimentacoes e
-       JOIN protese.produtos p ON e.produto_id = p.id
+       FROM estoque_movimentacoes e
+       JOIN produtos p ON e.produto_id = p.id
        WHERE e.id = $1`,
       [req.params.id]
     );
@@ -806,7 +806,7 @@ router.put('/estoque/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -818,7 +818,7 @@ router.put('/estoque/:id', async (req, res) => {
 
     // Buscar movimentação atual para reverter quantidade
     const movimentacaoAtual = await client.query(
-      'SELECT produto_id, quantidade FROM protese.estoque_movimentacoes WHERE id = $1',
+      'SELECT produto_id, quantidade FROM estoque_movimentacoes WHERE id = $1',
       [req.params.id]
     );
 
@@ -840,13 +840,13 @@ router.put('/estoque/:id', async (req, res) => {
 
     // Reverter quantidade antiga
     await client.query(
-      'UPDATE protese.produtos SET quantidade_estoque = quantidade_estoque - $1 WHERE id = $2',
+      'UPDATE produtos SET quantidade_estoque = quantidade_estoque - $1 WHERE id = $2',
       [quantidadeAntiga, produto_id]
     );
 
     // Atualizar movimentação
     await client.query(
-      `UPDATE protese.estoque_movimentacoes 
+      `UPDATE estoque_movimentacoes 
        SET produto_id = $1,
            fornecedor = $2,
            quantidade = $3,
@@ -868,7 +868,7 @@ router.put('/estoque/:id', async (req, res) => {
     // Aplicar nova quantidade
     const produtoFinal = novo_produto_id || produto_id;
     await client.query(
-      'UPDATE protese.produtos SET quantidade_estoque = quantidade_estoque + $1, ultimo_preco_custo = $2, fornecedor = $3 WHERE id = $4',
+      'UPDATE produtos SET quantidade_estoque = quantidade_estoque + $1, ultimo_preco_custo = $2, fornecedor = $3 WHERE id = $4',
       [quantidade, valor_unitario, fornecedor, produtoFinal]
     );
 
@@ -911,7 +911,7 @@ router.delete('/estoque/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -922,7 +922,7 @@ router.delete('/estoque/:id', async (req, res) => {
     }
 
     // Excluir movimentação (trigger vai reverter quantidade)
-    await client.query('DELETE FROM protese.estoque_movimentacoes WHERE id = $1', [req.params.id]);
+    await client.query('DELETE FROM estoque_movimentacoes WHERE id = $1', [req.params.id]);
 
     await client.query('COMMIT');
 
@@ -963,7 +963,7 @@ router.post('/romaneios', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT faturamento_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -983,7 +983,7 @@ router.post('/romaneios', async (req, res) => {
     // Gerar número do romaneio
     let numeroRomaneio;
     try {
-      const numeroResult = await client.query('SELECT protese.gerar_proximo_numero_romaneio() as numero');
+      const numeroResult = await client.query('SELECT gerar_proximo_numero_romaneio() as numero');
       if (!numeroResult.rows || numeroResult.rows.length === 0 || !numeroResult.rows[0].numero) {
         throw new Error('Função retornou resultado vazio');
       }
@@ -994,7 +994,7 @@ router.post('/romaneios', async (req, res) => {
       const anoAtual = new Date().getFullYear();
       try {
         const ultimoResult = await client.query(
-          `SELECT numero_romaneio FROM protese.romaneios 
+          `SELECT numero_romaneio FROM romaneios 
            WHERE numero_romaneio LIKE $1 
            ORDER BY numero_romaneio DESC LIMIT 1`,
           [`ROM-${anoAtual}-%`]
@@ -1018,7 +1018,7 @@ router.post('/romaneios', async (req, res) => {
 
     // Criar romaneio (status padrão: fechado, pois já foi criado com itens)
     const romaneioResult = await client.query(
-      `INSERT INTO protese.romaneios 
+      `INSERT INTO romaneios 
        (numero_romaneio, tipo_romaneio, data_romaneio, descricao, observacoes, status, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
@@ -1043,13 +1043,21 @@ router.post('/romaneios', async (req, res) => {
       }
       
       try {
-        await client.query(
-          `INSERT INTO protese.romaneios_itens 
-           (romaneio_id, tipo_movimentacao, movimentacao_id, created_by)
-           VALUES ($1, $2, $3, $4)
-           ON CONFLICT (romaneio_id, tipo_movimentacao, movimentacao_id) DO NOTHING`,
-          [romaneio.id, item.tipo, item.id, usuarioId]
+        const existingItemResult = await client.query(
+          `SELECT id
+           FROM romaneios_itens
+           WHERE romaneio_id = $1 AND tipo_movimentacao = $2 AND movimentacao_id = $3`,
+          [romaneio.id, item.tipo, item.id]
         );
+
+        if ((existingItemResult.rows || []).length === 0) {
+          await client.query(
+            `INSERT INTO romaneios_itens 
+             (romaneio_id, tipo_movimentacao, movimentacao_id, created_by)
+             VALUES ($1, $2, $3, $4)`,
+            [romaneio.id, item.tipo, item.id, usuarioId]
+          );
+        }
       } catch (itemError) {
         console.error('Erro ao inserir item do romaneio:', itemError);
         await client.query('ROLLBACK');
@@ -1101,7 +1109,7 @@ router.get('/romaneios', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT faturamento_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -1113,8 +1121,8 @@ router.get('/romaneios', async (req, res) => {
     const result = await pool.query(
       `SELECT r.*, 
               COUNT(ri.id) as total_itens
-       FROM protese.romaneios r
-       LEFT JOIN protese.romaneios_itens ri ON r.id = ri.romaneio_id
+       FROM romaneios r
+       LEFT JOIN romaneios_itens ri ON r.id = ri.romaneio_id
        GROUP BY r.id
        ORDER BY r.data_romaneio DESC, r.created_at DESC`
     );
@@ -1137,7 +1145,7 @@ router.get('/romaneios/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT faturamento_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT faturamento_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -1147,7 +1155,7 @@ router.get('/romaneios/:id', async (req, res) => {
     }
 
     const romaneioResult = await pool.query(
-      'SELECT * FROM protese.romaneios WHERE id = $1',
+      'SELECT * FROM romaneios WHERE id = $1',
       [req.params.id]
     );
 
@@ -1156,7 +1164,7 @@ router.get('/romaneios/:id', async (req, res) => {
     }
 
     const itensResult = await pool.query(
-      'SELECT * FROM protese.romaneios_itens WHERE romaneio_id = $1',
+      'SELECT * FROM romaneios_itens WHERE romaneio_id = $1',
       [req.params.id]
     );
 
