@@ -1,4 +1,4 @@
-// API de Teste Simples - Prótese Capilar Cuiabá
+// API de Teste Simples - Barbearia Premium
 // Arquivo: server.js
 // Porta: 3001
 
@@ -10,9 +10,7 @@ const PORT = 3001;
 
 // Configurar CORS para aceitar frontends
 const allowedOrigins = [
-  'https://www.protesecapilarcuiaba.com.br',
-  'https://app.protesecapilarcuiaba.com.br',
-  'https://admin.protesecapilarcuiaba.com.br',
+  'https://appbarber.auctusconsultoria.com.br',
   'http://localhost:3000',
   'http://localhost:3002',
 ];
@@ -34,7 +32,7 @@ app.use(express.json());
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'API Prótese Capilar funcionando!',
+    message: 'API Barbearia Premium funcionando!',
     timestamp: new Date(),
     uptime: process.uptime()
   });
@@ -44,7 +42,7 @@ app.get('/health', (req, res) => {
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'API Prótese Capilar Cuiabá',
+    message: 'API Barbearia Premium',
     version: '1.0.0',
     timestamp: new Date()
   });

@@ -27,7 +27,7 @@ ssh root@82.25.65.201
 cd /home/cyberpanel/app/backend
 
 # Reinicie o servidor com PM2
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 
 # Ou se o nome for diferente, verifique com:
 pm2 list
@@ -40,7 +40,7 @@ pm2 restart [nome-do-processo]
 
 ```bash
 pm2 status
-pm2 logs api-protese-capilar --lines 50
+pm2 logs api-barbearia-premium --lines 50
 ```
 
 ### 3. Verificar se a Rota está Funcionando
@@ -48,7 +48,7 @@ pm2 logs api-protese-capilar --lines 50
 Após reiniciar, teste a rota:
 
 ```bash
-curl -X GET https://api.protesecapilarcuiaba.com.br/api/v1/balanco-demonstrativo/categorias \
+curl -X GET https://api6.auctusconsultoria.com.br/api/v1/balanco-demonstrativo/categorias \
   -H "x-user-id: [seu-user-id]" \
   -H "x-user-tipo: master"
 ```
@@ -77,7 +77,7 @@ Após reiniciar o servidor backend, o módulo deve funcionar normalmente:
 
 1. Verifique os logs do PM2:
    ```bash
-   pm2 logs api-protese-capilar --lines 100
+   pm2 logs api-barbearia-premium --lines 100
    ```
 
 2. Verifique se o arquivo foi enviado corretamente para a VPS:

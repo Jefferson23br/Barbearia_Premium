@@ -38,7 +38,7 @@ export default function Home() {
           />
           <div>
             <h2 className="text-amber-500 font-bold text-lg">Barbearia Premium</h2>
-            <p className="text-gray-400 text-xs">Cuiabá - MT</p>
+            <p className="text-gray-400 text-xs">Barbearia Premium</p>
           </div>
         </div>
 

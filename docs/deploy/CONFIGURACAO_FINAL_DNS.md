@@ -4,7 +4,7 @@
 
 ### VPS Backend (82.25.65.201)
 - API + PostgreSQL
-- Domínio: api.protesecapilarcuiaba.com.br
+- Domínio: api6.auctusconsultoria.com.br
 - Porta: 3001
 
 ### VPS Frontend (45.132.157.28)
@@ -71,10 +71,10 @@ TTL:           Auto
 ## 🎯 Resumo Visual
 
 ```
-api.protesecapilarcuiaba.com.br    → 82.25.65.201 (Backend)
-www.protesecapilarcuiaba.com.br    → 45.132.157.28 (Frontend)
-app.protesecapilarcuiaba.com.br    → 45.132.157.28 (Frontend)
-admin.protesecapilarcuiaba.com.br  → 45.132.157.28 (Frontend)
+api6.auctusconsultoria.com.br    → 82.25.65.201 (Backend)
+appbarber.auctusconsultoria.com.br    → 45.132.157.28 (Frontend)
+appbarber.auctusconsultoria.com.br    → 45.132.157.28 (Frontend)
+appbarber.auctusconsultoria.com.br  → 45.132.157.28 (Frontend)
 ```
 
 ---
@@ -112,8 +112,8 @@ Após adicionar os registros, aguardar **2-4 horas** para DNS propagar.
 
 ```powershell
 # No PowerShell
-nslookup api.protesecapilarcuiaba.com.br
-nslookup www.protesecapilarcuiaba.com.br
+nslookup api6.auctusconsultoria.com.br
+nslookup appbarber.auctusconsultoria.com.br
 ```
 
 Deve retornar os IPs corretos!

@@ -7,7 +7,7 @@
 IP: 82.25.65.201
 Uso: API + PostgreSQL
 Sistema: AlmaLinux 9
-Domínio: api.protesecapilarcuiaba.com.br
+Domínio: api6.auctusconsultoria.com.br
 ```
 
 ### VPS 2 - Frontend (45.132.157.28)
@@ -16,9 +16,9 @@ IP: 45.132.157.28
 Uso: Sites estáticos (Frontend)
 Sistema: [Hostinger]
 Domínios: 
-  - www.protesecapilarcuiaba.com.br
-  - app.protesecapilarcuiaba.com.br
-  - admin.protesecapilarcuiaba.com.br
+  - appbarber.auctusconsultoria.com.br
+  - appbarber.auctusconsultoria.com.br
+  - appbarber.auctusconsultoria.com.br
 ```
 
 ---
@@ -70,17 +70,17 @@ PostgreSQL (localhost:5432)
 # /etc/nginx/conf.d/api.conf
 server {
     listen 80;
-    server_name api.protesecapilarcuiaba.com.br;
+    server_name api6.auctusconsultoria.com.br;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name api.protesecapilarcuiaba.com.br;
+    server_name api6.auctusconsultoria.com.br;
     
     # SSL
-    ssl_certificate /etc/letsencrypt/live/api.protesecapilarcuiaba.com.br/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/api.protesecapilarcuiaba.com.br/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/api6.auctusconsultoria.com.br/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api6.auctusconsultoria.com.br/privkey.pem;
     
     location / {
         proxy_pass http://localhost:3001;
@@ -111,15 +111,15 @@ server {
 
 ```
 /var/www/
-├── site-entrada/       → www.protesecapilarcuiaba.com.br
+├── site-entrada/       → appbarber.auctusconsultoria.com.br
 │   ├── index.html
 │   └── _next/
 │
-├── painel-cliente/     → app.protesecapilarcuiaba.com.br
+├── painel-cliente/     → appbarber.auctusconsultoria.com.br
 │   ├── index.html
 │   └── _next/
 │
-└── painel-admin/       → admin.protesecapilarcuiaba.com.br
+└── painel-admin/       → appbarber.auctusconsultoria.com.br
     ├── index.html
     └── _next/
 ```
@@ -130,16 +130,16 @@ server {
 ```nginx
 server {
     listen 80;
-    server_name www.protesecapilarcuiaba.com.br protesecapilarcuiaba.com.br;
+    server_name appbarber.auctusconsultoria.com.br appbarber.auctusconsultoria.com.br;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name www.protesecapilarcuiaba.com.br protesecapilarcuiaba.com.br;
+    server_name appbarber.auctusconsultoria.com.br appbarber.auctusconsultoria.com.br;
     
-    ssl_certificate /etc/letsencrypt/live/www.protesecapilarcuiaba.com.br/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/www.protesecapilarcuiaba.com.br/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/appbarber.auctusconsultoria.com.br/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/appbarber.auctusconsultoria.com.br/privkey.pem;
     
     root /var/www/site-entrada;
     index index.html;
@@ -154,16 +154,16 @@ server {
 ```nginx
 server {
     listen 80;
-    server_name app.protesecapilarcuiaba.com.br;
+    server_name appbarber.auctusconsultoria.com.br;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name app.protesecapilarcuiaba.com.br;
+    server_name appbarber.auctusconsultoria.com.br;
     
-    ssl_certificate /etc/letsencrypt/live/app.protesecapilarcuiaba.com.br/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/app.protesecapilarcuiaba.com.br/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/appbarber.auctusconsultoria.com.br/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/appbarber.auctusconsultoria.com.br/privkey.pem;
     
     root /var/www/painel-cliente;
     index index.html;
@@ -178,16 +178,16 @@ server {
 ```nginx
 server {
     listen 80;
-    server_name admin.protesecapilarcuiaba.com.br;
+    server_name appbarber.auctusconsultoria.com.br;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name admin.protesecapilarcuiaba.com.br;
+    server_name appbarber.auctusconsultoria.com.br;
     
-    ssl_certificate /etc/letsencrypt/live/admin.protesecapilarcuiaba.com.br/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/admin.protesecapilarcuiaba.com.br/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/appbarber.auctusconsultoria.com.br/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/appbarber.auctusconsultoria.com.br/privkey.pem;
     
     root /var/www/painel-admin;
     index index.html;

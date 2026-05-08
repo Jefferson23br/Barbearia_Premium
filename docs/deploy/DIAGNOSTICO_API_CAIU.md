@@ -1,6 +1,6 @@
 # 🚨 Diagnóstico e Recuperação - API Caiu
 
-Guia rápido para diagnosticar e recuperar quando a API `api.protesecapilarcuiaba.com.br` cai.
+Guia rápido para diagnosticar e recuperar quando a API `api6.auctusconsultoria.com.br` cai.
 
 ---
 
@@ -19,10 +19,10 @@ ssh root@82.25.65.201
 pm2 status
 
 # Ver logs da API
-pm2 logs api-protese-capilar --lines 50
+pm2 logs api-barbearia-premium --lines 50
 
 # Ver logs de erro
-pm2 logs api-protese-capilar --err --lines 50
+pm2 logs api-barbearia-premium --err --lines 50
 ```
 
 **Se o processo não estiver rodando:**
@@ -43,10 +43,10 @@ ls -la server.js
 
 ```bash
 # Iniciar
-pm2 start api-protese-capilar
+pm2 start api-barbearia-premium
 
 # Ou reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 
 # Salvar configuração
 pm2 save
@@ -62,7 +62,7 @@ cd /home/cyberpanel/app/backend
 ls -la server.js
 
 # Iniciar manualmente
-pm2 start server.js --name api-protese-capilar
+pm2 start server.js --name api-barbearia-premium
 
 # Salvar
 pm2 save
@@ -174,7 +174,7 @@ cat .env | grep -v PASSWORD
 
 **Se .env não existir ou estiver incorreto:**
 - Recriar o arquivo .env com as variáveis corretas
-- Reiniciar o PM2 após atualizar: `pm2 restart api-protese-capilar --update-env`
+- Reiniciar o PM2 após atualizar: `pm2 restart api-barbearia-premium --update-env`
 
 ---
 
@@ -182,13 +182,13 @@ cat .env | grep -v PASSWORD
 
 ```bash
 # Parar tudo
-pm2 stop api-protese-capilar
+pm2 stop api-barbearia-premium
 sudo systemctl stop lsws
 
 # Iniciar serviços na ordem
 sudo systemctl start postgresql-15
 sudo systemctl start lsws
-pm2 start api-protese-capilar
+pm2 start api-barbearia-premium
 
 # Verificar status
 pm2 status
@@ -208,8 +208,8 @@ curl http://localhost:3001/api/test-db
 
 ### Externamente (do seu computador)
 ```bash
-curl https://api.protesecapilarcuiaba.com.br/health
-curl https://api.protesecapilarcuiaba.com.br/api/test-db
+curl https://api6.auctusconsultoria.com.br/health
+curl https://api6.auctusconsultoria.com.br/api/test-db
 ```
 
 ---
@@ -224,11 +224,11 @@ ssh root@82.25.65.201
 
 # 2. Verificar PM2
 pm2 status
-pm2 logs api-protese-capilar --lines 20
+pm2 logs api-barbearia-premium --lines 20
 
 # 3. Reiniciar API
 cd /home/cyberpanel/app/backend
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 
 # 4. Verificar serviços
 sudo systemctl status postgresql-15
@@ -246,7 +246,7 @@ curl http://localhost:3001/health
 ```bash
 cd /home/cyberpanel/app/backend
 npm install
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 ```
 
 ### Erro: "Port 3001 already in use"
@@ -256,7 +256,7 @@ sudo lsof -i :3001
 # Matar processo (substituir PID)
 sudo kill -9 PID
 # Reiniciar PM2
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 ```
 
 ### Erro: "ECONNREFUSED" (banco de dados)
@@ -272,7 +272,7 @@ sudo systemctl start postgresql-15
 sudo netstat -tlnp | grep 3001
 # Parar PM2 e reiniciar
 pm2 stop all
-pm2 start api-protese-capilar
+pm2 start api-barbearia-premium
 ```
 
 ---
@@ -281,9 +281,9 @@ pm2 start api-protese-capilar
 
 - **IP VPS**: 82.25.65.201
 - **Caminho Backend**: `/home/cyberpanel/app/backend`
-- **Nome PM2**: `api-protese-capilar`
+- **Nome PM2**: `api-barbearia-premium`
 - **Porta API**: 3001
-- **Domínio**: api.protesecapilarcuiaba.com.br
+- **Domínio**: api6.auctusconsultoria.com.br
 
 ---
 
@@ -291,7 +291,7 @@ pm2 start api-protese-capilar
 
 Se você vê **↺ 16** (ou muitos restarts), isso indica instabilidade:
 
-1. **Ver logs de erro**: `pm2 logs api-protese-capilar --err --lines 100`
+1. **Ver logs de erro**: `pm2 logs api-barbearia-premium --err --lines 100`
 2. **Verificar memória**: `pm2 monit` ou `free -h`
 3. **Configurar limites**: Ver guia [PREVENIR_QUEDAS_API.md](./PREVENIR_QUEDAS_API.md)
 

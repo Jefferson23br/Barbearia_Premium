@@ -152,7 +152,7 @@ pm2 startup systemd
 2. Login com credenciais (senha em `sudo cat .litespeed_password`)
 3. **Websites** → **Create Website**
 4. Preencher:
-   - Domain Name: `api.protesecapilarcuiaba.com.br`
+   - Domain Name: `api6.auctusconsultoria.com.br`
    - Email: seu@email.com
    - Package: Default
 5. **Create Website**
@@ -171,7 +171,7 @@ sudo /usr/local/lsws/admin/misc/lsws_extra_config.sh
 ### Opção 1: Via CyberPanel (Interface)
 
 1. CyberPanel → **Websites**
-2. Selecione: `api.protesecapilarcuiaba.com.br`
+2. Selecione: `api6.auctusconsultoria.com.br`
 3. **Manage** → **Rewrite Rules**
 4. Adicionar:
 
@@ -185,7 +185,7 @@ RewriteRule ^(.*)$ http://localhost:3001/$1 [P,L]
 
 ```bash
 # Editar configuração do vHost
-sudo nano /usr/local/lsws/conf/vhosts/api.protesecapilarcuiaba.com.br/vhost.conf
+sudo nano /usr/local/lsws/conf/vhosts/api6.auctusconsultoria.com.br/vhost.conf
 ```
 
 **Adicionar contexto de proxy:**
@@ -212,7 +212,7 @@ sudo systemctl restart lsws
 ### Via CyberPanel (Fácil):
 
 1. CyberPanel → **SSL** → **Manage SSL**
-2. Selecione: `api.protesecapilarcuiaba.com.br`
+2. Selecione: `api6.auctusconsultoria.com.br`
 3. Escolha: **Issue SSL**
 4. Selecione: **Let's Encrypt**
 5. **Issue Now**
@@ -221,8 +221,8 @@ sudo systemctl restart lsws
 
 ```bash
 # CyberPanel usa acme.sh
-/root/.acme.sh/acme.sh --issue -d api.protesecapilarcuiaba.com.br \
-  --webroot /home/api.protesecapilarcuiaba.com.br/public_html
+/root/.acme.sh/acme.sh --issue -d api6.auctusconsultoria.com.br \
+  --webroot /home/api6.auctusconsultoria.com.br/public_html
 ```
 
 ---
@@ -237,7 +237,7 @@ cd /home/root/app/backend
 # Criar package.json
 cat > package.json << 'EOF'
 {
-  "name": "api-protese-capilar",
+  "name": "api-barbearia-premium",
   "version": "1.0.0",
   "scripts": {
     "start": "node server.js"
@@ -270,7 +270,7 @@ app.get('/health', (req, res) => {
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'API Prótese Capilar Cuiabá',
+    message: 'API Barbearia Premium',
     timestamp: new Date()
   });
 });
@@ -281,7 +281,7 @@ app.listen(PORT, () => {
 EOF
 
 # Iniciar com PM2
-pm2 start server.js --name api-protese
+pm2 start server.js --name api-barbearia-premium
 pm2 save
 ```
 
@@ -296,7 +296,7 @@ curl http://localhost:3001/health
 # Deve retornar: {"status":"OK","message":"API Funcionando!"}
 
 # Testar via domínio (após DNS propagar e SSL configurar)
-curl https://api.protesecapilarcuiaba.com.br/health
+curl https://api6.auctusconsultoria.com.br/health
 ```
 
 ---
@@ -315,7 +315,7 @@ pm2 status
 pm2 logs
 
 # Reiniciar API
-pm2 restart api-protese
+pm2 restart api-barbearia-premium
 ```
 
 ---
@@ -331,7 +331,7 @@ VPS Backend (82.25.65.201):
 └── CyberPanel (gerenciamento)
 
 Fluxo:
-Cliente → api.protesecapilarcuiaba.com.br
+Cliente → api6.auctusconsultoria.com.br
     ↓
 OpenLiteSpeed (proxy reverso)
     ↓

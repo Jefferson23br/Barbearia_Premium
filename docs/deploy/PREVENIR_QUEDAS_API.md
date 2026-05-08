@@ -18,7 +18,7 @@ Se a API reiniciou **16 vezes** (↺ 16), isso indica:
 
 ```bash
 # Ver todos os erros
-pm2 logs api-protese-capilar --err --lines 100
+pm2 logs api-barbearia-premium --err --lines 100
 
 # Ver logs do sistema
 journalctl -u pm2-root -n 100
@@ -43,7 +43,7 @@ nano ecosystem.config.js
 ```javascript
 module.exports = {
   apps: [{
-    name: 'api-protese-capilar',
+    name: 'api-barbearia-premium',
     script: './server.js',
     instances: 1,
     exec_mode: 'fork',
@@ -69,7 +69,7 @@ module.exports = {
 
 ```bash
 # Parar processo atual
-pm2 delete api-protese-capilar
+pm2 delete api-barbearia-premium
 
 # Iniciar com novo config
 pm2 start ecosystem.config.js
@@ -133,7 +133,7 @@ nano /home/cyberpanel/app/backend/monitor.sh
 #!/bin/bash
 
 # Verificar uso de memória
-MEM=$(pm2 jlist | jq -r '.[] | select(.name=="api-protese-capilar") | .monit.memory')
+MEM=$(pm2 jlist | jq -r '.[] | select(.name=="api-barbearia-premium") | .monit.memory')
 MEM_MB=$((MEM / 1024 / 1024))
 
 echo "Memória usada: ${MEM_MB}MB"
@@ -145,11 +145,11 @@ if [ $MEM_MB -gt 400 ]; then
 fi
 
 # Verificar se está online
-STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="api-protese-capilar") | .pm2_env.status')
+STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="api-barbearia-premium") | .pm2_env.status')
 if [ "$STATUS" != "online" ]; then
     echo "❌ API está offline! Status: $STATUS"
     # Reiniciar
-    pm2 restart api-protese-capilar
+    pm2 restart api-barbearia-premium
 fi
 ```
 
@@ -223,13 +223,13 @@ Verificar se o proxy reverso está configurado corretamente:
 
 ```bash
 # Ver configuração do vHost
-cat /usr/local/lsws/conf/vhosts/api.protesecapilarcuiaba.com.br/vhost.conf | grep -A 10 "proxy"
+cat /usr/local/lsws/conf/vhosts/api6.auctusconsultoria.com.br/vhost.conf | grep -A 10 "proxy"
 ```
 
 **Se não estiver configurado, adicionar:**
 
 ```bash
-nano /usr/local/lsws/conf/vhosts/api.protesecapilarcuiaba.com.br/vhost.conf
+nano /usr/local/lsws/conf/vhosts/api6.auctusconsultoria.com.br/vhost.conf
 ```
 
 **Adicionar contexto de proxy:**
@@ -267,7 +267,7 @@ Criar dashboard básico:
 ```bash
 # Ver status completo
 pm2 status
-pm2 describe api-protese-capilar
+pm2 describe api-barbearia-premium
 ```
 
 ---
@@ -305,10 +305,10 @@ ab -n 100 -c 10 http://localhost:3001/health
 pm2 status
 
 # Ver logs de erro
-pm2 logs api-protese-capilar --err --lines 50
+pm2 logs api-barbearia-premium --err --lines 50
 
 # Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 
 # Ver uso de recursos
 pm2 monit

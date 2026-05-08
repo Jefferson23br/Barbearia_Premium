@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Barbearia Premium - Site em Desenvolvimento',
   description: 'Estamos preparando algo incrível para você! Em breve, novo site da Barbearia Premium - Transformando vidas através do cabelo.',
-  keywords: ['prótese capilar', 'cuiabá', 'peruca masculina', 'calvície', 'implante capilar'],
+  keywords: ['barbearia premium', 'servicos capilares', 'calvicie', 'tratamento capilar'],
   authors: [{ name: 'Barbearia Premium' }],
   icons: {
     icon: '/images/logo.webp',

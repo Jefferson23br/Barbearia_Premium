@@ -30,7 +30,7 @@ O PM2 **NÃO carrega automaticamente** o arquivo `.env`! Você precisa:
 ### Opção A: Usar --update-env ao reiniciar
 
 ```bash
-pm2 restart api-protese-capilar --update-env
+pm2 restart api-barbearia-premium --update-env
 ```
 
 ### Opção B: Usar dotenv no server.js
@@ -74,7 +74,7 @@ npm install dotenv
 ## 🔍 PASSO 4: Verificar Logs do PM2
 
 ```bash
-pm2 logs api-protese-capilar --lines 20
+pm2 logs api-barbearia-premium --lines 20
 ```
 
 **Procurar por:**
@@ -135,13 +135,13 @@ npm list dotenv || npm install dotenv
 ### 4. Reiniciar PM2:
 
 ```bash
-pm2 restart api-protese-capilar --update-env
+pm2 restart api-barbearia-premium --update-env
 ```
 
 ### 5. Verificar logs:
 
 ```bash
-pm2 logs api-protese-capilar --lines 10
+pm2 logs api-barbearia-premium --lines 10
 ```
 
 **Deve aparecer:**
@@ -170,7 +170,7 @@ ps aux | grep "node.*server.js"
 ```bash
 pm2 env 0
 # Ou
-pm2 describe api-protese-capilar | grep -A 20 "env:"
+pm2 describe api-barbearia-premium | grep -A 20 "env:"
 ```
 
 ### Testar manualmente (fora do PM2):
@@ -194,10 +194,10 @@ head -1 /home/cyberpanel/app/backend/server.js
 cd /home/cyberpanel/app/backend && npm list dotenv
 
 # 3. Reiniciar com --update-env
-pm2 restart api-protese-capilar --update-env
+pm2 restart api-barbearia-premium --update-env
 
 # 4. Ver logs
-pm2 logs api-protese-capilar --lines 10 | grep -i port
+pm2 logs api-barbearia-premium --lines 10 | grep -i port
 
 # 5. Testar
 curl http://localhost:3001/health

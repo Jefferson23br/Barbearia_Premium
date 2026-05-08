@@ -2,14 +2,14 @@
 
 # ============================================
 # Script: Configurar SSL para API
-# Domínio: api.protesecapilarcuiaba.com.br
+# Domínio: api6.auctusconsultoria.com.br
 # VPS: 82.25.65.201
 # ============================================
 
 set -e  # Parar em caso de erro
 
 echo "═══════════════════════════════════════════════════════"
-echo "  Configuração SSL - API Prótese Capilar"
+echo "  Configuração SSL - API Barbearia Premium"
 echo "═══════════════════════════════════════════════════════"
 echo ""
 
@@ -32,7 +32,7 @@ echo ""
 # PASSO 1: Verificar DNS
 # ============================================
 echo -e "${YELLOW}[1/6] Verificando DNS...${NC}"
-DOMAIN="api.protesecapilarcuiaba.com.br"
+DOMAIN="api6.auctusconsultoria.com.br"
 DNS_RESULT=$(dig +short $DOMAIN | tail -1)
 
 if [ -z "$DNS_RESULT" ]; then

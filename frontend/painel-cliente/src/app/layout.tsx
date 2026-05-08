@@ -4,7 +4,7 @@ import '../styles/globals.css'
 export const metadata: Metadata = {
   title: 'Barbearia Premium - Painel do Cliente',
   description: 'Acesse seu painel de cliente da Barbearia Premium. Gerencie seus planos, agende atendimentos e acompanhe seu histórico de serviços.',
-  keywords: ['prótese capilar', 'cuiabá', 'painel cliente', 'agendamento', 'peruca masculina', 'calvície'],
+  keywords: ['barbearia premium', 'painel cliente', 'agendamento', 'servicos', 'atendimento'],
   authors: [{ name: 'Barbearia Premium' }],
   creator: 'Barbearia Premium',
   publisher: 'Barbearia Premium',

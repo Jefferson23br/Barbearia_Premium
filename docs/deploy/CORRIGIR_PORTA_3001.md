@@ -34,8 +34,8 @@ DB_NAME=protese_capilar
 DB_USER=protese_user
 DB_PASSWORD=AppProtese@2025!
 
-API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+API_BASE_URL=https://api6.auctusconsultoria.com.br
+CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 **Importante**: A linha `PORT=3001` deve estar presente!
@@ -69,15 +69,15 @@ Após editar o `.env`, reiniciar o PM2 com `--update-env`:
 
 ```bash
 # Parar
-pm2 stop api-protese-capilar
+pm2 stop api-barbearia-premium
 
 # Reiniciar com variáveis atualizadas
-pm2 restart api-protese-capilar --update-env
+pm2 restart api-barbearia-premium --update-env
 
 # Ou deletar e recriar
-pm2 delete api-protese-capilar
+pm2 delete api-barbearia-premium
 cd /home/cyberpanel/app/backend
-pm2 start server.js --name api-protese-capilar --update-env
+pm2 start server.js --name api-barbearia-premium --update-env
 pm2 save
 ```
 
@@ -105,7 +105,7 @@ sudo kill -9 PID
 curl http://localhost:3001/health
 
 # Se não responder, verificar logs
-pm2 logs api-protese-capilar --lines 20
+pm2 logs api-barbearia-premium --lines 20
 ```
 
 ---
@@ -120,7 +120,7 @@ cat /home/cyberpanel/app/backend/.env | grep PORT
 grep "PORT\|listen" /home/cyberpanel/app/backend/server.js
 
 # 3. Reiniciar com --update-env
-pm2 restart api-protese-capilar --update-env
+pm2 restart api-barbearia-premium --update-env
 
 # 4. Testar
 curl http://localhost:3001/health
@@ -132,10 +132,10 @@ curl http://localhost:3001/health
 
 ```bash
 # Ver logs de inicialização
-pm2 logs api-protese-capilar --lines 50
+pm2 logs api-barbearia-premium --lines 50
 
 # Procurar por mensagem de porta
-pm2 logs api-protese-capilar | grep -i "port\|3001"
+pm2 logs api-barbearia-premium | grep -i "port\|3001"
 ```
 
 **Deve aparecer algo como:**

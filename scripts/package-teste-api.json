@@ -1,7 +1,7 @@
 {
-  "name": "api-protese-capilar-teste",
+  "name": "api-barbearia-premium-teste",
   "version": "1.0.0",
-  "description": "API de teste - Prótese Capilar Cuiabá",
+  "description": "API de teste - Barbearia Premium",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

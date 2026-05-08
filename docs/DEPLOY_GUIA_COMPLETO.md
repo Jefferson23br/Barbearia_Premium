@@ -41,7 +41,7 @@ npm run build
 scp -r out/* root@45.132.157.28:/home/cyberpanel/app/frontend-admin/
 
 # Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 pm2 restart painel-admin
 ```
 
@@ -78,7 +78,7 @@ npm run build
 scp -r out/* root@45.132.157.28:/home/cyberpanel/app/frontend-admin/
 
 # 4. Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 pm2 restart painel-admin
 ```
 
@@ -115,7 +115,7 @@ npm run build
 scp -r out/* root@45.132.157.28:/home/cyberpanel/app/frontend-admin/
 
 # 4. Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 pm2 restart painel-admin
 ```
 
@@ -154,7 +154,7 @@ npm run build
 scp -r out/* root@45.132.157.28:/home/cyberpanel/app/frontend-admin/
 
 # 4. Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 pm2 restart painel-admin
 ```
 
@@ -165,7 +165,7 @@ pm2 restart painel-admin
 ### Verificar Status dos Serviços
 ```bash
 pm2 status
-pm2 logs api-protese-capilar --lines 20
+pm2 logs api-barbearia-premium --lines 20
 pm2 logs painel-admin --lines 20
 ```
 

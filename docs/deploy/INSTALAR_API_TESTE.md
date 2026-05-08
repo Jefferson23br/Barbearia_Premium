@@ -34,7 +34,7 @@ cd /home/cyberpanel/app/backend
 ```bash
 cat > package.json << 'EOF'
 {
-  "name": "api-protese-capilar-teste",
+  "name": "api-barbearia-premium-teste",
   "version": "1.0.0",
   "scripts": {
     "start": "node server.js"
@@ -63,7 +63,7 @@ app.use(express.json());
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'API Prótese Capilar funcionando!',
+    message: 'API Barbearia Premium funcionando!',
     timestamp: new Date()
   });
 });
@@ -71,7 +71,7 @@ app.get('/health', (req, res) => {
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'API Prótese Capilar Cuiabá',
+    message: 'API Barbearia Premium',
     version: '1.0.0'
   });
 });
@@ -100,7 +100,7 @@ curl http://localhost:3001/health
 
 Deve retornar:
 ```json
-{"status":"OK","message":"API Prótese Capilar funcionando!","timestamp":"..."}
+{"status":"OK","message":"API Barbearia Premium funcionando!","timestamp":"..."}
 ```
 
 ### 7️⃣ Rodar com PM2 (Produção)
@@ -113,7 +113,7 @@ Deve retornar:
 sudo npm install -g pm2
 
 # Iniciar com PM2
-pm2 start server.js --name api-protese
+pm2 start server.js --name api-barbearia-premium
 
 # Salvar
 pm2 save
@@ -140,7 +140,7 @@ sudo firewall-cmd --reload
 
 1. https://212.85.12.84:8090
 2. **Websites** → Create Website
-3. Domain: `api.protesecapilarcuiaba.com.br`
+3. Domain: `api6.auctusconsultoria.com.br`
 4. Depois: **Manage** → **Rewrite Rules**
 5. Adicionar regra de proxy para `http://localhost:3001`
 
@@ -149,7 +149,7 @@ sudo firewall-cmd --reload
 **Via CyberPanel:**
 
 1. **SSL** → **Manage SSL**
-2. Selecione: `api.protesecapilarcuiaba.com.br`
+2. Selecione: `api6.auctusconsultoria.com.br`
 3. **Issue SSL** (Let's Encrypt)
 
 ---
@@ -161,7 +161,7 @@ sudo firewall-cmd --reload
 curl http://localhost:3001/health
 
 # Via domínio (após DNS propagar e SSL configurar)
-curl https://api.protesecapilarcuiaba.com.br/health
+curl https://api6.auctusconsultoria.com.br/health
 ```
 
 ---
@@ -170,10 +170,10 @@ curl https://api.protesecapilarcuiaba.com.br/health
 
 ```bash
 pm2 status              # Ver status
-pm2 logs api-protese    # Ver logs
-pm2 restart api-protese # Reiniciar
-pm2 stop api-protese    # Parar
-pm2 delete api-protese  # Remover
+pm2 logs api-barbearia-premium    # Ver logs
+pm2 restart api-barbearia-premium # Reiniciar
+pm2 stop api-barbearia-premium    # Parar
+pm2 delete api-barbearia-premium  # Remover
 ```
 
 ---

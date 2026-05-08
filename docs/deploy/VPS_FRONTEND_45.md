@@ -6,9 +6,9 @@
 - **Uso**: Apenas arquivos estáticos (Frontend)
 - **Sistema**: [Sistema da Hostinger]
 - **Domínios**:
-  - www.protesecapilarcuiaba.com.br
-  - app.protesecapilarcuiaba.com.br
-  - admin.protesecapilarcuiaba.com.br
+  - appbarber.auctusconsultoria.com.br
+  - appbarber.auctusconsultoria.com.br
+  - appbarber.auctusconsultoria.com.br
 
 ---
 
@@ -112,9 +112,9 @@ sudo systemctl reload nginx
 ```bash
 # Aguardar DNS propagar primeiro!
 
-sudo certbot --nginx -d www.protesecapilarcuiaba.com.br -d protesecapilarcuiaba.com.br
-sudo certbot --nginx -d app.protesecapilarcuiaba.com.br
-sudo certbot --nginx -d admin.protesecapilarcuiaba.com.br
+sudo certbot --nginx -d appbarber.auctusconsultoria.com.br -d appbarber.auctusconsultoria.com.br
+sudo certbot --nginx -d appbarber.auctusconsultoria.com.br
+sudo certbot --nginx -d appbarber.auctusconsultoria.com.br
 ```
 
 ---
@@ -163,7 +163,7 @@ VPS Frontend (45.132.157.28):
 Nos frontends, configurar variável de ambiente:
 
 ```env
-NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
+NEXT_PUBLIC_API_URL=https://api6.auctusconsultoria.com.br
 ```
 
 ---

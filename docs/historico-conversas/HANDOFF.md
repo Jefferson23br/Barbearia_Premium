@@ -1,7 +1,7 @@
 # Handoff - Barbearia Premium
 
 ## Status atual
-- Fase: migracao operacional PostgreSQL -> Oracle com foco em manter admin funcionando.
+- Fase: migracao operacional PostgreSQL -> Oracle com backend legado estabilizado por camadas.
 - Ambientes:
   - App: `https://appbarber.auctusconsultoria.com.br`
   - API: `https://api6.auctusconsultoria.com.br`
@@ -20,40 +20,56 @@
 - Frontend admin:
   - URLs centralizadas por `NEXT_PUBLIC_API_URL`;
   - ajuste em `Sidebar.tsx` para mapear `item_id` -> `permissionKey` de forma consistente.
+- Migracao SQL em lotes concluida no backend:
+  - Lote 1: fortalecimento de adaptacao Oracle em `databaseV2.js`
+  - Lote 2: ajuste de rotas P0 (`dashboard`, `logs`, `vendas`, `agendamentos`, `emissao-nfe`, `relatorios`)
+  - Lote 3: ajuste restante de rotas/utils/services e remocao de `ON CONFLICT` residual
+- Scripts Oracle base atualizados:
+  - `database/sql/oracle/001_init_multifilial.sql` (Oracle nativo, UUID texto `VARCHAR2(36)`)
+  - `database/sql/oracle/002_base_operacao_storage.sql` (Oracle nativo)
+- Guia de execucao Oracle atualizado em `docs/deploy/ORACLE_BOOTSTRAP.md`.
 
 ## Estado do Oracle (operacao)
 - Usuario/schema em uso: `BARBEARIA_PREMIUM`.
 - Tabela `USUARIOS` existente e usada no login.
 - Tabela `PERMISSOES_USUARIOS` criada manualmente via DBeaver.
 - Colunas de permissao estao sendo adicionadas via PL/SQL (mais estavel que blocos SQL grandes no DBeaver).
+- Scripts SQL organizados em:
+  - `database/sql/oracle` (base atual Oracle)
+  - `database/sql/legacy-postgresql` (historico legado para referencia/migracao)
 
 ## Problema atual (aberto)
-- Menus aparecem parcialmente e dashboard retorna erro `500`.
-- Causa mais provavel do `500`: `backend/routes/dashboard.js` ainda depende de varias tabelas legadas (`receitas`, `despesas`, `agendamentos`, `vendas`, etc.) que podem nao existir/estar incompletas no Oracle.
+- Alinhamento total Frontend <> Backend <> Oracle ainda depende de validacao runtime com banco Oracle real.
+- Parte das rotas v1 depende de tabelas legadas completas (`receitas`, `despesas`, `agendamentos`, `vendas`, `movimentacoes_caixa`, etc.).
+- Se o schema Oracle de operacao nao tiver essas tabelas/colunas, ainda pode ocorrer `500` em modulos financeiros e dashboard.
 
 ## Proximo passo imediato (nova maquina)
-1. Subir backend atualizado e reiniciar API:
+1. Preparar schema Oracle base (uma das opcoes):
+   - `npm run db:oracle:bootstrap` em `backend/`
+   - ou executar manualmente `database/sql/oracle/001_init_multifilial.sql` e `002_base_operacao_storage.sql`
+2. Subir backend atualizado:
    - `pm2 restart api-barbearia-premium --update-env`
-2. Garantir deploy do frontend estatico:
-   - origem: `/Projetos/Barbearia_Premium/frontend/painel-admin/out`
-   - destino: `/var/www/appbarber-admin`
-   - comando recomendado: `rsync -avh --delete /Projetos/Barbearia_Premium/frontend/painel-admin/out/ /var/www/appbarber-admin/`
-3. Recarregar Nginx:
-   - `nginx -t && systemctl reload nginx`
-4. Validar endpoints chave:
+3. Executar smoke test minimo:
+   - `GET /health`
+   - `GET /api/test-db`
    - `GET /api/v1/modulos`
    - `GET /api/v1/permissoes/:usuarioId`
-   - `GET /api/v1/dashboard` (esperado ainda com risco de 500)
+   - `GET /api/v1/dashboard`
+4. Executar smoke funcional por frentes:
+   - Agenda, Vendas, Financeiro (Caixas/Receitas/Despesas/Faturamento), Relatorios, NFe, CRM, Assinaturas, Cupons/Fidelidades
 
 ## Bloqueios reais
-- Modelo legado v1 usa muitas tabelas `protese.*` historicas; nem todas estao criadas no Oracle.
-- Enquanto isso nao for migrado, algumas abas/indicadores vao depender de fallback ou retornar erro.
+- A homologacao funcional completa exige dados reais e schema Oracle completo das tabelas do legado v1.
+- Ainda ha risco de divergencia de tipo/constraint entre ambiente Oracle atual e expectativas das rotas financeiras.
 
 ## Checklist de transferencia
 - [x] Login admin funcional no Oracle
 - [x] Tabela `PERMISSOES_USUARIOS` criada
 - [x] Menu com fallback de modulos ativo
 - [x] Frontend com mapeamento de permissoes ajustado
-- [ ] Dashboard sem erro `500`
-- [ ] Migracao das tabelas legadas principais para Oracle
+- [x] Scripts base Oracle em pasta `database/sql/oracle` convertidos para Oracle nativo
+- [x] Lotes de ajuste SQL no backend concluido (P0/P1/P2)
+- [x] Mapeamento de chamadas Frontend -> endpoints Backend consolidado
+- [ ] Smoke test runtime completo em Oracle remoto (homologacao)
+- [ ] Confirmacao de schema legado completo no Oracle para modulos financeiros/dashboard
 

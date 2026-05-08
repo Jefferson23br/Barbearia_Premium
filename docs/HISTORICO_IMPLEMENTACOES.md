@@ -364,10 +364,10 @@ Documentação completa de tudo que foi implementado até agora no projeto.
 - **DNS**: Cloudflare
 
 **Domínios:**
-- `api.protesecapilarcuiaba.com.br` - API Backend
-- `admin.protesecapilarcuiaba.com.br` - Painel Admin
-- `app.protesecapilarcuiaba.com.br` - Painel Cliente
-- `www.protesecapilarcuiaba.com.br` - Site Público
+- `api6.auctusconsultoria.com.br` - API Backend
+- `appbarber.auctusconsultoria.com.br` - Painel Admin
+- `appbarber.auctusconsultoria.com.br` - Painel Cliente
+- `appbarber.auctusconsultoria.com.br` - Site Público
 
 ---
 

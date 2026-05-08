@@ -31,10 +31,10 @@ O sistema está hospedado em **2 VPS diferentes da Hostinger**, em contas separa
 
 | Serviço | URL | VPS |
 |---------|-----|-----|
-| **Painel Admin** | https://admin.protesecapilarcuiaba.com.br | 45.132.157.28 |
-| **Painel Cliente** | https://app.protesecapilarcuiaba.com.br | 45.132.157.28 |
-| **Site Público** | https://www.protesecapilarcuiaba.com.br | 45.132.157.28 |
-| **API Backend** | https://api.protesecapilarcuiaba.com.br | 82.25.65.201 |
+| **Painel Admin** | https://appbarber.auctusconsultoria.com.br/admin | 45.132.157.28 |
+| **Painel Cliente** | https://appbarber.auctusconsultoria.com.br | 45.132.157.28 |
+| **Site Público** | https://appbarber.auctusconsultoria.com.br | 45.132.157.28 |
+| **API Backend** | https://api6.auctusconsultoria.com.br | 82.25.65.201 |
 
 ---
 
@@ -52,7 +52,7 @@ O sistema está hospedado em **2 VPS diferentes da Hostinger**, em contas separa
 
 ### Processo PM2
 ```bash
-pm2 start server.js --name api-protese-capilar
+pm2 start server.js --name api-barbearia-premium
 pm2 save
 ```
 
@@ -67,8 +67,8 @@ DB_NAME=protese_capilar
 DB_USER=protese_user
 DB_PASSWORD=[senha]
 
-API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+API_BASE_URL=https://api6.auctusconsultoria.com.br
+CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 ### Banco de Dados
@@ -98,7 +98,7 @@ pm2 save
 
 ### Variáveis de Ambiente (Frontend)
 ```env
-NEXT_PUBLIC_API_URL=https://api.protesecapilarcuiaba.com.br
+NEXT_PUBLIC_API_URL=https://api6.auctusconsultoria.com.br
 ```
 
 ---
@@ -114,7 +114,7 @@ ssh root@82.25.65.201
 scp backend/routes/[arquivo].js root@82.25.65.201:/home/cyberpanel/app/backend/routes/
 
 # Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 ```
 
 ### Deploy Frontend
@@ -136,12 +136,12 @@ pm2 restart painel-admin
 ## 🌍 DNS e Domínios
 
 ### Domínio Principal
-- **Domínio**: `protesecapilarcuiaba.com.br`
+- **Domínio**: `appbarber.auctusconsultoria.com.br`
 - **Subdomínios**:
-  - `www.protesecapilarcuiaba.com.br` → Frontend (45.132.157.28)
-  - `admin.protesecapilarcuiaba.com.br` → Frontend (45.132.157.28)
-  - `app.protesecapilarcuiaba.com.br` → Frontend (45.132.157.28)
-  - `api.protesecapilarcuiaba.com.br` → Backend (82.25.65.201)
+  - `appbarber.auctusconsultoria.com.br` → Frontend (45.132.157.28)
+  - `appbarber.auctusconsultoria.com.br` → Frontend (45.132.157.28)
+  - `appbarber.auctusconsultoria.com.br` → Frontend (45.132.157.28)
+  - `api6.auctusconsultoria.com.br` → Backend (82.25.65.201)
 
 ### Configuração DNS
 - **DNS**: Cloudflare
@@ -177,7 +177,7 @@ pm2 restart painel-admin
 pm2 status
 
 # Logs
-pm2 logs api-protese-capilar
+pm2 logs api-barbearia-premium
 pm2 logs painel-admin
 
 # Monitoramento
@@ -209,7 +209,7 @@ systemctl status postgresql
 
 ### API não responde
 1. Verificar PM2: `pm2 status`
-2. Verificar logs: `pm2 logs api-protese-capilar`
+2. Verificar logs: `pm2 logs api-barbearia-premium`
 3. Verificar Nginx: `systemctl status nginx`
 4. Verificar porta: `netstat -tulpn | grep 3001`
 
@@ -232,7 +232,7 @@ systemctl status postgresql
 2. **Domínio Liberado**: A conta do frontend (m.br) tem domínio liberado e ilimitado
 3. **Schema do Banco**: O schema é `protese`, não `barbearia`
 4. **Nomes de Processos PM2**: 
-   - Backend: `api-protese-capilar`
+   - Backend: `api-barbearia-premium`
    - Frontend Admin: `painel-admin`
    - Frontend Cliente: `painel-cliente`
 
@@ -242,9 +242,9 @@ systemctl status postgresql
 **Versão**: 1.2
 
 **Informações Importantes:**
-- **Site URL**: www.protesecapilarcuiaba.com.br
-- **API_BASE_URL**: https://api.protesecapilarcuiaba.com.br
+- **Site URL**: appbarber.auctusconsultoria.com.br
+- **API_BASE_URL**: https://api6.auctusconsultoria.com.br
 - **DB_NAME**: protese_capilar
 - **DB_USER**: protese_user
-- **CORS_ORIGINS**: https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+- **CORS_ORIGINS**: https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
 

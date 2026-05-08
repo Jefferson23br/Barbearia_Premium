@@ -35,20 +35,20 @@ Nosso projeto usa `output: 'export'` = HTML estático = SEO perfeito!
 
 ## 📋 SEO Implementado no Projeto
 
-### Painel Cliente (`app.protesecapilarcuiaba.com.br`)
+### Painel Cliente (`appbarber.auctusconsultoria.com.br`)
 
 ```typescript
 metadata = {
-  title: 'Prótese Capilar Cuiabá - Painel do Cliente',
+  title: 'Barbearia Premium - Painel do Cliente',
   description: 'Acesse seu painel...',
-  keywords: ['prótese capilar', 'cuiabá', ...],
+  keywords: ['barbearia premium', ...],
   robots: { index: false } // Não indexar (área privada)
 }
 ```
 
 **Por que não indexar?** Área privada/autenticada não deve aparecer no Google.
 
-### Painel Admin (`admin.protesecapilarcuiaba.com.br`)
+### Painel Admin (`appbarber.auctusconsultoria.com.br`)
 
 ```typescript
 metadata = {
@@ -57,13 +57,13 @@ metadata = {
 }
 ```
 
-### Site Público (`www.protesecapilarcuiaba.com.br`) - Quando criar
+### Site Público (`appbarber.auctusconsultoria.com.br`) - Quando criar
 
 ```typescript
 metadata = {
-  title: 'Prótese Capilar em Cuiabá | Solução para Calvície',
-  description: 'Prótese capilar de alta qualidade em Cuiabá...',
-  keywords: ['prótese capilar cuiabá', ...],
+  title: 'Barbearia Premium | Soluções Capilares',
+  description: 'Serviços capilares de alta qualidade...',
+  keywords: ['barbearia premium', ...],
   robots: { index: true } // ✅ INDEXAR (público)
 }
 ```
@@ -111,7 +111,7 @@ twitter: {
 export default function sitemap() {
   return [
     {
-      url: 'https://www.protesecapilarcuiaba.com.br',
+      url: 'https://appbarber.auctusconsultoria.com.br',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
@@ -132,7 +132,7 @@ export default function robots() {
       allow: '/',
       disallow: ['/admin/', '/app/'],
     },
-    sitemap: 'https://www.protesecapilarcuiaba.com.br/sitemap.xml',
+    sitemap: 'https://appbarber.auctusconsultoria.com.br/sitemap.xml',
   }
 }
 ```
@@ -145,26 +145,26 @@ export default function robots() {
 
 ```typescript
 // Home
-title: 'Prótese Capilar em Cuiabá | Transformando Vidas'
-description: 'Prótese capilar de alta qualidade em Cuiabá. Acabamento natural, materiais premium. Agende sua avaliação gratuita!'
+title: 'Barbearia Premium | Transformando Vidas'
+description: 'Serviços capilares de alta qualidade. Acabamento natural, materiais premium. Agende sua avaliação gratuita!'
 
 // Serviços
-title: 'Serviços de Prótese Capilar | Cuiabá MT'
-description: 'Aplicação, manutenção e personalização de próteses capilares. Atendimento especializado em Cuiabá.'
+title: 'Serviços Capilares | Barbearia Premium'
+description: 'Aplicação, manutenção e personalização de soluções capilares com atendimento especializado.'
 
 // Planos
-title: 'Planos e Pacotes | Prótese Capilar Cuiabá'
+title: 'Planos e Pacotes | Barbearia Premium'
 description: 'Conheça nossos planos e pacotes de manutenção. Economia e praticidade para seu tratamento capilar.'
 ```
 
 ### Palavras-chave Estratégicas
 
 ```
-- prótese capilar cuiabá
-- peruca masculina cuiabá
-- solução calvície cuiabá
-- implante capilar cuiabá
-- protese de cabelo cuiabá mt
+- barbearia premium
+- serviços capilares premium
+- tratamento capilar
+- planos capilares
+- soluções para calvície
 - prótese capilar masculina
 - prótese capilar natural
 ```
@@ -181,7 +181,7 @@ import Image from 'next/image'
 
 <Image
   src="/logo.webp"
-  alt="Prótese Capilar Cuiabá"
+  alt="Barbearia Premium"
   width={96}
   height={96}
   priority // Carrega primeiro
@@ -195,16 +195,16 @@ import Image from 'next/image'
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "name": "Prótese Capilar Cuiabá",
+  "name": "Barbearia Premium",
   "description": "Serviços de prótese capilar premium",
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Cuiabá",
+    "addressLocality": "N/A",
     "addressRegion": "MT",
     "addressCountry": "BR"
   },
   "telephone": "+55-XX-XXXX-XXXX",
-  "url": "https://www.protesecapilarcuiaba.com.br"
+  "url": "https://appbarber.auctusconsultoria.com.br"
 }
 ```
 

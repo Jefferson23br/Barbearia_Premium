@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 🚨 Script de Diagnóstico Rápido - API Prótese Capilar
+# 🚨 Script de Diagnóstico Rápido - API Barbearia Premium
 # Execute na VPS: bash diagnostico-api-rapido.sh
 
 echo "═══════════════════════════════════════════════════════════"
-echo "  DIAGNÓSTICO RÁPIDO - API PROTESE CAPILAR"
+echo "  DIAGNÓSTICO RÁPIDO - API BARBEARIA PREMIUM"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
@@ -23,22 +23,22 @@ echo ""
 # 2. Verificar se API está rodando
 echo "2️⃣  Verificando se API está rodando..."
 echo "───────────────────────────────────────────────────────────"
-if pm2 list | grep -q "api-protese-capilar"; then
-    STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="api-protese-capilar") | .pm2_env.status')
+if pm2 list | grep -q "api-barbearia-premium"; then
+    STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="api-barbearia-premium") | .pm2_env.status')
     if [ "$STATUS" == "online" ]; then
         echo -e "${GREEN}✅ API está rodando${NC}"
     else
         echo -e "${RED}❌ API está parada (status: $STATUS)${NC}"
         echo "Tentando reiniciar..."
-        pm2 restart api-protese-capilar
+        pm2 restart api-barbearia-premium
     fi
 else
-    echo -e "${RED}❌ Processo api-protese-capilar não encontrado no PM2${NC}"
+    echo -e "${RED}❌ Processo api-barbearia-premium não encontrado no PM2${NC}"
     echo "Verificando se server.js existe..."
     if [ -f "/home/cyberpanel/app/backend/server.js" ]; then
         echo -e "${YELLOW}⚠️  server.js encontrado. Iniciando...${NC}"
         cd /home/cyberpanel/app/backend
-        pm2 start server.js --name api-protese-capilar
+        pm2 start server.js --name api-barbearia-premium
         pm2 save
     else
         echo -e "${RED}❌ server.js não encontrado em /home/cyberpanel/app/backend${NC}"
@@ -108,7 +108,7 @@ echo ""
 # 7. Verificar logs recentes
 echo "7️⃣  Últimos logs da API (erros)..."
 echo "───────────────────────────────────────────────────────────"
-pm2 logs api-protese-capilar --err --lines 10 --nostream
+pm2 logs api-barbearia-premium --err --lines 10 --nostream
 echo ""
 
 # 8. Verificar recursos do sistema
@@ -130,7 +130,7 @@ echo ""
 # Verificar se tudo está OK
 ALL_OK=true
 
-if ! pm2 list | grep -q "api-protese-capilar.*online"; then
+if ! pm2 list | grep -q "api-barbearia-premium.*online"; then
     echo -e "${RED}❌ API não está rodando${NC}"
     ALL_OK=false
 fi
@@ -149,12 +149,12 @@ if [ "$ALL_OK" = true ]; then
     echo -e "${GREEN}✅ Todos os serviços estão rodando!${NC}"
     echo ""
     echo "Teste externamente:"
-    echo "curl https://api.protesecapilarcuiaba.com.br/health"
+    echo "curl https://api6.auctusconsultoria.com.br/health"
 else
     echo -e "${YELLOW}⚠️  Alguns serviços precisam de atenção${NC}"
     echo ""
     echo "Comandos úteis:"
-    echo "  pm2 restart api-protese-capilar"
+    echo "  pm2 restart api-barbearia-premium"
     echo "  sudo systemctl start postgresql-15"
     echo "  sudo systemctl start lsws"
 fi

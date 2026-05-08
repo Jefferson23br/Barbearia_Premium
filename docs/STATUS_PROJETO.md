@@ -647,10 +647,10 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 **Próxima Revisão**: Janeiro 2026
 
 **URLs de Produção:**
-- Painel Admin: https://admin.protesecapilarcuiaba.com.br
-- Painel Cliente: https://app.protesecapilarcuiaba.com.br
-- Site Público: https://www.protesecapilarcuiaba.com.br
-- API Backend: https://api.protesecapilarcuiaba.com.br
+- Painel Admin: https://appbarber.auctusconsultoria.com.br/admin
+- Painel Cliente: https://appbarber.auctusconsultoria.com.br
+- Site Público: https://appbarber.auctusconsultoria.com.br
+- API Backend: https://api6.auctusconsultoria.com.br
 
 **Infraestrutura:**
 - Backend/API/Banco: VPS 82.25.65.201 (Hostinger)

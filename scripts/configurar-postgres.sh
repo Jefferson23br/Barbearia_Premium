@@ -47,8 +47,8 @@ echo "✓ PostgreSQL reiniciado"
 
 # Executar scripts SQL base
 echo "Aplicando scripts SQL base..."
-sudo -u postgres psql -d barbearia_premium -f /home/cyberpanel/app/backend/sql/001_init_multifilial.sql
-sudo -u postgres psql -d barbearia_premium -f /home/cyberpanel/app/backend/sql/002_base_operacao_storage.sql
+sudo -u postgres psql -d barbearia_premium -f /home/cyberpanel/app/database/sql/oracle/001_init_multifilial.sql
+sudo -u postgres psql -d barbearia_premium -f /home/cyberpanel/app/database/sql/oracle/002_base_operacao_storage.sql
 echo "✓ Scripts SQL base aplicados"
 
 echo ""
