@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT receitas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT receitas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -43,10 +43,10 @@ router.get('/', async (req, res) => {
         c.nome_completo as cliente_nome,
         ca.nome as caixa_nome,
         v.ticket as venda_ticket
-      FROM protese.receitas r
-      LEFT JOIN protese.usuarios_clientes c ON r.cliente_id = c.id
-      LEFT JOIN protese.contas ca ON r.caixa_id = ca.id
-      LEFT JOIN protese.vendas v ON r.venda_id = v.id
+      FROM receitas r
+      LEFT JOIN usuarios_clientes c ON r.cliente_id = c.id
+      LEFT JOIN contas ca ON r.caixa_id = ca.id
+      LEFT JOIN vendas v ON r.venda_id = v.id
       WHERE 1=1
     `;
     const params = [];
@@ -101,7 +101,7 @@ router.get('/', async (req, res) => {
     }
 
     if (search) {
-      query += ` AND (r.ticket_venda ILIKE $${paramIndex} OR c.nome_completo ILIKE $${paramIndex})`;
+      query += ` AND (r.ticket_venda LIKE $${paramIndex} OR c.nome_completo LIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
@@ -146,7 +146,7 @@ router.get('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT receitas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT receitas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -161,10 +161,10 @@ router.get('/:id', async (req, res) => {
         c.nome_completo as cliente_nome,
         ca.nome as caixa_nome,
         v.ticket as venda_ticket
-       FROM protese.receitas r
-       LEFT JOIN protese.usuarios_clientes c ON r.cliente_id = c.id
-       LEFT JOIN protese.contas ca ON r.caixa_id = ca.id
-       LEFT JOIN protese.vendas v ON r.venda_id = v.id
+       FROM receitas r
+       LEFT JOIN usuarios_clientes c ON r.cliente_id = c.id
+       LEFT JOIN contas ca ON r.caixa_id = ca.id
+       LEFT JOIN vendas v ON r.venda_id = v.id
        WHERE r.id = $1`,
       [req.params.id]
     );
@@ -197,7 +197,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT receitas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT receitas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -233,7 +233,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
 
       // Buscar receita
       const receitaResult = await client.query(
-        'SELECT * FROM protese.receitas WHERE id = $1',
+        'SELECT * FROM receitas WHERE id = $1',
         [receita_id]
       );
 
@@ -256,7 +256,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
       const statusReceita = valorPago >= parseFloat(receita.valor_vencimento) ? 'paga' : 'parcial';
 
       await client.query(
-        `UPDATE protese.receitas 
+        `UPDATE receitas 
          SET data_pagamento = $1, 
              valor_pago = $2, 
              status = $3,
@@ -268,7 +268,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
 
       // Criar movimentação no caixa
       const movimentacaoResult = await client.query(
-        `INSERT INTO protese.movimentacoes_caixa 
+        `INSERT INTO movimentacoes_caixa 
          (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
          VALUES ($1, 'entrada', $2, $3, $4, $5, 'receita', $6)
          RETURNING id`,
@@ -284,7 +284,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
 
       // Atualizar receita com o ID da movimentação
       await client.query(
-        `UPDATE protese.receitas 
+        `UPDATE receitas 
          SET movimentacao_caixa_id = $1 
          WHERE id = $2`,
         [movimentacaoResult.rows[0].id, receita_id]
@@ -296,9 +296,9 @@ router.post('/efetivar-pagamento', async (req, res) => {
           r.*,
           c.nome_completo as cliente_nome,
           ca.nome as caixa_nome
-         FROM protese.receitas r
-         LEFT JOIN protese.usuarios_clientes c ON r.cliente_id = c.id
-         LEFT JOIN protese.contas ca ON r.caixa_id = ca.id
+         FROM receitas r
+         LEFT JOIN usuarios_clientes c ON r.cliente_id = c.id
+         LEFT JOIN contas ca ON r.caixa_id = ca.id
          WHERE r.id = $1`,
         [receita_id]
       );
@@ -346,7 +346,7 @@ router.put('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT receitas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT receitas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -359,7 +359,7 @@ router.put('/:id', async (req, res) => {
 
     // Buscar receita atual
     const receitaAtual = await pool.query(
-      'SELECT * FROM protese.receitas WHERE id = $1',
+      'SELECT * FROM receitas WHERE id = $1',
       [req.params.id]
     );
 
@@ -374,7 +374,7 @@ router.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Não é possível alterar valor de receita já paga' });
     }
 
-    let query = 'UPDATE protese.receitas SET updated_by = $1';
+    let query = 'UPDATE receitas SET updated_by = $1';
     const params = [usuarioId];
     let paramIndex = 2;
 
@@ -401,9 +401,9 @@ router.put('/:id', async (req, res) => {
         r.*,
         c.nome_completo as cliente_nome,
         ca.nome as caixa_nome
-       FROM protese.receitas r
-       LEFT JOIN protese.usuarios_clientes c ON r.cliente_id = c.id
-       LEFT JOIN protese.contas ca ON r.caixa_id = ca.id
+       FROM receitas r
+       LEFT JOIN usuarios_clientes c ON r.cliente_id = c.id
+       LEFT JOIN contas ca ON r.caixa_id = ca.id
        WHERE r.id = $1`,
       [req.params.id]
     );
@@ -443,7 +443,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT receitas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT receitas_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -455,7 +455,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar receita
     const receitaResult = await client.query(
-      'SELECT ticket_venda, status, movimentacao_caixa_id FROM protese.receitas WHERE id = $1',
+      'SELECT ticket_venda, status, movimentacao_caixa_id FROM receitas WHERE id = $1',
       [req.params.id]
     );
 
@@ -475,13 +475,13 @@ router.delete('/:id', async (req, res) => {
     // Excluir movimentação de caixa se existir
     if (receita.movimentacao_caixa_id) {
       await client.query(
-        'DELETE FROM protese.movimentacoes_caixa WHERE id = $1',
+        'DELETE FROM movimentacoes_caixa WHERE id = $1',
         [receita.movimentacao_caixa_id]
       );
     }
 
     // Excluir receita
-    await client.query('DELETE FROM protese.receitas WHERE id = $1', [req.params.id]);
+    await client.query('DELETE FROM receitas WHERE id = $1', [req.params.id]);
 
     await client.query('COMMIT');
 
