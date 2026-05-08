@@ -20,10 +20,10 @@ router.get('/', async (req, res) => {
               'habilitado', ih.habilitado
             )
           ) FILTER (WHERE ih.id IS NOT NULL),
-          '[]'::json
+          '[]'
         ) as funcionalidades
-      FROM protese.integracoes i
-      LEFT JOIN protese.integracoes_habilitadas ih ON i.id = ih.integracao_id
+      FROM integracoes i
+      LEFT JOIN integracoes_habilitadas ih ON i.id = ih.integracao_id
       GROUP BY i.id
       ORDER BY i.created_at DESC`
     );
@@ -59,10 +59,10 @@ router.get('/:tipo', async (req, res) => {
               'habilitado', ih.habilitado
             )
           ) FILTER (WHERE ih.id IS NOT NULL),
-          '[]'::json
+          '[]'
         ) as funcionalidades
-      FROM protese.integracoes i
-      LEFT JOIN protese.integracoes_habilitadas ih ON i.id = ih.integracao_id
+      FROM integracoes i
+      LEFT JOIN integracoes_habilitadas ih ON i.id = ih.integracao_id
       WHERE i.tipo_integracao = $1
       GROUP BY i.id`,
       [tipo]
@@ -114,7 +114,7 @@ router.post('/', async (req, res) => {
     };
 
     const result = await pool.query(
-      `INSERT INTO protese.integracoes (
+      `INSERT INTO integracoes (
         tipo_integracao, nome, ativo, ambiente,
         token_producao, token_homologacao,
         certificado_digital_path, senha_certificado,
@@ -197,7 +197,7 @@ router.put('/:tipo', async (req, res) => {
     };
 
     const result = await pool.query(
-      `UPDATE protese.integracoes SET
+      `UPDATE integracoes SET
         nome = $1,
         ativo = $2,
         ambiente = $3,
@@ -274,7 +274,7 @@ router.put('/:tipo/funcionalidade/:funcionalidade', async (req, res) => {
     const usuarioLogadoId = req.headers['x-user-id'] || null;
 
     const integracaoResult = await pool.query(
-      'SELECT id FROM protese.integracoes WHERE tipo_integracao = $1',
+      'SELECT id FROM integracoes WHERE tipo_integracao = $1',
       [tipo]
     );
 
@@ -286,13 +286,25 @@ router.put('/:tipo/funcionalidade/:funcionalidade', async (req, res) => {
 
     const integracaoId = integracaoResult.rows[0].id;
 
-    const result = await pool.query(
-      `INSERT INTO protese.integracoes_habilitadas (integracao_id, funcionalidade, habilitado, updated_at)
-       VALUES ($1, $2, $3, NOW())
-       ON CONFLICT (integracao_id, funcionalidade)
-       DO UPDATE SET habilitado = $3, updated_at = NOW()
-       RETURNING *`,
+    const updateResult = await pool.query(
+      `UPDATE integracoes_habilitadas
+       SET habilitado = $3, updated_at = CURRENT_TIMESTAMP
+       WHERE integracao_id = $1 AND funcionalidade = $2`,
       [integracaoId, funcionalidade, habilitado === true]
+    );
+
+    if ((updateResult.rowCount || 0) === 0) {
+      await pool.query(
+        `INSERT INTO integracoes_habilitadas (integracao_id, funcionalidade, habilitado, updated_at)
+         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+        [integracaoId, funcionalidade, habilitado === true]
+      );
+    }
+
+    const result = await pool.query(
+      `SELECT * FROM integracoes_habilitadas
+       WHERE integracao_id = $1 AND funcionalidade = $2`,
+      [integracaoId, funcionalidade]
     );
 
     res.json({
