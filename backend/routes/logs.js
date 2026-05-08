@@ -47,8 +47,8 @@ router.get('/', async (req, res) => {
         ls.status,
         ls.mensagem_erro,
         ls.created_at
-      FROM protese.logs_sistema ls
-      WHERE DATE(ls.created_at) BETWEEN $1 AND $2
+      FROM logs_sistema ls
+      WHERE TRUNC(ls.created_at) BETWEEN $1 AND $2
     `;
 
     const params = [dataInicio, dataFim];
@@ -94,8 +94,8 @@ router.get('/', async (req, res) => {
     // Contar total (para paginação)
     let countQuery = `
       SELECT COUNT(*) as total
-      FROM protese.logs_sistema ls
-      WHERE DATE(ls.created_at) BETWEEN $1 AND $2
+      FROM logs_sistema ls
+      WHERE TRUNC(ls.created_at) BETWEEN $1 AND $2
     `;
     const countParams = [dataInicio, dataFim];
     let countParamIndex = 3;
@@ -173,15 +173,15 @@ router.get('/estatisticas', async (req, res) => {
 
     // Total de logs
     const totalLogs = await pool.query(
-      `SELECT COUNT(*) as total FROM protese.logs_sistema WHERE DATE(created_at) BETWEEN $1 AND $2`,
+      `SELECT COUNT(*) as total FROM logs_sistema WHERE TRUNC(created_at) BETWEEN $1 AND $2`,
       [dataInicio, dataFim]
     );
 
     // Por módulo
     const porModulo = await pool.query(
       `SELECT modulo, COUNT(*) as quantidade
-       FROM protese.logs_sistema
-       WHERE DATE(created_at) BETWEEN $1 AND $2
+       FROM logs_sistema
+       WHERE TRUNC(created_at) BETWEEN $1 AND $2
        GROUP BY modulo
        ORDER BY quantidade DESC`,
       [dataInicio, dataFim]
@@ -190,8 +190,8 @@ router.get('/estatisticas', async (req, res) => {
     // Por ação
     const porAcao = await pool.query(
       `SELECT acao, COUNT(*) as quantidade
-       FROM protese.logs_sistema
-       WHERE DATE(created_at) BETWEEN $1 AND $2
+       FROM logs_sistema
+       WHERE TRUNC(created_at) BETWEEN $1 AND $2
        GROUP BY acao
        ORDER BY quantidade DESC`,
       [dataInicio, dataFim]
@@ -200,8 +200,8 @@ router.get('/estatisticas', async (req, res) => {
     // Por status
     const porStatus = await pool.query(
       `SELECT status, COUNT(*) as quantidade
-       FROM protese.logs_sistema
-       WHERE DATE(created_at) BETWEEN $1 AND $2
+       FROM logs_sistema
+       WHERE TRUNC(created_at) BETWEEN $1 AND $2
        GROUP BY status
        ORDER BY quantidade DESC`,
       [dataInicio, dataFim]
@@ -210,8 +210,8 @@ router.get('/estatisticas', async (req, res) => {
     // Por usuário
     const porUsuario = await pool.query(
       `SELECT usuario_nome, usuario_tipo, COUNT(*) as quantidade
-       FROM protese.logs_sistema
-       WHERE DATE(created_at) BETWEEN $1 AND $2
+       FROM logs_sistema
+       WHERE TRUNC(created_at) BETWEEN $1 AND $2
          AND usuario_nome IS NOT NULL
        GROUP BY usuario_nome, usuario_tipo
        ORDER BY quantidade DESC
@@ -221,10 +221,10 @@ router.get('/estatisticas', async (req, res) => {
 
     // Por dia
     const porDia = await pool.query(
-      `SELECT DATE(created_at) as data, COUNT(*) as quantidade
-       FROM protese.logs_sistema
-       WHERE DATE(created_at) BETWEEN $1 AND $2
-       GROUP BY DATE(created_at)
+      `SELECT TRUNC(created_at) as data, COUNT(*) as quantidade
+       FROM logs_sistema
+       WHERE TRUNC(created_at) BETWEEN $1 AND $2
+       GROUP BY TRUNC(created_at)
        ORDER BY data DESC`,
       [dataInicio, dataFim]
     );
@@ -259,7 +259,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      `SELECT * FROM protese.logs_sistema WHERE id = $1`,
+      `SELECT * FROM logs_sistema WHERE id = $1`,
       [id]
     );
 
