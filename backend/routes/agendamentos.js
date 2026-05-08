@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT agenda_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT agenda_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -33,10 +33,10 @@ router.get('/', async (req, res) => {
         f.nome_completo as funcionario_nome,
         s.nome as servico_nome,
         s.duracao_minutos
-      FROM protese.agendamentos a
-      INNER JOIN protese.usuarios_clientes c ON a.cliente_id = c.id
-      INNER JOIN protese.usuarios_administrativos f ON a.funcionario_id = f.id
-      INNER JOIN protese.servicos s ON a.servico_id = s.id
+      FROM agendamentos a
+      INNER JOIN usuarios_clientes c ON a.cliente_id = c.id
+      INNER JOIN usuarios_administrativos f ON a.funcionario_id = f.id
+      INNER JOIN servicos s ON a.servico_id = s.id
       WHERE 1=1
     `;
     const params = [];
@@ -117,7 +117,7 @@ router.get('/disponibilidades', async (req, res) => {
 
     // Verificar se a data está em um fechamento especial
     const fechamentoResult = await pool.query(
-      'SELECT * FROM protese.fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
+      'SELECT * FROM fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
       [data]
     );
 
@@ -132,7 +132,7 @@ router.get('/disponibilidades', async (req, res) => {
     }
 
     // Obter configurações (horário de funcionamento e intervalo)
-    const configResult = await pool.query('SELECT * FROM protese.configuracoes ORDER BY created_at DESC LIMIT 1');
+    const configResult = await pool.query('SELECT * FROM configuracoes ORDER BY created_at DESC LIMIT 1');
     if (configResult.rows.length === 0) {
       return res.status(404).json({ error: 'Configurações não encontradas' });
     }
@@ -181,7 +181,7 @@ router.get('/disponibilidades', async (req, res) => {
     // Buscar agendamentos existentes para o funcionário na data
     const agendamentosResult = await pool.query(
       `SELECT hora_inicio, hora_fim 
-       FROM protese.agendamentos 
+       FROM agendamentos 
        WHERE funcionario_id = $1 AND data_agendamento = $2 AND status NOT IN ('cancelado', 'nao_compareceu')
        ORDER BY hora_inicio ASC`,
       [funcionario_id, data]
@@ -259,7 +259,7 @@ router.get('/horarios-funcionamento', async (req, res) => {
 
     // 0. Verificar se a data está em um fechamento especial
     const fechamentoResult = await pool.query(
-      'SELECT * FROM protese.fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
+      'SELECT * FROM fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
       [data]
     );
 
@@ -278,7 +278,7 @@ router.get('/horarios-funcionamento', async (req, res) => {
 
     // 1. Tenta buscar configuração
     console.log('🔍 Buscando configurações no banco...');
-    const configResult = await pool.query('SELECT * FROM protese.configuracoes ORDER BY updated_at DESC LIMIT 1');
+    const configResult = await pool.query('SELECT * FROM configuracoes ORDER BY updated_at DESC LIMIT 1');
     
     // Objeto padrão caso não exista config ou dê erro
     let config = {
@@ -435,7 +435,7 @@ router.get('/recursos-especiais', async (req, res) => {
     
     // Buscar ou criar cliente "Sistema"
     let clienteSistema = await pool.query(
-      "SELECT id, nome_completo FROM protese.usuarios_clientes WHERE nome_completo = 'Sistema' OR email = 'sistema@interno.com' LIMIT 1"
+      "SELECT id, nome_completo FROM usuarios_clientes WHERE nome_completo = 'Sistema' OR email = 'sistema@interno.com' LIMIT 1"
     );
 
     if (clienteSistema.rows.length === 0) {
@@ -447,7 +447,7 @@ router.get('/recursos-especiais', async (req, res) => {
         const senhaHash = await bcrypt.hash('sistema_interno_2024', 10);
         
         const novoCliente = await pool.query(
-          `INSERT INTO protese.usuarios_clientes (
+          `INSERT INTO usuarios_clientes (
             nome_completo, 
             email, 
             cpf,
@@ -472,7 +472,7 @@ router.get('/recursos-especiais', async (req, res) => {
             '0',
             NULL,
             'N/A',
-            'Cuiabá',
+            'N/A',
             'MT',
             '00000000',
             $1,
@@ -495,7 +495,7 @@ router.get('/recursos-especiais', async (req, res) => {
         if (insertError.code === '23505') {
           console.log('⚠️ [RECURSOS ESPECIAIS] Cliente Sistema já existe, buscando novamente...');
           clienteSistema = await pool.query(
-            "SELECT id, nome_completo FROM protese.usuarios_clientes WHERE nome_completo = 'Sistema' OR email = 'sistema@interno.com' LIMIT 1"
+            "SELECT id, nome_completo FROM usuarios_clientes WHERE nome_completo = 'Sistema' OR email = 'sistema@interno.com' LIMIT 1"
           );
         } else {
           // Se for erro de campo obrigatório, retornar erro detalhado
@@ -508,14 +508,14 @@ router.get('/recursos-especiais', async (req, res) => {
 
     // Buscar ou criar serviço "Almoço"
     let servicoAlmoco = await pool.query(
-      "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Almoço' LIMIT 1"
+      "SELECT id, nome, duracao_minutos, preco FROM servicos WHERE nome = 'Almoço' LIMIT 1"
     );
 
     if (servicoAlmoco.rows.length === 0) {
       try {
         console.log('📝 [RECURSOS ESPECIAIS] Criando serviço Almoço...');
         const novoServicoAlmoco = await pool.query(
-          `INSERT INTO protese.servicos (nome, descricao, duracao_minutos, preco, is_active)
+          `INSERT INTO servicos (nome, descricao, duracao_minutos, preco, is_active)
            VALUES ('Almoço', 'Horário de almoço', 60, 0.00, true)
            RETURNING id, nome, duracao_minutos, preco`
         );
@@ -531,7 +531,7 @@ router.get('/recursos-especiais', async (req, res) => {
         if (insertError.code === '23505') {
           console.log('⚠️ [RECURSOS ESPECIAIS] Serviço Almoço já existe, buscando novamente...');
           servicoAlmoco = await pool.query(
-            "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Almoço' LIMIT 1"
+            "SELECT id, nome, duracao_minutos, preco FROM servicos WHERE nome = 'Almoço' LIMIT 1"
           );
         } else {
           throw new Error(`Erro ao criar serviço Almoço: ${insertError.message} (Código: ${insertError.code})`);
@@ -543,14 +543,14 @@ router.get('/recursos-especiais', async (req, res) => {
 
     // Buscar ou criar serviço "Saída"
     let servicoSaida = await pool.query(
-      "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Saída' LIMIT 1"
+      "SELECT id, nome, duracao_minutos, preco FROM servicos WHERE nome = 'Saída' LIMIT 1"
     );
 
     if (servicoSaida.rows.length === 0) {
       try {
         console.log('📝 [RECURSOS ESPECIAIS] Criando serviço Saída...');
         const novoServicoSaida = await pool.query(
-          `INSERT INTO protese.servicos (nome, descricao, duracao_minutos, preco, is_active)
+          `INSERT INTO servicos (nome, descricao, duracao_minutos, preco, is_active)
            VALUES ('Saída', 'Horário de saída', 15, 0.00, true)
            RETURNING id, nome, duracao_minutos, preco`
         );
@@ -566,7 +566,7 @@ router.get('/recursos-especiais', async (req, res) => {
         if (insertError.code === '23505') {
           console.log('⚠️ [RECURSOS ESPECIAIS] Serviço Saída já existe, buscando novamente...');
           servicoSaida = await pool.query(
-            "SELECT id, nome, duracao_minutos, preco FROM protese.servicos WHERE nome = 'Saída' LIMIT 1"
+            "SELECT id, nome, duracao_minutos, preco FROM servicos WHERE nome = 'Saída' LIMIT 1"
           );
         } else {
           throw new Error(`Erro ao criar serviço Saída: ${insertError.message} (Código: ${insertError.code})`);
@@ -625,7 +625,7 @@ router.post('/', async (req, res) => {
       }
 
       const permissoesResult = await pool.query(
-        'SELECT agenda_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT agenda_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -671,7 +671,7 @@ router.post('/', async (req, res) => {
     // Buscar serviço para obter duração e valor
     console.log('🔍 [POST AGENDAMENTO] Buscando serviço:', servico_id);
     const servicoResult = await pool.query(
-      'SELECT duracao_minutos, preco FROM protese.servicos WHERE id = $1',
+      'SELECT duracao_minutos, preco FROM servicos WHERE id = $1',
       [servico_id]
     );
 
@@ -714,7 +714,7 @@ router.post('/', async (req, res) => {
     // Verificar conflitos de horário
     console.log('🔍 [POST AGENDAMENTO] Verificando conflitos de horário...');
     const conflitoResult = await pool.query(
-      `SELECT id FROM protese.agendamentos 
+      `SELECT id FROM agendamentos 
        WHERE funcionario_id = $1 
        AND data_agendamento = $2 
        AND hora_inicio = $3
@@ -730,7 +730,7 @@ router.post('/', async (req, res) => {
     // Verificar sobreposição de horários
     console.log('🔍 [POST AGENDAMENTO] Verificando sobreposição de horários...');
     const sobreposicaoResult = await pool.query(
-      `SELECT id FROM protese.agendamentos 
+      `SELECT id FROM agendamentos 
        WHERE funcionario_id = $1 
        AND data_agendamento = $2 
        AND status NOT IN ('cancelado', 'nao_compareceu')
@@ -752,7 +752,7 @@ router.post('/', async (req, res) => {
     // Criar agendamento
     console.log('💾 [POST AGENDAMENTO] Inserindo agendamento no banco...');
     const result = await pool.query(
-      `INSERT INTO protese.agendamentos 
+      `INSERT INTO agendamentos 
        (cliente_id, funcionario_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, observacoes, valor_servico, created_by)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *`,
@@ -805,7 +805,7 @@ router.put('/:id', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT agenda_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT agenda_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -827,7 +827,7 @@ router.put('/:id', async (req, res) => {
 
     // Buscar agendamento atual
     const agendamentoAtualResult = await pool.query(
-      'SELECT * FROM protese.agendamentos WHERE id = $1',
+      'SELECT * FROM agendamentos WHERE id = $1',
       [id]
     );
 
@@ -842,7 +842,7 @@ router.put('/:id', async (req, res) => {
     if (hora_inicio || servico_id) {
       const servicoId = servico_id || agendamentoAtual.servico_id;
       const servicoResult = await pool.query(
-        'SELECT duracao_minutos FROM protese.servicos WHERE id = $1',
+        'SELECT duracao_minutos FROM servicos WHERE id = $1',
         [servicoId]
       );
 
@@ -867,7 +867,7 @@ router.put('/:id', async (req, res) => {
       const horaInicio = hora_inicio || agendamentoAtual.hora_inicio;
 
       const conflitoResult = await pool.query(
-        `SELECT id FROM protese.agendamentos 
+        `SELECT id FROM agendamentos 
          WHERE funcionario_id = $1 
          AND data_agendamento = $2 
          AND hora_inicio = $3
@@ -883,7 +883,7 @@ router.put('/:id', async (req, res) => {
 
     // Atualizar agendamento
     const result = await pool.query(
-      `UPDATE protese.agendamentos 
+      `UPDATE agendamentos 
        SET cliente_id = COALESCE($1, cliente_id),
            funcionario_id = COALESCE($2, funcionario_id),
            servico_id = COALESCE($3, servico_id),
@@ -934,7 +934,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT agenda_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT agenda_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -947,7 +947,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar agendamento antes de excluir
     const agendamentoResult = await pool.query(
-      'SELECT * FROM protese.agendamentos WHERE id = $1',
+      'SELECT * FROM agendamentos WHERE id = $1',
       [id]
     );
 
@@ -958,7 +958,7 @@ router.delete('/:id', async (req, res) => {
     const agendamento = agendamentoResult.rows[0];
 
     // Excluir agendamento
-    await pool.query('DELETE FROM protese.agendamentos WHERE id = $1', [id]);
+    await pool.query('DELETE FROM agendamentos WHERE id = $1', [id]);
 
     // Registrar log
     await registrarLog({
