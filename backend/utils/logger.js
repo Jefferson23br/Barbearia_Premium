@@ -102,7 +102,7 @@ async function registrarLog({
       try {
         if (usuarioTipoNormalizado === 'administrativo') {
           const result = await pool.query(
-            'SELECT nome_completo FROM protese.usuarios_administrativos WHERE id = $1',
+            'SELECT nome_completo FROM usuarios_administrativos WHERE id = $1',
             [usuarioId]
           );
           if (result.rows.length > 0) {
@@ -110,7 +110,7 @@ async function registrarLog({
           }
         } else if (usuarioTipoNormalizado === 'cliente') {
           const result = await pool.query(
-            'SELECT nome_completo FROM protese.usuarios_clientes WHERE id = $1',
+            'SELECT nome_completo FROM usuarios_clientes WHERE id = $1',
             [usuarioId]
           );
           if (result.rows.length > 0) {
@@ -132,7 +132,7 @@ async function registrarLog({
     // Inserir log no banco
     // Se usuarioId for null, ainda assim registramos o log (para ações do sistema)
     await pool.query(
-      `INSERT INTO protese.logs_sistema (
+      `INSERT INTO logs_sistema (
         usuario_id,
         usuario_tipo,
         usuario_nome,
