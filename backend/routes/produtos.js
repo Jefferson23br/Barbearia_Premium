@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -30,11 +30,11 @@ router.get('/', async (req, res) => {
       SELECT 
         p.*,
         (SELECT preco_custo 
-         FROM protese.produtos_precos_custo 
+         FROM produtos_precos_custo 
          WHERE produto_id = p.id 
          ORDER BY data_lancamento DESC, created_at DESC 
          LIMIT 1) as ultimo_preco_custo_real
-      FROM protese.produtos p
+      FROM produtos p
       WHERE 1=1
     `;
     const params = [];
@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
     }
 
     if (search) {
-      query += ` AND (p.codigo ILIKE $${paramIndex} OR p.descricao ILIKE $${paramIndex} OR p.fornecedor ILIKE $${paramIndex})`;
+      query += ` AND (p.codigo LIKE $${paramIndex} OR p.descricao LIKE $${paramIndex} OR p.fornecedor LIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
@@ -93,7 +93,7 @@ router.get('/:id', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -106,11 +106,11 @@ router.get('/:id', async (req, res) => {
       `SELECT 
         p.*,
         (SELECT preco_custo 
-         FROM protese.produtos_precos_custo 
+         FROM produtos_precos_custo 
          WHERE produto_id = p.id 
          ORDER BY data_lancamento DESC, created_at DESC 
          LIMIT 1) as ultimo_preco_custo_real
-      FROM protese.produtos p
+      FROM produtos p
       WHERE p.id = $1`,
       [id]
     );
@@ -148,7 +148,7 @@ router.post('/', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -179,7 +179,7 @@ router.post('/', async (req, res) => {
 
     // Verificar se código já existe
     const codigoCheck = await pool.query(
-      'SELECT id FROM protese.produtos WHERE codigo = $1',
+      'SELECT id FROM produtos WHERE codigo = $1',
       [codigo]
     );
 
@@ -189,7 +189,7 @@ router.post('/', async (req, res) => {
 
     // Inserir no banco de dados
     const result = await pool.query(
-      `INSERT INTO protese.produtos (
+      `INSERT INTO produtos (
         codigo, descricao, fornecedor, preco_venda, is_active, created_by
       ) VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
@@ -251,7 +251,7 @@ router.put('/:id', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -262,7 +262,7 @@ router.put('/:id', async (req, res) => {
 
     // Buscar produto atual para log
     const produtoAtual = await pool.query(
-      'SELECT * FROM protese.produtos WHERE id = $1',
+      'SELECT * FROM produtos WHERE id = $1',
       [id]
     );
 
@@ -292,7 +292,7 @@ router.put('/:id', async (req, res) => {
 
     // Verificar se código já existe em outro produto
     const codigoCheck = await pool.query(
-      'SELECT id FROM protese.produtos WHERE codigo = $1 AND id != $2',
+      'SELECT id FROM produtos WHERE codigo = $1 AND id != $2',
       [codigo, id]
     );
 
@@ -302,7 +302,7 @@ router.put('/:id', async (req, res) => {
 
     // Atualizar no banco de dados
     const result = await pool.query(
-      `UPDATE protese.produtos SET
+      `UPDATE produtos SET
         codigo = $1,
         descricao = $2,
         fornecedor = $3,
@@ -370,7 +370,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -381,7 +381,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar produto para log
     const produto = await pool.query(
-      'SELECT * FROM protese.produtos WHERE id = $1',
+      'SELECT * FROM produtos WHERE id = $1',
       [id]
     );
 
@@ -390,7 +390,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Excluir produto (cascade vai excluir histórico de preços)
-    await pool.query('DELETE FROM protese.produtos WHERE id = $1', [id]);
+    await pool.query('DELETE FROM produtos WHERE id = $1', [id]);
 
     // Registrar log
     if (usuarioId) {
@@ -439,7 +439,7 @@ router.post('/:id/preco-custo', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -450,7 +450,7 @@ router.post('/:id/preco-custo', async (req, res) => {
 
     // Verificar se produto existe
     const produtoCheck = await pool.query(
-      'SELECT id, descricao, codigo FROM protese.produtos WHERE id = $1',
+      'SELECT id, descricao, codigo FROM produtos WHERE id = $1',
       [id]
     );
 
@@ -474,7 +474,7 @@ router.post('/:id/preco-custo', async (req, res) => {
 
     // Inserir preço de custo no histórico
     const result = await pool.query(
-      `INSERT INTO protese.produtos_precos_custo (
+      `INSERT INTO produtos_precos_custo (
         produto_id, preco_custo, data_lancamento, observacoes, created_by
       ) VALUES ($1, $2, $3, $4, $5)
       RETURNING *`,
@@ -538,7 +538,7 @@ router.get('/:id/precos-custo', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT produtos_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT produtos_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -548,7 +548,7 @@ router.get('/:id/precos-custo', async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT * FROM protese.produtos_precos_custo
+      `SELECT * FROM produtos_precos_custo
        WHERE produto_id = $1
        ORDER BY data_lancamento DESC, created_at DESC`,
       [id]
