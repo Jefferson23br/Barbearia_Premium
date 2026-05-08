@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT assinaturas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT assinaturas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     }
 
     const { is_active, search } = req.query;
-    let query = 'SELECT * FROM protese.assinaturas WHERE 1=1';
+    let query = 'SELECT * FROM assinaturas WHERE 1=1';
     const params = [];
     let paramIndex = 1;
 
@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
     }
 
     if (search) {
-      query += ` AND (nome ILIKE $${paramIndex} OR descricao ILIKE $${paramIndex})`;
+      query += ` AND (nome LIKE $${paramIndex} OR descricao LIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
@@ -52,8 +52,8 @@ router.get('/', async (req, res) => {
           aserv.*,
           s.nome as servico_nome,
           s.preco as servico_preco
-         FROM protese.assinaturas_servicos aserv
-         INNER JOIN protese.servicos s ON aserv.servico_id = s.id
+         FROM assinaturas_servicos aserv
+         INNER JOIN servicos s ON aserv.servico_id = s.id
          WHERE aserv.assinatura_id = $1`,
         [assinatura.id]
       );
@@ -64,8 +64,8 @@ router.get('/', async (req, res) => {
           p.descricao as produto_descricao,
           p.codigo as produto_codigo,
           p.preco_venda as produto_preco
-         FROM protese.assinaturas_produtos aprod
-         INNER JOIN protese.produtos p ON aprod.produto_id = p.id
+         FROM assinaturas_produtos aprod
+         INNER JOIN produtos p ON aprod.produto_id = p.id
          WHERE aprod.assinatura_id = $1`,
         [assinatura.id]
       );
@@ -102,7 +102,7 @@ router.get('/:id', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT assinaturas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT assinaturas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -112,7 +112,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM protese.assinaturas WHERE id = $1',
+      'SELECT * FROM assinaturas WHERE id = $1',
       [id]
     );
 
@@ -128,8 +128,8 @@ router.get('/:id', async (req, res) => {
         aserv.*,
         s.nome as servico_nome,
         s.preco as servico_preco
-       FROM protese.assinaturas_servicos aserv
-       INNER JOIN protese.servicos s ON aserv.servico_id = s.id
+       FROM assinaturas_servicos aserv
+       INNER JOIN servicos s ON aserv.servico_id = s.id
        WHERE aserv.assinatura_id = $1`,
       [assinatura.id]
     );
@@ -140,8 +140,8 @@ router.get('/:id', async (req, res) => {
         p.descricao as produto_descricao,
         p.codigo as produto_codigo,
         p.preco_venda as produto_preco
-       FROM protese.assinaturas_produtos aprod
-       INNER JOIN protese.produtos p ON aprod.produto_id = p.id
+       FROM assinaturas_produtos aprod
+       INNER JOIN produtos p ON aprod.produto_id = p.id
        WHERE aprod.assinatura_id = $1`,
       [assinatura.id]
     );
@@ -179,7 +179,7 @@ router.post('/', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT assinaturas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT assinaturas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -228,7 +228,7 @@ router.post('/', async (req, res) => {
 
         // Buscar preço do serviço
         const servicoCheck = await client.query(
-          'SELECT preco FROM protese.servicos WHERE id = $1',
+          'SELECT preco FROM servicos WHERE id = $1',
           [servico.servico_id]
         );
 
@@ -252,7 +252,7 @@ router.post('/', async (req, res) => {
 
         // Buscar preço do produto
         const produtoCheck = await client.query(
-          'SELECT preco_venda FROM protese.produtos WHERE id = $1',
+          'SELECT preco_venda FROM produtos WHERE id = $1',
           [produto.produto_id]
         );
 
@@ -293,7 +293,7 @@ router.post('/', async (req, res) => {
 
     // Inserir assinatura
     const result = await client.query(
-      `INSERT INTO protese.assinaturas (
+      `INSERT INTO assinaturas (
         nome, descricao, preco_total, valor_comercializado, desconto_percentual, 
         desconto_valor, valor_liquido, validade_em_dias, is_active, created_by
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
@@ -317,26 +317,42 @@ router.post('/', async (req, res) => {
     // Inserir serviços
     if (servicos && servicos.length > 0) {
       for (const servico of servicos) {
-        await client.query(
-          `INSERT INTO protese.assinaturas_servicos (assinatura_id, servico_id, quantidade)
-           VALUES ($1, $2, $3)
-           ON CONFLICT (assinatura_id, servico_id) 
-           DO UPDATE SET quantidade = EXCLUDED.quantidade`,
-          [novaAssinatura.id, servico.servico_id, parseInt(servico.quantidade)]
+        const quantidadeServico = parseInt(servico.quantidade);
+        const updateServicoResult = await client.query(
+          `UPDATE assinaturas_servicos
+           SET quantidade = $3
+           WHERE assinatura_id = $1 AND servico_id = $2`,
+          [novaAssinatura.id, servico.servico_id, quantidadeServico]
         );
+
+        if ((updateServicoResult.rowCount || 0) === 0) {
+          await client.query(
+            `INSERT INTO assinaturas_servicos (assinatura_id, servico_id, quantidade)
+             VALUES ($1, $2, $3)`,
+            [novaAssinatura.id, servico.servico_id, quantidadeServico]
+          );
+        }
       }
     }
 
     // Inserir produtos
     if (produtos && produtos.length > 0) {
       for (const produto of produtos) {
-        await client.query(
-          `INSERT INTO protese.assinaturas_produtos (assinatura_id, produto_id, quantidade)
-           VALUES ($1, $2, $3)
-           ON CONFLICT (assinatura_id, produto_id) 
-           DO UPDATE SET quantidade = EXCLUDED.quantidade`,
-          [novaAssinatura.id, produto.produto_id, parseInt(produto.quantidade)]
+        const quantidadeProduto = parseInt(produto.quantidade);
+        const updateProdutoResult = await client.query(
+          `UPDATE assinaturas_produtos
+           SET quantidade = $3
+           WHERE assinatura_id = $1 AND produto_id = $2`,
+          [novaAssinatura.id, produto.produto_id, quantidadeProduto]
         );
+
+        if ((updateProdutoResult.rowCount || 0) === 0) {
+          await client.query(
+            `INSERT INTO assinaturas_produtos (assinatura_id, produto_id, quantidade)
+             VALUES ($1, $2, $3)`,
+            [novaAssinatura.id, produto.produto_id, quantidadeProduto]
+          );
+        }
       }
     }
 
@@ -344,7 +360,7 @@ router.post('/', async (req, res) => {
 
     // Buscar assinatura completa para retornar
     const assinaturaCompletaResult = await pool.query(
-      'SELECT * FROM protese.assinaturas WHERE id = $1',
+      'SELECT * FROM assinaturas WHERE id = $1',
       [novaAssinatura.id]
     );
 
@@ -353,8 +369,8 @@ router.post('/', async (req, res) => {
         aserv.*,
         s.nome as servico_nome,
         s.preco as servico_preco
-       FROM protese.assinaturas_servicos aserv
-       INNER JOIN protese.servicos s ON aserv.servico_id = s.id
+       FROM assinaturas_servicos aserv
+       INNER JOIN servicos s ON aserv.servico_id = s.id
        WHERE aserv.assinatura_id = $1`,
       [novaAssinatura.id]
     );
@@ -365,8 +381,8 @@ router.post('/', async (req, res) => {
         p.descricao as produto_descricao,
         p.codigo as produto_codigo,
         p.preco_venda as produto_preco
-       FROM protese.assinaturas_produtos aprod
-       INNER JOIN protese.produtos p ON aprod.produto_id = p.id
+       FROM assinaturas_produtos aprod
+       INNER JOIN produtos p ON aprod.produto_id = p.id
        WHERE aprod.assinatura_id = $1`,
       [novaAssinatura.id]
     );
@@ -436,7 +452,7 @@ router.put('/:id', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT assinaturas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT assinaturas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -448,7 +464,7 @@ router.put('/:id', async (req, res) => {
 
     // Buscar assinatura atual
     const assinaturaAtual = await client.query(
-      'SELECT * FROM protese.assinaturas WHERE id = $1',
+      'SELECT * FROM assinaturas WHERE id = $1',
       [id]
     );
 
@@ -479,13 +495,13 @@ router.put('/:id', async (req, res) => {
       if (servicosParaCalcular.length === 0 && !produtos) {
         // Se não foram fornecidos novos serviços nem produtos, usar os existentes
         const servicosExistentes = await client.query(
-          'SELECT servico_id, quantidade FROM protese.assinaturas_servicos WHERE assinatura_id = $1',
+          'SELECT servico_id, quantidade FROM assinaturas_servicos WHERE assinatura_id = $1',
           [id]
         );
         
         for (const servico of servicosExistentes.rows) {
           const servicoCheck = await client.query(
-            'SELECT preco FROM protese.servicos WHERE id = $1',
+            'SELECT preco FROM servicos WHERE id = $1',
             [servico.servico_id]
           );
           if (servicoCheck.rows.length > 0) {
@@ -500,7 +516,7 @@ router.put('/:id', async (req, res) => {
           }
 
           const servicoCheck = await client.query(
-            'SELECT preco FROM protese.servicos WHERE id = $1',
+            'SELECT preco FROM servicos WHERE id = $1',
             [servico.servico_id]
           );
 
@@ -520,13 +536,13 @@ router.put('/:id', async (req, res) => {
       if (produtosParaCalcular.length === 0 && !servicos) {
         // Se não foram fornecidos novos produtos nem serviços, usar os existentes
         const produtosExistentes = await client.query(
-          'SELECT produto_id, quantidade FROM protese.assinaturas_produtos WHERE assinatura_id = $1',
+          'SELECT produto_id, quantidade FROM assinaturas_produtos WHERE assinatura_id = $1',
           [id]
         );
         
         for (const produto of produtosExistentes.rows) {
           const produtoCheck = await client.query(
-            'SELECT preco_venda FROM protese.produtos WHERE id = $1',
+            'SELECT preco_venda FROM produtos WHERE id = $1',
             [produto.produto_id]
           );
           if (produtoCheck.rows.length > 0) {
@@ -541,7 +557,7 @@ router.put('/:id', async (req, res) => {
           }
 
           const produtoCheck = await client.query(
-            'SELECT preco_venda FROM protese.produtos WHERE id = $1',
+            'SELECT preco_venda FROM produtos WHERE id = $1',
             [produto.produto_id]
           );
 
@@ -647,7 +663,7 @@ router.put('/:id', async (req, res) => {
 
     params.push(id);
 
-    const query = `UPDATE protese.assinaturas SET ${updateFields.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+    const query = `UPDATE assinaturas SET ${updateFields.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
     const result = await client.query(query, params);
 
     const assinaturaAtualizada = result.rows[0];
@@ -655,12 +671,12 @@ router.put('/:id', async (req, res) => {
     // Atualizar serviços se fornecidos
     if (servicos) {
       // Deletar serviços existentes
-      await client.query('DELETE FROM protese.assinaturas_servicos WHERE assinatura_id = $1', [id]);
+      await client.query('DELETE FROM assinaturas_servicos WHERE assinatura_id = $1', [id]);
 
       // Inserir novos serviços
       for (const servico of servicos) {
         await client.query(
-          `INSERT INTO protese.assinaturas_servicos (assinatura_id, servico_id, quantidade)
+          `INSERT INTO assinaturas_servicos (assinatura_id, servico_id, quantidade)
            VALUES ($1, $2, $3)`,
           [id, servico.servico_id, parseInt(servico.quantidade)]
         );
@@ -670,12 +686,12 @@ router.put('/:id', async (req, res) => {
     // Atualizar produtos se fornecidos
     if (produtos) {
       // Deletar produtos existentes
-      await client.query('DELETE FROM protese.assinaturas_produtos WHERE assinatura_id = $1', [id]);
+      await client.query('DELETE FROM assinaturas_produtos WHERE assinatura_id = $1', [id]);
 
       // Inserir novos produtos
       for (const produto of produtos) {
         await client.query(
-          `INSERT INTO protese.assinaturas_produtos (assinatura_id, produto_id, quantidade)
+          `INSERT INTO assinaturas_produtos (assinatura_id, produto_id, quantidade)
            VALUES ($1, $2, $3)`,
           [id, produto.produto_id, parseInt(produto.quantidade)]
         );
@@ -686,7 +702,7 @@ router.put('/:id', async (req, res) => {
 
     // Buscar assinatura completa para retornar
     const assinaturaCompletaResult = await pool.query(
-      'SELECT * FROM protese.assinaturas WHERE id = $1',
+      'SELECT * FROM assinaturas WHERE id = $1',
       [id]
     );
 
@@ -695,8 +711,8 @@ router.put('/:id', async (req, res) => {
         aserv.*,
         s.nome as servico_nome,
         s.preco as servico_preco
-       FROM protese.assinaturas_servicos aserv
-       INNER JOIN protese.servicos s ON aserv.servico_id = s.id
+       FROM assinaturas_servicos aserv
+       INNER JOIN servicos s ON aserv.servico_id = s.id
        WHERE aserv.assinatura_id = $1`,
       [id]
     );
@@ -707,8 +723,8 @@ router.put('/:id', async (req, res) => {
         p.descricao as produto_descricao,
         p.codigo as produto_codigo,
         p.preco_venda as produto_preco
-       FROM protese.assinaturas_produtos aprod
-       INNER JOIN protese.produtos p ON aprod.produto_id = p.id
+       FROM assinaturas_produtos aprod
+       INNER JOIN produtos p ON aprod.produto_id = p.id
        WHERE aprod.assinatura_id = $1`,
       [id]
     );
@@ -769,7 +785,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT assinaturas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT assinaturas_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -780,7 +796,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar assinatura para log
     const assinatura = await pool.query(
-      'SELECT * FROM protese.assinaturas WHERE id = $1',
+      'SELECT * FROM assinaturas WHERE id = $1',
       [id]
     );
 
@@ -789,7 +805,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Excluir assinatura (cascade vai excluir serviços e produtos)
-    await pool.query('DELETE FROM protese.assinaturas WHERE id = $1', [id]);
+    await pool.query('DELETE FROM assinaturas WHERE id = $1', [id]);
 
     // Registrar log
     if (usuarioId) {
