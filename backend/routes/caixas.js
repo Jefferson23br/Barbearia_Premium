@@ -16,7 +16,7 @@ router.get('/contas', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -26,7 +26,7 @@ router.get('/contas', async (req, res) => {
     }
 
     const { tipo, is_active, search } = req.query;
-    let query = 'SELECT * FROM protese.contas WHERE 1=1';
+    let query = 'SELECT * FROM contas WHERE 1=1';
     const params = [];
     let paramIndex = 1;
 
@@ -43,7 +43,7 @@ router.get('/contas', async (req, res) => {
     }
 
     if (search) {
-      query += ` AND (nome ILIKE $${paramIndex} OR banco ILIKE $${paramIndex} OR conta ILIKE $${paramIndex})`;
+      query += ` AND (nome LIKE $${paramIndex} OR banco LIKE $${paramIndex} OR conta LIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
@@ -83,7 +83,7 @@ router.get('/contas/:id', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -93,7 +93,7 @@ router.get('/contas/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM protese.contas WHERE id = $1',
+      'SELECT * FROM contas WHERE id = $1',
       [req.params.id]
     );
 
@@ -132,7 +132,7 @@ router.post('/contas', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -150,7 +150,7 @@ router.post('/contas', async (req, res) => {
     const saldoInicialValue = parseFloat(saldo_inicial) || 0;
     
     const result = await pool.query(
-      `INSERT INTO protese.contas 
+      `INSERT INTO contas 
        (nome, tipo, banco, agencia, conta, saldo_inicial, saldo_atual, descricao, is_active, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
@@ -171,7 +171,7 @@ router.post('/contas', async (req, res) => {
     // Se houver saldo inicial, criar movimentação de saldo inicial (trigger vai atualizar saldo_atual)
     if (saldoInicialValue > 0) {
       await pool.query(
-        `INSERT INTO protese.movimentacoes_caixa 
+        `INSERT INTO movimentacoes_caixa 
          (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, created_by)
          VALUES ($1, $2, $3, $4, CURRENT_DATE, $5)`,
         [
@@ -185,7 +185,7 @@ router.post('/contas', async (req, res) => {
       
       // Buscar conta atualizada com saldo correto
       const contaAtualizada = await pool.query(
-        'SELECT * FROM protese.contas WHERE id = $1',
+        'SELECT * FROM contas WHERE id = $1',
         [result.rows[0].id]
       );
       
@@ -228,7 +228,7 @@ router.put('/contas/:id', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -240,7 +240,7 @@ router.put('/contas/:id', async (req, res) => {
     const { nome, tipo, banco, agencia, conta, descricao, is_active } = req.body;
 
     const result = await pool.query(
-      `UPDATE protese.contas 
+      `UPDATE contas 
        SET nome = $1, tipo = $2, banco = $3, agencia = $4, conta = $5, 
            descricao = $6, is_active = $7, updated_by = $8, updated_at = CURRENT_TIMESTAMP
        WHERE id = $9
@@ -286,7 +286,7 @@ router.delete('/contas/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -297,7 +297,7 @@ router.delete('/contas/:id', async (req, res) => {
 
     // Buscar nome da conta antes de excluir
     const contaResult = await pool.query(
-      'SELECT nome FROM protese.contas WHERE id = $1',
+      'SELECT nome FROM contas WHERE id = $1',
       [req.params.id]
     );
 
@@ -309,7 +309,7 @@ router.delete('/contas/:id', async (req, res) => {
 
     // Verificar se há movimentações
     const movimentacoesResult = await pool.query(
-      'SELECT COUNT(*) as total FROM protese.movimentacoes_caixa WHERE conta_id = $1 OR conta_origem_id = $1 OR conta_destino_id = $1',
+      'SELECT COUNT(*) as total FROM movimentacoes_caixa WHERE conta_id = $1 OR conta_origem_id = $1 OR conta_destino_id = $1',
       [req.params.id]
     );
 
@@ -319,7 +319,7 @@ router.delete('/contas/:id', async (req, res) => {
       });
     }
 
-    await pool.query('DELETE FROM protese.contas WHERE id = $1', [req.params.id]);
+    await pool.query('DELETE FROM contas WHERE id = $1', [req.params.id]);
 
     await registrarLog({
       usuario_id: usuarioId,
@@ -352,7 +352,7 @@ router.get('/movimentacoes', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -368,10 +368,10 @@ router.get('/movimentacoes', async (req, res) => {
         c.nome as conta_nome,
         co.nome as conta_origem_nome,
         cd.nome as conta_destino_nome
-      FROM protese.movimentacoes_caixa m
-      LEFT JOIN protese.contas c ON m.conta_id = c.id
-      LEFT JOIN protese.contas co ON m.conta_origem_id = co.id
-      LEFT JOIN protese.contas cd ON m.conta_destino_id = cd.id
+      FROM movimentacoes_caixa m
+      LEFT JOIN contas c ON m.conta_id = c.id
+      LEFT JOIN contas co ON m.conta_origem_id = co.id
+      LEFT JOIN contas cd ON m.conta_destino_id = cd.id
       WHERE 1=1
     `;
     const params = [];
@@ -436,7 +436,7 @@ router.post('/movimentacoes/entrada', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -456,7 +456,7 @@ router.post('/movimentacoes/entrada', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO protese.movimentacoes_caixa 
+      `INSERT INTO movimentacoes_caixa 
        (conta_id, tipo_movimentacao, valor, descricao, categoria, data_movimentacao, observacoes, created_by)
        VALUES ($1, 'entrada', $2, $3, $4, $5, $6, $7)
        RETURNING *`,
@@ -502,7 +502,7 @@ router.post('/movimentacoes/saida', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -522,7 +522,7 @@ router.post('/movimentacoes/saida', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO protese.movimentacoes_caixa 
+      `INSERT INTO movimentacoes_caixa 
        (conta_id, tipo_movimentacao, valor, descricao, categoria, data_movimentacao, observacoes, created_by)
        VALUES ($1, 'saida', $2, $3, $4, $5, $6, $7)
        RETURNING *`,
@@ -568,7 +568,7 @@ router.post('/movimentacoes/transferencia', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -593,7 +593,7 @@ router.post('/movimentacoes/transferencia', async (req, res) => {
 
     // Verificar saldo da conta origem
     const contaOrigemResult = await pool.query(
-      'SELECT saldo_atual, nome FROM protese.contas WHERE id = $1',
+      'SELECT saldo_atual, nome FROM contas WHERE id = $1',
       [conta_origem_id]
     );
 
@@ -607,7 +607,7 @@ router.post('/movimentacoes/transferencia', async (req, res) => {
 
     // Verificar se conta destino existe
     const contaDestinoResult = await pool.query(
-      'SELECT nome FROM protese.contas WHERE id = $1',
+      'SELECT nome FROM contas WHERE id = $1',
       [conta_destino_id]
     );
 
@@ -618,7 +618,7 @@ router.post('/movimentacoes/transferencia', async (req, res) => {
     // Criar movimentação de transferência
     // A movimentação é registrada na conta destino, mas tem referência à conta origem
     const result = await pool.query(
-      `INSERT INTO protese.movimentacoes_caixa 
+      `INSERT INTO movimentacoes_caixa 
        (conta_id, tipo_movimentacao, conta_origem_id, conta_destino_id, valor, descricao, data_movimentacao, observacoes, created_by)
        VALUES ($1, 'transferencia', $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
@@ -665,7 +665,7 @@ router.delete('/movimentacoes/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT caixas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT caixas_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -676,7 +676,7 @@ router.delete('/movimentacoes/:id', async (req, res) => {
 
     // Buscar movimentação antes de excluir
     const movimentacaoResult = await pool.query(
-      'SELECT * FROM protese.movimentacoes_caixa WHERE id = $1',
+      'SELECT * FROM movimentacoes_caixa WHERE id = $1',
       [req.params.id]
     );
 
@@ -691,7 +691,7 @@ router.delete('/movimentacoes/:id', async (req, res) => {
       return res.status(400).json({ error: 'Não é possível excluir movimentação de saldo inicial' });
     }
 
-    await pool.query('DELETE FROM protese.movimentacoes_caixa WHERE id = $1', [req.params.id]);
+    await pool.query('DELETE FROM movimentacoes_caixa WHERE id = $1', [req.params.id]);
 
     await registrarLog({
       usuario_id: usuarioId,
