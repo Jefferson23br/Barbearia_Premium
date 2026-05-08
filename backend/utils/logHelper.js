@@ -107,7 +107,7 @@ async function logExcluir(req, modulo, entidadeId, entidadeTipo, descricao, dado
  * Útil para garantir que temos os dados para o log
  * 
  * @param {Pool} pool - Pool do PostgreSQL
- * @param {string} tabela - Nome da tabela (ex: 'protese.vendas')
+ * @param {string} tabela - Nome da tabela (ex: 'vendas')
  * @param {string} id - ID da entidade
  * @param {Array<string>} campos - Campos a buscar (ex: ['valor', 'cliente_id', 'data'])
  * @returns {Promise<Object>} Dados da entidade
