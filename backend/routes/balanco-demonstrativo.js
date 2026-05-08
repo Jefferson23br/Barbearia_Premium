@@ -14,7 +14,7 @@ router.get('/categorias', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT balanco_demonstrativo_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT balanco_demonstrativo_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -30,8 +30,8 @@ router.get('/categorias', async (req, res) => {
       SELECT 
         c.*,
         COUNT(d.id) as total_despesas
-      FROM protese.categorias_custo c
-      LEFT JOIN protese.despesas d ON d.categoria_custo_id = c.id
+      FROM categorias_custo c
+      LEFT JOIN despesas d ON d.categoria_custo_id = c.id
     `;
 
     const params = [];
@@ -49,7 +49,7 @@ router.get('/categorias', async (req, res) => {
 
     if (busca) {
       params.push(`%${busca}%`);
-      conditions.push(`(c.nome ILIKE $${params.length} OR c.descricao ILIKE $${params.length} OR c.codigo ILIKE $${params.length})`);
+      conditions.push(`(c.nome LIKE $${params.length} OR c.descricao LIKE $${params.length} OR c.codigo LIKE $${params.length})`);
     }
 
     if (conditions.length > 0) {
@@ -110,7 +110,7 @@ router.get('/categorias/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT balanco_demonstrativo_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT balanco_demonstrativo_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -120,7 +120,7 @@ router.get('/categorias/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM protese.categorias_custo WHERE id = $1',
+      'SELECT * FROM categorias_custo WHERE id = $1',
       [req.params.id]
     );
 
@@ -151,7 +151,7 @@ router.post('/categorias', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT balanco_demonstrativo_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT balanco_demonstrativo_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -203,7 +203,7 @@ router.post('/categorias', async (req, res) => {
     // Verificar se categoria pai existe e validar/ajustar nível
     if (categoriaPaiIdNormalizada) {
       const paiResult = await client.query(
-        'SELECT nivel FROM protese.categorias_custo WHERE id = $1',
+        'SELECT nivel FROM categorias_custo WHERE id = $1',
         [categoriaPaiIdNormalizada]
       );
 
@@ -234,8 +234,8 @@ router.post('/categorias', async (req, res) => {
 
     // Verificar se já existe categoria com mesmo nome no mesmo nível/pai
     const existeQuery = categoriaPaiIdNormalizada
-      ? 'SELECT id FROM protese.categorias_custo WHERE nome = $1 AND categoria_pai_id = $2'
-      : 'SELECT id FROM protese.categorias_custo WHERE nome = $1 AND categoria_pai_id IS NULL';
+      ? 'SELECT id FROM categorias_custo WHERE nome = $1 AND categoria_pai_id = $2'
+      : 'SELECT id FROM categorias_custo WHERE nome = $1 AND categoria_pai_id IS NULL';
     
     const existeParams = categoriaPaiIdNormalizada ? [nome, categoriaPaiIdNormalizada] : [nome];
     const existeResult = await client.query(existeQuery, existeParams);
@@ -248,7 +248,7 @@ router.post('/categorias', async (req, res) => {
     // Verificar se código hierárquico já existe (se fornecido)
     if (codigo_hierarquico && String(codigo_hierarquico).trim() !== '') {
       const codigoExisteResult = await client.query(
-        'SELECT id FROM protese.categorias_custo WHERE codigo_hierarquico = $1',
+        'SELECT id FROM categorias_custo WHERE codigo_hierarquico = $1',
         [String(codigo_hierarquico).trim()]
       );
 
@@ -284,7 +284,7 @@ router.post('/categorias', async (req, res) => {
     let result;
     try {
       result = await client.query(
-        `INSERT INTO protese.categorias_custo 
+        `INSERT INTO categorias_custo 
          (nome, descricao, codigo, tipo, categoria_pai_id, nivel, codigo_hierarquico, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
@@ -353,7 +353,7 @@ router.put('/categorias/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT balanco_demonstrativo_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT balanco_demonstrativo_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -367,7 +367,7 @@ router.put('/categorias/:id', async (req, res) => {
 
     // Buscar categoria atual
     const categoriaAtual = await client.query(
-      'SELECT * FROM protese.categorias_custo WHERE id = $1',
+      'SELECT * FROM categorias_custo WHERE id = $1',
       [req.params.id]
     );
 
@@ -379,7 +379,7 @@ router.put('/categorias/:id', async (req, res) => {
     // Verificar se nome já existe em outra categoria
     if (nome && nome !== categoriaAtual.rows[0].nome) {
       const existeResult = await client.query(
-        'SELECT id FROM protese.categorias_custo WHERE nome = $1 AND id != $2',
+        'SELECT id FROM categorias_custo WHERE nome = $1 AND id != $2',
         [nome, req.params.id]
       );
 
@@ -392,7 +392,7 @@ router.put('/categorias/:id', async (req, res) => {
     // Verificar se código já existe em outra categoria (se fornecido)
     if (codigo && codigo !== categoriaAtual.rows[0].codigo) {
       const codigoExisteResult = await client.query(
-        'SELECT id FROM protese.categorias_custo WHERE codigo = $1 AND id != $2',
+        'SELECT id FROM categorias_custo WHERE codigo = $1 AND id != $2',
         [codigo, req.params.id]
       );
 
@@ -403,7 +403,7 @@ router.put('/categorias/:id', async (req, res) => {
     }
 
     const result = await client.query(
-      `UPDATE protese.categorias_custo 
+      `UPDATE categorias_custo 
        SET nome = COALESCE($1, nome),
            descricao = COALESCE($2, descricao),
            codigo = COALESCE($3, codigo),
@@ -462,7 +462,7 @@ router.delete('/categorias/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT balanco_demonstrativo_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT balanco_demonstrativo_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -474,7 +474,7 @@ router.delete('/categorias/:id', async (req, res) => {
 
     // Buscar categoria para log
     const categoriaResult = await client.query(
-      'SELECT nome FROM protese.categorias_custo WHERE id = $1',
+      'SELECT nome FROM categorias_custo WHERE id = $1',
       [req.params.id]
     );
 
@@ -485,7 +485,7 @@ router.delete('/categorias/:id', async (req, res) => {
 
     // Verificar se há despesas vinculadas
     const despesasResult = await client.query(
-      'SELECT COUNT(*) as total FROM protese.despesas WHERE categoria_custo_id = $1',
+      'SELECT COUNT(*) as total FROM despesas WHERE categoria_custo_id = $1',
       [req.params.id]
     );
 
@@ -496,7 +496,7 @@ router.delete('/categorias/:id', async (req, res) => {
       });
     }
 
-    await client.query('DELETE FROM protese.categorias_custo WHERE id = $1', [req.params.id]);
+    await client.query('DELETE FROM categorias_custo WHERE id = $1', [req.params.id]);
 
     await client.query('COMMIT');
 
@@ -532,7 +532,7 @@ router.get('/relatorio', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT balanco_demonstrativo_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT balanco_demonstrativo_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -574,13 +574,13 @@ router.get('/relatorio', async (req, res) => {
     // 1. Buscar TOTAL GERAL de receitas (sem filtro, sem separação)
     const receitasTotalQuery = `
       SELECT 
-        DATE_TRUNC('month', v.data_venda)::date as mes,
+        TRUNC(, 'MM') as mes,
         COALESCE(SUM(COALESCE(vp.valor_total, 0) + COALESCE(vs.valor, 0)), 0) as valor_total
-      FROM protese.vendas v
-      LEFT JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
-      LEFT JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
+      FROM vendas v
+      LEFT JOIN vendas_produtos vp ON v.id = vp.venda_id
+      LEFT JOIN vendas_servicos vs ON v.id = vs.venda_id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
-      GROUP BY DATE_TRUNC('month', v.data_venda)
+      GROUP BY TRUNC(, 'MM')
       ORDER BY mes
     `;
 
@@ -589,12 +589,12 @@ router.get('/relatorio', async (req, res) => {
     // 2. Buscar receitas separadas por TIPO (Produtos e Serviços)
     const vendasProdutosQuery = `
       SELECT 
-        DATE_TRUNC('month', v.data_venda)::date as mes,
+        TRUNC(, 'MM') as mes,
         COALESCE(SUM(vp.valor_total), 0) as valor_total
-      FROM protese.vendas v
-      LEFT JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
+      FROM vendas v
+      LEFT JOIN vendas_produtos vp ON v.id = vp.venda_id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
-      GROUP BY DATE_TRUNC('month', v.data_venda)
+      GROUP BY TRUNC(, 'MM')
       ORDER BY mes
     `;
 
@@ -602,12 +602,12 @@ router.get('/relatorio', async (req, res) => {
 
     const vendasServicosQuery = `
       SELECT 
-        DATE_TRUNC('month', v.data_venda)::date as mes,
+        TRUNC(, 'MM') as mes,
         COALESCE(SUM(vs.valor), 0) as valor_total
-      FROM protese.vendas v
-      LEFT JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
+      FROM vendas v
+      LEFT JOIN vendas_servicos vs ON v.id = vs.venda_id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
-      GROUP BY DATE_TRUNC('month', v.data_venda)
+      GROUP BY TRUNC(, 'MM')
       ORDER BY mes
     `;
 
@@ -616,17 +616,17 @@ router.get('/relatorio', async (req, res) => {
     // 3. Buscar receitas agrupadas por FUNCIONÁRIO (total geral, sem separar produtos/serviços)
     const vendasPorFuncionarioQuery = `
       SELECT 
-        DATE_TRUNC('month', v.data_venda)::date as mes,
+        TRUNC(, 'MM') as mes,
         v.funcionario_id,
         COALESCE(f.nome_completo, 'Sem funcionário') as funcionario_nome,
         COALESCE(SUM(COALESCE(vp.valor_total, 0) + COALESCE(vs.valor, 0)), 0) as valor_total
-      FROM protese.vendas v
-      LEFT JOIN protese.vendas_produtos vp ON v.id = vp.venda_id
-      LEFT JOIN protese.vendas_servicos vs ON v.id = vs.venda_id
-      LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+      FROM vendas v
+      LEFT JOIN vendas_produtos vp ON v.id = vp.venda_id
+      LEFT JOIN vendas_servicos vs ON v.id = vs.venda_id
+      LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
       WHERE v.data_venda >= $1 AND v.data_venda <= $2
         AND (f.tipo_usuario IS NULL OR f.tipo_usuario != 'master')
-      GROUP BY DATE_TRUNC('month', v.data_venda), v.funcionario_id, f.nome_completo
+      GROUP BY TRUNC(, 'MM'), v.funcionario_id, f.nome_completo
       ORDER BY funcionario_nome, mes
     `;
 
@@ -635,11 +635,11 @@ router.get('/relatorio', async (req, res) => {
     // Buscar TOTAL GERAL de despesas (sem filtro)
     const despesasTotalQuery = `
       SELECT 
-        DATE_TRUNC('month', d.data_emissao)::date as mes,
+        TRUNC(, 'MM') as mes,
         SUM(d.valor_liquido) as valor_total
-      FROM protese.despesas d
+      FROM despesas d
       WHERE d.data_emissao >= $1 AND d.data_emissao <= $2
-      GROUP BY DATE_TRUNC('month', d.data_emissao)
+      GROUP BY TRUNC(, 'MM')
       ORDER BY mes
     `;
 
@@ -666,17 +666,17 @@ router.get('/relatorio', async (req, res) => {
         COALESCE(c_avo.codigo_hierarquico, c_avo.codigo, c_avo.nome) as categoria_avo_codigo,
         c_avo.nome as categoria_avo_nome,
         c_avo.nivel as categoria_avo_nivel,
-        DATE_TRUNC('month', d.data_emissao)::date as mes,
+        TRUNC(, 'MM') as mes,
         SUM(d.valor_liquido) as valor_total
-      FROM protese.despesas d
-      LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
-      LEFT JOIN protese.categorias_custo c_pai ON c.categoria_pai_id = c_pai.id
-      LEFT JOIN protese.categorias_custo c_avo ON c_pai.categoria_pai_id = c_avo.id
+      FROM despesas d
+      LEFT JOIN categorias_custo c ON d.categoria_custo_id = c.id
+      LEFT JOIN categorias_custo c_pai ON c.categoria_pai_id = c_pai.id
+      LEFT JOIN categorias_custo c_avo ON c_pai.categoria_pai_id = c_avo.id
       WHERE d.data_emissao >= $1 AND d.data_emissao <= $2
       GROUP BY d.descricao, d.id, c.nome, c.id, c.codigo_hierarquico, c.codigo, c.nivel, c.categoria_pai_id,
                c_pai.id, c_pai.codigo_hierarquico, c_pai.codigo, c_pai.nome, c_pai.nivel, c_pai.categoria_pai_id,
                c_avo.id, c_avo.codigo_hierarquico, c_avo.codigo, c_avo.nome, c_avo.nivel,
-               DATE_TRUNC('month', d.data_emissao)
+               TRUNC(, 'MM')
       ORDER BY 
         COALESCE(c_avo.codigo_hierarquico, c_avo.codigo, c_avo.nome, '') ASC,
         COALESCE(c_pai.codigo_hierarquico, c_pai.codigo, c_pai.nome, '') ASC,
