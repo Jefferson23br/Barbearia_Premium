@@ -25,7 +25,7 @@ function calcularDataVencimento(dataEmissao, formaPagamento, numeroParcela, prim
       const primeiraParcela = primeiroVencimentoBoleto ? new Date(primeiroVencimentoBoleto) : new Date(dataEmissao);
       const novaData = new Date(primeiraParcela);
       const diasAdicionais = (numeroParcela - 1) * 30;
-      novaData.setDate(novaData.getDate() + diasAdicionais);
+      novaData.setTRUNC(novaData.getTRUNC() + diasAdicionais);
       return novaData;
     }
   }
@@ -33,14 +33,14 @@ function calcularDataVencimento(dataEmissao, formaPagamento, numeroParcela, prim
   // Cartão: primeira parcela = data_emissao + 31 dias, depois +30 dias
   if (formaPagamento.startsWith('cartao_')) {
     const primeiraParcela = new Date(dataEmissao);
-    primeiraParcela.setDate(primeiraParcela.getDate() + 31); // 30 + 1
+    primeiraParcela.setTRUNC(primeiraParcela.getTRUNC() + 31); // 30 + 1
     
     if (numeroParcela === 1) {
       return primeiraParcela;
     } else {
       const novaData = new Date(primeiraParcela);
       const diasAdicionais = (numeroParcela - 1) * 30;
-      novaData.setDate(novaData.getDate() + diasAdicionais);
+      novaData.setTRUNC(novaData.getTRUNC() + diasAdicionais);
       return novaData;
     }
   }
@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT despesas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -99,9 +99,9 @@ router.get('/', async (req, res) => {
         d.*,
         ca.nome as caixa_nome,
         c.nome as categoria_custo_nome
-      FROM protese.despesas d
-      LEFT JOIN protese.contas ca ON d.caixa_id = ca.id
-      LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
+      FROM despesas d
+      LEFT JOIN contas ca ON d.caixa_id = ca.id
+      LEFT JOIN categorias_custo c ON d.categoria_custo_id = c.id
       WHERE 1=1
     `;
     const params = [];
@@ -132,7 +132,7 @@ router.get('/', async (req, res) => {
     }
 
     if (fornecedor) {
-      query += ` AND d.fornecedor ILIKE $${paramCount}`;
+      query += ` AND d.fornecedor LIKE $${paramCount}`;
       params.push(`%${fornecedor}%`);
       paramCount++;
     }
@@ -156,7 +156,7 @@ router.get('/', async (req, res) => {
     }
 
     if (busca) {
-      query += ` AND (d.ticket ILIKE $${paramCount} OR d.descricao ILIKE $${paramCount} OR d.fornecedor ILIKE $${paramCount})`;
+      query += ` AND (d.ticket LIKE $${paramCount} OR d.descricao LIKE $${paramCount} OR d.fornecedor LIKE $${paramCount})`;
       params.push(`%${busca}%`);
       paramCount++;
     }
@@ -168,7 +168,7 @@ router.get('/', async (req, res) => {
     // Buscar parcelas para cada despesa
     const despesasComParcelas = await Promise.all(result.rows.map(async (despesa) => {
       const parcelasResult = await pool.query(
-        `SELECT * FROM protese.despesas_parcelas WHERE despesa_id = $1 ORDER BY numero_parcela ASC`,
+        `SELECT * FROM despesas_parcelas WHERE despesa_id = $1 ORDER BY numero_parcela ASC`,
         [despesa.id]
       );
       return {
@@ -208,7 +208,7 @@ router.get('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT despesas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -222,9 +222,9 @@ router.get('/:id', async (req, res) => {
         d.*,
         ca.nome as caixa_nome,
         c.nome as categoria_custo_nome
-       FROM protese.despesas d
-       LEFT JOIN protese.contas ca ON d.caixa_id = ca.id
-       LEFT JOIN protese.categorias_custo c ON d.categoria_custo_id = c.id
+       FROM despesas d
+       LEFT JOIN contas ca ON d.caixa_id = ca.id
+       LEFT JOIN categorias_custo c ON d.categoria_custo_id = c.id
        WHERE d.id = $1`,
       [req.params.id]
     );
@@ -237,7 +237,7 @@ router.get('/:id', async (req, res) => {
 
     // Buscar parcelas
     const parcelasResult = await pool.query(
-      `SELECT * FROM protese.despesas_parcelas WHERE despesa_id = $1 ORDER BY numero_parcela ASC`,
+      `SELECT * FROM despesas_parcelas WHERE despesa_id = $1 ORDER BY numero_parcela ASC`,
       [despesa.id]
     );
 
@@ -270,7 +270,7 @@ router.post('/', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT despesas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -322,7 +322,7 @@ router.post('/', async (req, res) => {
     }
 
     // Gerar ticket
-    const ticketResult = await client.query('SELECT protese.gerar_proximo_ticket_despesa() as ticket');
+    const ticketResult = await client.query('SELECT gerar_proximo_ticket_despesa() as ticket');
     const ticketBase = ticketResult.rows[0].ticket;
 
     // Determinar status inicial
@@ -333,7 +333,7 @@ router.post('/', async (req, res) => {
 
     // Inserir despesa
     const despesaResult = await client.query(
-      `INSERT INTO protese.despesas 
+      `INSERT INTO despesas 
        (ticket, data_emissao, data_vencimento, data_pagamento, fornecedor, descricao, 
         categoria_custo_id, valor_bruto, valor_liquido, forma_pagamento, numero_parcelas, 
         caixa_id, status, observacoes, created_by)
@@ -390,7 +390,7 @@ router.post('/', async (req, res) => {
       const statusParcela = isPago ? 'paga' : 'pendente';
 
       const parcelaResult = await client.query(
-        `INSERT INTO protese.despesas_parcelas 
+        `INSERT INTO despesas_parcelas 
          (despesa_id, numero_parcela, ticket_parcela, valor, data_vencimento, data_pagamento, 
           valor_pago, forma_pagamento, status, caixa_id, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -415,7 +415,7 @@ router.post('/', async (req, res) => {
       // Se foi marcado como pago (pagamentos à vista ou se data_pagamento foi informada), criar movimentação de saída no caixa
       if (isPago) {
         await client.query(
-          `INSERT INTO protese.movimentacoes_caixa 
+          `INSERT INTO movimentacoes_caixa 
            (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
            VALUES ($1, 'saida', $2, $3, $4, $5, 'despesa', $6)`,
           [
@@ -475,7 +475,7 @@ router.put('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT despesas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -487,7 +487,7 @@ router.put('/:id', async (req, res) => {
 
     // Verificar se despesa existe
     const despesaExistente = await client.query(
-      'SELECT * FROM protese.despesas WHERE id = $1',
+      'SELECT * FROM despesas WHERE id = $1',
       [req.params.id]
     );
 
@@ -509,7 +509,7 @@ router.put('/:id', async (req, res) => {
 
     // Atualizar despesa
     await client.query(
-      `UPDATE protese.despesas 
+      `UPDATE despesas 
        SET data_emissao = $1, data_vencimento = $2, fornecedor = $3, descricao = $4,
            categoria_custo_id = $5, valor_bruto = $6, valor_liquido = $7, observacoes = $8,
            updated_at = CURRENT_TIMESTAMP, updated_by = $9
@@ -568,7 +568,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT despesas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -580,7 +580,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar despesa e parcelas
     const despesaResult = await client.query(
-      'SELECT * FROM protese.despesas WHERE id = $1',
+      'SELECT * FROM despesas WHERE id = $1',
       [req.params.id]
     );
 
@@ -593,7 +593,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar parcelas pagas para reverter movimentações
     const parcelasPagas = await client.query(
-      `SELECT * FROM protese.despesas_parcelas 
+      `SELECT * FROM despesas_parcelas 
        WHERE despesa_id = $1 AND status = 'paga' AND valor_pago > 0`,
       [req.params.id]
     );
@@ -601,17 +601,17 @@ router.delete('/:id', async (req, res) => {
     // Reverter movimentações de caixa das parcelas pagas
     for (const parcela of parcelasPagas.rows) {
       await client.query(
-        `DELETE FROM protese.movimentacoes_caixa 
+        `DELETE FROM movimentacoes_caixa 
          WHERE referencia_id = $1 AND referencia_tipo = 'despesa'`,
         [parcela.id]
       );
     }
 
     // Excluir parcelas (CASCADE vai excluir automaticamente)
-    await client.query('DELETE FROM protese.despesas_parcelas WHERE despesa_id = $1', [req.params.id]);
+    await client.query('DELETE FROM despesas_parcelas WHERE despesa_id = $1', [req.params.id]);
 
     // Excluir despesa
-    await client.query('DELETE FROM protese.despesas WHERE id = $1', [req.params.id]);
+    await client.query('DELETE FROM despesas WHERE id = $1', [req.params.id]);
 
     await client.query('COMMIT');
 
@@ -653,7 +653,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT despesas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -690,8 +690,8 @@ router.post('/efetivar-pagamento', async (req, res) => {
       // Buscar parcela
       const parcelaResult = await client.query(
         `SELECT dp.*, d.fornecedor, d.descricao 
-         FROM protese.despesas_parcelas dp
-         JOIN protese.despesas d ON dp.despesa_id = d.id
+         FROM despesas_parcelas dp
+         JOIN despesas d ON dp.despesa_id = d.id
          WHERE dp.id = $1`,
         [parcela_id]
       );
@@ -715,7 +715,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
       const statusParcela = valorPago >= parseFloat(parcela.valor) ? 'paga' : 'parcial';
 
       await client.query(
-        `UPDATE protese.despesas_parcelas 
+        `UPDATE despesas_parcelas 
          SET data_pagamento = $1, 
              valor_pago = $2, 
              status = $3,
@@ -727,7 +727,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
 
       // Criar movimentação de saída no caixa
       const movimentacaoResult = await client.query(
-        `INSERT INTO protese.movimentacoes_caixa 
+        `INSERT INTO movimentacoes_caixa 
          (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
          VALUES ($1, 'saida', $2, $3, $4, $5, 'despesa_parcela', $6)
          RETURNING id`,
@@ -743,7 +743,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
 
       // Atualizar parcela com o ID da movimentação
       await client.query(
-        `UPDATE protese.despesas_parcelas 
+        `UPDATE despesas_parcelas 
          SET movimentacao_caixa_id = $1 
          WHERE id = $2`,
         [movimentacaoResult.rows[0].id, parcela_id]
@@ -751,7 +751,7 @@ router.post('/efetivar-pagamento', async (req, res) => {
 
       // Buscar parcela atualizada
       const parcelaAtualizada = await client.query(
-        `SELECT * FROM protese.despesas_parcelas WHERE id = $1`,
+        `SELECT * FROM despesas_parcelas WHERE id = $1`,
         [parcela_id]
       );
 
@@ -802,7 +802,7 @@ router.put('/modificar-pagamento/:parcela_id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT despesas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT despesas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -822,8 +822,8 @@ router.put('/modificar-pagamento/:parcela_id', async (req, res) => {
     // Buscar parcela atual
     const parcelaResult = await client.query(
       `SELECT dp.*, d.fornecedor, d.descricao 
-       FROM protese.despesas_parcelas dp
-       JOIN protese.despesas d ON dp.despesa_id = d.id
+       FROM despesas_parcelas dp
+       JOIN despesas d ON dp.despesa_id = d.id
        WHERE dp.id = $1`,
       [req.params.parcela_id]
     );
@@ -847,14 +847,14 @@ router.put('/modificar-pagamento/:parcela_id', async (req, res) => {
     // Se havia movimentação anterior, deletar
     if (parcela.movimentacao_caixa_id) {
       await client.query(
-        'DELETE FROM protese.movimentacoes_caixa WHERE id = $1',
+        'DELETE FROM movimentacoes_caixa WHERE id = $1',
         [parcela.movimentacao_caixa_id]
       );
     }
 
     // Atualizar parcela
     await client.query(
-      `UPDATE protese.despesas_parcelas 
+      `UPDATE despesas_parcelas 
        SET data_pagamento = $1, 
            valor_pago = $2, 
            status = $3,
@@ -866,7 +866,7 @@ router.put('/modificar-pagamento/:parcela_id', async (req, res) => {
 
     // Criar nova movimentação de saída no caixa
     const movimentacaoResult = await client.query(
-      `INSERT INTO protese.movimentacoes_caixa 
+      `INSERT INTO movimentacoes_caixa 
        (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
        VALUES ($1, 'saida', $2, $3, $4, $5, 'despesa_parcela', $6)
        RETURNING id`,
@@ -882,7 +882,7 @@ router.put('/modificar-pagamento/:parcela_id', async (req, res) => {
 
     // Atualizar parcela com o ID da nova movimentação
     await client.query(
-      `UPDATE protese.despesas_parcelas 
+      `UPDATE despesas_parcelas 
        SET movimentacao_caixa_id = $1 
        WHERE id = $2`,
       [movimentacaoResult.rows[0].id, req.params.parcela_id]
@@ -890,7 +890,7 @@ router.put('/modificar-pagamento/:parcela_id', async (req, res) => {
 
     // Buscar parcela atualizada
     const parcelaAtualizada = await client.query(
-      `SELECT * FROM protese.despesas_parcelas WHERE id = $1`,
+      `SELECT * FROM despesas_parcelas WHERE id = $1`,
       [req.params.parcela_id]
     );
 
