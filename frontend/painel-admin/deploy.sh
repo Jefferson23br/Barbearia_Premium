@@ -1,54 +1,69 @@
 #!/bin/bash
 
-# Script de deploy automatizado para Hostinger
-# Execute: chmod +x deploy.sh && ./deploy.sh
+# Deploy do Painel Administrativo (Next.js export estático -> Nginx)
+# Execute na VPS: chmod +x deploy.sh && ./deploy.sh
 
-echo "🚀 Iniciando deploy do Painel de Cliente Barberia..."
+set -euo pipefail
 
-# Cores para output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+RED='\033[0;31m'
+NC='\033[0m'
 
-# Verificar se Node.js está instalado
-if ! command -v node &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Node.js não encontrado. Instalando...${NC}"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-    source ~/.bashrc
-    nvm install 18
-    nvm use 18
+DEST_DIR="/var/www/appbarber-admin"
+APP_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo -e "${GREEN}🚀 Deploy Painel Administrativo${NC}"
+echo "  Origem : ${APP_DIR}/out"
+echo "  Destino: ${DEST_DIR}"
+echo ""
+
+if ! command -v node >/dev/null 2>&1; then
+  echo -e "${RED}❌ Node.js não encontrado.${NC}"
+  exit 1
 fi
 
-# Instalar dependências
-echo -e "${GREEN}📦 Instalando dependências...${NC}"
-npm install
+cd "$APP_DIR"
 
-# Fazer build
-echo -e "${GREEN}🏗️  Criando build de produção...${NC}"
+echo -e "${GREEN}📦 Instalando dependências...${NC}"
+if [ -f package-lock.json ]; then
+  npm ci
+else
+  npm install
+fi
+
+echo -e "${GREEN}🏗️  Gerando build estático (out/)...${NC}"
+rm -rf .next out
 npm run build
 
-# Verificar se PM2 está instalado
-if ! command -v pm2 &> /dev/null; then
-    echo -e "${YELLOW}⚠️  PM2 não encontrado. Instalando...${NC}"
-    npm install -g pm2
+if [ ! -d "out" ]; then
+  echo -e "${RED}❌ Pasta 'out' não foi gerada. Verifique 'output: export' no next.config.js.${NC}"
+  exit 1
 fi
 
-# Parar aplicação existente (se houver)
-pm2 stop barberia-painel-cliente 2>/dev/null || true
-pm2 delete barberia-painel-cliente 2>/dev/null || true
+echo -e "${GREEN}📁 Garantindo destino ${DEST_DIR}...${NC}"
+sudo mkdir -p "$DEST_DIR"
 
-# Iniciar aplicação
-echo -e "${GREEN}▶️  Iniciando aplicação...${NC}"
-pm2 start ecosystem.config.js
+echo -e "${GREEN}🔄 Sincronizando arquivos (rsync --delete)...${NC}"
+sudo rsync -av --delete out/ "$DEST_DIR/"
 
-# Salvar configuração
-pm2 save
+echo -e "${GREEN}🔐 Ajustando permissões...${NC}"
+sudo chown -R nginx:nginx "$DEST_DIR" 2>/dev/null \
+  || sudo chown -R www-data:www-data "$DEST_DIR" 2>/dev/null \
+  || true
+sudo find "$DEST_DIR" -type d -exec chmod 755 {} \;
+sudo find "$DEST_DIR" -type f -exec chmod 644 {} \;
 
-echo -e "${GREEN}✅ Deploy concluído com sucesso!${NC}"
-echo -e "${GREEN}🌐 Acesse: http://localhost:3000${NC}"
+if command -v nginx >/dev/null 2>&1; then
+  echo -e "${GREEN}🧪 Testando configuração do Nginx...${NC}"
+  if sudo nginx -t; then
+    echo -e "${GREEN}♻️  Recarregando Nginx...${NC}"
+    sudo systemctl reload nginx || sudo nginx -s reload
+  else
+    echo -e "${YELLOW}⚠️  nginx -t falhou. Não recarreguei. Revise a configuração.${NC}"
+  fi
+fi
+
 echo ""
-echo "Comandos úteis:"
-echo "  pm2 logs barberia-painel-cliente  - Ver logs"
-echo "  pm2 restart barberia-painel-cliente - Reiniciar"
-echo "  pm2 stop barberia-painel-cliente - Parar"
-
+echo -e "${GREEN}✅ Deploy concluído!${NC}"
+echo "  Conteúdo publicado em: $DEST_DIR"

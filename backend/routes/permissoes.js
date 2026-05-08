@@ -2,6 +2,51 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
 const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
+const isOracle = Boolean(process.env.ORACLE_HOST);
+const schemaPrefix = isOracle ? '' : 'protese.';
+
+const CAMPOS_PERMISSOES = [
+  'dashboard_ver', 'agenda_ver', 'agenda_editar', 'agenda_excluir',
+  'lancamento_venda_ver', 'lancamento_venda_editar', 'lancamento_venda_excluir',
+  'lancamento_despesa_ver', 'lancamento_despesa_editar', 'lancamento_despesa_excluir',
+  'receitas_ver', 'receitas_editar', 'receitas_excluir',
+  'despesas_ver', 'despesas_editar', 'despesas_excluir',
+  'faturamento_ver', 'faturamento_editar', 'faturamento_excluir',
+  'usuarios_ver', 'usuarios_editar', 'usuarios_excluir',
+  'funcionarios_ver', 'funcionarios_editar', 'funcionarios_excluir',
+  'controle_acessos_ver', 'controle_logs_ver',
+  'help_desk_ver', 'help_desk_editar', 'help_desk_excluir',
+  'servicos_ver', 'servicos_editar', 'servicos_excluir',
+  'controle_permissoes_ver', 'controle_permissoes_editar', 'controle_permissoes_excluir',
+  'emissao_nfe_ver', 'emissao_nfe_editar', 'emissao_nfe_excluir',
+  'emissao_relatorios_ver', 'emissao_relatorios_editar', 'emissao_relatorios_excluir',
+  'integracao_apis_ver', 'integracao_apis_editar', 'integracao_apis_excluir',
+  'habilitar_api_ver', 'habilitar_api_editar', 'habilitar_api_excluir',
+  'configuracoes_ver', 'configuracoes_editar', 'configuracoes_excluir',
+  'produtos_ver', 'produtos_editar', 'produtos_excluir',
+  'estoque_ver', 'estoque_editar', 'estoque_excluir',
+  'caixas_ver', 'caixas_editar', 'caixas_excluir',
+  'vendas_ver', 'vendas_editar', 'vendas_excluir',
+  'balanco_demonstrativo_ver', 'balanco_demonstrativo_editar', 'balanco_demonstrativo_excluir',
+  'crm_ver', 'crm_editar', 'crm_excluir',
+  'cupons_fidelidades_ver', 'cupons_fidelidades_editar', 'cupons_fidelidades_excluir',
+  'servicos_integracao_ver', 'servicos_integracao_editar', 'servicos_integracao_excluir',
+  'assinaturas_ver', 'assinaturas_editar', 'assinaturas_excluir',
+];
+
+function buildPermissoesPadrao(valor = false) {
+  return CAMPOS_PERMISSOES.reduce((acc, campo) => {
+    acc[campo] = valor;
+    return acc;
+  }, {});
+}
+
+function normalizePermissoes(permissoes) {
+  return CAMPOS_PERMISSOES.reduce((acc, campo) => {
+    acc[campo] = permissoes?.[campo] === true || permissoes?.[campo] === 1 || permissoes?.[campo] === '1';
+    return acc;
+  }, {});
+}
 
 /**
  * GET /api/v1/permissoes/:usuarioId
@@ -13,99 +58,37 @@ router.get('/:usuarioId', async (req, res) => {
 
     // Buscar permissões do usuário
     const result = await pool.query(
-      `SELECT * FROM protese.permissoes_usuarios
+      `SELECT * FROM ${schemaPrefix}permissoes_usuarios
        WHERE usuario_id = $1`,
       [usuarioId]
     );
 
     if (result.rows.length === 0) {
+      if (isOracle) {
+        const usuarioResult = await pool.query(
+          `SELECT papel
+           FROM usuarios
+           WHERE id = $1
+           FETCH FIRST 1 ROWS ONLY`,
+          [usuarioId]
+        );
+
+        if (usuarioResult.rows.length > 0) {
+          const papel = String(usuarioResult.rows[0].papel || '').toLowerCase();
+          if (papel === 'gestor' || papel === 'proprietario') {
+            return res.json({ permissoes: buildPermissoesPadrao(true) });
+          }
+        }
+      }
+
       // Se não existir, retornar permissões padrão (todas false)
       return res.json({
-        permissoes: {
-          dashboard_ver: false,
-          agenda_ver: false,
-          agenda_editar: false,
-          agenda_excluir: false,
-          lancamento_venda_ver: false,
-          lancamento_venda_editar: false,
-          lancamento_venda_excluir: false,
-          lancamento_despesa_ver: false,
-          lancamento_despesa_editar: false,
-          lancamento_despesa_excluir: false,
-          receitas_ver: false,
-          receitas_editar: false,
-          receitas_excluir: false,
-          despesas_ver: false,
-          despesas_editar: false,
-          despesas_excluir: false,
-          faturamento_ver: false,
-          faturamento_editar: false,
-          faturamento_excluir: false,
-          usuarios_ver: false,
-          usuarios_editar: false,
-          usuarios_excluir: false,
-          funcionarios_ver: false,
-          funcionarios_editar: false,
-          funcionarios_excluir: false,
-          controle_acessos_ver: false,
-          controle_logs_ver: false,
-          help_desk_ver: false,
-          help_desk_editar: false,
-          help_desk_excluir: false,
-          servicos_ver: false,
-          servicos_editar: false,
-          servicos_excluir: false,
-          controle_permissoes_ver: false,
-          controle_permissoes_editar: false,
-          controle_permissoes_excluir: false,
-          emissao_nfe_ver: false,
-          emissao_nfe_editar: false,
-          emissao_nfe_excluir: false,
-          emissao_relatorios_ver: false,
-          emissao_relatorios_editar: false,
-          emissao_relatorios_excluir: false,
-          integracao_apis_ver: false,
-          integracao_apis_editar: false,
-          integracao_apis_excluir: false,
-          habilitar_api_ver: false,
-          habilitar_api_editar: false,
-          habilitar_api_excluir: false,
-          configuracoes_ver: false,
-          configuracoes_editar: false,
-          configuracoes_excluir: false,
-          produtos_ver: false,
-          produtos_editar: false,
-          produtos_excluir: false,
-          estoque_ver: false,
-          estoque_editar: false,
-          estoque_excluir: false,
-          caixas_ver: false,
-          caixas_editar: false,
-          caixas_excluir: false,
-          vendas_ver: false,
-          vendas_editar: false,
-          vendas_excluir: false,
-          balanco_demonstrativo_ver: false,
-          balanco_demonstrativo_editar: false,
-          balanco_demonstrativo_excluir: false,
-          crm_ver: false,
-          crm_editar: false,
-          crm_excluir: false,
-          cupons_fidelidades_ver: false,
-          cupons_fidelidades_editar: false,
-          cupons_fidelidades_excluir: false,
-          servicos_integracao_ver: false,
-          servicos_integracao_editar: false,
-          servicos_integracao_excluir: false,
-          assinaturas_ver: false,
-          assinaturas_editar: false,
-          assinaturas_excluir: false,
-        },
+        permissoes: buildPermissoesPadrao(false),
       });
     }
 
     res.json({
-      permissoes: result.rows[0],
+      permissoes: normalizePermissoes(result.rows[0]),
     });
   } catch (error) {
     console.error('Erro ao buscar permissões:', error);
@@ -126,10 +109,15 @@ router.put('/:usuarioId', async (req, res) => {
     const permissoesBody = req.body;
 
     // Verificar se o usuário existe
-    const usuarioCheck = await pool.query(
-      'SELECT id, nome_completo, tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
-      [usuarioId]
-    );
+    const usuarioCheck = isOracle
+      ? await pool.query(
+          'SELECT id, nome AS nome_completo, papel AS tipo_usuario FROM usuarios WHERE id = $1 FETCH FIRST 1 ROWS ONLY',
+          [usuarioId]
+        )
+      : await pool.query(
+          `SELECT id, nome_completo, tipo_usuario FROM ${schemaPrefix}usuarios_administrativos WHERE id = $1`,
+          [usuarioId]
+        );
 
     if (usuarioCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -138,7 +126,7 @@ router.put('/:usuarioId', async (req, res) => {
     const usuario = usuarioCheck.rows[0];
 
     // Master não precisa de permissões
-    if (usuario.tipo_usuario === 'master') {
+    if (usuario.tipo_usuario === 'master' || usuario.tipo_usuario === 'gestor' || usuario.tipo_usuario === 'proprietario') {
       return res.status(400).json({ error: 'Master não precisa de permissões configuradas' });
     }
 
@@ -226,14 +214,14 @@ router.put('/:usuarioId', async (req, res) => {
 
     // Verificar se já existe registro de permissões
     const existe = await pool.query(
-      'SELECT id FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+      `SELECT id FROM ${schemaPrefix}permissoes_usuarios WHERE usuario_id = $1`,
       [usuarioId]
     );
 
     if (existe.rows.length > 0) {
       // Atualizar permissões existentes
       await pool.query(
-        `UPDATE protese.permissoes_usuarios SET
+        `UPDATE ${schemaPrefix}permissoes_usuarios SET
           dashboard_ver = $2,
           agenda_ver = $3, agenda_editar = $4, agenda_excluir = $5,
           lancamento_venda_ver = $6, lancamento_venda_editar = $7, lancamento_venda_excluir = $8,
@@ -266,7 +254,7 @@ router.put('/:usuarioId', async (req, res) => {
           cupons_fidelidades_ver = $71, cupons_fidelidades_editar = $72, cupons_fidelidades_excluir = $73,
           servicos_integracao_ver = $74, servicos_integracao_editar = $75, servicos_integracao_excluir = $76,
           assinaturas_ver = $77, assinaturas_editar = $78, assinaturas_excluir = $79,
-          updated_at = NOW()
+          updated_at = CURRENT_TIMESTAMP
         WHERE usuario_id = $1`,
         [
           usuarioId,
@@ -353,7 +341,7 @@ router.put('/:usuarioId', async (req, res) => {
     } else {
       // Criar novo registro de permissões
       await pool.query(
-        `INSERT INTO protese.permissoes_usuarios (
+        `INSERT INTO ${schemaPrefix}permissoes_usuarios (
           usuario_id,
           dashboard_ver,
           agenda_ver, agenda_editar, agenda_excluir,

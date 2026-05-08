@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Categoria {
   id: string
@@ -71,6 +72,7 @@ interface RelatorioData {
       categoria_codigo: string
       categoria_nivel: number
       categoria_pai_id: string | null
+      is_header?: boolean
       despesas: Array<{ descricao: string }>
       totais_por_mes: Record<string, number>
     }>
@@ -82,11 +84,6 @@ interface RelatorioData {
     porcentagem: number
   }>
 }
-
-function getApiBaseUrl() {
-  return 'https://api6.actusconsultoria.com.br'
-}
-
 function formatarPreco(valor: number | string): string {
   const num = typeof valor === 'string' ? parseFloat(valor) : valor
   if (isNaN(num)) return 'R$ 0,00'

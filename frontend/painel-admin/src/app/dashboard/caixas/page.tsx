@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Conta {
   id: string
@@ -132,7 +133,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -177,7 +178,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -314,7 +315,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -381,7 +382,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -432,7 +433,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -509,7 +510,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -591,7 +592,7 @@ export default function CaixasPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
@@ -660,7 +661,7 @@ export default function CaixasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',

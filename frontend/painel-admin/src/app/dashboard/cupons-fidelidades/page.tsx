@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Cupom {
   id: string
@@ -109,7 +110,7 @@ export default function CuponsFidelidadesPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -161,7 +162,7 @@ export default function CuponsFidelidadesPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -306,7 +307,7 @@ export default function CuponsFidelidadesPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -381,7 +382,7 @@ export default function CuponsFidelidadesPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -754,7 +755,7 @@ export default function CuponsFidelidadesPage() {
                 </Button>
                 <Button
                   onClick={excluirCupom}
-                  disabled={salvando || (cupomSelecionado?.total_usos && cupomSelecionado.total_usos > 0)}
+                  disabled={salvando || (!!cupomSelecionado?.total_usos && cupomSelecionado.total_usos > 0)}
                   className="bg-red-500 hover:bg-red-600 text-white"
                 >
                   {salvando ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}

@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface DespesaParcela {
   id: string
@@ -55,7 +56,7 @@ interface Despesa {
   caixa_nome?: string | null
   status: string
   observacoes?: string | null
-  parcelas: DespesaParcela[]
+  parcelas?: DespesaParcela[]
 }
 
 interface Conta {
@@ -161,7 +162,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -199,7 +200,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -240,7 +241,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -369,7 +370,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -431,27 +432,24 @@ export default function DespesasPage() {
   }
 
   const pagarParcelasLote = async () => {
-    const parcelasParaPagar = Array.from(parcelasSelecionadas).map(id => {
-      // Encontrar a parcela
-      let parcelaEncontrada: DespesaParcela | null = null
-      despesas.forEach(despesa => {
-        const parcela = despesa.parcelas?.find(p => p.id === id)
-        if (parcela) {
-          parcelaEncontrada = parcela
+    const todasParcelas: DespesaParcela[] = despesas.flatMap((despesa) => despesa.parcelas ?? [])
+    const valorPadraoStr = formDataPagamento.valor_pago.trim()
+
+    const parcelasParaPagar = Array.from(parcelasSelecionadas)
+      .map((id): { parcela_id: string; valor_pago: number } | null => {
+        const parcelaEncontrada = todasParcelas.find((p) => p.id === id)
+        if (!parcelaEncontrada) return null
+
+        const valorPago = valorPadraoStr
+          ? parseFloat(valorPadraoStr.replace(',', '.'))
+          : parseFloat(String(parcelaEncontrada.valor))
+
+        return {
+          parcela_id: id,
+          valor_pago: valorPago,
         }
       })
-
-      if (!parcelaEncontrada) return null
-
-      const valorPago = formDataPagamento.valor_pago
-        ? parseFloat(formDataPagamento.valor_pago.replace(',', '.'))
-        : parseFloat(parcelaEncontrada.valor.toString())
-
-      return {
-        parcela_id: id,
-        valor_pago: valorPago,
-      }
-    }).filter(p => p !== null) as { parcela_id: string; valor_pago: number }[]
+      .filter((p): p is { parcela_id: string; valor_pago: number } => p !== null)
 
     if (parcelasParaPagar.length === 0) {
       setMensagem({ tipo: 'erro', texto: 'Nenhuma parcela válida selecionada' })
@@ -477,7 +475,7 @@ export default function DespesasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -890,7 +888,7 @@ export default function DespesasPage() {
                                 </p>
                               </div>
                             )}
-                            {parcela.valor_pago > 0 && (
+                            {Number(parcela.valor_pago) > 0 && (
                               <div>
                                 <span className="text-gray-400">Valor Pago:</span>
                                 <p className="text-sm font-bold text-green-500">
@@ -1083,20 +1081,19 @@ export default function DespesasPage() {
             <div className="max-h-60 overflow-y-auto space-y-2 border border-zinc-800 rounded p-2">
               <p className="text-sm font-semibold text-gray-300 mb-2">Parcelas Selecionadas:</p>
               {Array.from(parcelasSelecionadas).map(id => {
-                let parcelaEncontrada: DespesaParcela | null = null
-                let despesaEncontrada: Despesa | null = null
-                despesas.forEach(despesa => {
-                  const parcela = despesa.parcelas?.find(p => p.id === id)
+                let encontrado: { parcela: DespesaParcela; despesa: Despesa } | null = null
+                for (const despesa of despesas) {
+                  const parcela = despesa.parcelas?.find((p) => p.id === id)
                   if (parcela) {
-                    parcelaEncontrada = parcela
-                    despesaEncontrada = despesa
+                    encontrado = { parcela, despesa }
+                    break
                   }
-                })
-                if (!parcelaEncontrada || !despesaEncontrada) return null
+                }
+                if (!encontrado) return null
                 return (
                   <div key={id} className="flex items-center justify-between p-2 bg-zinc-800 rounded text-sm">
-                    <span className="text-gray-300">{parcelaEncontrada.ticket_parcela} - {despesaEncontrada.fornecedor}</span>
-                    <span className="text-amber-500 font-bold">{formatarPreco(parcelaEncontrada.valor)}</span>
+                    <span className="text-gray-300">{encontrado.parcela.ticket_parcela} - {encontrado.despesa.fornecedor}</span>
+                    <span className="text-amber-500 font-bold">{formatarPreco(encontrado.parcela.valor)}</span>
                   </div>
                 )
               })}

@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Romaneio {
   id: string
@@ -116,13 +117,6 @@ export default function EmissaoNfePage() {
   const [mostrarModalEmitir, setMostrarModalEmitir] = useState(false)
   const [observacoes, setObservacoes] = useState('')
   const { podeAcessar, podeEditar, loading: loadingPermissoes } = usePermissions()
-
-  const getApiBaseUrl = () => {
-    if (typeof window !== 'undefined') {
-      return process.env.NEXT_PUBLIC_API_URL || 'https://api6.actusconsultoria.com.br'
-    }
-    return 'https://api6.actusconsultoria.com.br'
-  }
 
   const formatarPreco = (valor: number | string | null | undefined) => {
     if (!valor) return 'R$ 0,00'

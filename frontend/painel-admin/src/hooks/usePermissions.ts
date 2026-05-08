@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getApiBaseUrl } from '@/lib/api'
 
 export interface PermissoesUsuario {
   // Dashboard (apenas ver)
@@ -202,7 +203,7 @@ export function usePermissions() {
 
   const buscarPermissoesBackend = async (adminId: string) => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/permissoes/${adminId}`, {
         cache: 'no-store', // Sempre buscar do servidor, não usar cache
       })

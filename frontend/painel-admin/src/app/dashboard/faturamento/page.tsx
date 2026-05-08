@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Movimentacao {
   id: string
@@ -193,7 +194,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -232,7 +233,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -257,7 +258,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -282,7 +283,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -307,7 +308,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -332,7 +333,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -363,7 +364,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -388,7 +389,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -498,7 +499,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -582,7 +583,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -640,7 +641,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -700,7 +701,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -773,7 +774,7 @@ export default function FaturamentoPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }

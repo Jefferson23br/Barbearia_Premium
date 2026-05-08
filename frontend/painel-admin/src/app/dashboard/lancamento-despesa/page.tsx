@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Conta {
   id: string
@@ -68,7 +69,7 @@ export default function LancamentoDespesaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -93,7 +94,7 @@ export default function LancamentoDespesaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -174,7 +175,7 @@ export default function LancamentoDespesaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }

@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface RelatorioData {
   [key: string]: any
@@ -48,13 +49,6 @@ export default function EmissaoRelatoriosPage() {
   const [categoriasDespesa, setCategoriasDespesa] = useState<any[]>([])
   const dadosCarregadosRef = useRef(false)
   const { podeAcessar, loading: loadingPermissoes } = usePermissions()
-
-  const getApiBaseUrl = () => {
-    if (typeof window !== 'undefined') {
-      return process.env.NEXT_PUBLIC_API_URL || 'https://api6.actusconsultoria.com.br'
-    }
-    return 'https://api6.actusconsultoria.com.br'
-  }
 
   // Carregar funcionários e categorias
   useEffect(() => {
@@ -744,13 +738,13 @@ export default function EmissaoRelatoriosPage() {
               <div className="mb-6 p-4 bg-zinc-800 rounded-lg">
                 <h4 className="font-semibold text-gray-300 mb-3">Resumo</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Object.entries(dadosRelatorio.resumo).map(([key, value]) => (
+                  {Object.entries(dadosRelatorio.resumo as Record<string, unknown>).map(([key, value]) => (
                     <div key={key}>
                       <p className="text-sm text-gray-400">{key.replace(/_/g, ' ').toUpperCase()}</p>
                       <p className="text-lg font-bold text-amber-500">
                         {typeof value === 'number' && key.includes('valor') 
                           ? formatarPreco(value) 
-                          : value}
+                          : String(value)}
                       </p>
                     </div>
                   ))}

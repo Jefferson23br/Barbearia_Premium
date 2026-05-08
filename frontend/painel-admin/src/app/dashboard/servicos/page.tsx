@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Scissors, Search, Edit, Trash2, Plus, Eye, X, Save, Loader2, AlertCircle, CheckCircle2, DollarSign, Clock, Tag, Image as ImageIcon, Star } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface ImagemServico {
   id: string
@@ -66,7 +67,7 @@ export default function ServicosPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Preparar headers
       const headers: HeadersInit = {
@@ -235,7 +236,7 @@ export default function ServicosPage() {
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
       }
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(
         `${apiUrl}/api/v1/servicos/${servicoSelecionado.id}/imagens/${campo}`,
         {
@@ -271,7 +272,7 @@ export default function ServicosPage() {
         headers['x-user-tipo'] = admin.tipo_usuario || 'administrativo'
       }
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(
         `${apiUrl}/api/v1/servicos/${servicoSelecionado.id}/imagens/capa`,
         {
@@ -325,7 +326,7 @@ export default function ServicosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -425,7 +426,7 @@ export default function ServicosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -618,14 +619,14 @@ export default function ServicosPage() {
                     alt={serv.nome}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      const imgUrl = serv.imagens.find((img) => img.is_capa)?.url_imagem || serv.imagens[0]?.url_imagem
+                      const imgUrl = serv.imagens?.find((img) => img.is_capa)?.url_imagem || serv.imagens?.[0]?.url_imagem
                       console.error('❌ Erro ao carregar imagem:', imgUrl)
                       console.error('Serviço:', serv.nome)
                       console.error('Todas as imagens:', serv.imagens)
                       // Não alterar para logo, manter tentando carregar
                     }}
                     onLoad={() => {
-                      console.log('✅ Imagem carregada:', serv.imagens.find((img) => img.is_capa)?.url_imagem || serv.imagens[0]?.url_imagem)
+                      console.log('✅ Imagem carregada:', serv.imagens?.find((img) => img.is_capa)?.url_imagem || serv.imagens?.[0]?.url_imagem)
                     }}
                   />
                   {serv.imagens.find((img) => img.is_capa) && (

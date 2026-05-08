@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { Menu, LogOut, UserCircle, Bell } from 'lucide-react'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -56,7 +57,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         // Carregar permissões do backend
         const carregarPermissoes = async () => {
           try {
-            const apiUrl = 'https://api6.actusconsultoria.com.br'
+            const apiUrl = getApiBaseUrl()
             const response = await fetch(`${apiUrl}/api/v1/permissoes/${adminObj.id}`)
             if (response.ok) {
               const data = await response.json()

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import * as Icons from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface MenuItem {
   id: string
@@ -107,7 +108,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
   useEffect(() => {
     const carregarIntegracoes = async () => {
       try {
-        const apiUrl = 'https://api6.actusconsultoria.com.br'
+        const apiUrl = getApiBaseUrl()
         const response = await fetch(`${apiUrl}/api/v1/integracoes`, {
           cache: 'no-store',
         })
@@ -132,7 +133,7 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
   useEffect(() => {
     const carregarModulos = async () => {
       try {
-        const apiUrl = 'https://api6.actusconsultoria.com.br'
+        const apiUrl = getApiBaseUrl()
         const response = await fetch(`${apiUrl}/api/v1/modulos`, {
           cache: 'no-store', // Sempre buscar do servidor
         })
@@ -206,20 +207,14 @@ export function Sidebar({ tipoUsuario, isMobile = false, isOpen = true, onClose 
 
   // Função para obter permissionKey de um item_id
   const obterPermissionKey = (itemId: string): string => {
-    // Mapear item_id para permissionKey (normalmente são iguais, mas pode haver exceções)
-    // Exemplo: 'lancamento_venda' -> 'lancamento_venda' ou 'vendas'
-    if (itemId === 'lancamento_venda') {
-      // Verificar se existe vendas_ver, senão usar lancamento_venda
-      return 'lancamento_venda'
+    const normalizado = itemId.toLowerCase().replace(/-/g, '_')
+
+    // Alguns IDs de menu não batem exatamente com as colunas do backend.
+    const aliases: Record<string, string> = {
+      integracoes_apis: 'integracao_apis',
     }
-    
-    // Para serviços de integração, usar o item_id diretamente como permissionKey
-    // Ex: 'servico_focus_nfe' -> 'servico_focus_nfe_ver'
-    if (itemId.startsWith('servico_')) {
-      return `${itemId}_ver`
-    }
-    
-    return itemId
+
+    return aliases[normalizado] || normalizado
   }
 
   // Filtrar itens baseado em permissões

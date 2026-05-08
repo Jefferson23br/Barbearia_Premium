@@ -9,6 +9,9 @@ const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
  * Agrupa por usuário, tipo e data (um registro por dia por usuário)
  */
 async function registrarAcesso(usuarioId, usuarioTipo) {
+  if (process.env.ORACLE_HOST) {
+    return;
+  }
   try {
     // Usar data local do servidor (timezone do banco)
     const agora = new Date();
@@ -104,12 +107,60 @@ router.post('/admin/login', async (req, res) => {
       return res.status(400).json({ error: 'Email e senha são obrigatórios' });
     }
 
-    // Buscar admin por email
-    const result = await pool.query(
+    let result;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Modo Oracle (novo): usa tabela v2 "usuarios"
+    if (process.env.ORACLE_HOST) {
+      result = await pool.query(
+        `SELECT id, filial_id, nome, email, senha_hash, papel, ativo
+         FROM usuarios
+         WHERE lower(email) = lower($1)
+         LIMIT 1`,
+        [normalizedEmail]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(401).json({ error: 'Email ou senha inválidos' });
+      }
+
+      const user = result.rows[0];
+      const senhaValida = await bcrypt.compare(senha, user.senha_hash);
+      if (!senhaValida) {
+        return res.status(401).json({ error: 'Email ou senha inválidos' });
+      }
+
+      if (!user.ativo) {
+        return res.status(403).json({ error: 'Conta desativada' });
+      }
+
+      // Compatibilidade com frontend legado v1 (espera tipo_usuario)
+      const mapTipoUsuario = {
+        proprietario: 'proprietario',
+        gestor: 'master',
+        cliente: 'cliente',
+      };
+
+      return res.json({
+        message: 'Login realizado com sucesso!',
+        admin: {
+          id: user.id,
+          nome_completo: user.nome,
+          email: user.email,
+          foto_url: null,
+          tipo_usuario: mapTipoUsuario[user.papel] || 'funcionario',
+          is_active: !!user.ativo,
+          filial_id: user.filial_id,
+        },
+      });
+    }
+
+    // Modo legado (PostgreSQL)
+    result = await pool.query(
       `SELECT id, nome_completo, email, senha_hash, foto_url, tipo_usuario, is_active
        FROM protese.usuarios_administrativos
        WHERE email = $1`,
-      [email.toLowerCase().trim()]
+      [normalizedEmail]
     );
 
     if (result.rows.length === 0) {

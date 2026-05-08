@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Funcionario {
   id: string
@@ -31,6 +32,7 @@ interface Funcionario {
 interface Cliente {
   id: string
   nome_completo: string
+  email?: string | null
 }
 
 interface Agendamento {
@@ -171,7 +173,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -200,7 +202,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -225,7 +227,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -250,7 +252,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -275,7 +277,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -307,7 +309,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -381,7 +383,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -430,7 +432,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -671,7 +673,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -779,7 +781,7 @@ export default function LancamentoVendaPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }

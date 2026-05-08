@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { ImageWithFallback } from '../components/figma/ImageWithFallback'
 import { useRouter } from 'next/navigation'
+import { getApiBaseUrl } from '@/lib/api'
 
 type ViewType = 'login' | 'forgot'
 
@@ -24,8 +25,7 @@ export default function Home() {
     setError(null)
 
     try {
-      // URL da API de produção
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       console.log('🔗 Tentando conectar em:', apiUrl)
 

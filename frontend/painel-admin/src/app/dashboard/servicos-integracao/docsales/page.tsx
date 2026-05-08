@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { FileText, Send, Search, CheckCircle, XCircle, AlertCircle, Loader2, Download, Eye, X, Plus, Calendar, Clock } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 import Link from 'next/link'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Documento {
   documento_id: string
@@ -38,7 +39,7 @@ export default function DocSalesPage() {
   const carregarDocumentos = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const params = new URLSearchParams()
       if (filtroStatus) params.append('status', filtroStatus)
 
@@ -59,7 +60,7 @@ export default function DocSalesPage() {
 
   const consultarStatus = async (documentoId: string) => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/docsales/documentos/${documentoId}`)
 
       if (response.ok) {
@@ -76,7 +77,7 @@ export default function DocSalesPage() {
 
   const baixarDocumento = async (documentoId: string) => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/docsales/documentos/${documentoId}/download`)
 
       if (response.ok) {
@@ -99,7 +100,7 @@ export default function DocSalesPage() {
     if (!confirm('Tem certeza que deseja cancelar este documento?')) return
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 

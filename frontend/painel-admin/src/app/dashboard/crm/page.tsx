@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Cliente {
   id: string
@@ -158,7 +159,7 @@ export default function CRMPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -208,7 +209,7 @@ export default function CRMPage() {
 
       console.log(`[CRM Frontend] 👤 Admin data:`, { id: admin?.id, tipo: admin?.tipo_usuario })
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -285,7 +286,7 @@ export default function CRMPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -425,7 +426,7 @@ export default function CRMPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
@@ -473,7 +474,7 @@ export default function CRMPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const headers: HeadersInit = {
         'Content-Type': 'application/json',

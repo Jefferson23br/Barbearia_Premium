@@ -14,21 +14,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
+import { getApiBaseUrl } from '@/lib/api'
 
 // Função para obter URL da API
-function getApiBaseUrl() {
-  // Sempre usar a API de produção, pois o backend está rodando lá
-  return 'https://api6.actusconsultoria.com.br'
-  
-  // Código antigo (comentado para referência):
-  // if (typeof window !== 'undefined') {
-  //   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  //     return 'http://localhost:3001'
-  //   }
-  // }
-  // return 'https://api6.actusconsultoria.com.br'
-}
-
 // Tipo Funcionario conforme resposta da API
 interface Funcionario {
   id: string

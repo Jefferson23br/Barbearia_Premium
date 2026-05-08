@@ -1,57 +1,59 @@
 # Handoff - Barbearia Premium
 
-## Como usar este arquivo
-- Atualizar este documento ao final de cada sessao de trabalho.
-- Manter apenas o estado atual (evitar historico longo aqui; historico detalhado fica no changelog).
-- Se houver bloqueio, registrar causa, impacto e acao de contorno.
-
-## Status Atual
-- Fase: Reinicializacao tecnica (base v2 multi-filial em construcao).
-- Ambiente alvo:
+## Status atual
+- Fase: migracao operacional PostgreSQL -> Oracle com foco em manter admin funcionando.
+- Ambientes:
   - App: `https://appbarber.auctusconsultoria.com.br`
-  - API: `https://api6.actusconsultoria.com.br`
-- Ultima atualizacao: `2026-05-06`
-- Responsavel da ultima atualizacao: `Cursor Agent`
+  - API: `https://api6.auctusconsultoria.com.br`
+- Ultima atualizacao: `2026-05-08`
+- Responsavel: `Cursor Agent`
 
-## Escopo da Arquitetura
-- Rebranding oficial: **Barbearia Premium**.
-- Backend e frontend hospedados na mesma VPS (PM2 + Nginx).
-- Multi-filial obrigatorio para usuarios e dados de negocio.
-- Cadastro publico por link da filial (slug fixando a filial no cadastro).
+## O que foi consolidado
+- Backend com camada Oracle ativa em `backend/config/databaseV2.js`.
+- `backend/config/database.js` reexporta `databaseV2` (ponto unico de acesso ao BD).
+- Login admin v1 ajustado para Oracle usando tabela `USUARIOS` (`backend/routes/auth.js`).
+- Rota de modulos com fallback estatico no Oracle (`backend/routes/modulos.js`) quando tabelas nao existem.
+- Rota de permissoes com comportamento Oracle (`backend/routes/permissoes.js`):
+  - leitura de `permissoes_usuarios`;
+  - retorno padrao;
+  - permissao ampla para papel `gestor`/`proprietario` sem cadastro manual completo.
+- Frontend admin:
+  - URLs centralizadas por `NEXT_PUBLIC_API_URL`;
+  - ajuste em `Sidebar.tsx` para mapear `item_id` -> `permissionKey` de forma consistente.
 
-## Entregas Concluidas
-- Pasta de historico criada em `docs/historico-conversas`.
-- Base v2 criada no backend:
-  - `backend/sql/001_init_multifilial.sql`
-  - `backend/config/databaseV2.js`
-  - `backend/middlewares/authV2.js`
-  - `backend/middlewares/filialScope.js`
-  - `backend/routes/v2/index.js`
-  - `backend/routes/v2/auth.js`
-  - `backend/routes/v2/filiais.js`
-  - `backend/routes/v2/clientes.js`
-- `backend/server.js` atualizado para expor `/api/v2`.
-- Frontend com branding e dominios antigos substituidos.
+## Estado do Oracle (operacao)
+- Usuario/schema em uso: `BARBEARIA_PREMIUM`.
+- Tabela `USUARIOS` existente e usada no login.
+- Tabela `PERMISSOES_USUARIOS` criada manualmente via DBeaver.
+- Colunas de permissao estao sendo adicionadas via PL/SQL (mais estavel que blocos SQL grandes no DBeaver).
 
-## Em Andamento
-- Planejamento da expansao de `filial_id` para entidades legadas.
+## Problema atual (aberto)
+- Menus aparecem parcialmente e dashboard retorna erro `500`.
+- Causa mais provavel do `500`: `backend/routes/dashboard.js` ainda depende de varias tabelas legadas (`receitas`, `despesas`, `agendamentos`, `vendas`, etc.) que podem nao existir/estar incompletas no Oracle.
 
-## Proxima Acao (Next)
-1. Expandir modelo multi-filial para entidades principais (servicos, agenda, vendas, estoque e financeiro).
-2. Aplicar escopo por `filial_id` em queries e regras de permissao.
-3. Integrar frontend ao `/api/v2` com contexto de filial.
+## Proximo passo imediato (nova maquina)
+1. Subir backend atualizado e reiniciar API:
+   - `pm2 restart api-barbearia-premium --update-env`
+2. Garantir deploy do frontend estatico:
+   - origem: `/Projetos/Barbearia_Premium/frontend/painel-admin/out`
+   - destino: `/var/www/appbarber-admin`
+   - comando recomendado: `rsync -avh --delete /Projetos/Barbearia_Premium/frontend/painel-admin/out/ /var/www/appbarber-admin/`
+3. Recarregar Nginx:
+   - `nginx -t && systemctl reload nginx`
+4. Validar endpoints chave:
+   - `GET /api/v1/modulos`
+   - `GET /api/v1/permissoes/:usuarioId`
+   - `GET /api/v1/dashboard` (esperado ainda com risco de 500)
 
-## Bloqueios
-- Logo oficial ainda nao versionada (referencias existem para `/images/logo.webp`, arquivo fisico nao encontrado).
+## Bloqueios reais
+- Modelo legado v1 usa muitas tabelas `protese.*` historicas; nem todas estao criadas no Oracle.
+- Enquanto isso nao for migrado, algumas abas/indicadores vao depender de fallback ou retornar erro.
 
-## Riscos e Atencoes
-- Mistura de legado v1 e estrutura v2 durante migracao pode gerar comportamento inconsistente.
-- Recomenda-se banco limpo para evitar conflitos de schema.
-
-## Checklist de Transferencia
-- [ ] Ambiente local sobe com backend v2
-- [ ] Script SQL base executado em banco limpo
-- [ ] Cadastro publico por slug testado
-- [ ] Login v2 retorna token com `filial_id`
-- [ ] Escopo por filial validado em listagem de clientes
+## Checklist de transferencia
+- [x] Login admin funcional no Oracle
+- [x] Tabela `PERMISSOES_USUARIOS` criada
+- [x] Menu com fallback de modulos ativo
+- [x] Frontend com mapeamento de permissoes ajustado
+- [ ] Dashboard sem erro `500`
+- [ ] Migracao das tabelas legadas principais para Oracle
 

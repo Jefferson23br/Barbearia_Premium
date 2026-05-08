@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Plug, Save, FileText, CheckCircle, XCircle, AlertCircle, Loader2, Plus } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Integracao {
   id?: string
@@ -439,7 +440,7 @@ export default function IntegracoesApisPage() {
   const carregarIntegracoes = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/integracoes`)
 
       if (!response.ok) {
@@ -508,7 +509,7 @@ export default function IntegracoesApisPage() {
 
     setSalvando(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null

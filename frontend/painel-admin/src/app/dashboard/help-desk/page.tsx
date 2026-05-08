@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { HelpCircle, MessageSquare, AlertCircle, CheckCircle2, Clock, Search, Filter, Plus, X, Edit, Download, FileText, Image as ImageIcon, Send, User, Mail, Phone, Calendar, Tag } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Chamado {
   id: string
@@ -110,7 +111,7 @@ export default function HelpDeskPage() {
     try {
       setLoading(true)
       setErro(null)
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Buscar dados do admin do localStorage
       const adminData = localStorage.getItem('admin')
@@ -174,7 +175,7 @@ export default function HelpDeskPage() {
 
   const carregarFuncionarios = async () => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/help-desk/funcionarios`, { 
         cache: 'no-store' 
       })
@@ -199,7 +200,7 @@ export default function HelpDeskPage() {
 
   const carregarChamadoCompleto = async (id: string) => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) return
@@ -231,7 +232,7 @@ export default function HelpDeskPage() {
 
   const criarChamado = async () => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) {
@@ -294,7 +295,7 @@ export default function HelpDeskPage() {
     }
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) {
@@ -340,7 +341,7 @@ export default function HelpDeskPage() {
     if (!chamadoSelecionado) return
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const adminData = localStorage.getItem('admin')
       if (!adminData) {

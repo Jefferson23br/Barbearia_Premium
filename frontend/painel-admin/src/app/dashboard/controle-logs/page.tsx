@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { FileSearch, Filter, Download, Calendar, User, Activity, AlertCircle, CheckCircle2, XCircle, Search } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Log {
   id: string
@@ -68,7 +69,7 @@ export default function ControleLogsPage() {
   const carregarLogs = async () => {
     try {
       setLoading(true)
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const params = new URLSearchParams()
       if (dataInicio) params.append('data_inicio', dataInicio)
@@ -94,7 +95,7 @@ export default function ControleLogsPage() {
 
   const carregarEstatisticas = async () => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       const params = new URLSearchParams()
       if (dataInicio) params.append('data_inicio', dataInicio)
@@ -178,7 +179,7 @@ export default function ControleLogsPage() {
   const exportarParaCSV = async () => {
     try {
       setLoading(true)
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Construir parâmetros base
       const baseParams = new URLSearchParams()

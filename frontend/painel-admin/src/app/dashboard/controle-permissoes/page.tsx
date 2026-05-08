@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import * as Icons from 'lucide-react'
 import { Settings, User, Eye, Edit, Trash2, Save, X, Check, AlertCircle } from 'lucide-react'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Funcionario {
   id: string
@@ -280,7 +281,7 @@ export default function ControlePermissoesPage() {
   
   const carregarModulos = async () => {
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/modulos`)
       if (response.ok) {
         const data = await response.json()
@@ -304,7 +305,7 @@ export default function ControlePermissoesPage() {
   const carregarFuncionarios = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Buscar tipo do usuário logado para filtrar corretamente
       const adminData = localStorage.getItem('admin')
@@ -331,7 +332,7 @@ export default function ControlePermissoesPage() {
   const carregarPermissoes = async (usuarioId: string) => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/permissoes/${usuarioId}`)
       
       if (!response.ok) {
@@ -364,7 +365,7 @@ export default function ControlePermissoesPage() {
 
     setSalvando(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')

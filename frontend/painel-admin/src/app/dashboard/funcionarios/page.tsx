@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { UserCog, Search, Edit, Trash2, Plus, Eye, Mail, X, Save, Loader2, AlertCircle, CheckCircle2, EyeOff } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 import { ImageCropModal } from '@/components/admin/ImageCropModal'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Funcionario {
   id: string
@@ -73,7 +74,7 @@ export default function FuncionariosPage() {
       const admin = adminData ? JSON.parse(adminData) : null
       const tipoUsuario = admin?.tipo_usuario || 'master'
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/funcionarios?tipo_usuario=${tipoUsuario}`)
 
       if (!response.ok) {
@@ -170,7 +171,7 @@ export default function FuncionariosPage() {
         setLoading(true)
         const adminData = localStorage.getItem('admin')
         const admin = adminData ? JSON.parse(adminData) : null
-        const apiUrl = 'https://api6.actusconsultoria.com.br'
+        const apiUrl = getApiBaseUrl()
         
         const response = await fetch(`${apiUrl}/api/v1/funcionarios/${funcionario.id}`, {
           headers: {
@@ -316,7 +317,7 @@ export default function FuncionariosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -479,7 +480,7 @@ export default function FuncionariosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')

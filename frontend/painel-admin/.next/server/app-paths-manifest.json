@@ -1,7 +1,0 @@
-{
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/lancamento-venda/page": "app/dashboard/lancamento-venda/page.js",
-  "/dashboard/perfil/page": "app/dashboard/perfil/page.js",
-  "/dashboard/funcionarios/page": "app/dashboard/funcionarios/page.js",
-  "/dashboard/servicos-integracao/docsales/page": "app/dashboard/servicos-integracao/docsales/page.js"
-}

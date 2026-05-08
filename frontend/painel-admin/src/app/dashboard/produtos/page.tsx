@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Produto {
   id: string
@@ -63,7 +64,7 @@ export default function ProdutosPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       // Preparar headers
       const headers: HeadersInit = {
@@ -180,7 +181,7 @@ export default function ProdutosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')
@@ -245,7 +246,7 @@ export default function ProdutosPage() {
     setMensagem({ tipo: null, texto: '' })
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       // Obter dados do admin logado para enviar nos headers
       const adminData = localStorage.getItem('admin')

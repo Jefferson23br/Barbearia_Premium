@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Lock, User, Phone, ArrowLeft, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { getApiBaseUrl } from '@/lib/api';
 
 type ViewType = 'login' | 'register' | 'forgot';
 
@@ -30,7 +31,7 @@ export default function Home() {
     setSuccess(null);
 
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br';
+      const apiUrl = getApiBaseUrl();
       
       const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
         method: 'POST',

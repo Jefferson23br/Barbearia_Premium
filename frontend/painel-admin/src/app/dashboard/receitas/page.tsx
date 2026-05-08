@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Receita {
   id: string
@@ -162,7 +163,7 @@ export default function ReceitasPage() {
       const admin = adminData ? JSON.parse(adminData) : null
       console.log('[Receitas Frontend] Admin data:', admin ? 'encontrado' : 'não encontrado')
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -215,7 +216,7 @@ export default function ReceitasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -254,7 +255,7 @@ export default function ReceitasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -361,7 +362,7 @@ export default function ReceitasPage() {
       const adminData = localStorage.getItem('admin')
       const admin = adminData ? JSON.parse(adminData) : null
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       }
@@ -747,7 +748,7 @@ export default function ReceitasPage() {
                       </div>
                     )}
                   </div>
-                  {receita.valor_pago > 0 && (
+                  {Number(receita.valor_pago) > 0 && (
                     <div className="mt-2">
                       <span className="text-sm text-gray-400">Valor Pago: </span>
                       <span className="text-sm font-bold text-green-500">

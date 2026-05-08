@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Shield, Calendar, Users, TrendingUp, Filter, UserCheck, Activity } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Acesso {
   id: string
@@ -86,7 +87,7 @@ export default function ControleAcessosPage() {
       const admin = adminData ? JSON.parse(adminData) : null
       const tipoUsuario = admin?.tipo_usuario || 'master'
 
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/funcionarios?tipo_usuario=${tipoUsuario}`)
 
       if (response.ok) {
@@ -103,7 +104,7 @@ export default function ControleAcessosPage() {
 
     setLoading(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       
       let urlAcessos = `${apiUrl}/api/v1/controle-acessos?data_inicio=${dataInicio}&data_fim=${dataFim}`
       if (funcionarioFiltro) {

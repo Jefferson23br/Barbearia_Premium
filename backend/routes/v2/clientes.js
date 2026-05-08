@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const { randomUUID } = require('crypto');
 const pool = require('../../config/databaseV2');
 const authV2 = require('../../middlewares/authV2');
 const requireFilialScope = require('../../middlewares/filialScope');
@@ -29,14 +30,21 @@ router.post('/publico/cadastro/:slugFilial', async (req, res) => {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
+      const usuarioId = randomUUID();
 
-      const usuarioResult = await client.query(
-        `INSERT INTO usuarios (filial_id, nome, email, senha_hash, papel)
-         VALUES ($1, $2, $3, $4, 'cliente')
-         RETURNING id, filial_id, nome, email, papel`,
-        [filialId, nome.trim(), email.trim().toLowerCase(), senhaHash]
+      await client.query(
+        `INSERT INTO usuarios (id, filial_id, nome, email, senha_hash, papel)
+         VALUES ($1, $2, $3, $4, $5, 'cliente')`,
+        [usuarioId, filialId, nome.trim(), email.trim().toLowerCase(), senhaHash]
       );
 
+      const usuarioResult = await client.query(
+        `SELECT id, filial_id, nome, email, papel
+         FROM usuarios
+         WHERE id = $1
+         LIMIT 1`,
+        [usuarioId]
+      );
       const usuario = usuarioResult.rows[0];
 
       await client.query(
@@ -52,7 +60,7 @@ router.post('/publico/cadastro/:slugFilial', async (req, res) => {
       });
     } catch (error) {
       await client.query('ROLLBACK');
-      if (error.code === '23505') {
+      if (error.code === '23505' || error.errorNum === 1) {
         return res.status(409).json({ error: 'Email já cadastrado nesta filial' });
       }
       throw error;

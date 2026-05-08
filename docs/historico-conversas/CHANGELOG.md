@@ -31,6 +31,9 @@ Formato inspirado em Keep a Changelog:
   - `GET /api/v2/filiais/slug/:slug`
   - `POST /api/v2/clientes/publico/cadastro/:slugFilial`
   - `GET /api/v2/clientes`
+- Base operacional Oracle para admin:
+  - tabela `PERMISSOES_USUARIOS` criada manualmente no schema `BARBEARIA_PREMIUM`
+  - scripts SQL/PLSQL de apoio para adicionar colunas de permissao e liberar usuario
 
 ### Changed
 - `backend/server.js` atualizado para registrar rotas `/api/v2`.
@@ -39,9 +42,15 @@ Formato inspirado em Keep a Changelog:
   - API: `https://api6.actusconsultoria.com.br`
   - App: `https://appbarber.auctusconsultoria.com.br`
   - Admin: `https://appbarber.auctusconsultoria.com.br/admin`
+- API ajustada para Oracle em pontos criticos de admin:
+  - `backend/config/databaseV2.js` com adaptacoes SQL (`protese.` removido em Oracle, `NOW()` -> `CURRENT_TIMESTAMP`, parametros e limit adaptados)
+  - `backend/routes/permissoes.js` com leitura/origem Oracle e normalizacao de booleans
+  - `backend/routes/modulos.js` com fallback para manter menu funcional sem todas as tabelas migradas
+- Frontend admin ajustado em `Sidebar.tsx` para mapear corretamente `item_id` -> chave de permissao
 
 ### Fixed
 - Padronizacao dos arquivos de historico com encoding consistente para GitHub.
+- Falha de exibicao parcial de menus causada por mapeamento incorreto de permissoes no frontend.
 
 ### Security
 - Isolamento inicial por `filial_id` implementado no fluxo autenticado da API v2.

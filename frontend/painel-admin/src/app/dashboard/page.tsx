@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { LayoutDashboard, TrendingUp, TrendingDown, Users, Calendar, Receipt, Loader2 } from 'lucide-react'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface DashboardData {
   receitas: {
@@ -42,13 +43,6 @@ export default function DashboardPage() {
   const [dados, setDados] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const getApiBaseUrl = () => {
-    if (typeof window !== 'undefined') {
-      return process.env.NEXT_PUBLIC_API_URL || 'https://api6.actusconsultoria.com.br'
-    }
-    return 'https://api6.actusconsultoria.com.br'
-  }
 
   const formatarPreco = (valor: number | string | null | undefined) => {
     if (valor === null || valor === undefined) return 'R$ 0,00'

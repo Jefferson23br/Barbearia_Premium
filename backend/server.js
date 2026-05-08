@@ -57,7 +57,9 @@ app.get('/health', (req, res) => {
 
 app.get('/api/test-db', async (req, res) => {
   try {
-    const result = await pool.query('SELECT NOW()');
+    const result = process.env.ORACLE_HOST
+      ? await pool.query('SELECT CURRENT_TIMESTAMP AS now FROM dual')
+      : await pool.query('SELECT NOW()');
     res.json({
       status: 'ok',
       database: 'connected',

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'motion/react'
 import { User, Mail, Lock, FileText, MapPin, Save, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { ImageCropModal } from '@/components/admin/ImageCropModal'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface Usuario {
   id: string
@@ -66,7 +67,7 @@ export default function PerfilPage() {
       }
 
       const admin = JSON.parse(adminData)
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/funcionarios/${admin.id}`, {
         headers: {
           'x-user-id': admin.id,
@@ -130,7 +131,7 @@ export default function PerfilPage() {
       }
 
       const admin = JSON.parse(adminData)
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
 
       // Preparar FormData para enviar arquivo se houver
       const formDataToSend = new FormData()

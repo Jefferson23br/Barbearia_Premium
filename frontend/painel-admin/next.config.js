@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production'
+
 const nextConfig = {
   reactStrictMode: true,
   output: 'export', // Export estático para hospedagem compartilhada
+  basePath: isProd ? '/admin' : '',
+  assetPrefix: isProd ? '/admin/' : '',
   eslint: {
     ignoreDuringBuilds: true, // Ignora erros do ESLint durante o build
   },

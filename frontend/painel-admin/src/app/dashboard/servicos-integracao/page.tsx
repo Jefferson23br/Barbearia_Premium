@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { Plug, FileText, CheckCircle, XCircle, AlertCircle, Loader2, ExternalLink, Settings } from 'lucide-react'
 import { usePermissions } from '@/hooks/usePermissions'
 import Link from 'next/link'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface ServicoIntegracao {
   id: string
@@ -50,7 +51,7 @@ export default function ServicosIntegracaoPage() {
   const verificarConfiguracoes = async () => {
     setLoading(true)
     try {
-      const apiUrl = 'https://api6.actusconsultoria.com.br'
+      const apiUrl = getApiBaseUrl()
       const response = await fetch(`${apiUrl}/api/v1/integracoes`)
 
       if (response.ok) {
