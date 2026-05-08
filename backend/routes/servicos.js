@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 
     const { categoria, is_active } = req.query;
-    let query = 'SELECT * FROM protese.servicos WHERE 1=1';
+    let query = 'SELECT * FROM servicos WHERE 1=1';
     const params = [];
     let paramIndex = 1;
 
@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
     const result = await pool.query(query, params);
 
     // Processar imagens dos serviços
-    const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+    const baseUrl = process.env.API_BASE_URL || 'https://api6.auctusconsultoria.com.br';
     const servicosComImagens = result.rows.map((servico) => {
       const imagens = [];
       
@@ -124,7 +124,7 @@ router.get('/:id', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -134,7 +134,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM protese.servicos WHERE id = $1',
+      'SELECT * FROM servicos WHERE id = $1',
       [id]
     );
 
@@ -143,7 +143,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const servico = result.rows[0];
-    const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+    const baseUrl = process.env.API_BASE_URL || 'https://api6.auctusconsultoria.com.br';
     const imagens = [];
 
     // Processar capa
@@ -212,7 +212,7 @@ router.post('/', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -244,7 +244,7 @@ router.post('/', async (req, res) => {
 
     // Inserir no banco de dados
     const result = await pool.query(
-      `INSERT INTO protese.servicos (
+      `INSERT INTO servicos (
         nome, descricao, preco, duracao_minutos, categoria, is_active
       ) VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
@@ -302,7 +302,7 @@ router.put('/:id', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -322,7 +322,7 @@ router.put('/:id', async (req, res) => {
 
     // Buscar serviço atual
     const servicoAtual = await pool.query(
-      'SELECT * FROM protese.servicos WHERE id = $1',
+      'SELECT * FROM servicos WHERE id = $1',
       [id]
     );
 
@@ -382,7 +382,7 @@ router.put('/:id', async (req, res) => {
     updates.push(`updated_at = NOW()`);
     params.push(id);
 
-    const query = `UPDATE protese.servicos SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+    const query = `UPDATE servicos SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
     const result = await pool.query(query, params);
 
     // Registrar log
@@ -428,7 +428,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -439,7 +439,7 @@ router.delete('/:id', async (req, res) => {
 
     // Verificar se serviço existe
     const servicoCheck = await pool.query(
-      'SELECT id, nome FROM protese.servicos WHERE id = $1',
+      'SELECT id, nome FROM servicos WHERE id = $1',
       [id]
     );
 
@@ -450,7 +450,7 @@ router.delete('/:id', async (req, res) => {
     const servico = servicoCheck.rows[0];
 
     // Deletar serviço do banco
-    await pool.query('DELETE FROM protese.servicos WHERE id = $1', [id]);
+    await pool.query('DELETE FROM servicos WHERE id = $1', [id]);
 
     // Registrar log
     if (usuarioId) {
@@ -493,7 +493,7 @@ router.post('/:id/imagens', uploadServicos.array('imagens', 3), async (req, res)
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -504,7 +504,7 @@ router.post('/:id/imagens', uploadServicos.array('imagens', 3), async (req, res)
 
     // Verificar se serviço existe e buscar imagens atuais
     const servicoCheck = await pool.query(
-      'SELECT imagem_capa_url, imagem_2_url, imagem_3_url FROM protese.servicos WHERE id = $1',
+      'SELECT imagem_capa_url, imagem_2_url, imagem_3_url FROM servicos WHERE id = $1',
       [id]
     );
 
@@ -534,7 +534,7 @@ router.post('/:id/imagens', uploadServicos.array('imagens', 3), async (req, res)
       });
     }
 
-    const baseUrl = process.env.API_BASE_URL || 'https://api.protesecapilarcuiaba.com.br';
+    const baseUrl = process.env.API_BASE_URL || 'https://api6.auctusconsultoria.com.br';
     const updates = {};
     let arquivoIndex = 0;
 
@@ -597,7 +597,7 @@ router.post('/:id/imagens', uploadServicos.array('imagens', 3), async (req, res)
     if (updateFields.length > 0) {
       params.push(id);
       await pool.query(
-        `UPDATE protese.servicos SET ${updateFields.join(', ')} WHERE id = $${paramIndex}`,
+        `UPDATE servicos SET ${updateFields.join(', ')} WHERE id = $${paramIndex}`,
         params
       );
     }
@@ -638,7 +638,7 @@ router.delete('/:id/imagens/:campo', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -655,7 +655,7 @@ router.delete('/:id/imagens/:campo', async (req, res) => {
 
     // Buscar serviço
     const servicoResult = await pool.query(
-      'SELECT imagem_capa_url, imagem_2_url, imagem_3_url FROM protese.servicos WHERE id = $1',
+      'SELECT imagem_capa_url, imagem_2_url, imagem_3_url FROM servicos WHERE id = $1',
       [id]
     );
 
@@ -692,7 +692,7 @@ router.delete('/:id/imagens/:campo', async (req, res) => {
     // Se for capa, mover img2 para capa e img3 para img2
     if (campo === 'capa') {
       await pool.query(
-        `UPDATE protese.servicos SET 
+        `UPDATE servicos SET 
           imagem_capa_url = imagem_2_url,
           imagem_2_url = imagem_3_url,
           imagem_3_url = NULL
@@ -702,7 +702,7 @@ router.delete('/:id/imagens/:campo', async (req, res) => {
     } else {
       // Atualizar campo específico para NULL
       await pool.query(
-        `UPDATE protese.servicos SET ${campoUpdate} = NULL WHERE id = $1`,
+        `UPDATE servicos SET ${campoUpdate} = NULL WHERE id = $1`,
         [id]
       );
     }
@@ -733,7 +733,7 @@ router.put('/:id/imagens/capa', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT servicos_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT servicos_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -748,7 +748,7 @@ router.put('/:id/imagens/capa', async (req, res) => {
 
     // Buscar serviço
     const servicoResult = await pool.query(
-      'SELECT imagem_capa_url, imagem_2_url, imagem_3_url FROM protese.servicos WHERE id = $1',
+      'SELECT imagem_capa_url, imagem_2_url, imagem_3_url FROM servicos WHERE id = $1',
       [id]
     );
 
@@ -761,12 +761,12 @@ router.put('/:id/imagens/capa', async (req, res) => {
     // Trocar capa com o campo selecionado
     if (campo === 'img2' && servico.imagem_2_url) {
       await pool.query(
-        'UPDATE protese.servicos SET imagem_capa_url = imagem_2_url, imagem_2_url = imagem_capa_url WHERE id = $1',
+        'UPDATE servicos SET imagem_capa_url = imagem_2_url, imagem_2_url = imagem_capa_url WHERE id = $1',
         [id]
       );
     } else if (campo === 'img3' && servico.imagem_3_url) {
       await pool.query(
-        'UPDATE protese.servicos SET imagem_capa_url = imagem_3_url, imagem_3_url = imagem_capa_url WHERE id = $1',
+        'UPDATE servicos SET imagem_capa_url = imagem_3_url, imagem_3_url = imagem_capa_url WHERE id = $1',
         [id]
       );
     }
