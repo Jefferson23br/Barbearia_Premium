@@ -41,14 +41,14 @@ router.get('/', async (req, res) => {
         COALESCE(uc.email, ua.email, NULL) as email_usuario,
         ua_responsavel.nome_completo as funcionario_responsavel_nome,
         uc.funcionario_responsavel_id
-      FROM protese.controle_acessos ca
-      LEFT JOIN protese.usuarios_clientes uc 
+      FROM controle_acessos ca
+      LEFT JOIN usuarios_clientes uc 
         ON ca.usuario_tipo = 'cliente' 
         AND ca.usuario_id = uc.id
-      LEFT JOIN protese.usuarios_administrativos ua 
+      LEFT JOIN usuarios_administrativos ua 
         ON ca.usuario_tipo = 'administrativo' 
         AND ca.usuario_id = ua.id
-      LEFT JOIN protese.usuarios_administrativos ua_responsavel 
+      LEFT JOIN usuarios_administrativos ua_responsavel 
         ON uc.funcionario_responsavel_id = ua_responsavel.id
       WHERE ca.data_acesso BETWEEN $1 AND $2
     `;
@@ -113,20 +113,20 @@ router.get('/estatisticas', async (req, res) => {
 
     // Total de acessos
     const totalAcessos = await pool.query(
-      `SELECT COUNT(*) as total FROM protese.controle_acessos WHERE data_acesso BETWEEN $1 AND $2`,
+      `SELECT COUNT(*) as total FROM controle_acessos WHERE data_acesso BETWEEN $1 AND $2`,
       [dataInicio, dataFim]
     );
 
     // Total de logins
     const totalLogins = await pool.query(
-      `SELECT SUM(quantidade_login) as total FROM protese.controle_acessos WHERE data_acesso BETWEEN $1 AND $2`,
+      `SELECT SUM(quantidade_login) as total FROM controle_acessos WHERE data_acesso BETWEEN $1 AND $2`,
       [dataInicio, dataFim]
     );
 
     // Por tipo de usuário
     const porTipo = await pool.query(
       `SELECT usuario_tipo, COUNT(*) as quantidade, SUM(quantidade_login) as total_logins
-       FROM protese.controle_acessos
+       FROM controle_acessos
        WHERE data_acesso BETWEEN $1 AND $2
        GROUP BY usuario_tipo`,
       [dataInicio, dataFim]
@@ -135,7 +135,7 @@ router.get('/estatisticas', async (req, res) => {
     // Por dia
     const porDia = await pool.query(
       `SELECT data_acesso, COUNT(*) as quantidade_acessos, SUM(quantidade_login) as total_logins
-       FROM protese.controle_acessos
+       FROM controle_acessos
        WHERE data_acesso BETWEEN $1 AND $2
        GROUP BY data_acesso
        ORDER BY data_acesso DESC`,
@@ -145,7 +145,7 @@ router.get('/estatisticas', async (req, res) => {
     // Top 10 usuários com mais logins
     const topUsuarios = await pool.query(
       `SELECT usuario_id, usuario_tipo, SUM(quantidade_login) as total_logins
-       FROM protese.controle_acessos
+       FROM controle_acessos
        WHERE data_acesso BETWEEN $1 AND $2
        GROUP BY usuario_id, usuario_tipo
        ORDER BY total_logins DESC
@@ -155,10 +155,10 @@ router.get('/estatisticas', async (req, res) => {
 
     // Total de usuários cadastrados no sistema (ativos)
     const totalClientes = await pool.query(
-      `SELECT COUNT(*) as total FROM protese.usuarios_clientes WHERE is_active = true`
+      `SELECT COUNT(*) as total FROM usuarios_clientes WHERE is_active = true`
     );
     const totalAdministrativos = await pool.query(
-      `SELECT COUNT(*) as total FROM protese.usuarios_administrativos WHERE is_active = true`
+      `SELECT COUNT(*) as total FROM usuarios_administrativos WHERE is_active = true`
     );
     const totalUsuariosCadastrados = 
       parseInt(totalClientes.rows[0].total || 0) + 
