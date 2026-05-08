@@ -18,20 +18,25 @@ async function registrarAcesso(usuarioId, usuarioTipo) {
     // Extrair apenas a data (YYYY-MM-DD) sem considerar timezone
     const dataAcesso = agora.toISOString().split('T')[0];
 
-    // Usar UPSERT para garantir que só existe um registro por usuário/tipo/data
-    // Se já existe registro para hoje, incrementa quantidade_login
-    // Se não existe, cria novo registro com quantidade_login = 1
-    // A constraint UNIQUE (usuario_id, usuario_tipo, data_acesso) garante que só existe um registro por dia
-    await pool.query(
-      `INSERT INTO protese.controle_acessos (usuario_id, usuario_tipo, data_acesso, quantidade_login, primeiro_acesso, ultimo_acesso, created_at, updated_at)
-       VALUES ($1, $2, $3, 1, $4, $4, $4, $4)
-       ON CONFLICT (usuario_id, usuario_tipo, data_acesso)
-       DO UPDATE SET
-         quantidade_login = protese.controle_acessos.quantidade_login + 1,
-         ultimo_acesso = $4,
-         updated_at = $4`,
+    // Upsert compatível com Oracle: tenta atualizar e, se não houver linha, insere.
+    const updateResult = await pool.query(
+      `UPDATE controle_acessos
+       SET quantidade_login = quantidade_login + 1,
+           ultimo_acesso = $4,
+           updated_at = $4
+       WHERE usuario_id = $1
+         AND usuario_tipo = $2
+         AND data_acesso = $3`,
       [usuarioId, usuarioTipo, dataAcesso, agora]
     );
+
+    if ((updateResult.rowCount || 0) === 0) {
+      await pool.query(
+        `INSERT INTO controle_acessos (usuario_id, usuario_tipo, data_acesso, quantidade_login, primeiro_acesso, ultimo_acesso, created_at, updated_at)
+         VALUES ($1, $2, $3, 1, $4, $4, $4, $4)`,
+        [usuarioId, usuarioTipo, dataAcesso, agora]
+      );
+    }
   } catch (error) {
     console.error('Erro ao registrar acesso:', error);
     // Não falhar o login se der erro ao registrar acesso
@@ -54,7 +59,7 @@ router.post('/login', async (req, res) => {
     // Buscar cliente por email
     const result = await pool.query(
       `SELECT id, nome_completo, email, senha_hash, foto_url, is_active
-       FROM protese.usuarios_clientes
+       FROM usuarios_clientes
        WHERE email = $1`,
       [email.toLowerCase().trim()]
     );
@@ -158,7 +163,7 @@ router.post('/admin/login', async (req, res) => {
     // Modo legado (PostgreSQL)
     result = await pool.query(
       `SELECT id, nome_completo, email, senha_hash, foto_url, tipo_usuario, is_active
-       FROM protese.usuarios_administrativos
+       FROM usuarios_administrativos
        WHERE email = $1`,
       [normalizedEmail]
     );
