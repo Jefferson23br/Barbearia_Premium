@@ -31,7 +31,7 @@ router.get('/buscar-clientes', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT crm_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -59,8 +59,8 @@ router.get('/buscar-clientes', async (req, res) => {
         cpf,
         foto_url,
         is_active
-       FROM protese.usuarios_clientes
-       WHERE (nome_completo ILIKE $1 OR email ILIKE $1)
+       FROM usuarios_clientes
+       WHERE (nome_completo LIKE $1 OR email LIKE $1)
        AND is_active = true
        ORDER BY nome_completo ASC
        LIMIT 20`,
@@ -98,7 +98,7 @@ router.get('/cliente/:id/dados', async (req, res) => {
     if (usuarioTipo !== 'master') {
       console.log(`[CRM] 🔐 Verificando permissões para usuário: ${usuarioId}`);
       const permissoesResult = await pool.query(
-        'SELECT crm_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -122,8 +122,8 @@ router.get('/cliente/:id/dados', async (req, res) => {
         uc.foto_url,
         uc.funcionario_responsavel_id,
         ua.nome_completo as funcionario_responsavel_nome
-       FROM protese.usuarios_clientes uc
-       LEFT JOIN protese.usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
+       FROM usuarios_clientes uc
+       LEFT JOIN usuarios_administrativos ua ON uc.funcionario_responsavel_id = ua.id
        WHERE uc.id = $1`,
       [clienteId]
     );
@@ -156,9 +156,9 @@ router.get('/cliente/:id/dados', async (req, res) => {
           a.updated_at,
           s.nome as servico_nome,
           f.nome_completo as funcionario_nome
-         FROM protese.agendamentos a
-         INNER JOIN protese.servicos s ON a.servico_id = s.id
-         INNER JOIN protese.usuarios_administrativos f ON a.funcionario_id = f.id
+         FROM agendamentos a
+         INNER JOIN servicos s ON a.servico_id = s.id
+         INNER JOIN usuarios_administrativos f ON a.funcionario_id = f.id
          WHERE a.cliente_id = $1
          ORDER BY a.data_agendamento DESC, a.hora_inicio DESC`,
         [clienteId]
@@ -194,8 +194,8 @@ router.get('/cliente/:id/dados', async (req, res) => {
           v.updated_at,
           v.cupom_id,
           f.nome_completo as funcionario_nome
-         FROM protese.vendas v
-         LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
+         FROM vendas v
+         LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
          WHERE v.cliente_id = $1
          ORDER BY v.data_venda DESC, v.created_at DESC`,
         [clienteId]
@@ -232,9 +232,9 @@ router.get('/cliente/:id/dados', async (req, res) => {
           r.updated_at,
           ca.nome as caixa_nome,
           v.ticket as venda_ticket
-         FROM protese.receitas r
-         LEFT JOIN protese.contas ca ON r.caixa_id = ca.id
-         LEFT JOIN protese.vendas v ON r.venda_id = v.id
+         FROM receitas r
+         LEFT JOIN contas ca ON r.caixa_id = ca.id
+         LEFT JOIN vendas v ON r.venda_id = v.id
          WHERE r.cliente_id = $1
          ORDER BY r.data_emissao DESC, r.data_vencimento DESC`,
         [clienteId]
@@ -264,8 +264,8 @@ router.get('/cliente/:id/dados', async (req, res) => {
           r.created_by,
           r.updated_by,
           ua.nome_completo as funcionario_nome
-         FROM protese.crm_relacionamentos r
-         LEFT JOIN protese.usuarios_administrativos ua ON r.funcionario_id = ua.id
+         FROM crm_relacionamentos r
+         LEFT JOIN usuarios_administrativos ua ON r.funcionario_id = ua.id
          WHERE r.cliente_id = $1
          ORDER BY r.data_interacao DESC, r.created_at DESC`,
         [clienteId]
@@ -327,7 +327,7 @@ router.get('/cliente/:id/assinaturas', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT crm_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -359,8 +359,8 @@ router.get('/cliente/:id/assinaturas', async (req, res) => {
           WHEN ac.status = 'cancelada' THEN 'cancelada'
           ELSE ac.status
         END as status_real
-       FROM protese.assinaturas_clientes ac
-       INNER JOIN protese.assinaturas a ON ac.assinatura_id = a.id
+       FROM assinaturas_clientes ac
+       INNER JOIN assinaturas a ON ac.assinatura_id = a.id
        WHERE ac.cliente_id = $1
        ORDER BY ac.data_aquisicao DESC`,
       [clienteId, hoje]
@@ -377,7 +377,7 @@ router.get('/cliente/:id/assinaturas', async (req, res) => {
         for (const [servicoId, quantidade] of Object.entries(servicosRestantes)) {
           if (quantidade > 0) {
             const servicoInfo = await pool.query(
-              'SELECT id, nome, preco FROM protese.servicos WHERE id = $1',
+              'SELECT id, nome, preco FROM servicos WHERE id = $1',
               [servicoId]
             );
             if (servicoInfo.rows.length > 0) {
@@ -396,7 +396,7 @@ router.get('/cliente/:id/assinaturas', async (req, res) => {
         for (const [produtoId, quantidade] of Object.entries(produtosRestantes)) {
           if (quantidade > 0) {
             const produtoInfo = await pool.query(
-              'SELECT id, descricao, codigo, preco_venda FROM protese.produtos WHERE id = $1',
+              'SELECT id, descricao, codigo, preco_venda FROM produtos WHERE id = $1',
               [produtoId]
             );
             if (produtoInfo.rows.length > 0) {
@@ -439,7 +439,7 @@ router.get('/cliente/:id/relacionamentos', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT crm_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -455,8 +455,8 @@ router.get('/cliente/:id/relacionamentos', async (req, res) => {
       `SELECT 
         r.*,
         ua.nome_completo as funcionario_nome
-       FROM protese.crm_relacionamentos r
-       LEFT JOIN protese.usuarios_administrativos ua ON r.funcionario_id = ua.id
+       FROM crm_relacionamentos r
+       LEFT JOIN usuarios_administrativos ua ON r.funcionario_id = ua.id
        WHERE r.cliente_id = $1
        ORDER BY r.data_interacao DESC, r.created_at DESC`,
       [id]
@@ -493,7 +493,7 @@ router.post('/cliente/:id/relacionamentos', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT crm_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -515,7 +515,7 @@ router.post('/cliente/:id/relacionamentos', async (req, res) => {
 
     // Verificar se cliente existe
     const clienteCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_clientes WHERE id = $1',
+      'SELECT id FROM usuarios_clientes WHERE id = $1',
       [id]
     );
 
@@ -526,7 +526,7 @@ router.post('/cliente/:id/relacionamentos', async (req, res) => {
 
     console.log(`[CRM] 💾 Inserindo relacionamento no banco...`);
     const result = await pool.query(
-      `INSERT INTO protese.crm_relacionamentos 
+      `INSERT INTO crm_relacionamentos 
        (cliente_id, funcionario_id, data_interacao, tipo_interacao, descricao, observacoes, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
@@ -540,8 +540,8 @@ router.post('/cliente/:id/relacionamentos', async (req, res) => {
       `SELECT 
         r.*,
         ua.nome_completo as funcionario_nome
-       FROM protese.crm_relacionamentos r
-       LEFT JOIN protese.usuarios_administrativos ua ON r.funcionario_id = ua.id
+       FROM crm_relacionamentos r
+       LEFT JOIN usuarios_administrativos ua ON r.funcionario_id = ua.id
        WHERE r.id = $1`,
       [result.rows[0].id]
     );
@@ -583,7 +583,7 @@ router.put('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res) =
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT crm_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -597,7 +597,7 @@ router.put('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res) =
 
     // Buscar relacionamento atual
     const relacionamentoAtual = await pool.query(
-      'SELECT * FROM protese.crm_relacionamentos WHERE id = $1',
+      'SELECT * FROM crm_relacionamentos WHERE id = $1',
       [relacionamento_id]
     );
 
@@ -606,7 +606,7 @@ router.put('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res) =
     }
 
     const result = await pool.query(
-      `UPDATE protese.crm_relacionamentos 
+      `UPDATE crm_relacionamentos 
        SET data_interacao = COALESCE($1, data_interacao),
            tipo_interacao = COALESCE($2, tipo_interacao),
            descricao = COALESCE($3, descricao),
@@ -623,8 +623,8 @@ router.put('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res) =
       `SELECT 
         r.*,
         ua.nome_completo as funcionario_nome
-       FROM protese.crm_relacionamentos r
-       LEFT JOIN protese.usuarios_administrativos ua ON r.funcionario_id = ua.id
+       FROM crm_relacionamentos r
+       LEFT JOIN usuarios_administrativos ua ON r.funcionario_id = ua.id
        WHERE r.id = $1`,
       [relacionamento_id]
     );
@@ -663,7 +663,7 @@ router.delete('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT crm_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT crm_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -676,7 +676,7 @@ router.delete('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res
 
     // Buscar relacionamento antes de excluir
     const relacionamento = await pool.query(
-      'SELECT * FROM protese.crm_relacionamentos WHERE id = $1',
+      'SELECT * FROM crm_relacionamentos WHERE id = $1',
       [relacionamento_id]
     );
 
@@ -684,7 +684,7 @@ router.delete('/cliente/:id/relacionamentos/:relacionamento_id', async (req, res
       return res.status(404).json({ error: 'Relacionamento não encontrado' });
     }
 
-    await pool.query('DELETE FROM protese.crm_relacionamentos WHERE id = $1', [relacionamento_id]);
+    await pool.query('DELETE FROM crm_relacionamentos WHERE id = $1', [relacionamento_id]);
 
     await registrarLog({
       usuario_id: usuarioId,
