@@ -14,7 +14,7 @@ router.get('/romaneios-fechados', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT emissao_nfe_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT emissao_nfe_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -30,7 +30,7 @@ router.get('/romaneios-fechados', async (req, res) => {
     try {
       // Primeiro, verificar quantos romaneios existem no total
       const totalRomaneios = await pool.query(
-        `SELECT COUNT(*) as total FROM protese.romaneios`
+        `SELECT COUNT(*) as total FROM romaneios`
       );
       console.log(`[DEBUG] Total de romaneios no banco: ${totalRomaneios.rows[0].total}`);
 
@@ -43,7 +43,7 @@ router.get('/romaneios-fechados', async (req, res) => {
           r.data_romaneio,
           r.descricao,
           r.status
-        FROM protese.romaneios r
+        FROM romaneios r
         WHERE r.status = 'fechado'
           AND r.tipo_romaneio IN ('faturamento', 'misto')
         ORDER BY r.data_romaneio DESC, r.numero_romaneio DESC
@@ -58,7 +58,7 @@ router.get('/romaneios-fechados', async (req, res) => {
         console.log('[DEBUG] Nenhum romaneio encontrado. Verificando estatísticas...');
         const debugResult = await pool.query(
           `SELECT status, tipo_romaneio, COUNT(*) as total 
-           FROM protese.romaneios 
+           FROM romaneios 
            GROUP BY status, tipo_romaneio
            ORDER BY status, tipo_romaneio`
         );
@@ -67,8 +67,8 @@ router.get('/romaneios-fechados', async (req, res) => {
         // Verificar se há romaneios com vendas
         const romaneiosComVendasCheck = await pool.query(
           `SELECT COUNT(DISTINCT r.id) as total
-           FROM protese.romaneios r
-           INNER JOIN protese.romaneios_itens ri ON r.id = ri.romaneio_id
+           FROM romaneios r
+           INNER JOIN romaneios_itens ri ON r.id = ri.romaneio_id
            WHERE ri.tipo_movimentacao = 'venda'`
         );
         console.log(`[DEBUG] Romaneios com vendas vinculadas: ${romaneiosComVendasCheck.rows[0].total}`);
@@ -100,7 +100,7 @@ router.get('/romaneios-fechados', async (req, res) => {
           // Primeiro, verificar se há itens de romaneio para este romaneio
           const itensCheck = await pool.query(
             `SELECT COUNT(*) as total, tipo_movimentacao 
-             FROM protese.romaneios_itens 
+             FROM romaneios_itens 
              WHERE romaneio_id = $1 
              GROUP BY tipo_movimentacao`,
             [romaneio.id]
@@ -126,30 +126,30 @@ router.get('/romaneios-fechados', async (req, res) => {
               c.estado as endereco_estado,
               c.cep as endereco_cep,
               COALESCE((
-              SELECT COALESCE(SUM(vp2.valor_total), 0)::numeric
-              FROM protese.vendas_produtos vp2 
+              SELECT COALESCE(SUM(vp2.valor_total), 0)
+              FROM vendas_produtos vp2 
               WHERE vp2.venda_id = v.id
             ), 0) + COALESCE((
-              SELECT COALESCE(SUM(vs2.valor), 0)::numeric
-              FROM protese.vendas_servicos vs2 
+              SELECT COALESCE(SUM(vs2.valor), 0)
+              FROM vendas_servicos vs2 
               WHERE vs2.venda_id = v.id
             ), 0) as valor_total,
               COALESCE((
                 SELECT COUNT(*) 
-                FROM protese.vendas_produtos vp2 
+                FROM vendas_produtos vp2 
                 WHERE vp2.venda_id = v.id
               ), 0) as total_produtos,
               COALESCE((
                 SELECT COUNT(*) 
-                FROM protese.vendas_servicos vs2 
+                FROM vendas_servicos vs2 
                 WHERE vs2.venda_id = v.id
               ), 0) as total_servicos
-            FROM protese.vendas v
-            INNER JOIN protese.romaneios_itens ri ON v.id = ri.movimentacao_id AND ri.tipo_movimentacao = 'venda'
-            LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
+            FROM vendas v
+            INNER JOIN romaneios_itens ri ON v.id = ri.movimentacao_id AND ri.tipo_movimentacao = 'venda'
+            LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
             WHERE ri.romaneio_id = $1
               AND NOT EXISTS (
-                SELECT 1 FROM protese.notas_fiscais nf 
+                SELECT 1 FROM notas_fiscais nf 
                 WHERE nf.venda_id = v.id
               )
             ORDER BY v.data_venda DESC, v.ticket DESC
@@ -168,9 +168,9 @@ router.get('/romaneios-fechados', async (req, res) => {
             // Verificar se há vendas com nota fiscal
             const vendasComNota = await pool.query(
               `SELECT COUNT(*) as total
-               FROM protese.vendas v
-               INNER JOIN protese.romaneios_itens ri ON v.id = ri.movimentacao_id AND ri.tipo_movimentacao = 'venda'
-               INNER JOIN protese.notas_fiscais nf ON nf.venda_id = v.id
+               FROM vendas v
+               INNER JOIN romaneios_itens ri ON v.id = ri.movimentacao_id AND ri.tipo_movimentacao = 'venda'
+               INNER JOIN notas_fiscais nf ON nf.venda_id = v.id
                WHERE ri.romaneio_id = $1`,
               [romaneio.id]
             );
@@ -179,8 +179,8 @@ router.get('/romaneios-fechados', async (req, res) => {
             // Verificar se há vendas sem nota fiscal (sem o filtro de nota)
             const todasVendas = await pool.query(
               `SELECT COUNT(*) as total
-               FROM protese.vendas v
-               INNER JOIN protese.romaneios_itens ri ON v.id = ri.movimentacao_id AND ri.tipo_movimentacao = 'venda'
+               FROM vendas v
+               INNER JOIN romaneios_itens ri ON v.id = ri.movimentacao_id AND ri.tipo_movimentacao = 'venda'
                WHERE ri.romaneio_id = $1`,
               [romaneio.id]
             );
@@ -259,7 +259,7 @@ router.get('/configuracoes-emitente', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT emissao_nfe_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT emissao_nfe_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -275,7 +275,7 @@ router.get('/configuracoes-emitente', async (req, res) => {
     console.log('[EMITENTE] Executando query para buscar configurações...');
     
     // Primeiro, verificar se há configurações no banco
-    const countResult = await pool.query('SELECT COUNT(*) as total FROM protese.configuracoes');
+    const countResult = await pool.query('SELECT COUNT(*) as total FROM configuracoes');
     console.log(`[EMITENTE] Total de configurações no banco: ${countResult.rows[0].total}`);
     
     const configResult = await pool.query(
@@ -306,7 +306,7 @@ router.get('/configuracoes-emitente', async (req, res) => {
         api_url_base,
         created_at,
         updated_at
-      FROM protese.configuracoes 
+      FROM configuracoes 
       ORDER BY updated_at DESC, created_at DESC
       LIMIT 1`
     );
@@ -317,7 +317,7 @@ router.get('/configuracoes-emitente', async (req, res) => {
       console.log('[EMITENTE] Nenhuma configuração encontrada no banco');
       
       // Debug: verificar se há configurações no banco
-      const debugConfig = await pool.query('SELECT COUNT(*) as total FROM protese.configuracoes');
+      const debugConfig = await pool.query('SELECT COUNT(*) as total FROM configuracoes');
       console.log(`[EMITENTE] Total de configurações no banco: ${debugConfig.rows[0].total}`);
       
       return res.status(404).json({ error: 'Configurações não encontradas' });
@@ -383,7 +383,7 @@ router.post('/emitir', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT emissao_nfe_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT emissao_nfe_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -415,8 +415,8 @@ router.post('/emitir', async (req, res) => {
         c.cidade as endereco_cidade,
         c.estado as endereco_estado,
         c.cep as endereco_cep
-      FROM protese.vendas v
-      LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
+      FROM vendas v
+      LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
       WHERE v.id = $1`,
       [venda_id]
     );
@@ -430,7 +430,7 @@ router.post('/emitir', async (req, res) => {
 
     // Verificar se já existe nota fiscal para esta venda
     const notaExistente = await client.query(
-      'SELECT id FROM protese.notas_fiscais WHERE venda_id = $1',
+      'SELECT id FROM notas_fiscais WHERE venda_id = $1',
       [venda_id]
     );
 
@@ -441,7 +441,7 @@ router.post('/emitir', async (req, res) => {
 
     // Buscar configurações do emitente
     const configResult = await client.query(
-      `SELECT * FROM protese.configuracoes ORDER BY updated_at DESC LIMIT 1`
+      `SELECT * FROM configuracoes ORDER BY updated_at DESC LIMIT 1`
     );
 
     if (configResult.rows.length === 0) {
@@ -453,7 +453,7 @@ router.post('/emitir', async (req, res) => {
 
     // Buscar integração de NFe
     const integracaoResult = await client.query(
-      `SELECT * FROM protese.integracoes WHERE tipo_integracao = 'nfe' AND ativo = true LIMIT 1`
+      `SELECT * FROM integracoes WHERE tipo_integracao = 'nfe' AND ativo = true LIMIT 1`
     );
 
     if (integracaoResult.rows.length === 0) {
@@ -507,16 +507,16 @@ router.post('/emitir', async (req, res) => {
     // Buscar produtos e serviços da venda
     const produtosResult = await client.query(
       `SELECT vp.*, p.descricao as produto_descricao
-       FROM protese.vendas_produtos vp
-       LEFT JOIN protese.produtos p ON vp.produto_id = p.id
+       FROM vendas_produtos vp
+       LEFT JOIN produtos p ON vp.produto_id = p.id
        WHERE vp.venda_id = $1`,
       [venda_id]
     );
 
     const servicosResult = await client.query(
       `SELECT vs.*, s.descricao as servico_descricao
-       FROM protese.vendas_servicos vs
-       LEFT JOIN protese.servicos s ON vs.servico_id = s.id
+       FROM vendas_servicos vs
+       LEFT JOIN servicos s ON vs.servico_id = s.id
        WHERE vs.venda_id = $1`,
       [venda_id]
     );
@@ -611,7 +611,7 @@ router.post('/emitir', async (req, res) => {
 
     // Salvar nota fiscal no banco
     const notaResult = await client.query(
-      `INSERT INTO protese.notas_fiscais 
+      `INSERT INTO notas_fiscais 
        (venda_id, romaneio_id, numero, serie, chave_acesso, status, xml_path, pdf_path, observacoes, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
@@ -669,7 +669,7 @@ router.get('/notas-fiscais', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT emissao_nfe_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT emissao_nfe_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -701,10 +701,10 @@ router.get('/notas-fiscais', async (req, res) => {
         COALESCE(c.nome_completo, 'Cliente não cadastrado') as cliente_nome,
         c.cpf as cliente_cpf_cnpj,
         COALESCE(r.numero_romaneio, '') as numero_romaneio
-      FROM protese.notas_fiscais nf
-      INNER JOIN protese.vendas v ON nf.venda_id = v.id
-      LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-      LEFT JOIN protese.romaneios r ON nf.romaneio_id = r.id
+      FROM notas_fiscais nf
+      INNER JOIN vendas v ON nf.venda_id = v.id
+      LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+      LEFT JOIN romaneios r ON nf.romaneio_id = r.id
       WHERE 1=1
     `;
 
@@ -731,10 +731,10 @@ router.get('/notas-fiscais', async (req, res) => {
 
     if (busca) {
       query += ` AND (
-        nf.numero ILIKE $${paramCount} OR
-        nf.chave_acesso ILIKE $${paramCount} OR
-        v.ticket ILIKE $${paramCount} OR
-        c.nome_completo ILIKE $${paramCount}
+        nf.numero LIKE $${paramCount} OR
+        nf.chave_acesso LIKE $${paramCount} OR
+        v.ticket LIKE $${paramCount} OR
+        c.nome_completo LIKE $${paramCount}
       )`;
       params.push(`%${busca}%`);
       paramCount++;
@@ -778,7 +778,7 @@ router.get('/notas-fiscais/:id', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT emissao_nfe_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT emissao_nfe_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -806,10 +806,10 @@ router.get('/notas-fiscais/:id', async (req, res) => {
         c.estado as endereco_estado,
         c.cep as endereco_cep,
         r.numero_romaneio
-      FROM protese.notas_fiscais nf
-      INNER JOIN protese.vendas v ON nf.venda_id = v.id
-      LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-      LEFT JOIN protese.romaneios r ON nf.romaneio_id = r.id
+      FROM notas_fiscais nf
+      INNER JOIN vendas v ON nf.venda_id = v.id
+      LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+      LEFT JOIN romaneios r ON nf.romaneio_id = r.id
       WHERE nf.id = $1`,
       [req.params.id]
     );
@@ -837,7 +837,7 @@ router.get('/notas-fiscais/:id/download', async (req, res) => {
 
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT emissao_nfe_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT emissao_nfe_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -847,7 +847,7 @@ router.get('/notas-fiscais/:id/download', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM protese.notas_fiscais WHERE id = $1',
+      'SELECT * FROM notas_fiscais WHERE id = $1',
       [req.params.id]
     );
 
