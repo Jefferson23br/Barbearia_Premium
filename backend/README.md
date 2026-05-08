@@ -212,7 +212,11 @@ Implementei as seguintes tabelas principais:
 
 ### Scripts SQL
 
-Criei scripts SQL na raiz do projeto para facilitar a configuração:
+Os scripts SQL foram organizados em `database/sql` para facilitar manutenção:
+- Oracle (base atual): `database/sql/oracle`
+- PostgreSQL legado: `database/sql/legacy-postgresql`
+
+Principais scripts legados:
 - `COMANDOS_CRIAR_TABELA_PERMISSOES_SIMPLES.sql`
 - `COMANDOS_CRIAR_TABELA_CONTROLE_ACESSOS.sql`
 - `COMANDOS_ADICIONAR_FUNCIONARIO_RESPONSAVEL.sql`
