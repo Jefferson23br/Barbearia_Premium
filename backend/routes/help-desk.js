@@ -20,7 +20,7 @@ router.get('/chamados', async (req, res) => {
 
     // Verificar usuário e permissões
     const usuarioCheck = await pool.query(
-      'SELECT tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT tipo_usuario FROM usuarios_administrativos WHERE id = $1',
       [usuarioId]
     );
 
@@ -35,7 +35,7 @@ router.get('/chamados', async (req, res) => {
     let temPermissaoHelpDesk = isMaster;
     if (!isMaster) {
       const permissoesCheck = await pool.query(
-        'SELECT help_desk_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT help_desk_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
       if (permissoesCheck.rows.length > 0) {
@@ -64,10 +64,10 @@ router.get('/chamados', async (req, res) => {
         ua_abriu.nome_completo as funcionario_abriu_nome,
         hdc.responsavel_id,
         ua_resp.nome_completo as responsavel_nome,
-        (SELECT COUNT(*) FROM protese.help_desk_respostas WHERE chamado_id = hdc.id) as total_respostas
-      FROM protese.help_desk_chamados hdc
-      INNER JOIN protese.usuarios_administrativos ua_abriu ON hdc.funcionario_abriu_id = ua_abriu.id
-      INNER JOIN protese.usuarios_administrativos ua_resp ON hdc.responsavel_id = ua_resp.id
+        (SELECT COUNT(*) FROM help_desk_respostas WHERE chamado_id = hdc.id) as total_respostas
+      FROM help_desk_chamados hdc
+      INNER JOIN usuarios_administrativos ua_abriu ON hdc.funcionario_abriu_id = ua_abriu.id
+      INNER JOIN usuarios_administrativos ua_resp ON hdc.responsavel_id = ua_resp.id
       WHERE 1=1
     `;
 
@@ -156,7 +156,7 @@ router.post('/chamados', uploadHelpDesk.array('anexos', 10), async (req, res) =>
     let responsavelId = responsavel_id;
     if (!responsavelId) {
       const masterResult = await pool.query(
-        "SELECT id FROM protese.usuarios_administrativos WHERE tipo_usuario = 'master' LIMIT 1"
+        "SELECT id FROM usuarios_administrativos WHERE tipo_usuario = 'master' LIMIT 1"
       );
       if (masterResult.rows.length > 0) {
         responsavelId = masterResult.rows[0].id;
@@ -167,7 +167,7 @@ router.post('/chamados', uploadHelpDesk.array('anexos', 10), async (req, res) =>
 
     // Verificar se o responsável existe
     const responsavelCheck = await pool.query(
-      'SELECT id FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT id FROM usuarios_administrativos WHERE id = $1',
       [responsavelId]
     );
     if (responsavelCheck.rows.length === 0) {
@@ -176,7 +176,7 @@ router.post('/chamados', uploadHelpDesk.array('anexos', 10), async (req, res) =>
 
     // Criar chamado
     const chamadoResult = await pool.query(
-      `INSERT INTO protese.help_desk_chamados (
+      `INSERT INTO help_desk_chamados (
         tipo_chamado, funcionario_abriu_id, responsavel_id, descricao,
         email_contato, telefone_whatsapp, temperatura, status
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -205,7 +205,7 @@ router.post('/chamados', uploadHelpDesk.array('anexos', 10), async (req, res) =>
         const tipoArquivo = file.mimetype.startsWith('image/') ? 'imagem' : 'pdf';
 
         const anexoResult = await pool.query(
-          `INSERT INTO protese.help_desk_anexos (
+          `INSERT INTO help_desk_anexos (
             chamado_id, nome_arquivo, url_arquivo, tipo_arquivo, tamanho_bytes
           ) VALUES ($1, $2, $3, $4, $5)
           RETURNING *`,
@@ -267,9 +267,9 @@ router.get('/chamados/:id', async (req, res) => {
         hdc.*,
         ua_abriu.nome_completo as funcionario_abriu_nome,
         ua_resp.nome_completo as responsavel_nome
-      FROM protese.help_desk_chamados hdc
-      INNER JOIN protese.usuarios_administrativos ua_abriu ON hdc.funcionario_abriu_id = ua_abriu.id
-      INNER JOIN protese.usuarios_administrativos ua_resp ON hdc.responsavel_id = ua_resp.id
+      FROM help_desk_chamados hdc
+      INNER JOIN usuarios_administrativos ua_abriu ON hdc.funcionario_abriu_id = ua_abriu.id
+      INNER JOIN usuarios_administrativos ua_resp ON hdc.responsavel_id = ua_resp.id
       WHERE hdc.id = $1`,
       [id]
     );
@@ -282,7 +282,7 @@ router.get('/chamados/:id', async (req, res) => {
 
     // Verificar permissão
     const usuarioCheck = await pool.query(
-      'SELECT tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT tipo_usuario FROM usuarios_administrativos WHERE id = $1',
       [usuarioId]
     );
 
@@ -296,7 +296,7 @@ router.get('/chamados/:id', async (req, res) => {
     let temPermissaoHelpDesk = isMaster;
     if (!isMaster) {
       const permissoesCheck = await pool.query(
-        'SELECT help_desk_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT help_desk_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
       if (permissoesCheck.rows.length > 0) {
@@ -317,7 +317,7 @@ router.get('/chamados/:id', async (req, res) => {
 
     // Buscar anexos do chamado
     const anexosChamado = await pool.query(
-      'SELECT * FROM protese.help_desk_anexos WHERE chamado_id = $1 AND resposta_id IS NULL',
+      'SELECT * FROM help_desk_anexos WHERE chamado_id = $1 AND resposta_id IS NULL',
       [id]
     );
 
@@ -326,8 +326,8 @@ router.get('/chamados/:id', async (req, res) => {
       `SELECT 
         hdr.*,
         ua.nome_completo as funcionario_nome
-      FROM protese.help_desk_respostas hdr
-      INNER JOIN protese.usuarios_administrativos ua ON hdr.funcionario_id = ua.id
+      FROM help_desk_respostas hdr
+      INNER JOIN usuarios_administrativos ua ON hdr.funcionario_id = ua.id
       WHERE hdr.chamado_id = $1
       ORDER BY hdr.created_at ASC`,
       [id]
@@ -337,7 +337,7 @@ router.get('/chamados/:id', async (req, res) => {
     const respostasComAnexos = await Promise.all(
       respostasResult.rows.map(async (resposta) => {
         const anexosResposta = await pool.query(
-          'SELECT * FROM protese.help_desk_anexos WHERE resposta_id = $1',
+          'SELECT * FROM help_desk_anexos WHERE resposta_id = $1',
           [resposta.id]
         );
         return { ...resposta, anexos: anexosResposta.rows };
@@ -378,7 +378,7 @@ router.put('/chamados/:id', async (req, res) => {
 
     // Buscar chamado atual
     const chamadoAtual = await pool.query(
-      'SELECT * FROM protese.help_desk_chamados WHERE id = $1',
+      'SELECT * FROM help_desk_chamados WHERE id = $1',
       [id]
     );
 
@@ -390,7 +390,7 @@ router.put('/chamados/:id', async (req, res) => {
 
     // Verificar permissão (apenas Master ou responsável pode atualizar)
     const usuarioCheck = await pool.query(
-      'SELECT tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT tipo_usuario FROM usuarios_administrativos WHERE id = $1',
       [usuarioId]
     );
 
@@ -417,7 +417,7 @@ router.put('/chamados/:id', async (req, res) => {
       if (!isResponsavel) {
         if (isCriador) {
           const permissoesCheck = await pool.query(
-            'SELECT help_desk_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+            'SELECT help_desk_editar FROM permissoes_usuarios WHERE usuario_id = $1',
             [usuarioId]
           );
           const temPermissaoEditar = permissoesCheck.rows.length > 0 && permissoesCheck.rows[0].help_desk_editar === true;
@@ -439,7 +439,7 @@ router.put('/chamados/:id', async (req, res) => {
     // Validar responsável se informado
     if (responsavel_id) {
       const responsavelCheck = await pool.query(
-        'SELECT id FROM protese.usuarios_administrativos WHERE id = $1',
+        'SELECT id FROM usuarios_administrativos WHERE id = $1',
         [responsavel_id]
       );
       if (responsavelCheck.rows.length === 0) {
@@ -471,7 +471,7 @@ router.put('/chamados/:id', async (req, res) => {
     updates.push(`updated_at = CURRENT_TIMESTAMP`);
     params.push(id);
 
-    const query = `UPDATE protese.help_desk_chamados SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+    const query = `UPDATE help_desk_chamados SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
     const result = await pool.query(query, params);
 
     // Registrar log
@@ -524,7 +524,7 @@ router.post('/chamados/:id/respostas', uploadHelpDesk.array('anexos', 10), async
 
     // Verificar se o chamado existe
     const chamadoCheck = await pool.query(
-      'SELECT * FROM protese.help_desk_chamados WHERE id = $1',
+      'SELECT * FROM help_desk_chamados WHERE id = $1',
       [id]
     );
 
@@ -536,7 +536,7 @@ router.post('/chamados/:id/respostas', uploadHelpDesk.array('anexos', 10), async
 
     // Verificar permissão (Master, responsável ou quem abriu pode responder)
     const usuarioCheck = await pool.query(
-      'SELECT tipo_usuario FROM protese.usuarios_administrativos WHERE id = $1',
+      'SELECT tipo_usuario FROM usuarios_administrativos WHERE id = $1',
       [usuarioId]
     );
 
@@ -553,7 +553,7 @@ router.post('/chamados/:id/respostas', uploadHelpDesk.array('anexos', 10), async
 
     // Criar resposta
     const respostaResult = await pool.query(
-      `INSERT INTO protese.help_desk_respostas (chamado_id, funcionario_id, mensagem)
+      `INSERT INTO help_desk_respostas (chamado_id, funcionario_id, mensagem)
        VALUES ($1, $2, $3)
        RETURNING *`,
       [id, usuarioId, mensagem]
@@ -571,7 +571,7 @@ router.post('/chamados/:id/respostas', uploadHelpDesk.array('anexos', 10), async
         const tipoArquivo = file.mimetype.startsWith('image/') ? 'imagem' : 'pdf';
 
         const anexoResult = await pool.query(
-          `INSERT INTO protese.help_desk_anexos (
+          `INSERT INTO help_desk_anexos (
             resposta_id, nome_arquivo, url_arquivo, tipo_arquivo, tamanho_bytes
           ) VALUES ($1, $2, $3, $4, $5)
           RETURNING *`,
@@ -617,7 +617,7 @@ router.get('/funcionarios', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT id, nome_completo, email, tipo_usuario
-       FROM protese.usuarios_administrativos
+       FROM usuarios_administrativos
        WHERE is_active = true
        ORDER BY nome_completo ASC`
     );
