@@ -15,7 +15,7 @@ router.get('/produtos', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT estoque_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT estoque_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -36,24 +36,24 @@ router.get('/produtos', async (req, res) => {
         p.ultimo_preco_custo,
         p.is_active,
         (SELECT valor_unitario 
-         FROM protese.estoque_movimentacoes 
+         FROM estoque_movimentacoes 
          WHERE produto_id = p.id 
          ORDER BY data_movimentacao DESC, created_at DESC 
          LIMIT 1) as ultimo_preco_compra
-      FROM protese.produtos p
+      FROM produtos p
       WHERE 1=1
     `;
     const params = [];
     let paramIndex = 1;
 
     if (search) {
-      query += ` AND (p.codigo ILIKE $${paramIndex} OR p.descricao ILIKE $${paramIndex})`;
+      query += ` AND (p.codigo LIKE $${paramIndex} OR p.descricao LIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
 
     if (fornecedor) {
-      query += ` AND p.fornecedor ILIKE $${paramIndex}`;
+      query += ` AND p.fornecedor LIKE $${paramIndex}`;
       params.push(`%${fornecedor}%`);
       paramIndex++;
     }
@@ -97,7 +97,7 @@ router.get('/movimentacoes', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT estoque_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT estoque_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -112,8 +112,8 @@ router.get('/movimentacoes', async (req, res) => {
         em.*,
         p.codigo as produto_codigo,
         p.descricao as produto_descricao
-      FROM protese.estoque_movimentacoes em
-      INNER JOIN protese.produtos p ON em.produto_id = p.id
+      FROM estoque_movimentacoes em
+      INNER JOIN produtos p ON em.produto_id = p.id
       WHERE 1=1
     `;
     const params = [];
@@ -126,7 +126,7 @@ router.get('/movimentacoes', async (req, res) => {
     }
 
     if (fornecedor) {
-      query += ` AND em.fornecedor ILIKE $${paramIndex}`;
+      query += ` AND em.fornecedor LIKE $${paramIndex}`;
       params.push(`%${fornecedor}%`);
       paramIndex++;
     }
@@ -172,7 +172,7 @@ router.get('/movimentacoes/:id', async (req, res) => {
     // Verificar permissão de visualização
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT estoque_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT estoque_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -186,8 +186,8 @@ router.get('/movimentacoes/:id', async (req, res) => {
         em.*,
         p.codigo as produto_codigo,
         p.descricao as produto_descricao
-      FROM protese.estoque_movimentacoes em
-      INNER JOIN protese.produtos p ON em.produto_id = p.id
+      FROM estoque_movimentacoes em
+      INNER JOIN produtos p ON em.produto_id = p.id
       WHERE em.id = $1`,
       [id]
     );
@@ -221,7 +221,7 @@ router.post('/entrada', async (req, res) => {
     // Verificar permissão de edição
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT estoque_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT estoque_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -259,7 +259,7 @@ router.post('/entrada', async (req, res) => {
 
     // Verificar se produto existe
     const produtoCheck = await pool.query(
-      'SELECT id, descricao, codigo FROM protese.produtos WHERE id = $1',
+      'SELECT id, descricao, codigo FROM produtos WHERE id = $1',
       [produto_id]
     );
 
@@ -269,7 +269,7 @@ router.post('/entrada', async (req, res) => {
 
     // Inserir movimentação
     const result = await pool.query(
-      `INSERT INTO protese.estoque_movimentacoes (
+      `INSERT INTO estoque_movimentacoes (
         produto_id, fornecedor, quantidade, valor_unitario, 
         data_movimentacao, observacoes, created_by
       ) VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -347,7 +347,7 @@ router.delete('/movimentacoes/:id', async (req, res) => {
     // Verificar permissão de exclusão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT estoque_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT estoque_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -362,8 +362,8 @@ router.delete('/movimentacoes/:id', async (req, res) => {
         em.*,
         p.descricao as produto_descricao,
         p.codigo as produto_codigo
-      FROM protese.estoque_movimentacoes em
-      INNER JOIN protese.produtos p ON em.produto_id = p.id
+      FROM estoque_movimentacoes em
+      INNER JOIN produtos p ON em.produto_id = p.id
       WHERE em.id = $1`,
       [id]
     );
@@ -373,7 +373,7 @@ router.delete('/movimentacoes/:id', async (req, res) => {
     }
 
     // Excluir movimentação (trigger vai reverter quantidade automaticamente)
-    await pool.query('DELETE FROM protese.estoque_movimentacoes WHERE id = $1', [id]);
+    await pool.query('DELETE FROM estoque_movimentacoes WHERE id = $1', [id]);
 
     // Registrar log
     if (usuarioId) {
