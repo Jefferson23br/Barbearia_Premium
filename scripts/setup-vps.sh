@@ -7,7 +7,7 @@
 set -e
 
 echo "═══════════════════════════════════════════════════════════════"
-echo "  Configuração Inicial da VPS - Sistema Prótese Capilar"
+echo "  Configuracao Inicial da VPS - Barbearia Premium"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 
@@ -67,35 +67,34 @@ echo "[6/10] Instalando PM2..."
 npm install -g pm2
 check_status "PM2 instalado"
 
-# 7. Instalar PostgreSQL
-echo "[7/10] Instalando PostgreSQL 15..."
-dnf install -y -q https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-dnf install -y -q postgresql15-server postgresql15
-postgresql-15-setup initdb
-systemctl start postgresql-15
-systemctl enable postgresql-15
-check_status "PostgreSQL instalado e iniciado"
-
-# 8. Instalar Nginx
-echo "[8/10] Instalando Nginx..."
+# 7. Instalar Nginx
+echo "[7/10] Instalando Nginx..."
 dnf install -y -q nginx
 systemctl start nginx
 systemctl enable nginx
 check_status "Nginx instalado e iniciado"
 
-# 9. Instalar Certbot
-echo "[9/10] Instalando Certbot (SSL)..."
+# 8. Instalar Certbot
+echo "[8/10] Instalando Certbot (SSL)..."
 dnf install -y -q certbot python3-certbot-nginx
 check_status "Certbot instalado"
 
-# 10. Criar Estrutura de Diretórios
-echo "[10/10] Criando estrutura de diretórios..."
+# 9. Criar Estrutura de Diretórios
+echo "[9/10] Criando estrutura de diretorios..."
 mkdir -p /var/www/{site-publico,painel-cliente,painel-admin}
-mkdir -p /home/desenvolvedor/app/{backend,frontend}
-mkdir -p /home/desenvolvedor/app/backend/logs
-chown -R desenvolvedor:desenvolvedor /home/desenvolvedor/app
-chown -R desenvolvedor:nginx /var/www
+mkdir -p /Projetos/Barbearia_Premium/{backend,frontend,scripts,docs}
+mkdir -p /Projetos/Barbearia_Premium/backend/{logs,uploads/fotos,uploads/help-desk,uploads/servicos}
+chown -R root:root /Projetos/Barbearia_Premium
+chown -R root:nginx /var/www
 check_status "Estrutura de diretórios criada"
+
+# 10. Confirmacao de versoes
+echo "[10/10] Validando stack..."
+node --version
+npm --version
+pm2 --version
+nginx -v
+check_status "Stack validada"
 
 echo ""
 echo "═══════════════════════════════════════════════════════════════"
@@ -103,10 +102,11 @@ echo -e "${GREEN}Configuração inicial concluída com sucesso!${NC}"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 echo "Próximos passos:"
-echo "1. Configurar PostgreSQL (senhas e banco de dados)"
-echo "2. Configurar Nginx (domínios)"
-echo "3. Configurar SSL (Certbot)"
-echo "4. Configurar usuário e chaves SSH"
+echo "1. Enviar projeto para /Projetos/Barbearia_Premium"
+echo "2. Configurar variaveis Oracle no .env da API"
+echo "3. Configurar Nginx (dominios)"
+echo "4. Configurar SSL (Certbot)"
+echo "5. Configurar usuario e chaves SSH"
 echo ""
 echo "Consulte: docs/deploy/CONFIGURACAO_VPS.md"
 

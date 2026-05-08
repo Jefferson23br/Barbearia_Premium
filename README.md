@@ -1,4 +1,4 @@
-# 💈 Sistema Barbearia Premium - Prótese Capilar Cuiabá
+# 💈 Sistema Barbearia Premium
 
 <div align="center">
 
@@ -25,7 +25,7 @@
 
 ## 🎯 Sobre o Projeto
 
-Olá! Este é o **Sistema Barbearia Premium**, uma solução completa de gestão desenvolvida especificamente para a Prótese Capilar Cuiabá. Desenvolvi este sistema do zero pensando em facilitar o gerenciamento de clientes, funcionários, serviços, agendamentos e todo o fluxo operacional da barbearia.
+Olá! Este é o **Sistema Barbearia Premium**, uma solução completa de gestão para operação de barbearias com foco em escalabilidade e modelo multi-filial.
 
 O sistema foi construído com tecnologias modernas e está **100% em produção**, atendendo diariamente as necessidades da barbearia. Atualmente, temos três aplicações principais rodando:
 
@@ -85,7 +85,7 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 **Infraestrutura:**
 - **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger) - API, Backend e Banco de dados PostgreSQL
 - **Frontend**: VPS 45.132.157.28 (Hostinger - conta diferente com domínio liberado) - Aplicações frontend
-- **Banco de Dados**: PostgreSQL 15+ (Schema: `protese`, Database: `protese_capilar`, User: `protese_user`)
+- **Banco de Dados**: PostgreSQL 15+ (ambiente em migração de legado para estrutura v2 multi-filial)
 
 </div>
 
@@ -237,16 +237,16 @@ npm run dev
 
 | Aplicação | URL | Status |
 |-----------|-----|--------|
-| **Painel Admin** | https://admin.protesecapilarcuiaba.com.br | ✅ Produção |
-| **Painel Cliente** | https://app.protesecapilarcuiaba.com.br | ✅ Produção |
-| **Site Público** | https://www.protesecapilarcuiaba.com.br | 🔄 Desenvolvimento |
-| **API Backend** | https://api.protesecapilarcuiaba.com.br | ✅ Produção |
+| **Painel Admin** | https://appbarber.auctusconsultoria.com.br/admin | ✅ Produção |
+| **Painel Cliente** | https://appbarber.auctusconsultoria.com.br | ✅ Produção |
+| **Site Público** | https://appbarber.auctusconsultoria.com.br | 🔄 Desenvolvimento |
+| **API Backend** | https://api6.actusconsultoria.com.br | ✅ Produção |
 
 **Configuração:**
-- **API_BASE_URL**: https://api.protesecapilarcuiaba.com.br
-- **CORS_ORIGINS**: https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
-- **DB_NAME**: protese_capilar
-- **DB_USER**: protese_user
+- **API_BASE_URL**: https://api6.actusconsultoria.com.br
+- **CORS_ORIGINS**: https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+- **DB_NAME**: definir conforme ambiente (legado/v2)
+- **DB_USER**: definir conforme ambiente
 - **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger)
 - **Frontend**: VPS 45.132.157.28 (Hostinger - conta diferente)
 
@@ -307,7 +307,7 @@ npm run dev
 
 ## 🗄️ Banco de Dados
 
-### Schema: `protese` (em uso)
+### Banco em transição (legado + v2)
 
 **Tabelas principais:**
 - `usuarios_administrativos` - Administradores/Funcionários
@@ -395,12 +395,12 @@ NODE_ENV=production
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=protese_capilar
-DB_USER=protese_user
+DB_NAME=barbearia_premium
+DB_USER=barbearia_user
 DB_PASSWORD=senha_segura
 
-API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+API_BASE_URL=https://api6.actusconsultoria.com.br
+CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 ---
@@ -469,19 +469,19 @@ Todas as decisões técnicas foram tomadas considerando:
 
 ## 📄 Licença
 
-Este é um projeto privado desenvolvido para uso comercial da Prótese Capilar Cuiabá.
+Este é um projeto privado desenvolvido para uso comercial da Barbearia Premium.
 
 ---
 
 <div align="center">
 
-**Desenvolvido com ❤️ para Prótese Capilar Cuiabá**
+**Desenvolvido com ❤️ para Barbearia Premium**
 
 *Sistema em desenvolvimento ativo* 🚀
 
 **Última Atualização**: 21 de Dezembro de 2025  
 **Versão**: 2.0.0  
-**Desenvolvido para**: Prótese Capilar Cuiabá  
+**Desenvolvido para**: Barbearia Premium  
 **Status**: ✅ Em Produção e Funcionando
 
 </div>

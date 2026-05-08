@@ -7,11 +7,11 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 ## 🚀 Status
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://api.protesecapilarcuiaba.com.br  
+**URL**: https://api6.actusconsultoria.com.br  
 **Porta**: 3001  
 **VPS**: 82.25.65.201 (Hostinger)  
 **Última Atualização**: 21 de Dezembro de 2025  
-**Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)
+**Banco de Dados**: PostgreSQL 15+ (ambiente em migração legado + v2 multi-filial)
 
 ---
 
@@ -109,12 +109,12 @@ NODE_ENV=production
 
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=protese_capilar
-DB_USER=protese_user
+DB_NAME=barbearia_premium
+DB_USER=barbearia_user
 DB_PASSWORD=sua_senha_segura
 
-API_BASE_URL=https://api.protesecapilarcuiaba.com.br
-CORS_ORIGINS=https://www.protesecapilarcuiaba.com.br,https://app.protesecapilarcuiaba.com.br,https://admin.protesecapilarcuiaba.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
+API_BASE_URL=https://api6.actusconsultoria.com.br
+CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
 ---
@@ -132,194 +132,26 @@ node server.js
 ### Produção (PM2)
 
 ```bash
-pm2 start server.js --name api-protese-capilar
+pm2 start server.js --name api-barbearia-premium
 pm2 save
 ```
 
 ---
 
-## 📡 Endpoints Implementados
+## 📡 Endpoints e Versionamento
 
-Desenvolvi uma API REST completa com os seguintes endpoints:
+O backend está em migração gradual para a API v2 multi-filial.
 
-### 🔐 Autenticação
-- `POST /api/v1/auth/login` - Login de cliente
-- `POST /api/v1/auth/admin/login` - Login de administrador
+### ✅ API v2 (ativo)
+- `POST /api/v2/auth/login`
+- `GET /api/v2/filiais/publicas`
+- `GET /api/v2/filiais/slug/:slug`
+- `POST /api/v2/clientes/publico/cadastro/:slugFilial`
+- `GET /api/v2/clientes`
 
-### 👥 Funcionários
-- `GET /api/v1/funcionarios` - Listar funcionários (com filtro de Master)
-- `POST /api/v1/funcionarios` - Criar funcionário
-- `GET /api/v1/funcionarios/:id` - Buscar funcionário específico
-- `PUT /api/v1/funcionarios/:id` - Atualizar funcionário
-- `DELETE /api/v1/funcionarios/:id` - Excluir funcionário (proteção Master)
-
-### 👤 Clientes
-- `GET /api/v1/clientes` - Listar clientes (com funcionário responsável)
-- `POST /api/v1/clientes` - Criar cliente
-- `GET /api/v1/clientes/:id` - Buscar cliente específico
-- `PUT /api/v1/clientes/:id` - Atualizar cliente
-- `DELETE /api/v1/clientes/:id` - Excluir cliente
-
-### 🔐 Permissões
-- `GET /api/v1/permissoes/:usuarioId` - Buscar permissões do usuário
-- `PUT /api/v1/permissoes/:usuarioId` - Atualizar permissões
-
-### 📊 Controle de Acessos
-- `GET /api/v1/controle-acessos` - Listar acessos (com filtros avançados)
-- `GET /api/v1/controle-acessos/estatisticas` - Estatísticas de acesso
-
-### 📋 Logs do Sistema
-- `GET /api/v1/logs` - Listar logs (com filtros avançados)
-- `GET /api/v1/logs/estatisticas` - Estatísticas de logs
-- `GET /api/v1/logs/:id` - Buscar log específico
-
-### 🛍️ Serviços
-- `GET /api/v1/servicos` - Listar serviços (com filtros)
-- `POST /api/v1/servicos` - Criar serviço
-- `GET /api/v1/servicos/:id` - Buscar serviço específico
-- `PUT /api/v1/servicos/:id` - Atualizar serviço
-- `DELETE /api/v1/servicos/:id` - Excluir serviço
-
-### 📦 Produtos
-- `GET /api/v1/produtos` - Listar produtos (com busca e filtros)
-- `POST /api/v1/produtos` - Criar produto
-- `GET /api/v1/produtos/:id` - Buscar produto específico
-- `PUT /api/v1/produtos/:id` - Atualizar produto
-- `DELETE /api/v1/produtos/:id` - Excluir produto
-- `POST /api/v1/produtos/:id/preco-custo` - Lançar preço de custo
-- `GET /api/v1/produtos/:id/precos-custo` - Histórico de preços de custo
-
-### 📊 Estoque
-- `GET /api/v1/estoque/produtos` - Listar produtos com estoque atual
-- `GET /api/v1/estoque/movimentacoes` - Listar movimentações de estoque
-- `GET /api/v1/estoque/movimentacoes/:id` - Buscar movimentação específica
-- `POST /api/v1/estoque/entrada` - Lançar entrada de estoque
-- `DELETE /api/v1/estoque/movimentacoes/:id` - Excluir movimentação
-
-### 💰 Caixas
-- `GET /api/v1/caixas/contas` - Listar todas as contas
-- `GET /api/v1/caixas/contas/:id` - Buscar conta específica
-- `POST /api/v1/caixas/contas` - Criar nova conta
-- `PUT /api/v1/caixas/contas/:id` - Atualizar conta
-- `DELETE /api/v1/caixas/contas/:id` - Excluir conta
-- `GET /api/v1/caixas/movimentacoes` - Listar movimentações
-- `POST /api/v1/caixas/movimentacoes/entrada` - Criar entrada manual
-- `POST /api/v1/caixas/movimentacoes/saida` - Criar saída manual
-- `POST /api/v1/caixas/movimentacoes/transferencia` - Criar transferência entre contas
-- `DELETE /api/v1/caixas/movimentacoes/:id` - Excluir movimentação
-
-### 🛒 Vendas
-- `GET /api/v1/vendas/agendamentos` - Buscar agendamentos do dia (apenas status "agendado")
-- `GET /api/v1/vendas` - Listar todas as vendas
-- `GET /api/v1/vendas/:id` - Buscar venda específica
-- `POST /api/v1/vendas` - Criar nova venda (gera receitas e movimentações automaticamente)
-- `DELETE /api/v1/vendas/:id` - Excluir venda (reverte receitas e movimentações)
-
-### 💵 Receitas
-- `GET /api/v1/receitas` - Listar receitas (com filtros avançados)
-- `GET /api/v1/receitas/:id` - Buscar receita específica
-- `POST /api/v1/receitas/efetivar-pagamento` - Efetivar pagamento (individual ou em lote)
-- `PUT /api/v1/receitas/:id` - Atualizar receita
-- `DELETE /api/v1/receitas/:id` - Excluir receita (apenas se não paga)
-
-### 💸 Despesas
-- `GET /api/v1/despesas` - Listar despesas (com filtros avançados)
-- `GET /api/v1/despesas/:id` - Buscar despesa específica
-- `POST /api/v1/despesas` - Criar nova despesa
-- `PUT /api/v1/despesas/:id` - Atualizar despesa
-- `DELETE /api/v1/despesas/:id` - Excluir despesa
-- `POST /api/v1/despesas/efetivar-pagamento` - Efetivar pagamento (individual ou em lote)
-- `PUT /api/v1/despesas/modificar-pagamento/:parcela_id` - Modificar pagamento já efetivado
-
-### 📊 Faturamento
-- `GET /api/v1/faturamento/movimentacoes` - Listar todas as movimentações (vendas, despesas, estoque)
-- `GET /api/v1/faturamento/venda/:id` - Buscar venda específica para edição
-- `PUT /api/v1/faturamento/venda/:id` - Editar venda
-- `DELETE /api/v1/faturamento/venda/:id` - Excluir venda
-- `GET /api/v1/faturamento/despesa/:id` - Buscar despesa específica para edição
-- `PUT /api/v1/faturamento/despesa/:id` - Editar despesa
-- `DELETE /api/v1/faturamento/despesa/:id` - Excluir despesa
-- `GET /api/v1/faturamento/estoque/:id` - Buscar movimentação de estoque específica para edição
-- `PUT /api/v1/faturamento/estoque/:id` - Editar movimentação de estoque
-- `DELETE /api/v1/faturamento/estoque/:id` - Excluir movimentação de estoque
-- `POST /api/v1/faturamento/romaneios` - Criar novo romaneio
-- `GET /api/v1/faturamento/romaneios` - Listar todos os romaneios
-- `GET /api/v1/faturamento/romaneios/:id` - Buscar romaneio específico com detalhes
-
-### ⚙️ Configurações
-- `GET /api/v1/configuracoes` - Buscar configurações do sistema
-- `PUT /api/v1/configuracoes` - Atualizar configurações
-
-### 🔌 Integrações
-- `GET /api/v1/integracoes` - Listar todas as integrações
-- `GET /api/v1/integracoes/:tipo` - Buscar integração específica
-- `POST /api/v1/integracoes` - Criar nova integração
-- `PUT /api/v1/integracoes/:tipo` - Atualizar integração
-- `PUT /api/v1/integracoes/:tipo/funcionalidade/:funcionalidade` - Habilitar/desabilitar funcionalidade
-
-### 📝 DocSales (Assinatura de Contratos)
-- `POST /api/v1/docsales/documentos` - Enviar documento para assinatura
-- `GET /api/v1/docsales/documentos/:id` - Consultar status do documento
-- `POST /api/v1/docsales/documentos/:id/cancelar` - Cancelar documento
-- `GET /api/v1/docsales/documentos` - Listar documentos
-- `GET /api/v1/docsales/documentos/:id/download` - Baixar documento assinado
-- `POST /api/v1/docsales/webhook` - Receber notificações de webhook
-
-### 🎫 Help Desk
-- `GET /api/v1/help-desk/chamados` - Listar chamados
-- `POST /api/v1/help-desk/chamados` - Criar chamado
-- `GET /api/v1/help-desk/chamados/:id` - Buscar chamado
-- `PUT /api/v1/help-desk/chamados/:id` - Atualizar chamado
-- `POST /api/v1/help-desk/chamados/:id/respostas` - Adicionar resposta
-- `GET /api/v1/help-desk/funcionarios` - Listar funcionários para responsável
-
-### 📅 Agendamentos
-- `GET /api/v1/agendamentos` - Listar agendamentos (com filtros)
-- `POST /api/v1/agendamentos` - Criar agendamento
-- `GET /api/v1/agendamentos/:id` - Buscar agendamento específico
-- `PUT /api/v1/agendamentos/:id` - Atualizar agendamento
-- `DELETE /api/v1/agendamentos/:id` - Excluir agendamento
-- `GET /api/v1/agendamentos/disponibilidades` - Buscar horários disponíveis
-- `GET /api/v1/agendamentos/horarios-funcionamento` - Buscar horários de funcionamento
-- `GET /api/v1/agendamentos/recursos-especiais` - Buscar/criar cliente Sistema e serviços especiais
-
-### 🗓️ Fechamentos Especiais
-- `GET /api/v1/fechamentos-especiais` - Listar fechamentos especiais
-- `POST /api/v1/fechamentos-especiais` - Criar fechamento especial
-- `GET /api/v1/fechamentos-especiais/verificar/:data` - Verificar se data é fechamento
-- `PUT /api/v1/fechamentos-especiais/:id` - Atualizar fechamento especial
-- `DELETE /api/v1/fechamentos-especiais/:id` - Excluir fechamento especial
-
-### 🎫 Cupons e Fidelidades
-- `GET /api/v1/cupons-fidelidades/cupons` - Listar cupons
-- `POST /api/v1/cupons-fidelidades/cupons` - Criar cupom
-- `GET /api/v1/cupons-fidelidades/cupons/:id` - Buscar cupom específico
-- `PUT /api/v1/cupons-fidelidades/cupons/:id` - Atualizar cupom
-- `DELETE /api/v1/cupons-fidelidades/cupons/:id` - Excluir cupom
-- `GET /api/v1/cupons-fidelidades/cupons/validar/:codigo` - Validar cupom
-- `POST /api/v1/cupons-fidelidades/cupons/usar` - Registrar uso de cupom
-- `GET /api/v1/cupons-fidelidades/fidelidades` - Listar fidelidades
-- `GET /api/v1/cupons-fidelidades/fidelidades/cliente/:clienteId` - Fidelidades de um cliente
-- `POST /api/v1/cupons-fidelidades/fidelidades/atualizar` - Atualizar fidelidade
-
-### 👥 CRM (Customer Relationship Management)
-- `GET /api/v1/crm/buscar-clientes` - Buscar clientes por nome ou email
-- `GET /api/v1/crm/cliente/:id/dados` - Buscar dados completos do cliente (agendamentos, vendas, receitas, relacionamentos)
-- `GET /api/v1/crm/cliente/:id/relacionamentos` - Listar relacionamentos do cliente
-- `POST /api/v1/crm/cliente/:id/relacionamentos` - Criar relacionamento
-- `PUT /api/v1/crm/cliente/:id/relacionamentos/:relacionamento_id` - Atualizar relacionamento
-- `DELETE /api/v1/crm/cliente/:id/relacionamentos/:relacionamento_id` - Excluir relacionamento
-- `GET /api/v1/crm/cliente/:id/assinaturas` - Buscar assinaturas ativas do cliente
-
-### 📋 Assinaturas
-- `GET /api/v1/assinaturas` - Listar assinaturas (com serviços e produtos)
-- `GET /api/v1/assinaturas/:id` - Buscar assinatura específica
-- `POST /api/v1/assinaturas` - Criar assinatura
-- `PUT /api/v1/assinaturas/:id` - Atualizar assinatura
-- `DELETE /api/v1/assinaturas/:id` - Excluir assinatura
-
-### 📂 Módulos do Menu
-- `GET /api/v1/modulos` - Listar módulos com seus itens ordenados
+### ⚠️ API v1 (legado)
+- Rotas `/api/v1/*` permanecem temporariamente disponíveis durante a migração.
+- Novas integrações devem priorizar `/api/v2`.
 
 ### 🏥 Health Check
 - `GET /health` - Status da API
@@ -329,7 +161,7 @@ Desenvolvi uma API REST completa com os seguintes endpoints:
 
 ## 🗄️ Banco de Dados
 
-### Schema: `protese`
+### Estrutura de banco
 
 Implementei as seguintes tabelas principais:
 
@@ -493,10 +325,10 @@ curl http://localhost:3001/health
 ### Verificar logs
 ```bash
 # Logs do PM2
-pm2 logs api-protese-capilar --lines 50
+pm2 logs api-barbearia-premium --lines 50
 
 # Logs do servidor
-tail -f /var/log/nodejs/api-protese-capilar.log
+tail -f /var/log/nodejs/api-barbearia-premium.log
 ```
 
 ---
@@ -513,19 +345,19 @@ tail -f /var/log/nodejs/api-protese-capilar.log
 **Comandos úteis que uso:**
 ```bash
 # Reiniciar API
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 
 # Ver status
 pm2 status
 
 # Ver logs
-pm2 logs api-protese-capilar
+pm2 logs api-barbearia-premium
 
 # Parar API
-pm2 stop api-protese-capilar
+pm2 stop api-barbearia-premium
 
 # Iniciar API
-pm2 start api-protese-capilar
+pm2 start api-barbearia-premium
 ```
 
 ### Atualizar código no servidor
@@ -537,7 +369,7 @@ git pull  # se usando git
 # ou fazer upload via SCP
 
 # Reiniciar
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 ```
 
 ---
@@ -571,4 +403,4 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 **Status**: ✅ Em Produção  
 **Versão**: 2.0.0  
 **VPS**: 82.25.65.201 (Hostinger)  
-**Banco de Dados**: PostgreSQL 15+ (protese_capilar, protese_user)
+**Banco de Dados**: PostgreSQL 15+ (ambiente em migração legado + v2)

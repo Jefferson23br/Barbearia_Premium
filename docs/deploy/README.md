@@ -1,4 +1,4 @@
-# 🚀 Deploy - Sistema Prótese Capilar
+# 🚀 Deploy - Sistema Barbearia Premium
 
 Documentação completa para deploy do sistema em produção.
 
@@ -23,7 +23,7 @@ Documentação completa para deploy do sistema em produção.
 - **Sistema**: AlmaLinux 9
 - **Painel**: CyberPanel
 - **Serviços**:
-  - PostgreSQL (DB_NAME: protese_capilar, DB_USER: protese_user)
+  - PostgreSQL (configuração conforme ambiente de produção)
   - API Backend (Node.js + Express)
   - Nginx (proxy reverso)
 - **Conta**: Hostinger (conta principal)
@@ -41,10 +41,10 @@ Documentação completa para deploy do sistema em produção.
 
 ## 🌐 URLs de Produção
 
-- **Painel Admin**: https://admin.protesecapilarcuiaba.com.br
-- **Painel Cliente**: https://app.protesecapilarcuiaba.com.br
-- **Site Público**: https://www.protesecapilarcuiaba.com.br
-- **API Backend**: https://api.protesecapilarcuiaba.com.br
+- **Painel Admin**: https://appbarber.auctusconsultoria.com.br/admin
+- **Painel Cliente**: https://appbarber.auctusconsultoria.com.br
+- **Site Público**: https://appbarber.auctusconsultoria.com.br
+- **API Backend**: https://api6.actusconsultoria.com.br
 
 ---
 
@@ -66,8 +66,8 @@ ssh root@45.132.157.28
 
 **Backend:**
 ```bash
-pm2 restart api-protese-capilar
-pm2 logs api-protese-capilar
+pm2 restart api-barbearia-premium
+pm2 logs api-barbearia-premium
 ```
 
 **Frontend:**

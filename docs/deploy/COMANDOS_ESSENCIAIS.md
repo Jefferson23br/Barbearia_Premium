@@ -25,14 +25,14 @@ scp root@82.25.65.201:/caminho/arquivo.txt .\local\
 
 ```bash
 # Conectar no banco
-psql -h localhost -U protese_user -d protese_capilar
+psql -h localhost -U barbearia_user -d barbearia_premium
 
 # Conectar como postgres
 sudo -u postgres psql
 
 # Comandos SQL úteis
 \l                    # Listar bancos
-\c protese_capilar    # Conectar em banco
+\c barbearia_premium    # Conectar em banco
 \dt                   # Listar tabelas
 \d nome_tabela        # Descrever tabela
 \q                    # Sair
@@ -73,19 +73,19 @@ pm2 status
 pm2 logs
 
 # Ver logs de app específico
-pm2 logs api-protese-capilar
+pm2 logs api-barbearia-premium
 
 # Reiniciar app
-pm2 restart api-protese-capilar
+pm2 restart api-barbearia-premium
 
 # Parar app
-pm2 stop api-protese-capilar
+pm2 stop api-barbearia-premium
 
 # Iniciar app
-pm2 start api-protese-capilar
+pm2 start api-barbearia-premium
 
 # Deletar app
-pm2 delete api-protese-capilar
+pm2 delete api-barbearia-premium
 
 # Salvar configuração
 pm2 save
@@ -186,10 +186,10 @@ sudo systemctl status nginx postgresql-15 firewalld fail2ban
 
 ```bash
 # Backup do banco de dados
-pg_dump -h localhost -U protese_user protese_capilar > backup_$(date +%Y%m%d).sql
+pg_dump -h localhost -U barbearia_user barbearia_premium > backup_$(date +%Y%m%d).sql
 
 # Restaurar banco
-psql -h localhost -U protese_user protese_capilar < backup_20250101.sql
+psql -h localhost -U barbearia_user barbearia_premium < backup_20250101.sql
 ```
 
 ---
@@ -197,20 +197,6 @@ psql -h localhost -U protese_user protese_capilar < backup_20250101.sql
 *Comandos prontos para copiar e colar!* ⚡
 
 
-#Senhas 
+## 🔒 Segurança
 
-═══════════════════════════════════════════════════════════
-   HASHS GERADOS COM SUCESSO!
-═══════════════════════════════════════════════════════════
-
-📌 MASTER (Jefferson Lima)
-   Senha: 010216Dp@
-   Hash:  $2b$10$jD2/mZmxaR9yVXU4O0Qq7OfvlWfIXkApmZQGmtGKQo70YV2UIsZFW
-
-📌 PROPRIETÁRIO (Carlos Silva)
-   Senha: Proprietario@2025
-   Hash:  $2b$10$jZd42Cxc6ANp9qphZgm2BeRdsBpJrDhvetr.ajzwsx6xu592sQaaG
-
-📌 FUNCIONÁRIO (Maria Santos)
-   Senha: Funcionario@2025
-   Hash:  $2b$10$SPoh1pzy2KLFolXWOVIp2OZMhoKnWsov2DYp0fKvDh4lnb8B2GaTG
+Nunca versionar senhas, hashes de credenciais, tokens e chaves privadas em arquivos `.md` ou no repositório.
