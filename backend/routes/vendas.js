@@ -19,7 +19,7 @@ router.get('/cliente/:id/servicos-produtos-disponiveis', async (req, res) => {
         ac.quantidade_servicos_restantes,
         ac.quantidade_produtos_restantes,
         ac.data_expiracao
-       FROM protese.assinaturas_clientes ac
+       FROM assinaturas_clientes ac
        WHERE ac.cliente_id = $1 
          AND ac.status = 'ativa'
          AND (ac.data_expiracao IS NULL OR ac.data_expiracao >= $2)
@@ -54,7 +54,7 @@ router.get('/cliente/:id/servicos-produtos-disponiveis', async (req, res) => {
     const servicosDetalhes = [];
     for (const [servicoId, quantidade] of Object.entries(servicosDisponiveis)) {
       const servicoInfo = await pool.query(
-        'SELECT id, nome, preco FROM protese.servicos WHERE id = $1',
+        'SELECT id, nome, preco FROM servicos WHERE id = $1',
         [servicoId]
       );
       if (servicoInfo.rows.length > 0) {
@@ -71,7 +71,7 @@ router.get('/cliente/:id/servicos-produtos-disponiveis', async (req, res) => {
     const produtosDetalhes = [];
     for (const [produtoId, quantidade] of Object.entries(produtosDisponiveis)) {
       const produtoInfo = await pool.query(
-        'SELECT id, descricao, codigo, preco_venda FROM protese.produtos WHERE id = $1',
+        'SELECT id, descricao, codigo, preco_venda FROM produtos WHERE id = $1',
         [produtoId]
       );
       if (produtoInfo.rows.length > 0) {
@@ -126,8 +126,8 @@ async function verificarEAbaterDeAssinatura(client, clienteId, servicoId, produt
       ac.quantidade_produtos_restantes,
       ac.data_expiracao,
       a.validade_em_dias
-     FROM protese.assinaturas_clientes ac
-     INNER JOIN protese.assinaturas a ON ac.assinatura_id = a.id
+     FROM assinaturas_clientes ac
+     INNER JOIN assinaturas a ON ac.assinatura_id = a.id
      WHERE ac.cliente_id = $1 
        AND ac.status = 'ativa'
        AND (ac.data_expiracao IS NULL OR ac.data_expiracao >= $2)
@@ -174,7 +174,7 @@ async function verificarEAbaterDeAssinatura(client, clienteId, servicoId, produt
 
         // Atualizar assinatura
         await client.query(
-          `UPDATE protese.assinaturas_clientes 
+          `UPDATE assinaturas_clientes 
            SET quantidade_servicos_restantes = $1,
                status = CASE WHEN $2 = false AND $3 = false THEN 'consumida' ELSE status END,
                updated_at = CURRENT_TIMESTAMP
@@ -225,7 +225,7 @@ async function verificarEAbaterDeAssinatura(client, clienteId, servicoId, produt
 
         // Atualizar assinatura
         await client.query(
-          `UPDATE protese.assinaturas_clientes 
+          `UPDATE assinaturas_clientes 
            SET quantidade_produtos_restantes = $1,
                status = CASE WHEN $2 = false AND $3 = false THEN 'consumida' ELSE status END,
                updated_at = CURRENT_TIMESTAMP
@@ -259,7 +259,7 @@ async function validarEAplicarCupom(client, cupomCodigo, clienteId, valorServico
   }
 
   const cupomResult = await client.query(
-    `SELECT * FROM protese.cupons 
+    `SELECT * FROM cupons 
      WHERE codigo = $1 
        AND is_active = true
        AND (validade_inicio IS NULL OR validade_inicio <= CURRENT_DATE)
@@ -276,7 +276,7 @@ async function validarEAplicarCupom(client, cupomCodigo, clienteId, valorServico
   // Verificar limite de usos
   if (cupom.regra_uso === 'limitado') {
     const usosResult = await client.query(
-      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1',
+      'SELECT COUNT(*) as total FROM cupons_usados WHERE cupom_id = $1',
       [cupom.id]
     );
     const totalUsos = parseInt(usosResult.rows[0].total);
@@ -288,7 +288,7 @@ async function validarEAplicarCupom(client, cupomCodigo, clienteId, valorServico
   // Verificar se cliente já usou (se aplicável)
   if (cupom.regra_uso === 'uma_vez_por_cliente' && clienteId) {
     const usoClienteResult = await client.query(
-      'SELECT COUNT(*) as total FROM protese.cupons_usados WHERE cupom_id = $1 AND cliente_id = $2',
+      'SELECT COUNT(*) as total FROM cupons_usados WHERE cupom_id = $1 AND cliente_id = $2',
       [cupom.id, clienteId]
     );
     if (parseInt(usoClienteResult.rows[0].total) > 0) {
@@ -345,9 +345,9 @@ router.get('/agendamentos', async (req, res) => {
         a.hora_fim,
         s.preco as valor_servico,
         a.status
-       FROM protese.agendamentos a
-       INNER JOIN protese.usuarios_clientes c ON a.cliente_id = c.id
-       INNER JOIN protese.servicos s ON a.servico_id = s.id
+       FROM agendamentos a
+       INNER JOIN usuarios_clientes c ON a.cliente_id = c.id
+       INNER JOIN servicos s ON a.servico_id = s.id
        WHERE a.data_agendamento = $1 
          AND a.funcionario_id = $2
          AND a.status = 'agendado'
@@ -374,7 +374,7 @@ router.get('/', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT vendas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT vendas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -390,10 +390,10 @@ router.get('/', async (req, res) => {
         c.nome_completo as cliente_nome,
         f.nome_completo as funcionario_nome,
         ca.nome as caixa_nome
-      FROM protese.vendas v
-      LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-      LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-      LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+      FROM vendas v
+      LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+      LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+      LEFT JOIN contas ca ON v.caixa_id = ca.id
       WHERE 1=1
     `;
     const params = [];
@@ -437,24 +437,24 @@ router.get('/', async (req, res) => {
     const vendasComDetalhes = await Promise.all(result.rows.map(async (venda) => {
       const servicosResult = await pool.query(
         `SELECT vs.*, s.nome as servico_nome 
-         FROM protese.vendas_servicos vs
-         INNER JOIN protese.servicos s ON vs.servico_id = s.id
+         FROM vendas_servicos vs
+         INNER JOIN servicos s ON vs.servico_id = s.id
          WHERE vs.venda_id = $1`,
         [venda.id]
       );
 
       const produtosResult = await pool.query(
         `SELECT vp.*, p.descricao as produto_descricao, p.codigo as produto_codigo
-         FROM protese.vendas_produtos vp
-         INNER JOIN protese.produtos p ON vp.produto_id = p.id
+         FROM vendas_produtos vp
+         INNER JOIN produtos p ON vp.produto_id = p.id
          WHERE vp.venda_id = $1`,
         [venda.id]
       );
 
       const assinaturasResult = await pool.query(
         `SELECT va.*, a.nome as assinatura_nome
-         FROM protese.vendas_assinaturas va
-         INNER JOIN protese.assinaturas a ON va.assinatura_id = a.id
+         FROM vendas_assinaturas va
+         INNER JOIN assinaturas a ON va.assinatura_id = a.id
          WHERE va.venda_id = $1`,
         [venda.id]
       );
@@ -486,7 +486,7 @@ router.get('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await pool.query(
-        'SELECT vendas_ver FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT vendas_ver FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -501,10 +501,10 @@ router.get('/:id', async (req, res) => {
         c.nome_completo as cliente_nome,
         f.nome_completo as funcionario_nome,
         ca.nome as caixa_nome
-       FROM protese.vendas v
-       LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-       LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-       LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+       FROM vendas v
+       LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+       LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+       LEFT JOIN contas ca ON v.caixa_id = ca.id
        WHERE v.id = $1`,
       [req.params.id]
     );
@@ -518,8 +518,8 @@ router.get('/:id', async (req, res) => {
     // Buscar serviços
     const servicosResult = await pool.query(
       `SELECT vs.*, s.nome as servico_nome 
-       FROM protese.vendas_servicos vs
-       INNER JOIN protese.servicos s ON vs.servico_id = s.id
+       FROM vendas_servicos vs
+       INNER JOIN servicos s ON vs.servico_id = s.id
        WHERE vs.venda_id = $1`,
       [venda.id]
     );
@@ -527,8 +527,8 @@ router.get('/:id', async (req, res) => {
     // Buscar produtos
     const produtosResult = await pool.query(
       `SELECT vp.*, p.descricao as produto_descricao, p.codigo as produto_codigo
-       FROM protese.vendas_produtos vp
-       INNER JOIN protese.produtos p ON vp.produto_id = p.id
+       FROM vendas_produtos vp
+       INNER JOIN produtos p ON vp.produto_id = p.id
        WHERE vp.venda_id = $1`,
       [venda.id]
     );
@@ -536,8 +536,8 @@ router.get('/:id', async (req, res) => {
     // Buscar assinaturas
     const assinaturasResult = await pool.query(
       `SELECT va.*, a.nome as assinatura_nome
-       FROM protese.vendas_assinaturas va
-       INNER JOIN protese.assinaturas a ON va.assinatura_id = a.id
+       FROM vendas_assinaturas va
+       INNER JOIN assinaturas a ON va.assinatura_id = a.id
        WHERE va.venda_id = $1`,
       [venda.id]
     );
@@ -572,7 +572,7 @@ router.post('/', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT vendas_editar FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT vendas_editar FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -710,7 +710,7 @@ router.post('/', async (req, res) => {
         if (quantidadeRestante > 0) {
           // Verificar estoque
           const estoqueResult = await client.query(
-            'SELECT quantidade_estoque FROM protese.produtos WHERE id = $1',
+            'SELECT quantidade_estoque FROM produtos WHERE id = $1',
             [produtoId]
           );
 
@@ -736,7 +736,7 @@ router.post('/', async (req, res) => {
       // Se não há cliente, verificar estoque e adicionar todos
       for (const produto of produtos) {
         const estoqueResult = await client.query(
-          'SELECT quantidade_estoque FROM protese.produtos WHERE id = $1',
+          'SELECT quantidade_estoque FROM produtos WHERE id = $1',
           [produto.produto_id]
         );
 
@@ -824,12 +824,12 @@ router.post('/', async (req, res) => {
     }
 
     // Gerar ticket
-    const ticketResult = await client.query('SELECT protese.gerar_proximo_ticket_venda() as ticket');
+    const ticketResult = await client.query('SELECT gerar_proximo_ticket_venda() as ticket');
     const ticketBase = ticketResult.rows[0].ticket;
 
     // Inserir venda
     const vendaResult = await client.query(
-      `INSERT INTO protese.vendas 
+      `INSERT INTO vendas 
        (ticket, funcionario_id, cliente_id, data_venda, valor_total, desconto_percentual, 
         desconto_valor, valor_liquido, forma_pagamento, numero_parcelas, caixa_id, cupom_id, observacoes, status, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
@@ -859,7 +859,7 @@ router.post('/', async (req, res) => {
     if (servicosParaVender.length > 0) {
       for (const servico of servicosParaVender) {
         await client.query(
-          `INSERT INTO protese.vendas_servicos (venda_id, servico_id, agendamento_id, valor)
+          `INSERT INTO vendas_servicos (venda_id, servico_id, agendamento_id, valor)
            VALUES ($1, $2, $3, $4)`,
           [venda.id, servico.servico_id, servico.agendamento_id || null, servico.valor]
         );
@@ -867,7 +867,7 @@ router.post('/', async (req, res) => {
         // Se o serviço está vinculado a um agendamento, atualizar status para 'concluido'
         if (servico.agendamento_id) {
           await client.query(
-            `UPDATE protese.agendamentos 
+            `UPDATE agendamentos 
              SET status = 'concluido', updated_at = CURRENT_TIMESTAMP
              WHERE id = $1`,
             [servico.agendamento_id]
@@ -883,14 +883,14 @@ router.post('/', async (req, res) => {
         const valorUnitario = parseFloat(produto.valor_unitario);
 
         await client.query(
-          `INSERT INTO protese.vendas_produtos (venda_id, produto_id, quantidade, valor_unitario, valor_total)
+          `INSERT INTO vendas_produtos (venda_id, produto_id, quantidade, valor_unitario, valor_total)
            VALUES ($1, $2, $3, $4, $5)`,
           [venda.id, produto.produto_id, quantidade, valorUnitario, quantidade * valorUnitario]
         );
 
         // Abater estoque
         await client.query(
-          `UPDATE protese.produtos 
+          `UPDATE produtos 
            SET quantidade_estoque = quantidade_estoque - $1,
                updated_at = CURRENT_TIMESTAMP
            WHERE id = $2`,
@@ -907,7 +907,7 @@ router.post('/', async (req, res) => {
 
         // Verificar se assinatura existe e está ativa
         const assinaturaCheck = await client.query(
-          'SELECT validade_em_dias FROM protese.assinaturas WHERE id = $1 AND is_active = true',
+          'SELECT validade_em_dias FROM assinaturas WHERE id = $1 AND is_active = true',
           [assinaturaId]
         );
         if (assinaturaCheck.rows.length === 0) {
@@ -918,18 +918,18 @@ router.post('/', async (req, res) => {
 
         // Inserir venda_assinatura
         await client.query(
-          `INSERT INTO protese.vendas_assinaturas (venda_id, assinatura_id, valor)
+          `INSERT INTO vendas_assinaturas (venda_id, assinatura_id, valor)
            VALUES ($1, $2, $3)`,
           [venda.id, assinaturaId, valorAssinatura]
         );
 
         // Buscar serviços e produtos da assinatura
         const servicosAssinaturaResult = await client.query(
-          'SELECT servico_id, quantidade FROM protese.assinaturas_servicos WHERE assinatura_id = $1',
+          'SELECT servico_id, quantidade FROM assinaturas_servicos WHERE assinatura_id = $1',
           [assinaturaId]
         );
         const produtosAssinaturaResult = await client.query(
-          'SELECT produto_id, quantidade FROM protese.assinaturas_produtos WHERE assinatura_id = $1',
+          'SELECT produto_id, quantidade FROM assinaturas_produtos WHERE assinatura_id = $1',
           [assinaturaId]
         );
 
@@ -947,11 +947,11 @@ router.post('/', async (req, res) => {
         // Calcular data de expiração
         const dataAquisicao = new Date(data_venda);
         const dataExpiracao = new Date(dataAquisicao);
-        dataExpiracao.setDate(dataExpiracao.getDate() + validadeEmDias);
+        dataExpiracao.setTRUNC(dataExpiracao.getTRUNC() + validadeEmDias);
 
         // Criar registro de assinatura_cliente
         await client.query(
-          `INSERT INTO protese.assinaturas_clientes 
+          `INSERT INTO assinaturas_clientes 
            (assinatura_id, cliente_id, venda_id, quantidade_servicos_restantes, 
             quantidade_produtos_restantes, data_aquisicao, data_expiracao, status)
            VALUES ($1, $2, $3, $4, $5, $6, $7, 'ativa')`,
@@ -971,7 +971,7 @@ router.post('/', async (req, res) => {
     // Registrar uso do cupom se aplicado
     if (cupomId && descontoCupom > 0) {
       await client.query(
-        `INSERT INTO protese.cupons_usados (cupom_id, cliente_id, venda_id, valor_desconto_aplicado, created_by)
+        `INSERT INTO cupons_usados (cupom_id, cliente_id, venda_id, valor_desconto_aplicado, created_by)
          VALUES ($1, $2, $3, $4, $5)`,
         [cupomId, cliente_id || null, venda.id, descontoCupom, usuarioId]
       );
@@ -982,7 +982,7 @@ router.post('/', async (req, res) => {
       if (forma_pagamento === 'dinheiro' || forma_pagamento === 'pix' || forma_pagamento === 'ted' || forma_pagamento.startsWith('cartao_1x')) {
         // Pagamento à vista - criar receita única
         const receitaResult = await client.query(
-          `INSERT INTO protese.receitas 
+          `INSERT INTO receitas 
            (venda_id, cliente_id, ticket_venda, valor_vencimento, valor_pago, data_emissao, data_vencimento, data_pagamento, 
             forma_pagamento, caixa_id, status, created_by)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
@@ -1007,7 +1007,7 @@ router.post('/', async (req, res) => {
 
         // Criar movimentação de caixa automaticamente para pagamento à vista
         const movimentacaoResult = await client.query(
-          `INSERT INTO protese.movimentacoes_caixa 
+          `INSERT INTO movimentacoes_caixa 
            (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
            VALUES ($1, 'entrada', $2, $3, $4, $5, 'receita', $6)
            RETURNING id`,
@@ -1023,7 +1023,7 @@ router.post('/', async (req, res) => {
 
         // Atualizar receita com o ID da movimentação
         await client.query(
-          `UPDATE protese.receitas 
+          `UPDATE receitas 
            SET movimentacao_caixa_id = $1 
            WHERE id = $2`,
           [movimentacaoResult.rows[0].id, receitaId]
@@ -1039,7 +1039,7 @@ router.post('/', async (req, res) => {
           const statusParcela = i === 1 && (forma_pagamento.startsWith('cartao_1x') || forma_pagamento === 'boleto_1x') ? 'paga' : 'pendente';
           
           const receitaParcelaResult = await client.query(
-            `INSERT INTO protese.receitas 
+            `INSERT INTO receitas 
              (venda_id, cliente_id, ticket_venda, valor_vencimento, valor_pago, data_emissao, data_vencimento, data_pagamento, 
               forma_pagamento, caixa_id, status, created_by)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
@@ -1065,7 +1065,7 @@ router.post('/', async (req, res) => {
           // Se a parcela está paga (primeira parcela de cartão 1x ou boleto 1x), criar movimentação de caixa
           if (statusParcela === 'paga') {
             const movimentacaoResult = await client.query(
-              `INSERT INTO protese.movimentacoes_caixa 
+              `INSERT INTO movimentacoes_caixa 
                (conta_id, tipo_movimentacao, valor, descricao, data_movimentacao, referencia_id, referencia_tipo, created_by)
                VALUES ($1, 'entrada', $2, $3, $4, $5, 'receita', $6)
                RETURNING id`,
@@ -1081,7 +1081,7 @@ router.post('/', async (req, res) => {
 
             // Atualizar receita com o ID da movimentação
             await client.query(
-              `UPDATE protese.receitas 
+              `UPDATE receitas 
                SET movimentacao_caixa_id = $1 
                WHERE id = $2`,
               [movimentacaoResult.rows[0].id, receitaParcelaId]
@@ -1115,10 +1115,10 @@ router.post('/', async (req, res) => {
         c.nome_completo as cliente_nome,
         f.nome_completo as funcionario_nome,
         ca.nome as caixa_nome
-       FROM protese.vendas v
-       LEFT JOIN protese.usuarios_clientes c ON v.cliente_id = c.id
-       LEFT JOIN protese.usuarios_administrativos f ON v.funcionario_id = f.id
-       LEFT JOIN protese.contas ca ON v.caixa_id = ca.id
+       FROM vendas v
+       LEFT JOIN usuarios_clientes c ON v.cliente_id = c.id
+       LEFT JOIN usuarios_administrativos f ON v.funcionario_id = f.id
+       LEFT JOIN contas ca ON v.caixa_id = ca.id
        WHERE v.id = $1`,
       [venda.id]
     );
@@ -1126,24 +1126,24 @@ router.post('/', async (req, res) => {
     // Buscar serviços, produtos e assinaturas
     const servicosCompletos = await client.query(
       `SELECT vs.*, s.nome as servico_nome 
-       FROM protese.vendas_servicos vs
-       INNER JOIN protese.servicos s ON vs.servico_id = s.id
+       FROM vendas_servicos vs
+       INNER JOIN servicos s ON vs.servico_id = s.id
        WHERE vs.venda_id = $1`,
       [venda.id]
     );
 
     const produtosCompletos = await client.query(
       `SELECT vp.*, p.descricao as produto_descricao, p.codigo as produto_codigo
-       FROM protese.vendas_produtos vp
-       INNER JOIN protese.produtos p ON vp.produto_id = p.id
+       FROM vendas_produtos vp
+       INNER JOIN produtos p ON vp.produto_id = p.id
        WHERE vp.venda_id = $1`,
       [venda.id]
     );
 
     const assinaturasCompletas = await client.query(
       `SELECT va.*, a.nome as assinatura_nome
-       FROM protese.vendas_assinaturas va
-       INNER JOIN protese.assinaturas a ON va.assinatura_id = a.id
+       FROM vendas_assinaturas va
+       INNER JOIN assinaturas a ON va.assinatura_id = a.id
        WHERE va.venda_id = $1`,
       [venda.id]
     );
@@ -1209,7 +1209,7 @@ router.delete('/:id', async (req, res) => {
     // Verificar permissão
     if (usuarioTipo !== 'master') {
       const permissoesResult = await client.query(
-        'SELECT vendas_excluir FROM protese.permissoes_usuarios WHERE usuario_id = $1',
+        'SELECT vendas_excluir FROM permissoes_usuarios WHERE usuario_id = $1',
         [usuarioId]
       );
 
@@ -1223,7 +1223,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar venda
     const vendaResult = await client.query(
-      'SELECT * FROM protese.vendas WHERE id = $1',
+      'SELECT * FROM vendas WHERE id = $1',
       [vendaId]
     );
 
@@ -1236,14 +1236,14 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar produtos da venda para reverter estoque
     const produtosVenda = await client.query(
-      'SELECT produto_id, quantidade FROM protese.vendas_produtos WHERE venda_id = $1',
+      'SELECT produto_id, quantidade FROM vendas_produtos WHERE venda_id = $1',
       [vendaId]
     );
 
     // Reverter estoque
     for (const produtoVenda of produtosVenda.rows) {
       await client.query(
-        `UPDATE protese.produtos 
+        `UPDATE produtos 
          SET quantidade_estoque = quantidade_estoque + $1,
              updated_at = CURRENT_TIMESTAMP
          WHERE id = $2`,
@@ -1253,7 +1253,7 @@ router.delete('/:id', async (req, res) => {
 
     // Buscar receitas vinculadas para excluir movimentações de caixa
     const receitasVenda = await client.query(
-      'SELECT id, movimentacao_caixa_id FROM protese.receitas WHERE venda_id = $1',
+      'SELECT id, movimentacao_caixa_id FROM receitas WHERE venda_id = $1',
       [vendaId]
     );
 
@@ -1261,7 +1261,7 @@ router.delete('/:id', async (req, res) => {
     for (const receita of receitasVenda.rows) {
       if (receita.movimentacao_caixa_id) {
         await client.query(
-          'DELETE FROM protese.movimentacoes_caixa WHERE id = $1',
+          'DELETE FROM movimentacoes_caixa WHERE id = $1',
           [receita.movimentacao_caixa_id]
         );
       }
@@ -1271,13 +1271,13 @@ router.delete('/:id', async (req, res) => {
     // IMPORTANTE: Isso remove as assinaturas adquiridas pelo cliente nesta venda
     // Quando uma venda de assinatura é excluída, a assinatura do cliente também deve ser excluída
     await client.query(
-      'DELETE FROM protese.assinaturas_clientes WHERE venda_id = $1',
+      'DELETE FROM assinaturas_clientes WHERE venda_id = $1',
       [vendaId]
     );
 
     // Excluir cupons usados vinculados a esta venda
     await client.query(
-      'DELETE FROM protese.cupons_usados WHERE venda_id = $1',
+      'DELETE FROM cupons_usados WHERE venda_id = $1',
       [vendaId]
     );
 
@@ -1286,16 +1286,16 @@ router.delete('/:id', async (req, res) => {
     if (venda.cliente_id) {
       try {
         const relacionamentosCRM = await client.query(
-          `SELECT id FROM protese.crm_relacionamentos 
+          `SELECT id FROM crm_relacionamentos 
            WHERE cliente_id = $1 
-           AND (descricao ILIKE '%' || $2 || '%' OR observacoes ILIKE '%' || $2 || '%')`,
+           AND (descricao LIKE '%' || $2 || '%' OR observacoes LIKE '%' || $2 || '%')`,
           [venda.cliente_id, venda.ticket]
         );
 
         // Excluir relacionamentos encontrados
         for (const relacionamento of relacionamentosCRM.rows) {
           await client.query(
-            'DELETE FROM protese.crm_relacionamentos WHERE id = $1',
+            'DELETE FROM crm_relacionamentos WHERE id = $1',
             [relacionamento.id]
           );
         }
@@ -1307,24 +1307,24 @@ router.delete('/:id', async (req, res) => {
 
     // Excluir notas fiscais vinculadas (se houver)
     const notasFiscais = await client.query(
-      'SELECT id FROM protese.notas_fiscais WHERE venda_id = $1',
+      'SELECT id FROM notas_fiscais WHERE venda_id = $1',
       [vendaId]
     );
     for (const notaFiscal of notasFiscais.rows) {
       await client.query(
-        'DELETE FROM protese.notas_fiscais WHERE id = $1',
+        'DELETE FROM notas_fiscais WHERE id = $1',
         [notaFiscal.id]
       );
     }
 
     // Excluir receitas vinculadas
     await client.query(
-      'DELETE FROM protese.receitas WHERE venda_id = $1',
+      'DELETE FROM receitas WHERE venda_id = $1',
       [vendaId]
     );
 
     // Excluir vendas_assinaturas, vendas_produtos, vendas_servicos (CASCADE vai cuidar disso)
-    await client.query('DELETE FROM protese.vendas WHERE id = $1', [vendaId]);
+    await client.query('DELETE FROM vendas WHERE id = $1', [vendaId]);
 
     await client.query('COMMIT');
 
