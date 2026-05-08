@@ -494,7 +494,7 @@ async function criarIntegracao(tipo, config = null) {
   // Se não foi passada a config, busca do banco de dados
   if (!config) {
     const result = await pool.query(
-      'SELECT * FROM protese.integracoes WHERE tipo_integracao = $1',
+      'SELECT * FROM integracoes WHERE tipo_integracao = $1',
       [tipo]
     );
 
@@ -546,10 +546,10 @@ async function obterConfiguracaoIntegracao(tipo) {
             'habilitado', ih.habilitado
           )
         ) FILTER (WHERE ih.id IS NOT NULL),
-        '[]'::json
+        '[]'
       ) as funcionalidades
-    FROM protese.integracoes i
-    LEFT JOIN protese.integracoes_habilitadas ih ON i.id = ih.integracao_id
+    FROM integracoes i
+    LEFT JOIN integracoes_habilitadas ih ON i.id = ih.integracao_id
     WHERE i.tipo_integracao = $1
     GROUP BY i.id`,
     [tipo]
