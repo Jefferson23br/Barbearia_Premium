@@ -11,7 +11,7 @@ const { registrarLog, getClientIp, getUserAgent } = require('../utils/logger');
 router.get('/', async (req, res) => {
   try {
     const { ativo } = req.query;
-    let query = 'SELECT * FROM protese.fechamentos_especiais';
+    let query = 'SELECT * FROM fechamentos_especiais';
     const params = [];
 
     if (ativo === 'true') {
@@ -51,7 +51,7 @@ router.get('/verificar/:data', async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT * FROM protese.fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
+      'SELECT * FROM fechamentos_especiais WHERE data_fechamento = $1 AND is_active = true',
       [data]
     );
 
@@ -107,7 +107,7 @@ router.post('/', async (req, res) => {
 
     // Verificar se já existe fechamento para esta data
     const existe = await pool.query(
-      'SELECT id FROM protese.fechamentos_especiais WHERE data_fechamento = $1',
+      'SELECT id FROM fechamentos_especiais WHERE data_fechamento = $1',
       [data_fechamento]
     );
 
@@ -119,7 +119,7 @@ router.post('/', async (req, res) => {
 
     // Inserir fechamento
     const result = await pool.query(
-      `INSERT INTO protese.fechamentos_especiais 
+      `INSERT INTO fechamentos_especiais 
        (data_fechamento, descricao, is_active, created_by) 
        VALUES ($1, $2, $3, $4) 
        RETURNING *`,
@@ -175,7 +175,7 @@ router.put('/:id', async (req, res) => {
 
     // Verificar se o fechamento existe
     const existe = await pool.query(
-      'SELECT * FROM protese.fechamentos_especiais WHERE id = $1',
+      'SELECT * FROM fechamentos_especiais WHERE id = $1',
       [id]
     );
 
@@ -201,7 +201,7 @@ router.put('/:id', async (req, res) => {
     // Se a data mudou, verificar se não existe outro fechamento com a nova data
     if (data_fechamento && data_fechamento !== existe.rows[0].data_fechamento) {
       const dataExiste = await pool.query(
-        'SELECT id FROM protese.fechamentos_especiais WHERE data_fechamento = $1 AND id != $2',
+        'SELECT id FROM fechamentos_especiais WHERE data_fechamento = $1 AND id != $2',
         [data_fechamento, id]
       );
 
@@ -215,7 +215,7 @@ router.put('/:id', async (req, res) => {
     // Atualizar fechamento
     const dadosAntigos = existe.rows[0];
     const result = await pool.query(
-      `UPDATE protese.fechamentos_especiais 
+      `UPDATE fechamentos_especiais 
        SET data_fechamento = COALESCE($1, data_fechamento),
            descricao = COALESCE($2, descricao),
            is_active = COALESCE($3, is_active),
@@ -276,7 +276,7 @@ router.delete('/:id', async (req, res) => {
 
     // Verificar se o fechamento existe
     const existe = await pool.query(
-      'SELECT * FROM protese.fechamentos_especiais WHERE id = $1',
+      'SELECT * FROM fechamentos_especiais WHERE id = $1',
       [id]
     );
 
@@ -289,7 +289,7 @@ router.delete('/:id', async (req, res) => {
     const fechamento = existe.rows[0];
 
     // Deletar fechamento
-    await pool.query('DELETE FROM protese.fechamentos_especiais WHERE id = $1', [id]);
+    await pool.query('DELETE FROM fechamentos_especiais WHERE id = $1', [id]);
 
     // Registrar log
     if (usuarioLogadoId) {
