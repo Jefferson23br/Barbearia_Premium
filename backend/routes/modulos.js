@@ -84,7 +84,7 @@ router.get('/', async (req, res) => {
     // Buscar módulos ativos ordenados
     const modulosResult = await pool.query(
       `SELECT id, nome, icone, ordem 
-       FROM protese.modulos 
+       FROM modulos 
        WHERE ativo = true 
        ORDER BY ordem ASC`
     );
@@ -94,7 +94,7 @@ router.get('/', async (req, res) => {
       modulosResult.rows.map(async (modulo) => {
         const itensResult = await pool.query(
           `SELECT item_id, item_label, item_path, item_icon, ordem
-           FROM protese.modulos_itens
+           FROM modulos_itens
            WHERE modulo_id = $1 AND ativo = true
            ORDER BY ordem ASC`,
           [modulo.id]
