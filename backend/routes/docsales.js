@@ -21,7 +21,7 @@ try {
  */
 async function verificarIntegracaoDocSales() {
   const integracaoCheck = await pool.query(
-    'SELECT * FROM protese.integracoes WHERE tipo_integracao = $1',
+    'SELECT * FROM integracoes WHERE tipo_integracao = $1',
     ['docsales']
   );
 
