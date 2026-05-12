@@ -1,6 +1,6 @@
 # ⚙️ Backend - Sistema Barbearia Premium
 
-API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do backend que gerencia toda a lógica de negócio e comunicação com o banco de dados.
+API REST com Node.js e Express. Em **produção** a camada de dados usa **Oracle** via `config/databaseV2.js` (exportada também por `database.js`). Sem variáveis `ORACLE_*`, o mesmo arquivo pode usar **PostgreSQL** (`pg`) para desenvolvimento local — ver `backend/.env.example`.
 
 ---
 
@@ -10,8 +10,8 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 **URL**: https://api6.auctusconsultoria.com.br  
 **Porta**: 3001  
 **VPS**: 82.25.65.201 (Hostinger)  
-**Última Atualização**: 21 de Dezembro de 2025  
-**Banco de Dados**: PostgreSQL 15+ (ambiente em migração legado + v2 multi-filial)
+**Última atualização**: maio de 2026  
+**Banco de dados**: **Oracle** em produção (`ORACLE_*`); PostgreSQL opcional em dev se Oracle não estiver configurado
 
 ---
 
@@ -19,7 +19,7 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 
 - **Node.js 20 LTS** - Runtime JavaScript
 - **Express.js 4.x** - Framework web minimalista e flexível
-- **PostgreSQL 15+** - Banco de dados relacional robusto
+- **Oracle Database** (`oracledb`) — produção; **PostgreSQL** (`pg`) — fallback quando `ORACLE_*` ausente
 - **bcrypt** - Hash de senhas com 10 rounds
 - **Multer** - Upload de arquivos (fotos e anexos)
 - **dotenv** - Gerenciamento de variáveis de ambiente
@@ -34,7 +34,7 @@ Organizei o backend em uma estrutura modular para facilitar a manutenção e esc
 backend/
 ├── server.js           # Servidor Express central (ponto de entrada)
 ├── config/             # Configurações compartilhadas
-│   ├── database.js    # Configuração PostgreSQL
+│   ├── database.js    # Reexport de databaseV2 (Oracle ou PostgreSQL)
 │   ├── cors.js        # Configuração CORS
 │   └── multer.js      # Configuração upload
 ├── routes/             # Rotas modulares por funcionalidade
@@ -89,7 +89,7 @@ backend/
 
 ### Pré-requisitos
 - Node.js 20+ instalado
-- PostgreSQL 15+ instalado e configurado
+- Oracle acessível em produção **ou** PostgreSQL para desenvolvimento local (conforme `.env`)
 - npm ou yarn
 
 ### Instalação
@@ -103,15 +103,28 @@ npm install
 
 Crie um arquivo `.env` na raiz do backend com as seguintes variáveis:
 
+Variáveis completas estão em `.env.example`. Resumo:
+
 ```env
 PORT=3001
 NODE_ENV=production
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=barbearia_premium
-DB_USER=barbearia_user
-DB_PASSWORD=sua_senha_segura
+# Produção (Oracle) — preencha todos quando for usar Oracle
+ORACLE_HOST=
+ORACLE_PORT=1521
+ORACLE_SERVICE_NAME=
+ORACLE_USER=
+ORACLE_PASSWORD=
+
+# Legado / dev local — usado só se ORACLE_* não estiver definido
+# DB_HOST=localhost
+# DB_PORT=5432
+# DB_NAME=barbearia_premium
+# DB_USER=postgres
+# DB_PASSWORD=
+
+JWT_SECRET=
+JWT_EXPIRES_IN=12h
 
 API_BASE_URL=https://api6.auctusconsultoria.com.br
 CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
@@ -407,4 +420,4 @@ Para documentação completa do projeto, consulte a pasta `docs/` na raiz do pro
 **Status**: ✅ Em Produção  
 **Versão**: 2.0.0  
 **VPS**: 82.25.65.201 (Hostinger)  
-**Banco de Dados**: PostgreSQL 15+ (ambiente em migração legado + v2)
+**Banco de dados**: Oracle em produção; PostgreSQL apenas como fallback de desenvolvimento (`databaseV2.js`).
