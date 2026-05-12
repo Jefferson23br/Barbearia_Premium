@@ -2,6 +2,8 @@
 
 Guia consolidado com todas as instruções de deploy e atualizações do sistema.
 
+> **Produção atual (2026):** a API usa **Oracle** (`ORACLE_*`, `database/sql/oracle/`). Os comandos **`psql`** e referências a `protese_capilar` / `protese_user` abaixo são **legado PostgreSQL**; em ambientes Oracle, execute o equivalente via SQLcl/DBeaver ou adapte os scripts. Deploy ponta a ponta: [deploy/GUIA_ATUALIZACAO_DEPLOY.md](deploy/GUIA_ATUALIZACAO_DEPLOY.md).
+
 ---
 
 ## 📋 Índice
@@ -23,7 +25,7 @@ Guia consolidado com todas as instruções de deploy e atualizações do sistema
 - `backend/routes/controle-acessos.js` - Endpoint de estatísticas
 - `frontend/painel-admin/src/app/dashboard/controle-acessos/page.tsx` - Interface
 
-**Comandos PostgreSQL:**
+**Verificação SQL (legado PostgreSQL — em Oracle use o mesmo intent no seu schema):**
 ```sql
 -- Verificar se a tabela existe
 SELECT * FROM protese.controle_acessos LIMIT 1;
