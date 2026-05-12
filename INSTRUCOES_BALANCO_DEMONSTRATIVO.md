@@ -1,5 +1,7 @@
 # 📋 Instruções - Módulo Balanço Demonstrativo
 
+> **Produção (Oracle):** Execute os scripts equivalentes no seu schema Oracle (SQLcl, DBeaver ou scripts em `database/sql/oracle/` quando existirem). Comandos abaixo em dialeto PostgreSQL são **legado**.
+
 ## ⚠️ Erro 404 - Rota não encontrada
 
 O erro `404` indica que o servidor backend não foi reiniciado após adicionar a nova rota.
@@ -8,10 +10,10 @@ O erro `404` indica que o servidor backend não foi reiniciado após adicionar a
 
 ### 1. Execute o Script SQL
 
-Primeiro, execute o script SQL no PostgreSQL para criar a tabela de categorias:
+Primeiro, execute o script SQL no **Oracle** (adaptando sintaxe se necessário) ou use o arquivo legado em PostgreSQL apenas como referência:
 
 ```sql
--- Execute este arquivo no PostgreSQL
+-- Ex.: executar no Oracle após revisar o DDL (legado PostgreSQL: mesmo nome de arquivo na raiz histórica)
 COMANDOS_CRIAR_TABELA_CATEGORIAS_CUSTO.sql
 ```
 
