@@ -1,5 +1,7 @@
 # Organizacao de Scripts SQL
 
+**Produção:** novos scripts e bootstrap devem seguir `oracle/`. PostgreSQL em `legacy-postgresql/` é apenas referência de migração.
+
 Esta pasta centraliza os scripts SQL do projeto e separa claramente o que e base atual do que e legado.
 
 ## Estrutura
