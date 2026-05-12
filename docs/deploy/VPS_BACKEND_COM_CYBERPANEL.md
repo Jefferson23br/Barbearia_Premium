@@ -6,7 +6,13 @@
 - **Sistema**: CyberPanel + OpenLiteSpeed
 - **Painel**: https://212.85.12.84:8090
 - **Servidor Web**: OpenLiteSpeed (não Nginx)
-- **Banco**: MariaDB (não PostgreSQL)
+- **Banco**: MariaDB (CyberPanel; não é o banco da API Barbearia Premium)
+
+### Barbearia Premium — produção atual
+
+A API Node.js em produção conecta ao **Oracle** (`ORACLE_*` no `.env`). Scripts oficiais: `database/sql/oracle/`; bootstrap: `npm run db:oracle:bootstrap` em `backend/` — ver [ORACLE_BOOTSTRAP.md](./ORACLE_BOOTSTRAP.md).
+
+As secções abaixo sobre MariaDB/PostgreSQL são referência de instalação genérica ou histórico na VPS; não substituem a configuração Oracle da aplicação.
 
 ---
 
