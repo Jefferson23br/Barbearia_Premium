@@ -1,75 +1,56 @@
-# Handoff - Barbearia Premium
+# Handoff — Barbearia Premium
 
 ## Status atual
-- Fase: migracao operacional PostgreSQL -> Oracle com backend legado estabilizado por camadas.
-- Ambientes:
+- **Fase:** Operação em **Oracle** com backend legado estabilizado; migração PostgreSQL → Oracle aplicada na camada de rotas (detalhes no `CHANGELOG.md`).
+- **Última atualização deste documento:** 2026-05-11
+- **Ambientes de produção:**
   - App: `https://appbarber.auctusconsultoria.com.br`
   - API: `https://api6.auctusconsultoria.com.br`
-- Ultima atualizacao: `2026-05-08`
-- Responsavel: `Cursor Agent`
+- **Infra:** duas VPS (API em 82.25.65.201; frontends em 45.132.157.28) — ver `docs/INFRAESTRUTURA.md`.
 
 ## O que foi consolidado
-- Backend com camada Oracle ativa em `backend/config/databaseV2.js`.
-- `backend/config/database.js` reexporta `databaseV2` (ponto unico de acesso ao BD).
-- Login admin v1 ajustado para Oracle usando tabela `USUARIOS` (`backend/routes/auth.js`).
-- Rota de modulos com fallback estatico no Oracle (`backend/routes/modulos.js`) quando tabelas nao existem.
-- Rota de permissoes com comportamento Oracle (`backend/routes/permissoes.js`):
-  - leitura de `permissoes_usuarios`;
-  - retorno padrao;
-  - permissao ampla para papel `gestor`/`proprietario` sem cadastro manual completo.
-- Frontend admin:
-  - URLs centralizadas por `NEXT_PUBLIC_API_URL`;
-  - ajuste em `Sidebar.tsx` para mapear `item_id` -> `permissionKey` de forma consistente.
-- Migracao SQL em lotes concluida no backend:
-  - Lote 1: fortalecimento de adaptacao Oracle em `databaseV2.js`
-  - Lote 2: ajuste de rotas P0 (`dashboard`, `logs`, `vendas`, `agendamentos`, `emissao-nfe`, `relatorios`)
-  - Lote 3: ajuste restante de rotas/utils/services e remocao de `ON CONFLICT` residual
-- Scripts Oracle base atualizados:
-  - `database/sql/oracle/001_init_multifilial.sql` (Oracle nativo, UUID texto `VARCHAR2(36)`)
-  - `database/sql/oracle/002_base_operacao_storage.sql` (Oracle nativo)
-- Guia de execucao Oracle atualizado em `docs/deploy/ORACLE_BOOTSTRAP.md`.
+- `backend/config/databaseV2.js` como camada de dados; `database.js` reexporta (único ponto de acesso).
+- Login admin v1 para Oracle com tabela `USUARIOS` (`backend/routes/auth.js`).
+- `modulos.js` com fallback estático quando tabelas Oracle ainda não existem.
+- `permissoes.js`: leitura Oracle (`permissoes_usuarios`), retorno padrão, papéis `gestor`/`proprietario` com permissão ampla quando aplicável.
+- Frontend admin: `NEXT_PUBLIC_API_URL`; `Sidebar.tsx` com `item_id` → `permissionKey` consistente.
+- Lotes de migração SQL no backend concluídos (P0/P1/P2): ver `CHANGELOG.md`.
+- Scripts Oracle base: `database/sql/oracle/001_init_multifilial.sql`, `002_base_operacao_storage.sql`.
+- Documentação de bootstrap: `docs/deploy/ORACLE_BOOTSTRAP.md`; deploy/atualização: `docs/deploy/GUIA_ATUALIZACAO_DEPLOY.md`.
 
-## Estado do Oracle (operacao)
-- Usuario/schema em uso: `BARBEARIA_PREMIUM`.
-- Tabela `USUARIOS` existente e usada no login.
-- Tabela `PERMISSOES_USUARIOS` criada manualmente via DBeaver.
-- Colunas de permissao estao sendo adicionadas via PL/SQL (mais estavel que blocos SQL grandes no DBeaver).
-- Scripts SQL organizados em:
-  - `database/sql/oracle` (base atual Oracle)
-  - `database/sql/legacy-postgresql` (historico legado para referencia/migracao)
+## Estado do Oracle (operação)
+- Usuário/schema típico: `BARBEARIA_PREMIUM` (ajustar ao ambiente real).
+- `USUARIOS` em uso no login.
+- `PERMISSOES_USUARIOS` (criação/checagem conforme processo do time — ex.: DBeaver + PL/SQL).
+- Scripts atuais em `database/sql/oracle`; histórico PostgreSQL em `database/sql/legacy-postgresql`.
 
-## Problema atual (aberto)
-- Alinhamento total Frontend <> Backend <> Oracle ainda depende de validacao runtime com banco Oracle real.
-- Parte das rotas v1 depende de tabelas legadas completas (`receitas`, `despesas`, `agendamentos`, `vendas`, `movimentacoes_caixa`, etc.).
-- Se o schema Oracle de operacao nao tiver essas tabelas/colunas, ainda pode ocorrer `500` em modulos financeiros e dashboard.
+## Problemas em aberto
+- Validação runtime completa Frontend ↔ Backend ↔ Oracle com schema real.
+- Rotas v1 dependentes de tabelas legadas (`receitas`, `despesas`, `agendamentos`, `vendas`, `movimentacoes_caixa`, …): sem todas no Oracle, risco de **500** em financeiro e dashboard.
 
-## Proximo passo imediato (nova maquina)
-1. Preparar schema Oracle base (uma das opcoes):
-   - `npm run db:oracle:bootstrap` em `backend/`
-   - ou executar manualmente `database/sql/oracle/001_init_multifilial.sql` e `002_base_operacao_storage.sql`
-2. Subir backend atualizado:
-   - `pm2 restart api-barbearia-premium --update-env`
-3. Executar smoke test minimo:
+## Próximo passo imediato (nova máquina ou recuperação)
+1. Schema Oracle base: `npm run db:oracle:bootstrap` em `backend/` ou execução manual de `001` + `002` em `database/sql/oracle`.
+2. Backend atualizado e `.env` com `ORACLE_*` corretos: `pm2 restart api-barbearia-premium --update-env`.
+3. Smoke mínimo:
    - `GET /health`
    - `GET /api/test-db`
    - `GET /api/v1/modulos`
    - `GET /api/v1/permissoes/:usuarioId`
    - `GET /api/v1/dashboard`
-4. Executar smoke funcional por frentes:
-   - Agenda, Vendas, Financeiro (Caixas/Receitas/Despesas/Faturamento), Relatorios, NFe, CRM, Assinaturas, Cupons/Fidelidades
+4. Smoke funcional: Agenda, Vendas, Financeiro (caixas/receitas/despesas/faturamento), Relatórios, NFe, CRM, Assinaturas, Cupons/Fidelidades.
 
 ## Bloqueios reais
-- A homologacao funcional completa exige dados reais e schema Oracle completo das tabelas do legado v1.
-- Ainda ha risco de divergencia de tipo/constraint entre ambiente Oracle atual e expectativas das rotas financeiras.
+- Homologação funcional plena exige dados reais e schema Oracle alinhado ao legado v1.
+- Risco de divergência de tipo/constraint nas rotas financeiras vs. Oracle real.
 
-## Checklist de transferencia
+## Checklist de transferência
 - [x] Login admin funcional no Oracle
-- [x] Tabela `PERMISSOES_USUARIOS` criada
-- [x] Menu com fallback de modulos ativo
-- [x] Frontend com mapeamento de permissoes ajustado
-- [x] Scripts base Oracle em pasta `database/sql/oracle` convertidos para Oracle nativo
-- [x] Lotes de ajuste SQL no backend concluido (P0/P1/P2)
-- [x] Mapeamento de chamadas Frontend -> endpoints Backend consolidado
-- [ ] Smoke test runtime completo em Oracle remoto (homologacao)
-- [ ] Confirmacao de schema legado completo no Oracle para modulos financeiros/dashboard
-
+- [x] Tabela `PERMISSOES_USUARIOS` criada (processo do ambiente)
+- [x] Menu com fallback de módulos ativo
+- [x] Frontend com mapeamento de permissões ajustado
+- [x] Scripts base Oracle em `database/sql/oracle` (nativos)
+- [x] Lotes P0/P1/P2 no backend concluídos
+- [x] Mapeamento frontend → endpoints consolidado
+- [x] Documentação de deploy/atualização revisada (2026-05-11)
+- [ ] Smoke test runtime completo em Oracle remoto (homologação)
+- [ ] Confirmação de schema legado completo no Oracle para módulos financeiros/dashboard
