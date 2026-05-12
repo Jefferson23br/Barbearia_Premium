@@ -2,6 +2,8 @@
 
 Documento detalhando as implementações realizadas em **16 de Dezembro de 2025**.
 
+> **Contexto 2026:** Em produção o banco é **Oracle**. Menções a banco (na época PostgreSQL) neste documento refletem a stack na data do release.
+
 ---
 
 ## 📅 Resumo Executivo
@@ -107,7 +109,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 
 #### Características Técnicas:
 
-- ✅ Módulos carregados do PostgreSQL
+- ✅ Módulos carregados do banco (na época PostgreSQL)
 - ✅ Ordenação por campo `ordem`
 - ✅ Filtro de itens ativos
 - ✅ Mapeamento correto de permissões
@@ -125,7 +127,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 
 **Problema 1: Permissões por Tipo vs. Permissões por Usuário**
 - ❌ **Antes**: Sistema usava permissões padrão baseadas no tipo de usuário (proprietário/funcionário)
-- ✅ **Agora**: Sistema sempre busca permissões do PostgreSQL por usuário específico
+- ✅ **Agora**: Sistema sempre busca permissões do banco (na época PostgreSQL) por usuário específico
 
 **Problema 2: Duplicações na Página de Controle de Permissões**
 - ❌ **Antes**: Itens apareciam duplicados (tanto como individuais quanto dentro dos módulos)
@@ -135,15 +137,15 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 - ❌ **Antes**: Sidebar não atualizava após alterações de permissões
 - ✅ **Agora**: Sidebar recarrega automaticamente quando permissões são atualizadas
 
-**Problema 4: Permissões não Eram Sempre do PostgreSQL**
+**Problema 4: Permissões não Eram Sempre do banco (na época PostgreSQL)**
 - ❌ **Antes**: Hook usava localStorage como fonte primária e permissões padrão por tipo
-- ✅ **Agora**: Hook sempre busca do PostgreSQL primeiro, localStorage apenas como cache
+- ✅ **Agora**: Hook sempre busca do banco (na época PostgreSQL) primeiro, localStorage apenas como cache
 
 #### Correções Aplicadas:
 
 1. **Hook usePermissions (`frontend/painel-admin/src/hooks/usePermissions.ts`)**
    - ✅ Removida lógica de permissões padrão por tipo
-   - ✅ Sempre busca do PostgreSQL
+   - ✅ Sempre busca do banco (na época PostgreSQL)
    - ✅ Se não encontrar, retorna permissões vazias (todas false)
    - ✅ Master ainda tem todas as permissões, mas também busca do backend
    - ✅ Adicionado listener para recarregar automaticamente
@@ -208,7 +210,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
    - Itens aparecem apenas uma vez (ou individual ou no módulo)
 
 2. **Fonte de Verdade**
-   - PostgreSQL é sempre a fonte primária de permissões
+   - banco (na época PostgreSQL) é sempre a fonte primária de permissões
    - localStorage apenas como cache
    - Sempre busca do servidor ao carregar
 
@@ -244,7 +246,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 ### Funcionalidades Habilitadas
 - ✅ Menu organizado por módulos
 - ✅ Módulos expansíveis/colapsáveis
-- ✅ Permissões sempre do PostgreSQL
+- ✅ Permissões sempre do banco (na época PostgreSQL)
 - ✅ Recarregamento automático de permissões
 - ✅ Sem duplicações na interface
 
@@ -281,7 +283,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 
 ### Decisões de Design
 
-1. **Módulos no Banco**: Módulos são armazenados no PostgreSQL para fácil configuração
+1. **Módulos no Banco**: Módulos são armazenados no banco (na época PostgreSQL) para fácil configuração
 2. **Ordem Configurável**: Ordem dos módulos e itens configurável via campo `ordem`
 3. **Permissões por Usuário**: Permissões são sempre por usuário, não por categoria
 4. **Recarregamento Automático**: Sistema recarrega automaticamente quando permissões mudam
@@ -400,7 +402,7 @@ Documento detalhando as implementações realizadas em **16 de Dezembro de 2025*
 
 ## ✅ Checklist de Implementação
 
-- [x] Tabelas de módulos criadas no PostgreSQL
+- [x] Tabelas de módulos criadas no banco (na época PostgreSQL)
 - [x] Rota de módulos criada no backend
 - [x] Sidebar atualizado para módulos expansíveis
 - [x] Hook de permissões corrigido
