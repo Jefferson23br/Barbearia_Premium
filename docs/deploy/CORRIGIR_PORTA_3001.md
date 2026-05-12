@@ -22,23 +22,30 @@ cd /home/cyberpanel/app/backend
 nano .env
 ```
 
-### Verificar se contém:
+### Verificar se contém (produção = Oracle)
 
 ```env
 PORT=3001
 NODE_ENV=production
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=protese_capilar
-DB_USER=protese_user
-DB_PASSWORD=AppProtese@2025!
+ORACLE_HOST=seu_host
+ORACLE_PORT=1521
+ORACLE_SERVICE_NAME=seu_service
+ORACLE_USER=seu_usuario
+ORACLE_PASSWORD=sua_senha
+
+# Apenas se NÃO usar Oracle (dev local): descomente DB_*
+# DB_HOST=localhost
+# DB_PORT=5432
+# DB_NAME=barbearia_premium
+# DB_USER=postgres
+# DB_PASSWORD=
 
 API_BASE_URL=https://api6.auctusconsultoria.com.br
-CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
+CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
-**Importante**: A linha `PORT=3001` deve estar presente!
+**Importante:** `PORT=3001` deve estar presente. Após alterar `ORACLE_*` ou `DB_*`, use `pm2 restart api-barbearia-premium --update-env`.
 
 ---
 
