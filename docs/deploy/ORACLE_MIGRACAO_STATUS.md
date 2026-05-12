@@ -1,23 +1,21 @@
-# Oracle - Status de Migracao
+# Oracle — status da migração
 
-## O que ja foi ajustado
+## Estado atual (2026)
 
-- Estrutura de VPS padronizada em `/Projetos/Barbearia_Premium`.
-- Guia de go-live atualizado para Oracle remoto.
-- Variaveis Oracle adicionadas em `backend/.env.example`.
+- **`backend/config/database.js`** reexporta **`databaseV2.js`**.
+- Com **`ORACLE_HOST`**, **`ORACLE_USER`** e **`ORACLE_PASSWORD`** definidos, o backend usa o driver **`oracledb`** e adaptações de SQL em `databaseV2.js`.
+- Sem `ORACLE_*`, o mesmo arquivo usa **`pg`** (PostgreSQL) para desenvolvimento local — não é o alvo de produção documentado para a Barbearia Premium em produção.
 
-## Bloqueador tecnico atual
+## Scripts e bootstrap
 
-O backend ainda depende de PostgreSQL:
-- Driver `pg` em `backend/config/database.js` e `backend/config/databaseV2.js`.
-- Queries SQL em estilo PostgreSQL espalhadas nas rotas.
+- Scripts Oracle oficiais: `database/sql/oracle/`
+- Bootstrap: `npm run db:oracle:bootstrap` no diretório `backend/` — ver [ORACLE_BOOTSTRAP.md](./ORACLE_BOOTSTRAP.md).
 
-Sem migrar camada de dados, a API nao conecta nem executa no Oracle.
+## Referências
 
-## Proximo passo obrigatorio
+- Handoff operacional: [../historico-conversas/HANDOFF.md](../historico-conversas/HANDOFF.md)
+- Guia de atualização: [GUIA_ATUALIZACAO_DEPLOY.md](./GUIA_ATUALIZACAO_DEPLOY.md)
 
-1. Adicionar driver Oracle (`oracledb`) no backend.
-2. Criar novo client de conexao Oracle em `backend/config/databaseOracle.js`.
-3. Adaptar queries (placeholders, tipos e funcoes SQL).
-4. Criar scripts SQL Oracle equivalentes aos `backend/sql/*.sql`.
-5. Executar testes de `/health` e `/api/test-db` com Oracle.
+---
+
+*Documento anterior listava bloqueadores da migração; esses itens foram endereçados na base de código atual — este ficheiro foi alinhado ao comportamento real do repositório.*
