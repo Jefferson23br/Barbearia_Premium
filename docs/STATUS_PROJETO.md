@@ -67,7 +67,7 @@ Documento atualizado com o status completo do projeto em **21 de Dezembro de 202
 - Controle no sidebar
 - Controle em botões
 - 3 níveis: Master, Proprietário, Funcionário
-- Sempre busca do PostgreSQL
+- Sempre busca da API / banco (**Oracle** em produção atual)
 - Recarregamento automático após alterações
 
 **Endpoints**: 2  
@@ -194,10 +194,10 @@ Documento atualizado com o status completo do projeto em **21 de Dezembro de 202
 - **Projetos**: 3 (Admin, Cliente, Site)
 - **Design**: Responsivo e moderno
 
-### Banco de Dados
-- **Tabelas**: 28+
-- **Schema**: `protese` (em uso)
-- **Índices**: Otimizados
+### Banco de dados
+- **Tabelas**: 28+ (dependendo do schema Oracle completo)
+- **Motor**: Oracle em produção (`ORACLE_*`); schema/usuário conforme ambiente (ex.: `BARBEARIA_PREMIUM`)
+- **Índices**: Otimizados onde aplicável
 - **Relacionamentos**: Bem definidos
 
 ---
@@ -655,6 +655,6 @@ Para questões ou sugestões, consulte a documentação ou entre em contato com 
 **Infraestrutura:**
 - Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
 - Frontend: VPS 45.132.157.28 (Hostinger - conta diferente com domínio liberado)
-- Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)
+- Banco de dados: Oracle em produção (`ORACLE_*`); PostgreSQL apenas fallback local sem Oracle
 
 
