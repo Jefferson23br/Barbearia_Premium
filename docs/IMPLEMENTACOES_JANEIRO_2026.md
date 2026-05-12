@@ -206,12 +206,12 @@ Documento detalhando todas as implementações realizadas em **Janeiro 2026**.
 **Problema Identificado:**
 - Ao criar uma venda com pagamento à vista (dinheiro, pix, ted ou cartão 1x), a receita era criada como "paga", mas a movimentação de caixa não era gerada automaticamente
 - Isso causava o problema de o saldo do caixa não ser atualizado, mesmo com a receita marcada como paga
-- O trigger `protese.atualizar_saldo_conta()` está na tabela `movimentacoes_caixa`, não em `receitas`, então era necessário criar a movimentação explicitamente
+- O trigger `atualizar_saldo_conta()` (schema conforme ambiente Oracle) está na tabela `movimentacoes_caixa`, não em `receitas`, então era necessário criar a movimentação explicitamente
 
 **Solução Implementada:**
 - Modificação em `backend/routes/vendas.js` para criar automaticamente uma movimentação de caixa quando uma receita é criada como "paga" (pagamento à vista)
 - A movimentação é vinculada à receita através do campo `movimentacao_caixa_id`
-- O saldo do caixa é atualizado automaticamente pelo trigger do PostgreSQL
+- O saldo do caixa é atualizado automaticamente pelo trigger no banco (Oracle em produção)
 - Aplicado também para a primeira parcela de cartão/boleto 1x
 
 **Arquivos Modificados:**
