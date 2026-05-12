@@ -5,7 +5,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?style=for-the-badge&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-20_LTS-green?style=for-the-badge&logo=node.js&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?style=for-the-badge&logo=postgresql&logoColor=white)
+![Oracle](https://img.shields.io/badge/Oracle-Produção-red?style=for-the-badge&logo=oracle&logoColor=white)
 ![Express](https://img.shields.io/badge/Express.js-4.x-gray?style=for-the-badge&logo=express&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.3-61dafb?style=for-the-badge&logo=react&logoColor=white)
@@ -16,7 +16,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Produção-success?style=flat-square)
 ![License](https://img.shields.io/badge/License-Private-red?style=flat-square)
-![Last Update](https://img.shields.io/badge/Última_Atualização-21_Dezembro_2025-blue?style=flat-square)
+![Last Update](https://img.shields.io/badge/Última_Atualização-11_Maio_2026-blue?style=flat-square)
 ![Version](https://img.shields.io/badge/Versão-2.0.0-green?style=flat-square)
 
 </div>
@@ -62,7 +62,7 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 |------------|--------|-----|
 | ![Node.js](https://img.shields.io/badge/Node.js-20_LTS-green?logo=node.js) | 20 LTS | Runtime |
 | ![Express.js](https://img.shields.io/badge/Express-4.x-gray?logo=express) | 4.x | Framework web |
-| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?logo=postgresql) | 15+ | Banco de dados |
+| ![Oracle](https://img.shields.io/badge/Oracle-Produção-red?logo=oracle) | — | Banco em produção (`ORACLE_*`, `databaseV2.js`) |
 | ![bcrypt](https://img.shields.io/badge/bcrypt-Latest-green?logo=bcrypt) | Latest | Hash de senhas |
 | ![Multer](https://img.shields.io/badge/Multer-Latest-orange?logo=multer) | Latest | Upload de arquivos |
 
@@ -83,9 +83,9 @@ O sistema foi construído com tecnologias modernas e está **100% em produção*
 | ![Let's Encrypt](https://img.shields.io/badge/SSL-Let's_Encrypt-green?logo=lets-encrypt) | Certificados SSL |
 
 **Infraestrutura:**
-- **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger) - API, Backend e Banco de dados PostgreSQL
-- **Frontend**: VPS 45.132.157.28 (Hostinger - conta diferente com domínio liberado) - Aplicações frontend
-- **Banco de Dados**: PostgreSQL 15+ (ambiente em migração de legado para estrutura v2 multi-filial)
+- **Backend/API/Banco**: VPS 82.25.65.201 (Hostinger) — API Node.js e conexão ao **Oracle** em produção
+- **Frontend**: VPS 45.132.157.28 (Hostinger — conta diferente com domínio liberado) — aplicações Next.js
+- **Banco de dados**: **Oracle** (variáveis `ORACLE_*`); o backend ainda pode usar **PostgreSQL** local apenas se `ORACLE_*` não estiver definido (`databaseV2.js`). Scripts legados em `database/sql/legacy-postgresql`.
 
 </div>
 
@@ -167,7 +167,7 @@ Barbearia_Premium/
 - ✅ Estrutura modular e escalável
 - ✅ Middleware automático de logging
 - ✅ Upload de arquivos (fotos e anexos)
-- ✅ Integração completa com PostgreSQL
+- ✅ Integração com banco via `databaseV2.js` (**Oracle** em produção; PostgreSQL opcional em dev)
 - ✅ **Sistema de Módulos** - Organização de itens do menu em módulos
 
 ### 💰 Sistema Financeiro Completo
@@ -202,7 +202,7 @@ Barbearia_Premium/
 
 ### Pré-requisitos
 - Node.js 20+ instalado
-- PostgreSQL 15+ instalado e configurado
+- **Oracle** acessível em produção (`ORACLE_*` no `.env`) ou, para desenvolvimento local sem Oracle, **PostgreSQL** conforme `DB_*` em `backend/.env.example`
 - Git instalado
 
 ### Instalação
