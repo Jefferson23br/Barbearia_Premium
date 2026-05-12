@@ -1,13 +1,15 @@
 # Correções no Sistema de Permissões
 
+> **Atualização (2026):** Em produção as permissões vêm da API persistindo em **Oracle**. Abaixo, “PostgreSQL” refere-se ao período da correção; o fluxo correto segue sendo **sempre buscar no backend**.
+
 ## Problemas Identificados e Corrigidos
 
-### 1. ✅ Hook usePermissions - Sempre buscar do PostgreSQL
+### 1. ✅ Hook usePermissions — sempre buscar no backend (banco/API)
 **Problema:** O hook estava usando permissões padrão baseadas no tipo de usuário quando não encontrava no backend.
 
 **Correção:**
 - Removida a lógica de permissões padrão por tipo (proprietário/funcionário)
-- Agora sempre busca do PostgreSQL
+- Agora sempre busca no backend (hoje Oracle em produção)
 - Se não encontrar, cria permissões vazias (todas false)
 - Master ainda tem todas as permissões, mas também busca do backend para consistência
 - Adicionado `cache: 'no-store'` para sempre buscar do servidor
@@ -46,7 +48,7 @@
 
 ### Permissões são por USUÁRIO, não por CATEGORIA
 - Master, Proprietário e Funcionário são apenas categorias informativas
-- Cada usuário tem suas próprias permissões no PostgreSQL
+- Cada usuário tem suas próprias permissões no banco (via API)
 - As permissões são armazenadas na tabela `protese.permissoes_usuarios`
 
 ### Fluxo de Permissões
@@ -71,7 +73,7 @@
 1. `frontend/painel-admin/src/hooks/usePermissions.ts`
    - Removida lógica de permissões padrão por tipo
    - Adicionado listener para recarregamento automático
-   - Sempre busca do PostgreSQL
+   - Sempre busca no backend
 
 2. `frontend/painel-admin/src/components/admin/Sidebar.tsx`
    - Adicionado listener para recarregamento automático
@@ -85,7 +87,7 @@
 ## Como Funciona Agora
 
 1. **Usuário faz login:**
-   - Sistema busca permissões do PostgreSQL para aquele usuário específico
+   - Sistema busca permissões no backend para aquele usuário específico
    - Se não encontrar, todas as permissões são false
 
 2. **Sidebar carrega:**
@@ -100,7 +102,7 @@
 4. **Administrador edita permissões:**
    - Seleciona usuário
    - Edita permissões (agrupadas por módulos)
-   - Salva no PostgreSQL
+   - Salva no banco via API
    - Sistema recarrega automaticamente
 
 ## Próximos Passos
@@ -114,5 +116,5 @@
 2. Verificar se todas as páginas estão usando `podeEditar()` e `podeExcluir()`:
    - Já verificado que várias páginas usam, mas pode haver algumas que não usam
 
-3. Garantir que o backend está retornando todas as permissões corretamente do PostgreSQL
+3. Garantir que o backend está retornando todas as permissões corretamente do banco
 
