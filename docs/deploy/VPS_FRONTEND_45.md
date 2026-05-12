@@ -65,7 +65,7 @@ sudo systemctl enable fail2ban
 
 **NÃO precisa instalar:**
 - ❌ Node.js (opcional, só se quiser fazer build aqui)
-- ❌ PostgreSQL (está na outra VPS)
+- ❌ Oracle / banco da API (fica na VPS do backend ou serviço gerenciado — não no servidor de front estático)
 - ❌ PM2 (não tem Node rodando)
 
 ---
