@@ -4,6 +4,8 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 
 > **Nota**: Este documento registra as implementações mais recentes do sistema. Para histórico completo, consulte [`HISTORICO_IMPLEMENTACOES.md`](./HISTORICO_IMPLEMENTACOES.md).
 
+> **Contexto 2026:** A API em produção usa **Oracle**. Referências a PostgreSQL/funções PostgreSQL descrevem o comportamento ou o período técnico correspondente.
+
 ---
 
 ## 📅 Resumo Executivo
@@ -529,7 +531,7 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 - ✅ Tabela `protese.vendas_parcelas` criada
 - ✅ Script: `COMANDOS_CRIAR_TABELA_VENDAS.sql`
 - ✅ Script: `COMANDOS_ADICIONAR_PERMISSOES_VENDAS.sql`
-- ✅ Função PostgreSQL para gerar tickets únicos
+- ✅ Função no banco (PostgreSQL na época; Oracle em produção atual) para gerar tickets únicos
 
 #### Funcionalidades:
 
@@ -663,7 +665,7 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 - ✅ Tabela `protese.despesas_parcelas` criada
 - ✅ Script: `COMANDOS_CRIAR_TABELA_DESPESAS.sql`
 - ✅ Script: `COMANDOS_ADICIONAR_PERMISSOES_DESPESAS.sql`
-- ✅ Função PostgreSQL para gerar tickets únicos
+- ✅ Função no banco (PostgreSQL na época; Oracle em produção atual) para gerar tickets únicos
 - ✅ Triggers para atualização automática de status
 
 #### Funcionalidades:
@@ -799,7 +801,7 @@ Documento detalhando todas as implementações realizadas em **Dezembro 2025**.
 - ✅ Script: `COMANDOS_CRIAR_TABELA_ROMANEIOS.sql`
 - ✅ Script: `COMANDOS_CORRIGIR_FUNCAO_ROMANEIOS.sql`
 - ✅ Script: `COMANDOS_ATUALIZAR_STATUS_ROMANEIOS.sql`
-- ✅ Função PostgreSQL para gerar números únicos de romaneio
+- ✅ Função no banco (PostgreSQL na época; Oracle em produção atual) para gerar números únicos de romaneio
 - ✅ Triggers para atualização automática
 
 #### Funcionalidades:
@@ -953,7 +955,7 @@ Para detalhes completos das implementações de 16 de Dezembro de 2025, consulte
 ### Resumo das Implementações de 16 de Dezembro de 2025:
 
 1. **Sistema de Módulos no Menu** - Menu organizado por módulos expansíveis
-2. **Correção do Sistema de Permissões** - Permissões sempre do PostgreSQL, sem duplicações
+2. **Correção do Sistema de Permissões** — permissões sempre vindas do backend (Oracle em produção atual), sem duplicações
 3. **Reorganização do Menu Sidebar** - Ordem correta e organização por categorias
 4. **Integração DocSales** - Sistema de assinatura de contratos (eSign as a Service)
 5. **Serviços de Integração** - Módulo para gerenciar e usar integrações configuradas
