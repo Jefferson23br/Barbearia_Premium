@@ -24,7 +24,7 @@ Documentação completa para deploy do sistema em produção.
 - **Sistema**: AlmaLinux 9
 - **Painel**: CyberPanel
 - **Serviços**:
-  - PostgreSQL (configuração conforme ambiente de produção)
+  - Oracle (banco operacional da API; variáveis `ORACLE_*` no backend)
   - API Backend (Node.js + Express)
   - Nginx (proxy reverso)
 - **Conta**: Hostinger (conta principal)
