@@ -21,21 +21,16 @@ scp root@82.25.65.201:/caminho/arquivo.txt .\local\
 
 ---
 
-## 🗄️ PostgreSQL
+## 🗄️ Banco de dados
+
+**Produção:** Oracle (`ORACLE_*` no `.env` do backend). Teste rápido: `curl https://api6.auctusconsultoria.com.br/api/test-db` — ver [ORACLE_BOOTSTRAP.md](./ORACLE_BOOTSTRAP.md).
+
+**PostgreSQL** (somente se o backend estiver **sem** `ORACLE_*`, ex.: dev local):
 
 ```bash
-# Conectar no banco
-psql -h localhost -U barbearia_user -d barbearia_premium
-
-# Conectar como postgres
+psql -h localhost -U postgres -d barbearia_premium
 sudo -u postgres psql
-
-# Comandos SQL úteis
-\l                    # Listar bancos
-\c barbearia_premium    # Conectar em banco
-\dt                   # Listar tabelas
-\d nome_tabela        # Descrever tabela
-\q                    # Sair
+# \l  \c barbearia_premium  \dt  \d tabela  \q
 ```
 
 ---
@@ -173,11 +168,12 @@ sudo chmod -R 755 /var/www
 ```bash
 # Reiniciar todos os serviços principais
 sudo systemctl restart nginx
-sudo systemctl restart postgresql-15
+# sudo systemctl restart postgresql-15   # se usar Postgres legado nesta VPS
 sudo systemctl restart firewalld
 
 # Ver status de todos
-sudo systemctl status nginx postgresql-15 firewalld fail2ban
+sudo systemctl status nginx firewalld fail2ban
+# sudo systemctl status postgresql-15   # opcional
 ```
 
 ---
