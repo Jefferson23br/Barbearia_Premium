@@ -57,7 +57,7 @@ Este é o painel principal para a gestão completa da barbearia. Aqui os adminis
 - ✅ **Cupons e Fidelidades** (sistema completo de cupons e programa de fidelidade)
 - ✅ **Integrações de APIs** (9 integrações: Focus NFe, PLUG NFe, Asaas, Mercado Pago, PagSeguro, Twilio, WhatsApp Business API, SendGrid, DocSales)
 - ✅ **Sistema de Módulos no Menu** - Menu organizado por módulos expansíveis (16 de Dezembro de 2025)
-- ✅ **Correção do Sistema de Permissões** - Permissões sempre do PostgreSQL, sem duplicações (16 de Dezembro de 2025)
+- ✅ **Correção do Sistema de Permissões** — fonte de verdade na API/banco (Oracle em produção atual); sem duplicações (16 de Dezembro de 2025)
 - ✅ **Integração DocSales** - Sistema de assinatura de contratos (16 de Dezembro de 2025)
 - ✅ **Serviços de Integração** - Módulo para gerenciar integrações (16 de Dezembro de 2025)
 - ✅ **Master Acessa Tudo** - Master não precisa configurar permissões (16 de Dezembro de 2025)
