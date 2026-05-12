@@ -3,7 +3,7 @@
 ## 🎯 Arquitetura Definida
 
 ### VPS Backend (82.25.65.201)
-- API + PostgreSQL
+- API Node.js + conexão ao **Oracle** em produção (variáveis `ORACLE_*`)
 - Domínio: api6.auctusconsultoria.com.br
 - Porta: 3001
 
