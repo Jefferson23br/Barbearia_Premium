@@ -13,8 +13,10 @@ O sistema está hospedado em **2 VPS diferentes da Hostinger**, em contas separa
 - **Conta**: Hostinger (conta principal)
 - **Serviços**:
   - API Backend (Node.js/Express)
-  - Banco de Dados PostgreSQL
+  - Banco de dados **Oracle** (alvo operacional atual; conexão via `backend/config/databaseV2.js`)
   - PM2 para gerenciamento de processos
+  - Nginx (proxy reverso para a API)
+  - *Opcional:* PostgreSQL apenas se ainda existir instância legada na mesma VPS; o código de produção foi migrado para Oracle.
 
 ### VPS 2: Frontend
 - **IP**: 45.132.157.28
@@ -57,25 +59,31 @@ pm2 save
 ```
 
 ### Variáveis de Ambiente
+O backend usa principalmente **Oracle**. Variáveis legadas `DB_*` (PostgreSQL) podem permanecer no `.env` para referência ou ambientes antigos, mas a API em produção deve ter **`ORACLE_*`** corretas. Lista completa e exemplos: `backend/.env.example`.
+
 ```env
 PORT=3001
 NODE_ENV=production
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=protese_capilar
-DB_USER=protese_user
-DB_PASSWORD=[senha]
+# Oracle (produção)
+ORACLE_HOST=[host]
+ORACLE_PORT=1521
+ORACLE_SERVICE_NAME=[service_name]
+ORACLE_USER=[usuario_schema]
+ORACLE_PASSWORD=[senha]
+
+JWT_SECRET=[valor_forte]
+JWT_EXPIRES_IN=12h
 
 API_BASE_URL=https://api6.auctusconsultoria.com.br
-CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
+CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
-### Banco de Dados
-- **PostgreSQL 15+**
-- **Schema**: `protese`
-- **Database**: `protese_capilar`
-- **User**: `protese_user`
+### Banco de dados (Oracle)
+- **Motor**: Oracle Database (acesso via driver `oracledb` no Node).
+- **Usuário/schema** típico em homologação: `BARBEARIA_PREMIUM` (ajuste ao seu ambiente).
+- **Bootstrap / scripts SQL**: pasta `database/sql/oracle` e comando `npm run db:oracle:bootstrap` no diretório `backend/` — ver [deploy/ORACLE_BOOTSTRAP.md](deploy/ORACLE_BOOTSTRAP.md).
+- **Legado**: scripts e histórico PostgreSQL em `database/sql/legacy-postgresql` (referência, não é o alvo da API atual).
 
 ---
 
@@ -106,6 +114,8 @@ NEXT_PUBLIC_API_URL=https://api6.auctusconsultoria.com.br
 ## 🔧 Comandos de Deploy
 
 ### Deploy Backend
+Passo a passo consolidado: [deploy/GUIA_ATUALIZACAO_DEPLOY.md](deploy/GUIA_ATUALIZACAO_DEPLOY.md).
+
 ```bash
 # Conectar na VPS
 ssh root@82.25.65.201
@@ -113,8 +123,8 @@ ssh root@82.25.65.201
 # Enviar arquivos
 scp backend/routes/[arquivo].js root@82.25.65.201:/home/cyberpanel/app/backend/routes/
 
-# Reiniciar
-pm2 restart api-barbearia-premium
+# Reiniciar (reler .env)
+pm2 restart api-barbearia-premium --update-env
 ```
 
 ### Deploy Frontend
@@ -163,7 +173,7 @@ pm2 restart painel-admin
 - Nginx como reverse proxy
 
 ### Backup
-- Backup automático do banco de dados
+- Backup do banco (Oracle conforme política do provedor / export periódico)
 - Backup dos arquivos de configuração
 - Retenção de backups configurada
 
@@ -194,12 +204,17 @@ tail -f /var/log/nginx/error.log
 tail -f /var/log/nginx/access.log
 ```
 
-### PostgreSQL
+### Oracle (API)
 ```bash
-# Conectar
-psql -U protese_user -d protese_capilar
+# Teste rápido pela API (com backend no ar)
+curl -sS https://api6.auctusconsultoria.com.br/api/test-db
+```
 
-# Status
+Ferramentas no servidor ou estação (SQL*Plus, SQLcl, DBeaver) usando `ORACLE_HOST`, `ORACLE_SERVICE_NAME`, `ORACLE_USER` e `ORACLE_PASSWORD` do `.env`.
+
+### PostgreSQL (somente se legado ainda existir na VPS)
+```bash
+psql -U [usuario] -d [database]
 systemctl status postgresql
 ```
 
@@ -220,31 +235,31 @@ systemctl status postgresql
 4. Verificar logs: `pm2 logs painel-admin`
 
 ### Banco de dados não conecta
-1. Verificar PostgreSQL: `systemctl status postgresql`
-2. Verificar conexão: `psql -U protese_user -d protese_capilar`
-3. Verificar variáveis de ambiente no `.env`
+1. Verificar variáveis `ORACLE_*` no `.env` da API e reiniciar com `pm2 restart api-barbearia-premium --update-env`
+2. Chamar `GET /api/test-db` na API (local ou `https://api6.auctusconsultoria.com.br/api/test-db`)
+3. Validar rede/firewall até o listener Oracle (porta 1521 ou a configurada)
+4. Se ainda houver PostgreSQL legado na mesma máquina, conferir `systemctl status postgresql` apenas nesse cenário
 
 ---
 
 ## 📝 Notas Importantes
 
-1. **Contas Separadas**: Backend e Frontend estão em contas Hostinger diferentes
-2. **Domínio Liberado**: A conta do frontend (m.br) tem domínio liberado e ilimitado
-3. **Schema do Banco**: O schema é `protese`, não `barbearia`
-4. **Nomes de Processos PM2**: 
+1. **Contas separadas**: Backend e frontend estão em contas Hostinger diferentes.
+2. **Domínio liberado**: A conta do frontend (m.br) tem domínio liberado e ilimitado.
+3. **Banco em produção**: API orientada a **Oracle**; permissões e login admin dependem de tabelas como `USUARIOS` e `PERMISSOES_USUARIOS` no schema em uso — ver [historico-conversas/HANDOFF.md](historico-conversas/HANDOFF.md).
+4. **Nomes de processos PM2**:
    - Backend: `api-barbearia-premium`
    - Frontend Admin: `painel-admin`
    - Frontend Cliente: `painel-cliente`
 
 ---
 
-**Última Atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.2
+**Última atualização**: 11 de maio de 2026  
+**Versão**: 1.3
 
-**Informações Importantes:**
-- **Site URL**: appbarber.auctusconsultoria.com.br
-- **API_BASE_URL**: https://api6.auctusconsultoria.com.br
-- **DB_NAME**: protese_capilar
-- **DB_USER**: protese_user
-- **CORS_ORIGINS**: https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br,https://appbarber.auctusconsultoria.com.br/admin,http://localhost:3000,http://localhost:3001,http://localhost:3002
+**Informações importantes:**
+- **Site / app**: `appbarber.auctusconsultoria.com.br`
+- **API pública**: `https://api6.auctusconsultoria.com.br`
+- **Banco**: Oracle (`ORACLE_*` no `.env` do backend)
+- **CORS**: origens do app em `https://appbarber.auctusconsultoria.com.br` (e `/admin`), mais localhost em desenvolvimento
 
