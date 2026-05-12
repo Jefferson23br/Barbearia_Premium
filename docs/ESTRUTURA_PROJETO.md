@@ -11,7 +11,7 @@ Barbearia_Premium/
 │
 ├── backend/                          # ⚙️ API Backend (Node.js/Express)
 │   ├── config/                       # Configurações
-│   │   ├── database.js              # Configuração PostgreSQL
+│   │   ├── database.js              # Reexport databaseV2 (Oracle produção / PostgreSQL dev)
 │   │   ├── cors.js                   # Configuração CORS
 │   │   └── multer.js                 # Configuração upload
 │   ├── middlewares/                  # Middlewares customizados
@@ -72,7 +72,7 @@ Barbearia_Premium/
 │
 ├── scripts/                          # 🔧 Scripts de configuração
 │   ├── setup-vps.sh                  # Setup completo VPS
-│   ├── configurar-postgres.sh        # Configurar PostgreSQL
+│   ├── configurar-postgres.sh        # PostgreSQL (legado / dev opcional)
 │   ├── configurar-ssl-api.sh         # Configurar SSL
 │   └── templates-nginx/               # Templates Nginx
 │
@@ -160,7 +160,8 @@ src/app/
 
 ### Backend
 - `express` - Framework web
-- `pg` - Cliente PostgreSQL
+- `oracledb` - Cliente Oracle (produção quando `ORACLE_*` definido)
+- `pg` - Cliente PostgreSQL (fallback em `databaseV2.js` sem Oracle)
 - `bcrypt` - Hash de senhas
 - `multer` - Upload de arquivos
 - `dotenv` - Variáveis de ambiente
@@ -218,8 +219,8 @@ src/app/
 
 ---
 
-**Última atualização**: 16 de Dezembro de 2025  
-**Versão**: 1.9.0
+**Última atualização**: maio de 2026  
+**Versão**: 1.10.0
 
 **URLs de Produção:**
 - Painel Admin: https://appbarber.auctusconsultoria.com.br/admin
@@ -230,7 +231,7 @@ src/app/
 **Infraestrutura:**
 - Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
 - Frontend: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
-- Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)
+- Banco de dados: **Oracle** em produção (`ORACLE_*`); PostgreSQL só em dev local sem Oracle
 
 
 
