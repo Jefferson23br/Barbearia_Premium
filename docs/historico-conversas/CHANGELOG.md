@@ -63,7 +63,7 @@ Formato inspirado em Keep a Changelog:
   - varredura de padroes SQL legados removidos das rotas (`protese.`, `ILIKE`, `::`, `DATE_TRUNC`, `ON CONFLICT`)
 - Frontend atualizado para o branding **Barbearia Premium**.
 - Frontend atualizado para novos dominios:
-  - API: `https://api6.actusconsultoria.com.br`
+  - API: `https://api6.auctusconsultoria.com.br`
   - App: `https://appbarber.auctusconsultoria.com.br`
   - Admin: `https://appbarber.auctusconsultoria.com.br/admin`
 - API ajustada para Oracle em pontos criticos de admin:

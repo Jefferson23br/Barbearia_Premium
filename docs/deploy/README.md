@@ -6,13 +6,14 @@ Documentação completa para deploy do sistema em produção.
 
 ## 📋 Índice
 
-1. [Comandos Essenciais](./COMANDOS_ESSENCIAIS.md) - Comandos úteis do dia a dia
-2. [Arquitetura VPS](./ARQUITETURA_DUAS_VPS.md) - Estrutura do servidor
-3. [Configuração DNS](./CONFIGURACAO_FINAL_DNS.md) - Setup de domínios
-4. [VPS Backend](./VPS_BACKEND_COM_CYBERPANEL.md) - Configuração do backend
-5. [VPS Frontend](./VPS_FRONTEND_45.md) - Configuração do frontend
-6. [Segurança](./SEGURANCA_VPS.md) - Boas práticas de segurança
-7. [Instalar API Teste](./INSTALAR_API_TESTE.md) - Setup inicial
+1. [Guia de atualização (deploy)](./GUIA_ATUALIZACAO_DEPLOY.md) - Passo a passo para atualizar produção após `git pull`
+2. [Comandos Essenciais](./COMANDOS_ESSENCIAIS.md) - Comandos úteis do dia a dia
+3. [Arquitetura VPS](./ARQUITETURA_DUAS_VPS.md) - Estrutura do servidor
+4. [Configuração DNS](./CONFIGURACAO_FINAL_DNS.md) - Setup de domínios
+5. [VPS Backend](./VPS_BACKEND_COM_CYBERPANEL.md) - Configuração do backend
+6. [VPS Frontend](./VPS_FRONTEND_45.md) - Configuração do frontend
+7. [Segurança](./SEGURANCA_VPS.md) - Boas práticas de segurança
+8. [Instalar API Teste](./INSTALAR_API_TESTE.md) - Setup inicial
 
 ---
 
@@ -44,7 +45,7 @@ Documentação completa para deploy do sistema em produção.
 - **Painel Admin**: https://appbarber.auctusconsultoria.com.br/admin
 - **Painel Cliente**: https://appbarber.auctusconsultoria.com.br
 - **Site Público**: https://appbarber.auctusconsultoria.com.br
-- **API Backend**: https://api6.actusconsultoria.com.br
+- **API Backend**: https://api6.auctusconsultoria.com.br
 
 ---
 

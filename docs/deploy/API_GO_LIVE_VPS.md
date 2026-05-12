@@ -34,7 +34,7 @@ ORACLE_PASSWORD=trocar_senha_forte
 JWT_SECRET=trocar_por_valor_forte
 JWT_EXPIRES_IN=12h
 
-API_BASE_URL=https://api6.actusconsultoria.com.br
+API_BASE_URL=https://api6.auctusconsultoria.com.br
 ```
 
 ## 3) Banco Oracle e tabelas basicas
@@ -76,7 +76,7 @@ systemctl reload nginx
 ## 6) SSL com Certbot
 
 ```bash
-certbot --nginx -d api6.actusconsultoria.com.br
+certbot --nginx -d api6.auctusconsultoria.com.br
 nginx -t
 systemctl reload nginx
 ```
@@ -84,9 +84,9 @@ systemctl reload nginx
 ## 7) Testes finais
 
 ```bash
-curl -I https://api6.actusconsultoria.com.br/health
-curl https://api6.actusconsultoria.com.br/health
-curl https://api6.actusconsultoria.com.br/api/test-db
+curl -I https://api6.auctusconsultoria.com.br/health
+curl https://api6.auctusconsultoria.com.br/health
+curl https://api6.auctusconsultoria.com.br/api/test-db
 ```
 
 ## 8) Storage de arquivos (disco local)

@@ -259,7 +259,7 @@ Arquivos `.env.local` em cada projeto:
 
 ```env
 # API Backend
-NEXT_PUBLIC_API_URL=https://api6.actusconsultoria.com.br
+NEXT_PUBLIC_API_URL=https://api6.auctusconsultoria.com.br
 ```
 
 ---

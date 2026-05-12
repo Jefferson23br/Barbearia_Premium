@@ -7,7 +7,7 @@ API REST desenvolvida com Node.js, Express.js e PostgreSQL. Esta é a parte do b
 ## 🚀 Status
 
 **Status**: ✅ **Em Produção**  
-**URL**: https://api6.actusconsultoria.com.br  
+**URL**: https://api6.auctusconsultoria.com.br  
 **Porta**: 3001  
 **VPS**: 82.25.65.201 (Hostinger)  
 **Última Atualização**: 21 de Dezembro de 2025  
@@ -113,7 +113,7 @@ DB_NAME=barbearia_premium
 DB_USER=barbearia_user
 DB_PASSWORD=sua_senha_segura
 
-API_BASE_URL=https://api6.actusconsultoria.com.br
+API_BASE_URL=https://api6.auctusconsultoria.com.br
 CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 

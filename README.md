@@ -240,10 +240,10 @@ npm run dev
 | **Painel Admin** | https://appbarber.auctusconsultoria.com.br/admin | ✅ Produção |
 | **Painel Cliente** | https://appbarber.auctusconsultoria.com.br | ✅ Produção |
 | **Site Público** | https://appbarber.auctusconsultoria.com.br | 🔄 Desenvolvimento |
-| **API Backend** | https://api6.actusconsultoria.com.br | ✅ Produção |
+| **API Backend** | https://api6.auctusconsultoria.com.br | ✅ Produção |
 
 **Configuração:**
-- **API_BASE_URL**: https://api6.actusconsultoria.com.br
+- **API_BASE_URL**: https://api6.auctusconsultoria.com.br
 - **CORS_ORIGINS**: https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 - **DB_NAME**: definir conforme ambiente (legado/v2)
 - **DB_USER**: definir conforme ambiente
@@ -399,7 +399,7 @@ DB_NAME=barbearia_premium
 DB_USER=barbearia_user
 DB_PASSWORD=senha_segura
 
-API_BASE_URL=https://api6.actusconsultoria.com.br
+API_BASE_URL=https://api6.auctusconsultoria.com.br
 CORS_ORIGINS=https://appbarber.auctusconsultoria.com.br,http://localhost:3000,http://localhost:3001,http://localhost:3002
 ```
 
