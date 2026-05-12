@@ -18,8 +18,9 @@
 - 443 (HTTPS) - tráfego seguro
 - 3001 (API Backend) - via proxy reverso Nginx
 
-✅ **Portas Fechadas:**
-- 5432 (PostgreSQL) - somente localhost
+✅ **Portas Fechadas / restritas:**
+- **1521** (Oracle listener) — não exponha na internet; a API Node conecta ao Oracle por rede privada ou host permitido
+- **5432** (PostgreSQL) — apenas se ainda existir legado local; somente localhost
 - Todas as outras portas não essenciais
 
 ### 3. SSL/HTTPS (Let's Encrypt)
@@ -36,13 +37,19 @@
 - Proteção para SSH e outros serviços
 - Logs de tentativas de acesso
 
-### 5. PostgreSQL Seguro
+### 5. Banco de dados (Oracle em produção)
 
-✅ **Configuração:**
-- Acesso somente via localhost
-- Usuário específico para aplicação
-- Senhas fortes
-- Sem acesso externo direto
+✅ **Configuração típica:**
+- Credenciais apenas no `.env` da API (nunca no repositório)
+- Oracle acessível só pela rede necessária (VPN/rede interna/firewall do provedor)
+- Senhas fortes e usuário/schema dedicado
+
+<details>
+<summary>PostgreSQL (legado / dev local)</summary>
+
+Se ainda houver instância na VPS: acesso somente via localhost, usuário da aplicação, sem exposição pública.
+
+</details>
 
 ---
 
@@ -144,7 +151,7 @@ sudo dnf install -y mod_security mod_security_crs
 sudo systemctl status firewalld
 sudo systemctl status fail2ban
 sudo systemctl status nginx
-sudo systemctl status postgresql-15
+# sudo systemctl status postgresql-15   # apenas se usar Postgres legado nesta VPS
 
 # Ver processos PM2
 pm2 status
@@ -188,7 +195,7 @@ sudo tail -f /var/log/nginx/access.log | grep -v "200"
 - [x] Firewall configurado e ativo
 - [x] fail2ban instalado e ativo
 - [x] SSL/HTTPS configurado
-- [x] PostgreSQL acessível apenas localhost
+- [x] Banco (Oracle/Postgres) não exposto desnecessariamente na internet pública
 - [x] Senhas fortes configuradas
 - [ ] Backups automáticos configurados
 - [ ] Monitoramento configurado
