@@ -439,7 +439,7 @@ Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Últ
 
 **Implementações Anteriores (16 de Dezembro de 2025)**:
 - ✅ Sistema de Módulos no Menu - Menu organizado por módulos expansíveis
-- ✅ Correção do Sistema de Permissões - Permissões sempre do PostgreSQL, sem duplicações
+- ✅ Correção do Sistema de Permissões — fonte na API/banco (Oracle em produção atual), sem duplicações
 - ✅ Reorganização do Menu Sidebar - Ordem correta e organização por categorias
 - ✅ Integração DocSales - Sistema de assinatura de contratos (eSign as a Service)
 - ✅ Serviços de Integração - Módulo para gerenciar e usar integrações configuradas
@@ -456,4 +456,4 @@ Este roadmap é atualizado regularmente conforme o desenvolvimento avança. Últ
 **Infraestrutura:**
 - Backend/API/Banco: VPS 82.25.65.201 (Hostinger)
 - Frontend: VPS 45.132.157.28 (Hostinger - conta com domínio liberado)
-- Banco de Dados: PostgreSQL 15+ (protese_capilar, protese_user)
+- Banco de dados: Oracle em produção (`ORACLE_*`); PostgreSQL apenas fallback local sem Oracle
