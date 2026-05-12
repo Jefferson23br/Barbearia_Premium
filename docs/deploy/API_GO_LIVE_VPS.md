@@ -39,11 +39,13 @@ API_BASE_URL=https://api6.auctusconsultoria.com.br
 
 ## 3) Banco Oracle e tabelas basicas
 
-Como o banco agora e Oracle remoto, rode os scripts SQL Oracle via SQLcl/SQL*Plus
-com o usuario ja criado. Use os arquivos SQL de inicializacao adaptados para Oracle.
+Como o banco alvo e Oracle, rode os scripts SQL Oracle via SQLcl/SQL*Plus (ou DBeaver)
+com o usuario/schema ja criado. Use os arquivos em **`database/sql/oracle/`** e, se
+preferir automatizar, `npm run db:oracle:bootstrap` no diretorio `backend/` — ver
+[ORACLE_BOOTSTRAP.md](./ORACLE_BOOTSTRAP.md).
 
-> Observacao: os scripts atuais em `backend/sql/*.sql` estao em dialeto PostgreSQL
-> e precisam de versao Oracle antes da execucao.
+> Scripts SQL antigos em dialeto PostgreSQL estao em `database/sql/legacy-postgresql/`
+> apenas para referencia; nao os use como fonte primaria em producao Oracle.
 
 ## 4) Subir API no PM2
 
@@ -103,8 +105,9 @@ chmod -R 755 /Projetos/Barbearia_Premium/backend/uploads
 
 A tabela `storage_arquivos` (versao Oracle) deve guardar metadados dos uploads.
 
-## 9) Ponto critico atual
+## 9) Conexao e dialeto SQL
 
-O backend atual ainda usa `pg` (PostgreSQL) em `backend/config/database.js` e
-rotas com SQL especifico de PostgreSQL. Antes do go-live com Oracle, e obrigatorio
-migrar camada de conexao e queries para Oracle.
+Em producao, configure **`ORACLE_*`** no `.env` do backend. O `database.js` aponta para
+`databaseV2.js`, que escolhe **Oracle** quando `ORACLE_*` esta definido; caso contrario,
+usa **PostgreSQL** apenas para desenvolvimento local. Apos alterar o `.env`, reinicie com
+`pm2 restart api-barbearia-premium --update-env`.
