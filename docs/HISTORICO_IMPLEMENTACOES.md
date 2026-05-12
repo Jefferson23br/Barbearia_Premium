@@ -2,6 +2,8 @@
 
 Documentação completa de tudo que foi implementado até agora no projeto.
 
+> **Produção atual:** a API usa **Oracle** (`ORACLE_*`, `database/sql/oracle/`). Onde o histórico citar PostgreSQL, trata-se do período anterior ou de desenvolvimento local com `pg`.
+
 ---
 
 ## ✅ Funcionalidades Implementadas
@@ -104,7 +106,7 @@ Documentação completa de tudo que foi implementado até agora no projeto.
 - ✅ Listagem de usuários (Master não aparece para não-Master)
 - ✅ Visualização de permissões por módulo
 - ✅ Edição de permissões (checkboxes)
-- ✅ Botão Salvar que persiste no PostgreSQL
+- ✅ Botão Salvar que persiste no banco (via API)
 - ✅ Controle de acesso no sidebar (itens aparecem/desaparecem)
 - ✅ Controle de acesso em botões (editar/excluir)
 
@@ -342,7 +344,7 @@ Documentação completa de tudo que foi implementado até agora no projeto.
 - **Runtime**: Node.js 20 LTS
 - **Framework**: Express.js
 - **Linguagem**: JavaScript
-- **Banco de Dados**: PostgreSQL 15+
+- **Banco de dados**: Oracle em produção; PostgreSQL opcional em dev (`databaseV2.js`)
 - **Autenticação**: bcrypt (hash de senhas)
 - **Upload**: Multer
 - **CORS**: express-cors
@@ -581,7 +583,7 @@ Reorganizar o backend de um arquivo monolítico (`server.js`) para uma estrutura
 ### Estrutura Criada
 
 **Configurações** (`backend/config/`):
-- ✅ `database.js` - Configuração do PostgreSQL
+- ✅ `database.js` - Reexport de `databaseV2` (Oracle / PostgreSQL)
 - ✅ `cors.js` - Configuração de CORS
 - ✅ `multer.js` - Configuração de upload (fotos e anexos)
 
@@ -881,7 +883,7 @@ A migração foi realizada com sucesso, mantendo 100% de compatibilidade com o s
 - `protese.vendas_parcelas` - Parcelas das vendas
 
 **Detalhes Técnicos:**
-- Função PostgreSQL para gerar tickets únicos
+- Função no banco (legado PostgreSQL; equivalente Oracle conforme migração) para gerar tickets únicos
 - Cálculo automático de parcelas e datas de vencimento
 - Integração completa com Receitas (gera receitas automaticamente)
 - Integração completa com Caixas (gera movimentações para pagamentos à vista)
