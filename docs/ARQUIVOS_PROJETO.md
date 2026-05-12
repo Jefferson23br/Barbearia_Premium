@@ -11,7 +11,7 @@ Barbearia_Premium/
 │
 ├── backend/                        # ⚙️ API Backend (Estrutura Modular)
 │   ├── config/                     # ✅ Configurações compartilhadas
-│   │   ├── database.js            # ✅ Configuração PostgreSQL
+│   │   ├── database.js            # ✅ Reexport databaseV2 (Oracle / PostgreSQL)
 │   │   ├── cors.js                # ✅ Configuração CORS
 │   │   └── multer.js              # ✅ Configuração upload
 │   ├── routes/                     # ✅ Rotas modulares
@@ -46,7 +46,7 @@ Barbearia_Premium/
 │   └── ARQUIVOS_PROJETO.md        # ✅ Este arquivo
 │
 ├── scripts/                        # 🔧 Scripts de configuração
-│   ├── configurar-postgres.sh     # ✅ Setup PostgreSQL
+│   ├── configurar-postgres.sh     # ✅ Setup PostgreSQL (legado / dev opcional)
 │   ├── setup-vps.sh               # ✅ Setup completo VPS
 │   └── templates-nginx/           # ✅ Templates Nginx
 │
@@ -97,7 +97,7 @@ Barbearia_Premium/
 
 ### Scripts de Configuração
 - `scripts/setup-vps.sh` - ✅ Setup VPS
-- `scripts/configurar-postgres.sh` - ✅ Setup PostgreSQL
+- `scripts/configurar-postgres.sh` - ✅ Setup PostgreSQL (legado / dev opcional)
 - `scripts/templates-nginx/*` - ✅ Templates Nginx
 
 ---
