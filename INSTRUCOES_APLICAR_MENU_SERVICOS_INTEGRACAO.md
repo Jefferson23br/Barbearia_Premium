@@ -1,5 +1,7 @@
 # Instruções para Aplicar Menu de Serviços de Integração
 
+> **Produção:** aplicar os scripts no **Oracle**. Texto abaixo menciona PostgreSQL como período legado.
+
 ## Problema
 No menu, apenas o DocSales aparece, mas deveriam aparecer todas as integrações:
 - Focus NFe
@@ -17,7 +19,7 @@ No menu, apenas o DocSales aparece, mas deveriam aparecer todas as integrações
 
 ### 1. Executar Script SQL no Banco de Dados
 
-Execute o script `COMANDOS_CRIAR_MODULO_SERVICOS_INTEGRACAO.sql` no seu banco de dados PostgreSQL.
+Execute o script `COMANDOS_CRIAR_MODULO_SERVICOS_INTEGRACAO.sql` no **Oracle** (SQLcl/DBeaver), adaptando o DDL se o arquivo for dialeto PostgreSQL legado.
 
 Este script irá:
 - Criar o módulo "Serviços de Integração" (se não existir)
