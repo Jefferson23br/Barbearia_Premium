@@ -5,7 +5,7 @@
 ### VPS 1 - Backend (82.25.65.201)
 ```
 IP: 82.25.65.201
-Uso: API + PostgreSQL
+Uso: API Node.js + conexao ao Oracle em producao (PostgreSQL apenas se ambiente legado local)
 Sistema: AlmaLinux 9
 Domínio: api6.auctusconsultoria.com.br
 ```
@@ -45,11 +45,11 @@ Domínios:
 
 ```bash
 # Node.js 20 LTS
-# PostgreSQL 15
 # Nginx (proxy reverso)
 # PM2
 # Certbot (SSL)
 # fail2ban
+# Oracle: listener em host remoto ou local (porta 1521 tipica) — ver ORACLE_* no .env
 ```
 
 ### Estrutura:
@@ -60,8 +60,8 @@ Domínios:
 ├── node_modules/
 └── .env
 
-PostgreSQL (localhost:5432)
-└── Database: protese_capilar
+Oracle (remoto ou local via ORACLE_HOST / ORACLE_SERVICE_NAME)
+└── Schema/usuario conforme ORACLE_USER (ex.: BARBEARIA_PREMIUM)
 ```
 
 ### Nginx apenas para API:
@@ -245,7 +245,7 @@ Usuário acessa:
 [Cloudflare DNS]
     ↓
     ├─→ api.* → 82.25.65.201 (VPS Backend)
-    │              └─→ Node.js + PostgreSQL
+    │              └─→ Node.js + Oracle (produção)
     │
     └─→ www.*, app.*, admin.* → 45.132.157.28 (VPS Frontend)
                                    └─→ Nginx serve arquivos estáticos
