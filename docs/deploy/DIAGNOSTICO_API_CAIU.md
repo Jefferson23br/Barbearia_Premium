@@ -90,19 +90,32 @@ curl http://localhost:3001/api/test-db
 
 ---
 
-## 🗄️ PASSO 5: Verificar Banco de Dados
+## 🗄️ PASSO 5: Verificar banco de dados (Oracle em produção)
+
+A API usa **Oracle** quando `ORACLE_*` está no `.env` do backend (ver `backend/.env.example`).
 
 ```bash
-# Verificar se PostgreSQL está rodando
-sudo systemctl status postgresql-15
+cd /home/cyberpanel/app/backend
+grep -E '^ORACLE_' .env || true
 
-# Se não estiver rodando, iniciar
-sudo systemctl start postgresql-15
-sudo systemctl enable postgresql-15
-
-# Testar conexão
-psql -h localhost -U protese_user -d protese_capilar -c "SELECT 1;"
+# Teste pela própria API (valida credenciais + rede até o Oracle)
+curl -sS http://localhost:3001/api/test-db
 ```
+
+Se `/api/test-db` falhar, confira no `.env`: `ORACLE_HOST`, `ORACLE_PORT`, `ORACLE_SERVICE_NAME`, `ORACLE_USER`, `ORACLE_PASSWORD` e rede/firewall até a porta do listener (geralmente **1521**).
+
+<details>
+<summary>PostgreSQL apenas em ambiente legado/local</summary>
+
+Se esta VPS ainda tiver **PostgreSQL** para desenvolvimento e o backend estiver **sem** `ORACLE_*`:
+
+```bash
+sudo systemctl status postgresql-15
+sudo systemctl start postgresql-15
+psql -h localhost -U [usuario] -d [database] -c "SELECT 1;"
+```
+
+</details>
 
 ---
 
@@ -185,15 +198,15 @@ cat .env | grep -v PASSWORD
 pm2 stop api-barbearia-premium
 sudo systemctl stop lsws
 
-# Iniciar serviços na ordem
-sudo systemctl start postgresql-15
+# Iniciar serviços na ordem (PostgreSQL só se ainda existir nesta VPS)
 sudo systemctl start lsws
+# sudo systemctl start postgresql-15   # opcional: legado local
 pm2 start api-barbearia-premium
 
 # Verificar status
 pm2 status
 sudo systemctl status lsws
-sudo systemctl status postgresql-15
+# sudo systemctl status postgresql-15
 ```
 
 ---
@@ -231,8 +244,8 @@ cd /home/cyberpanel/app/backend
 pm2 restart api-barbearia-premium
 
 # 4. Verificar serviços
-sudo systemctl status postgresql-15
 sudo systemctl status lsws
+# sudo systemctl status postgresql-15   # se usar Postgres legado nesta máquina
 
 # 5. Testar
 curl http://localhost:3001/health
@@ -259,11 +272,12 @@ sudo kill -9 PID
 pm2 restart api-barbearia-premium
 ```
 
-### Erro: "ECONNREFUSED" (banco de dados)
+### Erro: "ECONNREFUSED" / falha em `/api/test-db` (banco de dados)
 ```bash
-# Verificar PostgreSQL
-sudo systemctl status postgresql-15
-sudo systemctl start postgresql-15
+# Conferir ORACLE_* no .env e reiniciar a API
+pm2 restart api-barbearia-premium --update-env
+curl -sS http://localhost:3001/api/test-db
+# Se usar Postgres local sem Oracle: sudo systemctl status postgresql-15
 ```
 
 ### Erro: "EADDRINUSE" (porta em uso)
@@ -299,5 +313,5 @@ Se você vê **↺ 16** (ou muitos restarts), isso indica instabilidade:
 
 ---
 
-**Última atualização**: Dezembro 2025
+**Última atualização**: maio de 2026 (Oracle como alvo de produção)
 
