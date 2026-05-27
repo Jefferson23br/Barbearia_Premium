@@ -469,7 +469,10 @@ Todas as decisões técnicas foram tomadas considerando:
 
 ## 📄 Licença
 
-Este é um projeto privado desenvolvido para uso comercial da Barbearia Premium.
+Este projeto e proprietario e possui uso restrito.
+Nao e permitida copia, redistribuicao ou uso comercial sem autorizacao previa e expressa por escrito.
+
+Consulte os termos completos em [`LICENSE`](./LICENSE).
 
 ---
 
