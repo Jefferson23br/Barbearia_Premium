@@ -220,6 +220,18 @@ credentials.json
 secrets.json
 *.credentials
 
+# Documentos/artefatos sensiveis para nao publicar
+docs/historico-conversas/
+docs/deploy/VPS_BACKEND_COM_CYBERPANEL.md
+docs/INFRAESTRUTURA.md
+docs/deploy/ARQUITETURA_DUAS_VPS.md
+docs/deploy/CONFIGURACAO_FINAL_DNS.md
+docs/deploy/
+docs/DEPLOY_GUIA_COMPLETO.md
+scripts/verificar-vps-backend.sh
+scripts/configurar-ssl-api.sh
+*.rar
+
 # Arquivos de monitoramento local
 monitor.log
 health-check.log
